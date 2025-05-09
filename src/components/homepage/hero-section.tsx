@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { HeartPulse } from "lucide-react"; // Changed from ArrowRight to HeartPulse
+import { HeartPulse } from "lucide-react"; 
 import Link from "next/link";
 
 export function HeroSection() {
@@ -30,7 +30,7 @@ export function HeroSection() {
           <Button asChild size="lg" className="rounded-lg group px-8 py-6 text-lg shadow-lg hover:shadow-primary/30 transition-all duration-300 transform hover:scale-105">
             <Link href="#mode-switcher" className="flex items-center">
               Get Started
-              <HeartPulse className="ml-2 h-5 w-5 animate-pulse-medical text-primary-foreground/90" />
+              <HeartPulse className="ml-2 h-6 w-6 animate-pulse-medical text-primary-foreground/90" />
             </Link>
           </Button>
         </div>
