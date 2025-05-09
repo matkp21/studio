@@ -6,13 +6,21 @@ import React, { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
-import { PanelLeftOpen, PanelRightOpen } from 'lucide-react';
+import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, MoreVertical } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Footer } from './footer';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const ToggleSidebarButton = () => {
   const { state, toggleSidebar, isMobile } = useSidebar();
@@ -70,15 +78,34 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
           
           <nav className="flex items-center gap-4">
-            {/* Placeholder for potential header navigation or user actions */}
-            {/* <Link href="/features" className="text-sm font-medium text-foreground/80 hover:text-foreground hidden sm:block">Features</Link> */}
-            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-foreground p-0 rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
-                <AvatarFallback>DR</AvatarFallback>
-              </Avatar>
-              <span className="sr-only">User Profile</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-foreground p-0 rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
+                    <AvatarFallback>DR</AvatarFallback>
+                  </Avatar>
+                  <span className="sr-only">Open user menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <UserCircle className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
         </header>
         <main className="flex-1 flex flex-col overflow-auto">
@@ -89,4 +116,3 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </SidebarProvider>
   );
 }
-
