@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
 
 const ToggleSidebarButton = () => {
   const { state, toggleSidebar, isMobile } = useSidebar();
@@ -36,14 +37,34 @@ const ToggleSidebarButton = () => {
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+  const [clientLoaded, setClientLoaded] = useState(false);
+
 
   useEffect(() => {
+    setClientLoaded(true); // Indicates component has mounted on client
+
+    // Check for onboarding completion only on client
+    if (typeof window !== 'undefined' && localStorage.getItem('onboardingComplete') !== 'true') {
+      setShowOnboardingModal(true);
+    }
+
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      if (typeof window !== 'undefined') {
+        setScrolled(window.scrollY > 20);
+      }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleOnboardingClose = () => {
+    setShowOnboardingModal(false);
+    if (typeof window !== 'undefined') { // Ensure localStorage is available
+      localStorage.setItem('onboardingComplete', 'true');
+    }
+  };
+  
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -70,7 +91,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <ToggleSidebarButton />
             </div>
             <div className={cn("transition-all duration-300", scrolled ? "opacity-0 md:opacity-100" : "opacity-100")}>
-               {/* Optionally show full logo when not scrolled, icon when scrolled */}
               <Link href="/" className="flex items-center gap-2">
                 <Logo simple={scrolled} />
               </Link>
@@ -80,12 +100,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <nav className="flex items-center gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-foreground p-0 rounded-full">
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full text-foreground/80 hover:text-foreground">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
                     <AvatarFallback>DR</AvatarFallback>
                   </Avatar>
-                  <span className="sr-only">Open user menu</span>
+                   <span className="sr-only">Open user menu</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -111,6 +131,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <main className="flex-1 flex flex-col overflow-auto">
           {children}
         </main>
+        {clientLoaded && showOnboardingModal && (
+          <OnboardingModal
+            isOpen={showOnboardingModal}
+            onClose={handleOnboardingClose}
+          />
+        )}
         <Footer />
       </SidebarInset>
     </SidebarProvider>
