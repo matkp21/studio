@@ -2,7 +2,7 @@ import { HeartPulse } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface LogoProps {
-  simple?: boolean; // If true, name uses animated gradient. If false, name uses static foreground text.
+  simple?: boolean; // If true, icon and container are smaller. Text is always animated.
   className?: string;
 }
 
@@ -18,9 +18,7 @@ export function Logo({ simple = false, className }: LogoProps) {
       <span
         className={cn(
           "text-lg font-semibold tracking-tight", // Common styles
-          simple
-            ? "bg-clip-text text-transparent animated-gradient-text" // Styles for simple={true} (animated gradient)
-            : "text-foreground" // Styles for simple={false} (default, static color)
+          "bg-clip-text text-transparent animated-gradient-text" // Always apply animated gradient
         )}
       >
         MediAssistant
