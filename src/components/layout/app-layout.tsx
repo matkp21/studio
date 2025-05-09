@@ -45,7 +45,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
           {/* Page title or breadcrumbs can go here */}
         </header>
-        <main className="flex-1 p-4 md:p-6 overflow-auto">
+        <main className="flex-1 flex flex-col overflow-auto"> {/* Removed default padding */}
           {children}
         </main>
       </SidebarInset>

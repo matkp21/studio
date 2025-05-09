@@ -55,7 +55,7 @@ export function ChatInterface() {
   }, [messages]);
   
   return (
-    <Card className="h-[calc(100vh-12rem)] flex flex-col shadow-lg rounded-lg">
+    <Card className="flex-1 flex flex-col shadow-lg rounded-lg overflow-hidden">
       <CardContent className="flex-1 p-0">
         <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
           <div className="space-y-4">
