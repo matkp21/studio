@@ -5,7 +5,7 @@ import { Construction } from 'lucide-react';
 export default function ARViewerPage() {
   return (
     <PageWrapper title="Augmented Reality Viewer">
-      <Card className="shadow-lg">
+      <Card className="shadow-md">
         <CardHeader>
           <CardTitle>AR Medical Image Viewer</CardTitle>
           <CardDescription>View annotated medical images in augmented reality.</CardDescription>

@@ -25,7 +25,7 @@ export default function ImageAnalyzerPage() {
   return (
     <PageWrapper title="Medical Image Analyzer">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="shadow-lg">
+        <Card className="shadow-md">
           <CardHeader>
             <CardTitle>Upload Image</CardTitle>
             <CardDescription>Upload a medical image (e.g., X-ray, CT scan) for AI-powered annotation.</CardDescription>
@@ -35,7 +35,7 @@ export default function ImageAnalyzerPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-md">
           <CardHeader>
             <CardTitle>Analysis & Annotations</CardTitle>
             <CardDescription>AI-generated annotations will appear here. This is not a substitute for professional medical advice.</CardDescription>

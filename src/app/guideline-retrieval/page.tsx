@@ -22,7 +22,7 @@ export default function GuidelineRetrievalPage() {
   return (
     <PageWrapper title="Clinical Guideline Retrieval">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="shadow-lg">
+        <Card className="shadow-md">
           <CardHeader>
             <CardTitle>Query Guidelines</CardTitle>
             <CardDescription>
@@ -34,7 +34,7 @@ export default function GuidelineRetrievalPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-md">
           <CardHeader>
             <CardTitle>Retrieved Guidelines</CardTitle>
             <CardDescription>

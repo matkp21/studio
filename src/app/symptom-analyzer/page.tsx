@@ -22,7 +22,7 @@ export default function SymptomAnalyzerPage() {
   return (
     <PageWrapper title="Symptom Analyzer">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="shadow-lg">
+        <Card className="shadow-md">
           <CardHeader>
             <CardTitle>Enter Symptoms</CardTitle>
             <CardDescription>Describe the symptoms you are experiencing. Our AI will provide potential insights.</CardDescription>
@@ -32,7 +32,7 @@ export default function SymptomAnalyzerPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-md">
           <CardHeader>
             <CardTitle>Analysis Results</CardTitle>
             <CardDescription>Potential diagnoses based on the provided symptoms. This is not a substitute for professional medical advice.</CardDescription>
