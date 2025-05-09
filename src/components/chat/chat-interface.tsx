@@ -1,3 +1,4 @@
+// src/components/chat/chat-interface.tsx
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -5,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { SendHorizonal } from 'lucide-react';
+import { SendHorizonal, HeartPulse } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface Message {
@@ -97,19 +98,31 @@ export function ChatInterface() {
       </CardContent>
       <div className="border-t p-4 bg-background">
         <div className="flex items-center gap-2">
-          <Textarea
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 resize-none"
-            rows={1}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSendMessage();
-              }
-            }}
-          />
+          <div className="relative flex-1">
+            <Textarea
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="w-full resize-none pr-3" // Use w-full, padding ensures custom placeholder visibility
+              rows={1}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+            />
+            {inputValue === '' && (
+              <div 
+                className="absolute top-1/2 left-3 transform -translate-y-1/2 text-muted-foreground pointer-events-none flex items-center"
+                aria-hidden="true"
+              >
+                <span>Type your message</span>
+                <span className="animate-pulse-medical ml-1.5"> {/* Increased margin slightly */}
+                  <HeartPulse size={14} className="inline-block text-primary/80" />
+                </span>
+              </div>
+            )}
+          </div>
           <Button onClick={handleSendMessage} size="icon" aria-label="Send message">
             <SendHorizonal className="h-5 w-5" />
           </Button>
