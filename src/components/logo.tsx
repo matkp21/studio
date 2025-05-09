@@ -2,7 +2,7 @@ import { HeartPulse } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface LogoProps {
-  simple?: boolean;
+  simple?: boolean; // If true, name uses animated gradient. If false, name uses static foreground text.
   className?: string;
 }
 
@@ -11,15 +11,20 @@ export function Logo({ simple = false, className }: LogoProps) {
     <div className={cn("flex items-center gap-2 p-1", className)}>
       <div className={cn(
         "flex items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm",
-        simple ? "h-8 w-8" : "h-9 w-9"
+        simple ? "h-8 w-8" : "h-9 w-9" // Conditional sizing for icon container
       )}>
-        <HeartPulse className={cn(simple ? "h-4 w-4" : "h-5 w-5")} />
+        <HeartPulse className={cn(simple ? "h-4 w-4" : "h-5 w-5")} /> {/* Conditional sizing for icon */}
       </div>
-      {!simple && (
-        <span className="text-lg font-semibold text-foreground tracking-tight">
-          MediAssistant
-        </span>
-      )}
+      <span
+        className={cn(
+          "text-lg font-semibold tracking-tight", // Common styles
+          simple
+            ? "bg-clip-text text-transparent animated-gradient-text" // Styles for simple={true} (animated gradient)
+            : "text-foreground" // Styles for simple={false} (default, static color)
+        )}
+      >
+        MediAssistant
+      </span>
     </div>
   );
 }

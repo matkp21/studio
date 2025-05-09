@@ -186,3 +186,18 @@ body {
 .input-focus-glow:focus-within {
   box-shadow: 0 0 0 2px hsl(var(--primary) / 0.4);
 }
+
+/* Animated Gradient Text for Logo */
+.animated-gradient-text {
+  background-size: 200% auto;
+  background-image: linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--primary)) 100%);
+  animation: gradient-flow 3s linear infinite;
+  /* -webkit-background-clip and background-clip are applied by Tailwind's bg-clip-text */
+  /* color: transparent is applied by Tailwind's text-transparent */
+}
+
+@keyframes gradient-flow {
+  to {
+    background-position: 200% center;
+  }
+}
