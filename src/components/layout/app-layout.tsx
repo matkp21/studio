@@ -1,53 +1,86 @@
+// src/components/layout/app-layout.tsx
 "use client";
 
 import type { ReactNode } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
-import { PanelLeftOpen, PanelRightOpen } from 'lucide-react';
-import { useSidebar } from '@/components/ui/sidebar'; // Ensure useSidebar is correctly imported if used here directly
+import { PanelLeftOpen, PanelRightOpen, UserCircle } from 'lucide-react';
+import { useSidebar } from '@/components/ui/sidebar';
+import { Logo } from '@/components/logo';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { Footer } from './footer';
 
-// Helper component to use useSidebar hook
 const ToggleSidebarButton = () => {
   const { state, toggleSidebar, isMobile } = useSidebar();
-  if (isMobile) return null; // Or render a mobile-specific toggle if needed in this position
+  if (isMobile) return null;
 
   return (
-    <Button variant="ghost" size="icon" onClick={toggleSidebar} className="hidden md:flex">
+    <Button variant="ghost" size="icon" onClick={toggleSidebar} className="hidden md:flex text-foreground/80 hover:text-foreground">
       {state === 'collapsed' ? <PanelRightOpen /> : <PanelLeftOpen />}
       <span className="sr-only">Toggle sidebar</span>
     </Button>
   );
 };
 
-
 export function AppLayout({ children }: { children: ReactNode }) {
-  // Retrieve sidebar state from cookies or localStorage if persistent state is desired on initial load
-  // For now, defaultOpen will handle it.
-  // const [isSidebarOpen, setIsSidebarOpen] = React.useState(true); // Example for controlled state
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <SidebarProvider defaultOpen={true}>
       <Sidebar
-        variant="sidebar" // "sidebar", "floating", "inset"
-        collapsible="icon" // "icon", "offcanvas", "none"
+        variant="sidebar"
+        collapsible="icon"
         side="left"
+        className="border-r border-border/50"
       >
         <SidebarNav />
       </Sidebar>
-      <SidebarInset className="flex flex-col">
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
-          <div className="md:hidden"> {/* Show SidebarTrigger only on mobile within the header */}
-            <SidebarTrigger />
+      <SidebarInset className="flex flex-col bg-background">
+        <header 
+          className={cn(
+            "sticky top-0 z-30 flex items-center justify-between gap-4 border-b bg-background/70 backdrop-blur-md px-4 md:px-6 transition-all duration-300 ease-in-out fade-in",
+            scrolled ? "h-14 shadow-md" : "h-16 border-transparent"
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <div className="md:hidden">
+              <SidebarTrigger />
+            </div>
+            <div className="hidden md:block">
+              <ToggleSidebarButton />
+            </div>
+            <div className={cn("transition-all duration-300", scrolled ? "opacity-0 md:opacity-100" : "opacity-100")}>
+               {/* Optionally show full logo when not scrolled, icon when scrolled */}
+              <Link href="/" className="flex items-center gap-2">
+                <Logo simple={scrolled} />
+              </Link>
+            </div>
           </div>
-          <div className="hidden md:block"> {/* Show custom ToggleSidebarButton on desktop */}
-            <ToggleSidebarButton />
-          </div>
-          {/* Page title or breadcrumbs can go here */}
+          
+          <nav className="flex items-center gap-4">
+            {/* Placeholder for potential header navigation or user actions */}
+            {/* <Link href="/features" className="text-sm font-medium text-foreground/80 hover:text-foreground hidden sm:block">Features</Link> */}
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-foreground">
+              <UserCircle className="h-5 w-5" />
+              <span className="sr-only">User Profile</span>
+            </Button>
+          </nav>
         </header>
-        <main className="flex-1 flex flex-col overflow-auto"> {/* Removed default padding */}
+        <main className="flex-1 flex flex-col overflow-auto">
           {children}
         </main>
+        <Footer />
       </SidebarInset>
     </SidebarProvider>
   );

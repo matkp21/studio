@@ -1,3 +1,4 @@
+// src/components/guideline-retrieval/guideline-query-form.tsx
 "use client";
 
 import { useForm, type SubmitHandler } from 'react-hook-form';
@@ -5,9 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { retrieveGuidelines, type GuidelineRetrievalInput, type GuidelineRetrievalOutput } from '@/ai/flows/guideline-retrieval';
 import { useToast } from '@/hooks/use-toast';
+import { Search, Send } from 'lucide-react';
 
 const formSchema = z.object({
   query: z.string().min(3, { message: "Query must be at least 3 characters long." }),
@@ -18,9 +20,10 @@ type GuidelineQueryFormValues = z.infer<typeof formSchema>;
 interface GuidelineQueryFormProps {
   onRetrievalComplete: (result: GuidelineRetrievalOutput | null, error?: string) => void;
   setIsLoading: (loading: boolean) => void;
+  isLoading: boolean; // Added isLoading prop
 }
 
-export function GuidelineQueryForm({ onRetrievalComplete, setIsLoading }: GuidelineQueryFormProps) {
+export function GuidelineQueryForm({ onRetrievalComplete, setIsLoading, isLoading }: GuidelineQueryFormProps) {
   const { toast } = useToast();
   const form = useForm<GuidelineQueryFormValues>({
     resolver: zodResolver(formSchema),
@@ -37,7 +40,7 @@ export function GuidelineQueryForm({ onRetrievalComplete, setIsLoading }: Guidel
       const result = await retrieveGuidelines(data as GuidelineRetrievalInput);
       onRetrievalComplete(result);
       toast({
-        title: "Guideline Retrieval Complete",
+        title: "Retrieval Complete",
         description: "Guidelines retrieved successfully.",
       });
     } catch (error) {
@@ -61,23 +64,32 @@ export function GuidelineQueryForm({ onRetrievalComplete, setIsLoading }: Guidel
           control={form.control}
           name="query"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="guideline-query-input">Medical Condition or Treatment</FormLabel>
-              <FormControl>
-                <Input
-                  id="guideline-query-input"
-                  placeholder="e.g., 'treatment for type 2 diabetes', 'management of asthma'"
-                  {...field}
-                />
-              </FormControl>
+            <FormItem className="input-focus-glow rounded-lg">
+              <FormLabel htmlFor="guideline-query-input" className="text-foreground/90">Medical Topic or Condition</FormLabel>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <FormControl>
+                  <Input
+                    id="guideline-query-input"
+                    placeholder="e.g., 'treatment for type 2 diabetes', 'Thalassemia Major'"
+                    className="pl-10 rounded-lg border-border/70 focus:border-primary"
+                    {...field}
+                  />
+                </FormControl>
+              </div>
+              <FormDescription>
+                Enter a topic to search for related guidelines or educational information.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-          Retrieve Guidelines
+        <Button type="submit" className="w-full rounded-lg py-3 text-base group" disabled={form.formState.isSubmitting || isLoading}>
+          {isLoading ? 'Searching...' : 'Retrieve Information'}
+          {!isLoading && <Send className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />}
         </Button>
       </form>
     </Form>
   );
 }
+

@@ -1,3 +1,4 @@
+// src/components/layout/sidebar-nav.tsx
 "use client";
 
 import Link from 'next/link';
@@ -13,10 +14,8 @@ import {
 import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
+  Home,
   BotMessageSquare,
-  ClipboardPenLine,
-  FileScan,
-  BookText,
   Users,
   View,
   Settings,
@@ -25,10 +24,8 @@ import {
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/', label: 'Chat', icon: BotMessageSquare },
-  { href: '/symptom-analyzer', label: 'Symptom Analyzer', icon: ClipboardPenLine },
-  { href: '/image-analyzer', label: 'Image Analyzer', icon: FileScan },
-  { href: '/guideline-retrieval', label: 'Guideline Retrieval', icon: BookText },
+  { href: '/', label: 'Home', icon: Home },
+  { href: '/chat', label: 'Chat', icon: BotMessageSquare },
   { href: '/patient-management', label: 'Patient Management', icon: Users },
   { href: '/ar-viewer', label: 'AR Viewer', icon: View },
 ];
@@ -38,10 +35,10 @@ export function SidebarNav() {
 
   return (
     <>
-      <SidebarHeader>
+      <SidebarHeader className="p-2 pt-3">
         <Logo />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="p-2">
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.href}>
@@ -51,7 +48,7 @@ export function SidebarNav() {
                   isActive={pathname === item.href}
                   tooltip={item.label}
                   className={cn(
-                    "justify-start",
+                    "justify-start w-full", // Ensure button takes full width for consistent icon placement
                     pathname === item.href && "bg-sidebar-accent text-sidebar-accent-foreground"
                   )}
                 >
@@ -65,7 +62,7 @@ export function SidebarNav() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="p-2">
+      <SidebarFooter className="p-2 border-t border-sidebar-border/50">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton className="justify-start w-full" tooltip="Settings">
@@ -80,7 +77,7 @@ export function SidebarNav() {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <div className="flex items-center gap-3 p-3 mt-2 border-t border-sidebar-border">
+        <div className="flex items-center gap-3 p-3 mt-2">
           <Avatar className="h-10 w-10">
             <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
             <AvatarFallback>DR</AvatarFallback>

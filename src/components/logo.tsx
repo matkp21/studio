@@ -1,14 +1,25 @@
-import { Activity } from 'lucide-react'; // Changed from BotMessageSquare
+import { HeartPulse } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export function Logo() {
+interface LogoProps {
+  simple?: boolean;
+  className?: string;
+}
+
+export function Logo({ simple = false, className }: LogoProps) {
   return (
-    <div className="flex items-center gap-3 p-2"> {/* Increased gap and padding slightly */}
-      <div className="flex items-center justify-center h-10 w-10 rounded-full bg-sidebar-primary text-sidebar-primary-foreground shadow-md"> {/* Circular badge */}
-        <Activity className="h-5 w-5" /> {/* Adjusted icon size for badge */}
+    <div className={cn("flex items-center gap-2 p-1", className)}>
+      <div className={cn(
+        "flex items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm",
+        simple ? "h-8 w-8" : "h-9 w-9"
+      )}>
+        <HeartPulse className={cn(simple ? "h-4 w-4" : "h-5 w-5")} />
       </div>
-      <span className="text-xl font-semibold text-sidebar-foreground tracking-tight"> {/* Added tracking-tight */}
-        MediAssistant
-      </span>
+      {!simple && (
+        <span className="text-lg font-semibold text-foreground tracking-tight">
+          MediAssistant
+        </span>
+      )}
     </div>
   );
 }

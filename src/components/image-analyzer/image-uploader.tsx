@@ -1,3 +1,4 @@
+// src/components/image-analyzer/image-uploader.tsx
 "use client";
 
 import { useState, type ChangeEvent } from 'react';
@@ -7,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { analyzeImage, type AnalyzeImageInput, type AnalyzeImageOutput } from '@/ai/flows/image-analyzer';
 import { useToast } from '@/hooks/use-toast';
-import { UploadCloud, X } from 'lucide-react';
+import { UploadCloud, X, Send } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ImageUploaderProps {
   onAnalysisComplete: (result: AnalyzeImageOutput | null, imageUrl?: string, error?: string) => void;
@@ -22,11 +24,10 @@ export function ImageUploader({ onAnalysisComplete, setIsLoading }: ImageUploade
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Basic validation for image types
       if (!file.type.startsWith('image/')) {
         toast({
           title: "Invalid File Type",
-          description: "Please upload a valid image file (e.g., JPG, PNG, DICOM-as-image).",
+          description: "Please upload a valid image file (e.g., JPG, PNG).",
           variant: "destructive",
         });
         clearSelection();
@@ -45,8 +46,8 @@ export function ImageUploader({ onAnalysisComplete, setIsLoading }: ImageUploade
     setSelectedFile(null);
     setPreviewUrl(null);
     const fileInput = document.getElementById('image-upload-input') as HTMLInputElement;
-    if (fileInput) fileInput.value = ""; // Reset file input
-    onAnalysisComplete(null, undefined); // Clear previous results in parent
+    if (fileInput) fileInput.value = ""; 
+    onAnalysisComplete(null, undefined); 
   };
 
   const handleSubmit = async () => {
@@ -60,10 +61,10 @@ export function ImageUploader({ onAnalysisComplete, setIsLoading }: ImageUploade
     }
 
     setIsLoading(true);
-    onAnalysisComplete(null, previewUrl); // Show preview while loading
+    onAnalysisComplete(null, previewUrl); 
 
     try {
-      const imageDataUri = previewUrl; // Already in data URI format
+      const imageDataUri = previewUrl; 
       const input: AnalyzeImageInput = { imageDataUri };
       const result = await analyzeImage(input);
       onAnalysisComplete(result, imageDataUri);
@@ -87,42 +88,41 @@ export function ImageUploader({ onAnalysisComplete, setIsLoading }: ImageUploade
 
   return (
     <div className="space-y-6">
-      <div>
-        <Label htmlFor="image-upload-input" className="mb-2 block">Upload Medical Image</Label>
-        <div className="flex items-center space-x-2">
-          <Input
-            id="image-upload-input"
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
-          />
-        </div>
+      <div className="input-focus-glow rounded-lg">
+        <Label htmlFor="image-upload-input" className="mb-2 block text-foreground/90">Upload Medical Image</Label>
+        <Input
+          id="image-upload-input"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 rounded-lg border-border/70 focus:border-primary"
+        />
       </div>
 
       {previewUrl && (
         <div className="space-y-4">
-          <div className="relative aspect-video w-full max-w-md mx-auto border rounded-md overflow-hidden bg-muted">
+          <div className="relative aspect-video w-full max-w-md mx-auto border border-border/50 rounded-lg overflow-hidden bg-muted/30">
             <Image src={previewUrl} alt="Selected image preview" layout="fill" objectFit="contain" data-ai-hint="medical xray" />
           </div>
           <div className="flex justify-center gap-2">
-            <Button onClick={clearSelection} variant="outline" size="sm">
-              <X className="mr-2 h-4 w-4" /> Clear
+            <Button onClick={clearSelection} variant="outline" size="sm" className="rounded-md">
+              <X className="mr-2 h-4 w-4" /> Clear Selection
             </Button>
           </div>
         </div>
       )}
 
       {!previewUrl && (
-         <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg text-muted-foreground min-h-[200px]">
-            <UploadCloud className="w-12 h-12 mb-2" />
+         <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border/50 rounded-lg text-muted-foreground min-h-[200px] bg-muted/20">
+            <UploadCloud className="w-12 h-12 mb-3 text-muted-foreground/70" />
             <p className="text-sm">Drag & drop an image or click to browse.</p>
             <p className="text-xs">Supports JPG, PNG, etc.</p>
         </div>
       )}
 
-      <Button onClick={handleSubmit} disabled={!selectedFile} className="w-full">
+      <Button onClick={handleSubmit} disabled={!selectedFile} className="w-full rounded-lg py-3 text-base group">
         Analyze Image
+        <Send className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
       </Button>
     </div>
   );

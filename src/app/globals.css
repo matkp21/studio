@@ -3,12 +3,15 @@
 @tailwind utilities;
 
 body {
-  font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer base {
   :root {
-    --background: 0 0% 98%; /* Very Light Gray */
+    /* Light Theme - Apple Inspired (Cool Metallic) */
+    --background: 210 33% 98%; /* Very Light Cool Gray (Almost White) */
     --foreground: 220 25% 25%; /* Dark Cool Gray */
 
     --card: 0 0% 100%; /* White */
@@ -17,87 +20,88 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 220 25% 25%;
 
-    --primary: 210 70% 55%; /* Clear, Trustworthy Blue */
+    --primary: 210 100% 50%; /* Vibrant Blue (Apple's Blue #007AFF) */
     --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 210 20% 94%; /* Light Cool Gray */
-    --secondary-foreground: 220 25% 35%; /* Slightly Lighter Dark Cool Gray */
+    --secondary: 210 25% 96%; /* Light Gray (Sterling Silver/Platinum hint) */
+    --secondary-foreground: 220 25% 35%; /* Medium-Dark Cool Gray */
 
     --muted: 210 20% 90%; /* Lighter Cool Gray */
     --muted-foreground: 220 20% 50%; /* Medium Cool Gray */
 
-    --accent: 180 80% 45%; /* Softer Cyan/Teal */
-    --accent-foreground: 0 0% 100%; /* White */
-
+    --accent: 170 98% 52%; /* Vibrant Teal/Cyan (Neon Pulse) */
+    --accent-foreground: 210 100% 10%; /* Dark Blue for contrast on accent */
+    
     --destructive: 0 70% 60%; /* Standard Red */
     --destructive-foreground: 0 0% 100%;
 
     --border: 210 20% 88%; /* Light Cool Gray Border */
-    --input: 210 20% 88%;
-    --ring: 210 70% 60%; /* Primary Blue for focus rings */
+    --input: 210 20% 92%; /* Slightly darker than secondary for input bg */
+    --ring: 210 100% 55%; /* Primary Blue for focus rings */
 
-    --radius: 0.6rem;
+    --radius: 0.75rem; /* Apple-like rounded corners */
 
     /* Sidebar specific colors - Light Mode */
-    --sidebar-background: 210 25% 97%; /* Slightly off-white, distinct from main bg */
-    --sidebar-foreground: 220 25% 20%; /* Darker for emphasis */
+    --sidebar-background: 210 25% 97%; 
+    --sidebar-foreground: 220 25% 20%; 
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 210 20% 90%; /* Hover state */
+    --sidebar-accent: 210 20% 90%; 
     --sidebar-accent-foreground: 220 25% 15%;
     --sidebar-border: 210 20% 85%;
     --sidebar-ring: hsl(var(--ring));
     
     /* Chart Colors - Light Mode */
-    --chart-1: 210 70% 50%;  /* Primary Blue */
-    --chart-2: 180 70% 40%;  /* Teal */
+    --chart-1: hsl(var(--primary));  
+    --chart-2: hsl(var(--accent));  
     --chart-3: 260 65% 60%;  /* Purple */
     --chart-4: 30 80% 55%;   /* Orange */
     --chart-5: 130 50% 50%;  /* Green */
   }
 
   .dark {
-    --background: 220 40% 12%; /* Deep Navy Blue */
-    --foreground: 210 20% 95%; /* Off-white with a slight cool tint */
+    /* Dark Theme - Apple Inspired (Deep Navy/Cool Metallic) */
+    --background: 216 65% 11%; /* Deep Navy Blue */
+    --foreground: 215 100% 95%; /* Off-white with a slight cool tint */
 
-    --card: 220 40% 16%; /* Slightly Lighter Deep Navy Blue */
-    --card-foreground: 210 20% 95%;
+    --card: 216 54% 20%; /* Darker shade of navy/gray */
+    --card-foreground: 215 100% 95%;
 
-    --popover: 220 40% 10%; /* Darker, similar to background for popovers */
-    --popover-foreground: 210 20% 95%;
+    --popover: 216 65% 9%; /* Slightly darker than background */
+    --popover-foreground: 215 100% 95%;
 
-    --primary: 200 30% 75%; /* Sterling Silver / Light Cool Gray-Blue */
-    --primary-foreground: 200 30% 10%; /* Dark Blue-Gray for text on primary */
+    --primary: 210 100% 60%; /* Lighter, vibrant Blue */
+    --primary-foreground: 216 65% 10%; /* Dark Blue-Gray for text on primary */
 
-    --secondary: 220 30% 25%; /* Darker Muted Blue */
-    --secondary-foreground: 210 15% 80%; /* Light Gray */
+    --secondary: 216 50% 25%; /* Dark Muted Blue/Gray */
+    --secondary-foreground: 215 20% 85%; /* Light Gray */
 
-    --muted: 220 30% 20%; /* Very Dark Muted Blue */
-    --muted-foreground: 210 15% 65%; /* Mid-Light Gray */
+    --muted: 216 45% 18%; /* Very Dark Muted Blue */
+    --muted-foreground: 215 15% 70%; /* Mid-Light Gray */
 
-    --accent: 180 90% 50%; /* Vibrant Cyan/Teal - for "neon pulse" */
-    --accent-foreground: 180 90% 5%; /* Very Dark Cyan/Teal for text on accent */
+    --accent: 170 98% 52%; /* Vibrant Teal/Cyan (Neon Pulse) */
+    --accent-foreground: 170 90% 10%; /* Very Dark Cyan/Teal for text on accent */
 
     --destructive: 0 60% 55%; /* Vibrant but slightly desaturated Red */
     --destructive-foreground: 0 0% 100%; /* White */
 
-    --border: 220 30% 30%; /* Subtle Border Color */
-    --input: 220 30% 28%; /* Input Background / Border */
-    --ring: 180 90% 60%; /* Brighter Accent for focus rings */
+    --border: 216 40% 30%; /* Subtle Border Color */
+    --input: 216 50% 28%; /* Input Background / Border */
+    --ring: 210 100% 65%; /* Brighter Primary for focus rings */
 
     /* Sidebar specific colors - Dark Mode */
-    --sidebar-background: 220 40% 10%; /* Slightly darker than main background */
-    --sidebar-foreground: 210 20% 90%; /* Softer than main foreground */
+    --sidebar-background: 216 65% 9%; 
+    --sidebar-foreground: 215 20% 90%; 
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 220 30% 22%; /* Hover state */
-    --sidebar-accent-foreground: 210 20% 95%;
-    --sidebar-border: 220 30% 25%;
+    --sidebar-accent: 216 50% 22%; 
+    --sidebar-accent-foreground: 215 20% 95%;
+    --sidebar-border: 216 40% 25%;
     --sidebar-ring: hsl(var(--ring));
 
     /* Chart Colors - Dark Mode */
-    --chart-1: 200 40% 70%;  /* Primary (Silver-Blue) */
-    --chart-2: 180 80% 55%;  /* Accent (Cyan/Teal) */
+    --chart-1: hsl(var(--primary));  
+    --chart-2: hsl(var(--accent));  
     --chart-3: 270 70% 70%;  /* Bright Purple */
     --chart-4: 40 90% 65%;   /* Bright Yellow-Orange */
     --chart-5: 140 60% 60%;  /* Bright Green */
@@ -112,4 +116,73 @@ body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+}
+
+/* Animation Utilities */
+.fade-in {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInAnimation 0.5s ease-out forwards;
+}
+
+.fade-in-delay-1 { animation-delay: 0.1s; }
+.fade-in-delay-2 { animation-delay: 0.2s; }
+.fade-in-delay-3 { animation-delay: 0.3s; }
+.fade-in-delay-4 { animation-delay: 0.4s; }
+.fade-in-delay-5 { animation-delay: 0.5s; }
+.fade-in-delay-7 { animation-delay: 0.7s; }
+.fade-in-delay-10 { animation-delay: 1s; }
+
+
+@keyframes fadeInAnimation {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-bottom {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideInBottomAnimation 0.7s ease-in-out forwards;
+}
+
+@keyframes slideInBottomAnimation {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Heartbeat Animation */
+.heartbeat-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawHeartbeat 3s linear infinite;
+}
+
+@keyframes drawHeartbeat {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Content Crossfade */
+.content-area > .active-mode {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+.content-area > .inactive-mode {
+  opacity: 0;
+  transform: scale(0.95);
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out, height 0s 0.4s;
+}
+
+/* Input focus glow */
+.input-focus-glow:focus-within {
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.4);
 }

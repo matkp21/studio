@@ -1,14 +1,49 @@
-import { ChatInterface } from '@/components/chat/chat-interface';
+// src/app/page.tsx
+"use client";
+
+import { useState, type ReactNode } from 'react';
+import { HeroSection } from '@/components/homepage/hero-section';
+import { ModeSwitcher, type ActiveMode } from '@/components/homepage/mode-switcher';
+import { SymptomAnalysisMode } from '@/components/homepage/symptom-analysis-mode';
+import { ImageProcessingMode } from '@/components/homepage/image-processing-mode';
+import { EducationalSupportMode } from '@/components/homepage/educational-support-mode';
+import { PageWrapper } from '@/components/layout/page-wrapper';
 
 export default function HomePage() {
+  const [activeMode, setActiveMode] = useState<ActiveMode>('symptom');
+
+  let currentModeComponent: ReactNode;
+  switch (activeMode) {
+    case 'symptom':
+      currentModeComponent = <SymptomAnalysisMode />;
+      break;
+    case 'image':
+      currentModeComponent = <ImageProcessingMode />;
+      break;
+    case 'education':
+      currentModeComponent = <EducationalSupportMode />;
+      break;
+    default:
+      currentModeComponent = <div>Select a mode</div>;
+  }
+
   return (
-    // This div will be a direct child of <main> in AppLayout
-    // AppLayout's <main> is flex-1 and flex-col.
-    // This div will take full height of <main> if it's also flex-1
-    <div className="flex-1 flex flex-col p-2 sm:p-4 h-full"> {/* Ensure h-full for ChatInterface to flex-1 properly */}
-      {/* Optionally, a title here or integrated into AppLayout based on route */}
-      {/* <h1 className="text-2xl font-semibold mb-4 text-foreground">MediAssistant Chat</h1> */}
-      <ChatInterface />
+    <div className="flex flex-col min-h-screen">
+      <HeroSection />
+      <PageWrapper className="py-8 sm:py-12 flex-grow">
+        <ModeSwitcher activeMode={activeMode} setActiveMode={setActiveMode} />
+        <div className="mt-8 md:mt-12 content-area">
+          <div className={activeMode === 'symptom' ? 'active-mode' : 'inactive-mode'}>
+            {activeMode === 'symptom' && <SymptomAnalysisMode />}
+          </div>
+          <div className={activeMode === 'image' ? 'active-mode' : 'inactive-mode'}>
+             {activeMode === 'image' && <ImageProcessingMode />}
+          </div>
+          <div className={activeMode === 'education' ? 'active-mode' : 'inactive-mode'}>
+            {activeMode === 'education' && <EducationalSupportMode />}
+          </div>
+        </div>
+      </PageWrapper>
     </div>
   );
 }
