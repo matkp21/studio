@@ -6,12 +6,13 @@ import React, { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
-import { PanelLeftOpen, PanelRightOpen, UserCircle } from 'lucide-react';
+import { PanelLeftOpen, PanelRightOpen } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Footer } from './footer';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const ToggleSidebarButton = () => {
   const { state, toggleSidebar, isMobile } = useSidebar();
@@ -71,8 +72,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <nav className="flex items-center gap-4">
             {/* Placeholder for potential header navigation or user actions */}
             {/* <Link href="/features" className="text-sm font-medium text-foreground/80 hover:text-foreground hidden sm:block">Features</Link> */}
-            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-foreground">
-              <UserCircle className="h-5 w-5" />
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-foreground p-0 rounded-full">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
+                <AvatarFallback>DR</AvatarFallback>
+              </Avatar>
               <span className="sr-only">User Profile</span>
             </Button>
           </nav>
@@ -85,3 +89,4 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </SidebarProvider>
   );
 }
+
