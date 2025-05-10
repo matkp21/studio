@@ -13,6 +13,7 @@ import { processChatMessage, type ChatMessageInput } from '@/ai/flows/chat-flow'
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { TypewriterText } from './typewriter-text';
+import { Logo } from '@/components/logo'; // Import the Logo component
 
 interface Message {
   id: string;
@@ -255,7 +256,7 @@ export function ChatInterface() {
                 {message.sender === 'bot' && (
                   <Avatar className="h-8 w-8 self-start flex-shrink-0">
                     <AvatarImage src="/placeholder-bot.jpg" alt="Bot Avatar" data-ai-hint="robot avatar" />
-                    <AvatarFallback>MA</AvatarFallback>
+                    <AvatarFallback><Logo simple={true} /></AvatarFallback>
                   </Avatar>
                 )}
                 <div
@@ -282,7 +283,7 @@ export function ChatInterface() {
               <div className="flex items-end gap-2 fade-in">
                 <Avatar className="h-8 w-8 self-start flex-shrink-0">
                   <AvatarImage src="/placeholder-bot.jpg" alt="Bot Avatar" data-ai-hint="robot avatar" />
-                  <AvatarFallback>MA</AvatarFallback>
+                  <AvatarFallback><Logo simple={true}/></AvatarFallback>
                 </Avatar>
                 <div
                   className="max-w-xs lg:max-w-md rounded-lg p-3 shadow bg-secondary text-secondary-foreground flex items-center space-x-2"
@@ -367,3 +368,4 @@ export function ChatInterface() {
     </Card>
   );
 }
+
