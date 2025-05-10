@@ -320,3 +320,21 @@ body {
     background-position: 200% center;
   }
 } */
+
+
+/* Error Message Highlight Animation */
+@keyframes error-highlight-animation {
+  0%, 100% {
+    box-shadow: 0 0 4px hsl(var(--destructive) / 0.3);
+    border-color: hsl(var(--destructive) / 0.4); /* Use current border color or a slightly lighter one */
+  }
+  50% {
+    box-shadow: 0 0 8px hsl(var(--destructive) / 0.6), 0 0 12px hsl(var(--destructive) / 0.4);
+    border-color: hsl(var(--destructive) / 0.7); /* Make border slightly more prominent */
+  }
+}
+
+.animate-error-highlight {
+  animation: error-highlight-animation 2s infinite ease-in-out;
+  /* Tailwind classes like bg-destructive/10, border-destructive/40, text-destructive will define base styles */
+}

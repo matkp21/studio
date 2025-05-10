@@ -1,4 +1,3 @@
-
 // src/components/chat/chat-interface.tsx
 "use client";
 
@@ -24,6 +23,7 @@ interface Message {
   sender: 'user' | 'bot';
   timestamp: Date;
   isCommandResponse?: boolean; // To style medico tool responses differently
+  isErrorResponse?: boolean; // To style error messages from the bot
 }
 
 export function ChatInterface() {
@@ -200,6 +200,7 @@ export function ChatInterface() {
 
     let botResponseContent: ReactNode | string = "Sorry, I couldn't process that.";
     let isCommandResp = false;
+    let isErrorRespFlag = false;
 
     try {
       if (userRole === 'medico' && currentMessage.startsWith('/')) {
@@ -259,6 +260,7 @@ export function ChatInterface() {
 
     } catch (error) {
       console.error("Chat processing error:", error);
+      isErrorRespFlag = true;
       const errorMessageText = error instanceof Error ? error.message : "An unknown error occurred.";
       
       const errorBotResponse: Message = {
@@ -266,6 +268,7 @@ export function ChatInterface() {
         content: <TypewriterText text={`Sorry, I encountered an error: ${errorMessageText}`} speed={150} />,
         sender: 'bot',
         timestamp: new Date(),
+        isErrorResponse: true,
       };
       setMessages((prevMessages) => [...prevMessages, errorBotResponse]);
       toast({
@@ -333,8 +336,13 @@ export function ChatInterface() {
                 <div
                   className={cn(
                     "max-w-xs lg:max-w-md rounded-lg p-3 shadow",
-                    message.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
-                    message.isCommandResponse && "bg-accent/20 border border-accent/50" // Special styling for command responses
+                    message.sender === 'user' 
+                      ? 'bg-primary text-primary-foreground' 
+                      : message.isErrorResponse 
+                        ? 'bg-destructive/10 border border-destructive/40 text-destructive animate-error-highlight' 
+                        : message.isCommandResponse 
+                          ? "bg-accent/20 border border-accent/50" 
+                          : 'bg-secondary text-secondary-foreground'
                   )}
                 >
                   {message.content}
