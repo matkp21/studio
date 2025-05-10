@@ -17,6 +17,7 @@ import {
 import { DifferentialDiagnosisAssistant } from './differential-diagnosis-assistant'; 
 import { DischargeSummaryGenerator } from './discharge-summary-generator';
 import { TreatmentProtocolNavigator } from './treatment-protocol-navigator';
+import { RoundsTool } from './rounds-tool';
 
 
 // Placeholder components for Pro tools that are still "coming soon"
@@ -28,13 +29,11 @@ const PlaceholderTool = ({ title }: { title: string }) => (
   </div>
 );
 
-// const TreatmentProtocolNavigator = () => <PlaceholderTool title="Evidence-Based Treatment Protocol Navigator" />; // Placeholder, actual component imported above
 const PharmacopeiaChecker = () => <PlaceholderTool title="Pharmacopeia & Drug Interaction Checker" />;
 const SmartDictation = () => <PlaceholderTool title="Smart Dictation & Note Assistant" />;
 const ClinicalCalculatorSuite = () => <PlaceholderTool title="Intelligent Clinical Calculator Suite" />;
 const ReferralStreamliner = () => <PlaceholderTool title="Referral & Consultation Streamliner" />;
 const PersonalizedDashboard = () => <PlaceholderTool title="Personalized Clinical Dashboard (View)" />; // This is the overall page
-const RoundsTool = () => <PlaceholderTool title="Rounds Tool 2.0 (Shared Tasks & Handover)" />;
 const PatientCommunicationDrafter = () => <PlaceholderTool title="AI-Assisted Patient Communication Drafter" />;
 const OnCallHandoverAssistant = () => <PlaceholderTool title="Intelligent On-Call Handover Assistant" />;
 const ResearchSummarizer = () => <PlaceholderTool title="AI-Powered Research & Literature Summarizer" />;
@@ -67,7 +66,7 @@ const proToolsList: ProTool[] = [
   { id: 'diffDx', title: 'Differential Diagnosis Assistant', description: 'AI-powered suggestions, investigations, and initial management steps.', icon: Brain, component: DifferentialDiagnosisAssistant, comingSoon: false },
   { id: 'discharge', title: 'Discharge Summary Generator', description: 'Ultra-streamlined, predictive discharge summary creation.', icon: FilePlus, component: DischargeSummaryGenerator, comingSoon: false }, 
   { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator, comingSoon: false }, 
-  { id: 'rounds', title: 'Rounds Tool 2.0', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool, comingSoon: true },
+  { id: 'rounds', title: 'Rounds Tool 2.0', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool, comingSoon: false },
   { id: 'pharmacopeia', title: 'Pharmacopeia & Interaction Checker', description: 'Comprehensive drug database and interaction analysis.', icon: Pill, component: PharmacopeiaChecker, comingSoon: true },
   { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation, comingSoon: true },
   { id: 'calculators', title: 'Intelligent Clinical Calculators', description: 'Suite of scores and criteria (GRACE, Wells\', etc.).', icon: BarChart3, component: ClinicalCalculatorSuite, comingSoon: true },
@@ -148,4 +147,3 @@ export function ProDashboard() {
     </div>
   );
 }
-
