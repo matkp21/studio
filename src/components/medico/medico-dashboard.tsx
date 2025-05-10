@@ -20,7 +20,7 @@ import { SolvedQuestionPapersViewer } from './solved-question-papers-viewer';
 import { FlowchartCreator } from './flowchart-creator';
 import { 
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy, 
-  Users, Eye, Brain, TrendingUp, Calculator, FlaskConical, Workflow 
+  Users, Eye, Brain, TrendingUp, Calculator, FlaskConical, Workflow, Award 
 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
@@ -40,6 +40,7 @@ type ActiveToolId =
   | 'dosage'
   | 'papers' 
   | 'flowcharts'
+  | 'progress' // Added progress tracker
   | null;
 
 interface MedicoTool {
@@ -52,19 +53,20 @@ interface MedicoTool {
 }
 
 const medicoToolsList: MedicoTool[] = [
-  { id: 'notes', title: 'Study Notes Generator', description: 'Generate concise notes on medical topics.', icon: NotebookText, component: StudyNotesGenerator },
-  { id: 'mcq', title: 'MCQ Generator', description: 'Create multiple-choice questions for practice.', icon: FileQuestion, component: McqGenerator },
-  { id: 'timetable', title: 'Study Timetable Creator', description: 'Help students plan study schedules.', icon: CalendarClock, component: StudyTimetableCreator },
-  { id: 'flashcards', title: 'Flashcard Generator', description: 'Provide digital flashcards for quick revision.', icon: Layers, component: FlashcardGenerator },
-  { id: 'cases', title: 'Clinical Case Simulations', description: 'Offer interactive patient scenarios.', icon: CaseUpper, component: ClinicalCaseSimulator },
-  { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Describe anatomical structures.', icon: Eye, component: AnatomyVisualizer },
-  { id: 'mnemonics', title: 'Mnemonics Generator', description: 'Create memory aids for complex topics.', icon: Lightbulb, component: MnemonicsGenerator },
-  { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'Practice listing diagnoses based on symptoms.', icon: Brain, component: DifferentialDiagnosisTrainer },
-  { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds },
-  { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study.', icon: TrendingUp, component: HighYieldTopicPredictor },
-  { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator, comingSoon: false },
   { id: 'papers', title: 'Solved Question Papers', description: 'Access past exam papers with solutions.', icon: BookCopy, component: SolvedQuestionPapersViewer, comingSoon: false },
+  { id: 'notes', title: 'Study Notes Generator', description: 'Generate concise notes on medical topics.', icon: NotebookText, component: StudyNotesGenerator, comingSoon: false },
+  { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study.', icon: TrendingUp, component: HighYieldTopicPredictor, comingSoon: false },
   { id: 'flowcharts', title: 'Flowchart Creator', description: 'Create diagnostic or treatment flowcharts.', icon: Workflow, component: FlowchartCreator, comingSoon: false },
+  { id: 'flashcards', title: 'Flashcard Generator', description: 'Provide digital flashcards for quick revision.', icon: Layers, component: FlashcardGenerator, comingSoon: false },
+  { id: 'mnemonics', title: 'Mnemonics Generator', description: 'Create memory aids for complex topics.', icon: Lightbulb, component: MnemonicsGenerator, comingSoon: false },
+  { id: 'timetable', title: 'Study Timetable Creator', description: 'Help students plan study schedules.', icon: CalendarClock, component: StudyTimetableCreator, comingSoon: false },
+  { id: 'mcq', title: 'MCQ Generator', description: 'Create multiple-choice questions for practice.', icon: FileQuestion, component: McqGenerator, comingSoon: false },
+  { id: 'cases', title: 'Clinical Case Simulations', description: 'Offer interactive patient scenarios.', icon: CaseUpper, component: ClinicalCaseSimulator, comingSoon: false },
+  { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'Practice listing diagnoses based on symptoms.', icon: Brain, component: DifferentialDiagnosisTrainer, comingSoon: false },
+  { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Describe anatomical structures.', icon: Eye, component: AnatomyVisualizer, comingSoon: false },
+  { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds, comingSoon: false },
+  { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator, comingSoon: false },
+  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: undefined, comingSoon: true }, // New Tool
 ];
 
 
@@ -152,3 +154,4 @@ export function MedicoDashboard() {
     </div>
   );
 }
+
