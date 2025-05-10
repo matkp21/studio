@@ -281,3 +281,15 @@ body {
 .animate-ecg-beat {
   animation: ecg-beat 1.5s infinite cubic-bezier(0.215, 0.610, 0.355, 1.000);
 }
+
+/* Firebase Gradient Glowing Ring for AvatarFallback */
+@keyframes firebase-glow-ring {
+  0%, 100% { box-shadow: 0 0 3px hsl(var(--welcome-color-1)), 0 0 6px hsl(var(--welcome-color-1)), 0 0 10px hsl(var(--welcome-color-1)/0.6); }
+  25% { box-shadow: 0 0 3px hsl(var(--welcome-color-2)), 0 0 6px hsl(var(--welcome-color-2)), 0 0 10px hsl(var(--welcome-color-2)/0.6); }
+  50% { box-shadow: 0 0 3px hsl(var(--welcome-color-3)), 0 0 6px hsl(var(--welcome-color-3)), 0 0 10px hsl(var(--welcome-color-3)/0.6); }
+  75% { box-shadow: 0 0 3px hsl(var(--welcome-color-4)), 0 0 6px hsl(var(--welcome-color-4)), 0 0 10px hsl(var(--welcome-color-4)/0.6); }
+}
+
+.glowing-ring-firebase {
+  animation: firebase-glow-ring 5s linear infinite;
+}

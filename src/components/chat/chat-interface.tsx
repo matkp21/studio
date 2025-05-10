@@ -166,7 +166,7 @@ export function ChatInterface() {
         content: (
           <TypewriterText
             text={botResponseContent}
-            speed={150} 
+            speed={50} 
             onComplete={() => {
               // Delay adding the final helper message slightly for better flow
               setTimeout(addFinalHelperMessage, 300);
@@ -211,7 +211,7 @@ export function ChatInterface() {
         content: (
           <TypewriterText
             text={`Sorry, I encountered an error: ${errorMessage}`}
-            speed={150} 
+            speed={50} 
             onComplete={() => {
               setTimeout(addFinalHelperMessageOnError, 300);
             }}
@@ -255,7 +255,9 @@ export function ChatInterface() {
                 {message.sender === 'bot' && (
                   <Avatar className="h-8 w-8 self-start flex-shrink-0">
                     <AvatarImage src="/placeholder-bot.jpg" alt="Bot Avatar" data-ai-hint="robot avatar" />
-                    <AvatarFallback><HeartPulse className="h-4 w-4 text-primary" /></AvatarFallback>
+                    <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 glowing-ring-firebase">
+                      <HeartPulse className="h-4 w-4 text-white" />
+                    </AvatarFallback>
                   </Avatar>
                 )}
                 <div
@@ -282,7 +284,9 @@ export function ChatInterface() {
               <div className="flex items-end gap-2 fade-in">
                 <Avatar className="h-8 w-8 self-start flex-shrink-0">
                   <AvatarImage src="/placeholder-bot.jpg" alt="Bot Avatar" data-ai-hint="robot avatar" />
-                  <AvatarFallback><HeartPulse className="h-4 w-4 text-primary" /></AvatarFallback>
+                   <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 glowing-ring-firebase">
+                      <HeartPulse className="h-4 w-4 text-white" />
+                    </AvatarFallback>
                 </Avatar>
                 <div
                   className="max-w-xs lg:max-w-md rounded-lg p-3 shadow bg-secondary text-secondary-foreground flex items-center space-x-2"
