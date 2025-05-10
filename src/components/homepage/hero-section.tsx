@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { HeartPulse, BookHeart } from "lucide-react"; 
+import { HeartPulse, BookHeart, Briefcase } from "lucide-react"; 
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProMode } from '@/contexts/pro-mode-context';
@@ -35,10 +35,25 @@ export function HeroSection() {
     return () => clearInterval(interval);
   }, []);
 
-  const isMedicoMode = userRole === 'medico';
-  const ctaLink = isMedicoMode ? "/medico" : "/chat";
-  const ctaText = isMedicoMode ? "Medico Study Hub" : "Get Started";
-  const CtaIcon = isMedicoMode ? BookHeart : HeartPulse;
+  let ctaLink = "/chat";
+  let ctaText = "Get Started";
+  let CtaIcon = HeartPulse;
+  let ctaAriaLabel = "Get started with MediAssistant features";
+  let ctaColorClasses = "bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-primary/30";
+
+  if (userRole === 'medico') {
+    ctaLink = "/medico";
+    ctaText = "Medico Study Hub";
+    CtaIcon = BookHeart;
+    ctaAriaLabel = "Go to Medico Study Hub";
+    ctaColorClasses = "bg-sky-600 hover:bg-sky-500 text-white hover:shadow-sky-500/40";
+  } else if (userRole === 'pro') {
+    ctaLink = "/pro";
+    ctaText = "Pro Clinical Suite";
+    CtaIcon = Briefcase;
+    ctaAriaLabel = "Go to Professional Clinical Suite";
+    ctaColorClasses = "bg-purple-600 hover:bg-purple-500 text-white hover:shadow-purple-500/40";
+  }
 
 
   return (
@@ -73,7 +88,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground/90 dark:text-foreground/90 mb-6" // Changed dark mode text color
+          className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground/90 dark:text-foreground/90 mb-6"
         >
           Welcome to <span className="animated-gradient-text bg-clip-text text-transparent">MediAssistant</span>.
         </motion.p>
@@ -81,7 +96,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
-          className="text-lg sm:text-xl md:text-2xl text-foreground/80 dark:text-foreground/80 max-w-3xl mx-auto mb-10" // Changed dark mode text color
+          className="text-lg sm:text-xl md:text-2xl text-foreground/80 dark:text-foreground/80 max-w-3xl mx-auto mb-10"
         >
           Your intelligent partner for AI-powered diagnostics, imaging analysis, and educational support—all at your fingertips.
         </motion.p>
@@ -96,19 +111,16 @@ export function HeroSection() {
             size="lg" 
             className={cn(
               "rounded-lg group px-8 py-6 text-lg shadow-lg transition-all duration-300 transform hover:scale-105",
-              isMedicoMode 
-                ? "bg-sky-600 hover:bg-sky-500 text-white hover:shadow-sky-500/40" 
-                : "bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-primary/30"
+              ctaColorClasses
             )} 
-            aria-label={isMedicoMode ? "Go to Medico Study Hub" : "Get started with MediAssistant features"}
+            aria-label={ctaAriaLabel}
           >
             <Link href={ctaLink} className="flex items-center">
               {ctaText}
               <CtaIcon 
                 className={cn(
-                  "ml-2 h-7 w-7 group-hover:scale-110",
-                  isMedicoMode ? "text-white" : "text-red-400 group-hover:text-red-300",
-                  "animate-pulse-medical"
+                  "ml-2 h-7 w-7 group-hover:scale-110 animate-pulse-medical",
+                  (userRole === 'medico' || userRole === 'pro') ? "text-white" : "text-red-400 group-hover:text-red-300"
                 )} 
                 style={{"--medical-pulse-opacity-base": "0.7", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.35"} as React.CSSProperties}
               />
@@ -122,3 +134,4 @@ export function HeroSection() {
     </section>
   );
 }
+
