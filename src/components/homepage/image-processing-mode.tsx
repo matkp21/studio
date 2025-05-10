@@ -1,4 +1,3 @@
-
 // src/components/homepage/image-processing-mode.tsx
 "use client";
 
@@ -87,7 +86,7 @@ export function ImageProcessingMode() {
                   <TestTubeDiagonal className="h-5 w-5 text-sky-600" />
                   <AlertTitle className="text-sky-700 dark:text-sky-500 font-semibold">Medico Study Focus: Image Analysis</AlertTitle>
                   <AlertDescription className="text-sky-600/80 dark:text-sky-500/80">
-                    Study image annotations to learn radiological signs and pathological changes. Correlate findings with clinical knowledge. Try the Interactive Anatomy Visualizer in chat: `/anatomy <structure>`
+                    Study image annotations to learn radiological signs and pathological changes. Correlate findings with clinical knowledge. Try the Interactive Anatomy Visualizer in chat: `/anatomy &lt;structure&gt;`
                   </AlertDescription>
                 </Alert>
               )}
