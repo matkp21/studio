@@ -1,3 +1,4 @@
+
 // src/components/chat/chat-interface.tsx
 "use client";
 
@@ -97,7 +98,7 @@ export function ChatInterface() {
       }
       const welcomeMessage: Message = {
         id: `welcome-bot-${Date.now()}`,
-        content: <TypewriterText text={welcomeText} speed={150} />,
+        content: <TypewriterText text={welcomeText} speed={50} />, // Adjusted speed
         sender: 'bot',
         timestamp: new Date(),
       };
@@ -168,10 +169,10 @@ export function ChatInterface() {
      return (
       <div className="space-y-3">
         <h4 className="font-semibold text-base">Study Notes for: {topic}</h4>
-        <div className="text-sm whitespace-pre-wrap bg-card/70 p-3 rounded-md shadow-sm">{notesData.notes}</div>
+        <div className="text-sm whitespace-pre-wrap bg-card/70 p-3 rounded-md shadow-sm prose prose-sm dark:prose-invert max-w-none">{notesData.notes}</div>
         {notesData.summaryPoints && notesData.summaryPoints.length > 0 && (
-          <div>
-            <h5 className="font-medium text-sm mt-2 mb-1">Key Summary Points:</h5>
+          <div className="mt-2">
+            <h5 className="font-medium text-sm mb-1">Key Summary Points:</h5>
             <ul className="list-disc list-inside ml-4 text-sm space-y-0.5">
               {notesData.summaryPoints.map((point, i) => <li key={i}>{point}</li>)}
             </ul>
@@ -205,29 +206,34 @@ export function ChatInterface() {
     try {
       if (userRole === 'medico' && currentMessage.startsWith('/')) {
         const [command, ...args] = currentMessage.split(' ');
-        const fullArgs = args.join(' ');
+        const fullArgs = args.join(' ').trim();
 
         if (command === '/notes') {
           isCommandResp = true;
-          const topic = fullArgs.trim();
+          const topic = fullArgs;
           if (!topic) {
-            botResponseContent = "Please provide a topic for notes. Usage: /notes <topic>";
+            botResponseContent = "Please provide a topic for notes. Usage: `/notes <topic>` (e.g., `/notes Diabetes Mellitus`)";
+            isErrorRespFlag = true;
           } else {
             const notesInput: MedicoStudyNotesInput = { topic };
             const result = await generateStudyNotes(notesInput);
             botResponseContent = formatStudyNotesResponse(result, topic);
-            if (isVoiceOutputEnabled && typeof result.notes === 'string') speakText(`Notes for ${topic}: ${result.notes.substring(0,100)}...`);
+            if (isVoiceOutputEnabled && typeof result.notes === 'string') speakText(`Generated study notes for ${topic}. Please check the chat for details.`);
           }
         } else if (command === '/mcq') {
           isCommandResp = true;
-          const [topicPart, countStr] = fullArgs.split(/(\s+\d+)$/); // Split topic and count
-          const topic = topicPart?.trim();
-          const count = countStr ? parseInt(countStr.trim(), 10) : 5; // Default to 5
+          // Regex to separate topic from an optional count at the end
+          const mcqArgsMatch = fullArgs.match(/^(.*?)(?:\s+(\d+))?$/);
+          const topic = mcqArgsMatch?.[1]?.trim();
+          const countStr = mcqArgsMatch?.[2];
+          const count = countStr ? parseInt(countStr, 10) : 5; // Default to 5 MCQs
           
           if (!topic) {
-            botResponseContent = "Please provide a topic for MCQs. Usage: /mcq <topic> [number_of_questions]";
+            botResponseContent = "Please provide a topic for MCQs. Usage: `/mcq <topic> [number_of_questions]` (e.g., `/mcq Cardiology 5`)";
+             isErrorRespFlag = true;
           } else if (isNaN(count) || count < 1 || count > 10) {
             botResponseContent = "Invalid number of questions. Please provide a number between 1 and 10.";
+             isErrorRespFlag = true;
           }
           else {
             const mcqInput: MedicoMCQGeneratorInput = { topic, count };
@@ -236,11 +242,8 @@ export function ChatInterface() {
             if (isVoiceOutputEnabled) speakText(`Generated ${result.mcqs.length} MCQs for ${topic}. Check the chat for details.`);
           }
         } else {
-          // Fallback to general chat if medico command is not recognized
-          const chatInput: ChatMessageInput = { message: currentMessage };
-          const result = await processChatMessage(chatInput);
-          botResponseContent = result.response;
-           if (isVoiceOutputEnabled && typeof botResponseContent === 'string') speakText(botResponseContent);
+           botResponseContent = `Unknown medico command: ${command}. Try /notes <topic> or /mcq <topic> [count]. For general chat, just type your message.`;
+           isErrorRespFlag = true;
         }
       } else {
         const chatInput: ChatMessageInput = { message: userMessage.content as string };
@@ -251,10 +254,11 @@ export function ChatInterface() {
 
       const botMessage: Message = {
         id: (Date.now() + Math.random()).toString(),
-        content: typeof botResponseContent === 'string' ? <TypewriterText text={botResponseContent} speed={150} /> : botResponseContent,
+        content: typeof botResponseContent === 'string' ? <TypewriterText text={botResponseContent} speed={50} /> : botResponseContent,
         sender: 'bot',
         timestamp: new Date(),
         isCommandResponse: isCommandResp,
+        isErrorResponse: isErrorRespFlag,
       };
       setMessages((prevMessages) => [...prevMessages, botMessage]);
 
@@ -265,7 +269,7 @@ export function ChatInterface() {
       
       const errorBotResponse: Message = {
         id: (Date.now() + Math.random() + 1).toString(),
-        content: <TypewriterText text={`Sorry, I encountered an error: ${errorMessageText}`} speed={150} />,
+        content: <TypewriterText text={`Sorry, I encountered an error: ${errorMessageText}`} speed={50} />,
         sender: 'bot',
         timestamp: new Date(),
         isErrorResponse: true,
@@ -314,7 +318,7 @@ export function ChatInterface() {
 
 
   return (
-    <Card className="flex-1 flex flex-col shadow-lg rounded-lg overflow-hidden h-full relative">
+    <Card className="flex-1 flex flex-col shadow-lg rounded-lg overflow-hidden h-full relative bg-gradient-to-br from-card via-card to-secondary/10 dark:from-card dark:via-card dark:to-secondary/5">
       <CardContent className="flex-1 p-0 flex flex-col overflow-hidden">
         <ScrollArea className="flex-grow p-4" viewportRef={viewportRef} ref={scrollAreaRef}>
           <div className="space-y-4">
@@ -322,7 +326,7 @@ export function ChatInterface() {
               <div
                 key={message.id}
                 className={`flex items-end gap-2 fade-in ${
-                  message.sender === 'user' ? 'justify-end' : ''
+                  message.sender === 'user' ? 'justify-end' : 'justify-start'
                 }`}
               >
                 {message.sender === 'bot' && (
@@ -335,14 +339,14 @@ export function ChatInterface() {
                 )}
                 <div
                   className={cn(
-                    "max-w-xs lg:max-w-md rounded-lg p-3 shadow",
-                    message.sender === 'user' 
-                      ? 'bg-primary text-primary-foreground' 
+                    "max-w-xs lg:max-w-md rounded-xl p-3 shadow-md transition-all duration-300",
+                     message.sender === 'user' 
+                      ? 'bg-primary text-primary-foreground rounded-br-none' 
                       : message.isErrorResponse 
-                        ? 'bg-destructive/10 border border-destructive/40 text-destructive animate-error-highlight' 
+                        ? 'bg-destructive/20 border border-destructive/50 text-destructive-foreground rounded-bl-none animate-error-highlight' 
                         : message.isCommandResponse 
-                          ? "bg-accent/20 border border-accent/50" 
-                          : 'bg-secondary text-secondary-foreground'
+                          ? "bg-gradient-to-tr from-accent/20 via-accent/30 to-accent/40 border border-accent/60 text-accent-foreground rounded-bl-none shadow-accent/20"
+                          : 'bg-secondary text-secondary-foreground rounded-bl-none shadow-secondary/20'
                   )}
                 >
                   {message.content}
@@ -359,7 +363,7 @@ export function ChatInterface() {
               </div>
             ))}
             {isLoading && (
-              <div className="flex items-end gap-2 fade-in">
+              <div className="flex items-end gap-2 fade-in justify-start">
                 <Avatar className="h-8 w-8 self-start flex-shrink-0">
                   <AvatarImage src="/placeholder-bot.jpg" alt="Bot Avatar" data-ai-hint="robot avatar" />
                    <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 glowing-ring-firebase">
@@ -367,7 +371,7 @@ export function ChatInterface() {
                     </AvatarFallback>
                 </Avatar>
                 <div
-                  className="max-w-xs lg:max-w-md rounded-lg p-3 shadow bg-secondary text-secondary-foreground flex items-center space-x-2"
+                  className="max-w-xs lg:max-w-md rounded-xl p-3 shadow-md bg-secondary text-secondary-foreground flex items-center space-x-2 rounded-bl-none"
                 >
                   <HeartPulse className="h-5 w-5 text-primary animate-ecg-beat" />
                   <p className="text-sm italic">MediAssistant is thinking...</p>
@@ -380,7 +384,7 @@ export function ChatInterface() {
           <Button
             variant="outline"
             size="icon"
-            className="absolute bottom-20 right-4 h-10 w-10 rounded-full bg-background/70 backdrop-blur-sm shadow-lg hover:bg-primary/20 z-10" // Adjusted bottom position
+            className="absolute bottom-20 right-4 h-10 w-10 rounded-full bg-background/70 backdrop-blur-sm shadow-lg hover:bg-primary/20 z-10" 
             onClick={() => scrollToBottom()}
             aria-label="Scroll to bottom"
           >
@@ -388,7 +392,7 @@ export function ChatInterface() {
           </Button>
         )}
       </CardContent>
-      <div className="border-t p-4 bg-background">
+      <div className="border-t p-4 bg-background/80 backdrop-blur-sm">
         {hasMicPermission === false && (
              <Alert variant="destructive" className="mb-2">
               <AlertTitle>Microphone Access Denied</AlertTitle>
@@ -412,14 +416,15 @@ export function ChatInterface() {
             onClick={toggleListening}
             disabled={hasMicPermission === false || !(typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window))}
             aria-label={isListening ? "Stop voice input" : "Start voice input"}
+            className="hover:bg-primary/10"
           >
-            {isListening ? <MicOff className="h-5 w-5 text-destructive" /> : <Mic className="h-5 w-5" />}
+            {isListening ? <MicOff className="h-5 w-5 text-destructive" /> : <Mic className="h-5 w-5 text-primary" />}
           </Button>
           <div className="relative flex-1">
             <Textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="w-full resize-none pr-3" 
+              className="w-full resize-none pr-3 rounded-xl border-border/70 focus:border-primary input-focus-glow" 
               rows={1}
               placeholder={isListening ? "Listening..." : ""} 
               onKeyDown={(e) => {
@@ -443,7 +448,7 @@ export function ChatInterface() {
               </div>
             )}
           </div>
-          <Button onClick={() => handleSendMessage()} size="icon" aria-label="Send message" disabled={isLoading || inputValue.trim() === ''}>
+          <Button onClick={() => handleSendMessage()} size="icon" aria-label="Send message" disabled={isLoading || inputValue.trim() === ''} className="rounded-full">
             {isLoading ? <HeartPulse className="h-5 w-5 animate-ecg-beat text-primary-foreground" /> : <SendHorizonal className="h-5 w-5" />}
           </Button>
           <Button
@@ -452,14 +457,15 @@ export function ChatInterface() {
             onClick={() => setIsVoiceOutputEnabled(prev => !prev)}
             aria-label={isVoiceOutputEnabled ? "Disable voice output" : "Enable voice output"}
             disabled={!(typeof window !== 'undefined' && 'speechSynthesis' in window)}
+            className="hover:bg-primary/10"
           >
-            {isVoiceOutputEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5 text-muted-foreground" />}
+            {isVoiceOutputEnabled ? <Volume2 className="h-5 w-5 text-primary" /> : <VolumeX className="h-5 w-5 text-muted-foreground" />}
           </Button>
         </div>
         {userRole === 'medico' && (
-          <div className="mt-2 text-xs text-muted-foreground flex items-center gap-4">
-            <p className="flex items-center gap-1"><BookCopy size={12} /> Try: <code>/notes &lt;topic&gt;</code></p>
-            <p className="flex items-center gap-1"><FileQuestion size={12} /> Try: <code>/mcq &lt;topic&gt; [num]</code></p>
+          <div className="mt-2 text-xs text-muted-foreground flex items-center gap-x-4 gap-y-1 flex-wrap">
+            <p className="flex items-center gap-1"><BookCopy size={12} /> Try: <code className="bg-muted px-1 py-0.5 rounded">/notes &lt;topic&gt;</code></p>
+            <p className="flex items-center gap-1"><FileQuestion size={12} /> Try: <code className="bg-muted px-1 py-0.5 rounded">/mcq &lt;topic&gt; [num]</code></p>
           </div>
         )}
       </div>

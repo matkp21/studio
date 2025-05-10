@@ -1,3 +1,4 @@
+
 // src/components/homepage/image-processing-mode.tsx
 "use client";
 
@@ -6,7 +7,7 @@ import Image from 'next/image';
 import { ImageUploader } from '@/components/image-analyzer/image-uploader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, ImageOff, ScanEye, Sparkles, BookOpen, TestTubeDiagonal } from 'lucide-react';
+import { Loader2, ImageOff, ScanEye, Sparkles, TestTubeDiagonal, PencilRuler } from 'lucide-react';
 import type { AnalyzeImageOutput } from '@/ai/flows/image-analyzer';
 import { useProMode } from '@/contexts/pro-mode-context';
 
@@ -41,21 +42,37 @@ export function ImageProcessingMode() {
           <CardTitle className="text-2xl">Analysis & Annotations</CardTitle>
           <CardDescription>AI-generated insights. Not a substitute for professional medical advice.</CardDescription>
         </CardHeader>
-        <CardContent className="min-h-[300px] flex flex-col justify-center">
+        <CardContent className="min-h-[300px] flex flex-col justify-start"> {/* Changed to justify-start */}
           {isLoading && (
-            <div className="flex flex-col items-center justify-center text-muted-foreground">
+            <div className="flex flex-col items-center justify-center text-muted-foreground py-10">
               <Loader2 className="h-10 w-10 animate-spin text-primary mb-3" />
               <p className="text-sm">Analyzing image...</p>
             </div>
           )}
           {error && !isLoading && (
-            <Alert variant="destructive" className="rounded-lg">
+            <Alert variant="destructive" className="rounded-lg my-4">
               <AlertTitle>Analysis Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+
+          {userRole === 'medico' && (
+            <Alert variant="default" className="my-4 border-sky-500/50 bg-sky-500/10 rounded-lg">
+              <PencilRuler className="h-5 w-5 text-sky-600" />
+              <AlertTitle className="text-sky-700 dark:text-sky-500 font-semibold">Medico Study Tools</AlertTitle>
+              <AlertDescription className="text-sky-600/80 dark:text-sky-500/80">
+                Study image annotations. For notes &amp; MCQs, use chat commands:
+                <ul className="list-disc pl-5 mt-1 text-xs">
+                  <li><code>/notes &lt;topic&gt;</code></li>
+                  <li><code>/mcq &lt;topic&gt; [num]</code></li>
+                  {/* <li>Try Interactive Anatomy: <code>/anatomy &lt;structure&gt;</code></li> */}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          )}
+
           {!isLoading && !error && (
-            <div className="space-y-4 fade-in">
+            <div className="space-y-4 fade-in mt-2"> {/* Added mt-2 */}
               {uploadedImage && (
                 <div className="mb-4 border border-border/30 rounded-lg overflow-hidden aspect-video relative bg-muted/50">
                   <Image src={uploadedImage} alt="Uploaded medical scan" layout="fill" objectFit="contain" data-ai-hint="medical scan" />
@@ -76,25 +93,19 @@ export function ImageProcessingMode() {
                 <Alert variant="default" className="mt-4 border-primary/50 bg-primary/10 rounded-lg">
                   <Sparkles className="h-5 w-5 text-primary" />
                   <AlertTitle className="text-primary font-semibold">Pro Mode Active</AlertTitle>
-                  <AlertDescription className="text-primary/80">
+                  <AlertDescription className="text-primary/80 text-xs">
                     Advanced clinical annotations, detailed JSON data, and further analytical tools would be available.
                   </AlertDescription>
                 </Alert>
               )}
-              {userRole === 'medico' && analysisResult && (
-                <Alert variant="default" className="mt-4 border-sky-500/50 bg-sky-500/10 rounded-lg">
-                  <TestTubeDiagonal className="h-5 w-5 text-sky-600" />
-                  <AlertTitle className="text-sky-700 dark:text-sky-500 font-semibold">Medico Study Focus: Image Analysis</AlertTitle>
-                  <AlertDescription className="text-sky-600/80 dark:text-sky-500/80">
-                    Study image annotations to learn radiological signs and pathological changes. Correlate findings with clinical knowledge. Try the Interactive Anatomy Visualizer in chat: `/anatomy &lt;structure&gt;`
-                  </AlertDescription>
-                </Alert>
-              )}
+              {/* This specific alert for medico when analysisResult is present is now covered by the general medico alert above */}
+              {/* {userRole === 'medico' && analysisResult && ( ... )} */}
+              
               {!uploadedImage && !analysisResult && (
-                <div className="flex flex-col items-center justify-center text-muted-foreground">
-                  <ImageOff className="h-12 w-12 mb-3 text-muted-foreground/70" />
-                  <p>Upload an image to see analysis and annotations.</p>
-                </div>
+                 <div className="flex flex-col items-center justify-center text-muted-foreground py-10 flex-grow">
+                    <ImageOff className="h-12 w-12 mb-3 text-muted-foreground/70" />
+                    <p>Upload an image to see analysis and annotations.</p>
+                 </div>
               )}
             </div>
           )}
