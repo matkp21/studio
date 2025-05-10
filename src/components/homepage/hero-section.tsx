@@ -4,9 +4,10 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { HeartPulse } from "lucide-react"; 
+import { HeartPulse, BookHeart } from "lucide-react"; 
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { useProMode } from '@/contexts/pro-mode-context';
 
 const greetings = [
   { lang: "en", text: "Hello" },
@@ -24,6 +25,7 @@ const greetings = [
 
 export function HeroSection() {
   const [currentGreetingIndex, setCurrentGreetingIndex] = useState(0);
+  const { userRole } = useProMode();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -33,8 +35,14 @@ export function HeroSection() {
     return () => clearInterval(interval);
   }, []);
 
+  const isMedicoMode = userRole === 'medico';
+  const ctaLink = isMedicoMode ? "/medico" : "/chat";
+  const ctaText = isMedicoMode ? "Medico Study Hub" : "Get Started";
+  const CtaIcon = isMedicoMode ? BookHeart : HeartPulse;
+
+
   return (
-    <section className="relative bg-gradient-to-br from-background to-secondary/30 dark:from-background dark:to-secondary/10 py-20 md:py-32 overflow-hidden">
+    <section className="relative bg-background py-20 md:py-32 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         {/* Subtle animated heartbeat line */}
         <svg
@@ -54,7 +62,7 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="text-6xl sm:text-7xl md:text-8xl font-bold text-center welcome-text-fg-animated mb-8"
+            className="text-6xl sm:text-7xl md:text-8xl font-bold text-center firebase-gradient-text mb-8"
             lang={greetings[currentGreetingIndex].lang}
           >
             {greetings[currentGreetingIndex].text}
@@ -65,7 +73,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground/90 dark:text-background/90 mb-6"
+          className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground/90 dark:text-foreground/90 mb-6" // Changed dark mode text color
         >
           Welcome to <span className="animated-gradient-text bg-clip-text text-transparent">MediAssistant</span>.
         </motion.p>
@@ -73,7 +81,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
-          className="text-lg sm:text-xl md:text-2xl text-foreground/80 dark:text-background/80 max-w-3xl mx-auto mb-10"
+          className="text-lg sm:text-xl md:text-2xl text-foreground/80 dark:text-foreground/80 max-w-3xl mx-auto mb-10" // Changed dark mode text color
         >
           Your intelligent partner for AI-powered diagnostics, imaging analysis, and educational support—all at your fingertips.
         </motion.p>
@@ -83,10 +91,27 @@ export function HeroSection() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1.2, duration: 0.5 }}
         >
-          <Button asChild size="lg" className="rounded-lg group px-8 py-6 text-lg shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-primary/30 transition-all duration-300 transform hover:scale-105" aria-label="Get started with MediAssistant features">
-            <Link href="/chat" className="flex items-center">
-              Get Started
-              <HeartPulse className="ml-2 h-6 w-6 animate-pulse-medical text-red-400 group-hover:scale-110 group-hover:text-red-300" style={{"--medical-pulse-opacity-base": "0.7", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.25"} as React.CSSProperties}/>
+          <Button 
+            asChild 
+            size="lg" 
+            className={cn(
+              "rounded-lg group px-8 py-6 text-lg shadow-lg transition-all duration-300 transform hover:scale-105",
+              isMedicoMode 
+                ? "bg-sky-600 hover:bg-sky-500 text-white hover:shadow-sky-500/40" 
+                : "bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-primary/30"
+            )} 
+            aria-label={isMedicoMode ? "Go to Medico Study Hub" : "Get started with MediAssistant features"}
+          >
+            <Link href={ctaLink} className="flex items-center">
+              {ctaText}
+              <CtaIcon 
+                className={cn(
+                  "ml-2 h-7 w-7 group-hover:scale-110",
+                  isMedicoMode ? "text-white" : "text-red-400 group-hover:text-red-300",
+                  "animate-pulse-medical"
+                )} 
+                style={{"--medical-pulse-opacity-base": "0.7", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.35"} as React.CSSProperties}
+              />
             </Link>
           </Button>
         </motion.div>
