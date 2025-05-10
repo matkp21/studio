@@ -1,4 +1,3 @@
-// SymptomAnalyzer
 'use server';
 /**
  * @fileOverview An AI agent that analyzes symptoms and provides potential diagnoses.
@@ -10,15 +9,9 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { SymptomAnalyzerInputSchema, SymptomAnalyzerOutputSchema } from '@/ai/schemas/symptom-analyzer-schemas';
 
-const SymptomAnalyzerInputSchema = z.object({
-  symptoms: z.string().describe('The symptoms the user is experiencing.'),
-});
 export type SymptomAnalyzerInput = z.infer<typeof SymptomAnalyzerInputSchema>;
-
-const SymptomAnalyzerOutputSchema = z.object({
-  diagnoses: z.array(z.string()).describe('A list of potential diagnoses based on the symptoms provided.'),
-});
 export type SymptomAnalyzerOutput = z.infer<typeof SymptomAnalyzerOutputSchema>;
 
 export async function analyzeSymptoms(input: SymptomAnalyzerInput): Promise<SymptomAnalyzerOutput> {
@@ -44,6 +37,12 @@ const symptomAnalyzerFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      // Handle cases where the LLM might not produce structured output
+      // or if an error occurs within the prompt execution.
+      console.error("Symptom analyzer prompt did not return an output.");
+      return { diagnoses: ["Could not determine potential diagnoses at this time. Please try again or consult a medical professional."] };
+    }
+    return output;
   }
 );
