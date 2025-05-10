@@ -57,6 +57,12 @@ body {
     --chart-3: 260 65% 60%;  /* Purple */
     --chart-4: 30 80% 55%;   /* Orange */
     --chart-5: 130 50% 50%;  /* Green */
+
+     /* Welcome Screen Colors - can be dynamic or fixed */
+    --welcome-color-1: 210 100% 60%; /* Brighter Blue */
+    --welcome-color-2: 170 98% 55%; /* Brighter Teal */
+    --welcome-color-3: 330 100% 65%; /* Vibrant Pink/Magenta */
+    --welcome-color-4: 45 100% 55%;  /* Bright Orange/Gold */
   }
 
   .dark {
@@ -105,6 +111,12 @@ body {
     --chart-3: 270 70% 70%;  /* Bright Purple */
     --chart-4: 40 90% 65%;   /* Bright Yellow-Orange */
     --chart-5: 140 60% 60%;  /* Bright Green */
+
+    /* Welcome Screen Colors - Dark Mode Friendly */
+    --welcome-color-1: 210 100% 70%; 
+    --welcome-color-2: 170 98% 65%; 
+    --welcome-color-3: 330 100% 75%; 
+    --welcome-color-4: 45 100% 65%;
   }
 }
 
@@ -212,4 +224,43 @@ body {
   animation: pulseMedical 1.8s infinite ease-in-out;
   display: inline-flex; /* For better alignment if icon is complex */
   align-items: center;
+}
+
+
+/* Welcome Screen Animations */
+@keyframes welcome-text-color-cycle {
+  0% { color: hsl(var(--welcome-color-1)); }
+  25% { color: hsl(var(--welcome-color-2)); }
+  50% { color: hsl(var(--welcome-color-3)); }
+  75% { color: hsl(var(--welcome-color-4)); }
+  100% { color: hsl(var(--welcome-color-1)); }
+}
+
+.welcome-text-fg-animated {
+  /* Uses foreground variable by default but can be overridden by animation or direct styling */
+  color: hsl(var(--foreground)); /* Default text color for the welcome screen */
+  animation: welcome-text-color-cycle 12s linear infinite;
+}
+
+
+@keyframes animated-gradient-background {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.welcome-background-animated {
+  /* Use more distinct colors for a "colorful" effect */
+  /* Ensure these colors contrast well with the text color animation */
+  background: linear-gradient(
+    135deg, 
+    hsl(var(--primary)/0.7), /* Original primary, slightly transparent */
+    hsl(var(--accent)/0.7),   /* Original accent, slightly transparent */
+    hsl(var(--welcome-color-3)/0.7), /* Vibrant pink/magenta, slightly transparent */
+    hsl(var(--welcome-color-4)/0.7),  /* Bright orange/gold, slightly transparent */
+    hsl(var(--primary)/0.7) /* Loop back to primary */
+  );
+  background-size: 400% 400%;
+  animation: animated-gradient-background 20s ease infinite;
+  color: white; /* Ensure text is readable on this background */
 }

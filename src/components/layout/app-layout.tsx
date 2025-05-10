@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
-import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, MoreVertical, Sparkles } from 'lucide-react';
+import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, MoreVertical, Sparkles, Info } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
@@ -25,7 +25,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
+import { WelcomeScreen } from '@/components/welcome/welcome-screen'; // Added WelcomeScreen
 import { useProMode } from '@/contexts/pro-mode-context';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+
 
 const ToggleSidebarButton = () => {
   const { state, toggleSidebar, isMobile } = useSidebar();
@@ -41,16 +45,21 @@ const ToggleSidebarButton = () => {
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [clientLoaded, setClientLoaded] = useState(false);
   const { isProMode, toggleProMode } = useProMode();
 
 
   useEffect(() => {
-    setClientLoaded(true); 
+    setClientLoaded(true);
 
-    if (typeof window !== 'undefined' && localStorage.getItem('onboardingComplete') !== 'true') {
-      setShowOnboardingModal(true);
+    if (typeof window !== 'undefined') {
+      if (localStorage.getItem('welcomeScreenShown') !== 'true') {
+        setShowWelcomeScreen(true);
+      } else if (localStorage.getItem('onboardingComplete') !== 'true') {
+        setShowOnboardingModal(true);
+      }
     }
 
     const handleScroll = () => {
@@ -61,6 +70,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleWelcomeScreenClose = () => {
+    setShowWelcomeScreen(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('welcomeScreenShown', 'true');
+      // After welcome screen, check if onboarding is needed
+      if (localStorage.getItem('onboardingComplete') !== 'true') {
+        setShowOnboardingModal(true);
+      }
+    }
+  };
+  
 
   const handleOnboardingClose = () => {
     setShowOnboardingModal(false);
@@ -102,14 +123,23 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
           
           <nav className="flex items-center gap-4">
+            {isProMode && (
+              <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10 hidden sm:flex items-center gap-1.5 py-1 px-2.5">
+                <Sparkles className="h-3.5 w-3.5" />
+                Pro Mode
+              </Badge>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full text-foreground/80 hover:text-foreground">
-                   <MoreVertical className="h-5 w-5" />
+                   <Avatar className="h-8 w-8">
+                    <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
+                    <AvatarFallback>DR</AvatarFallback>
+                  </Avatar>
                    <span className="sr-only">Open user menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64"> {/* Increased width for Pro Mode switch */}
+              <DropdownMenuContent align="end" className="w-64">
                  <DropdownMenuLabel className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
@@ -143,6 +173,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     />
                   </div>
                 </DropdownMenuItem>
+                {isProMode && (
+                  <DropdownMenuItem disabled className="text-xs text-muted-foreground p-2 focus:bg-transparent">
+                    <Info className="mr-2 h-3 w-3 text-primary"/>
+                    <span>Advanced features enabled.</span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
@@ -155,7 +191,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <main className="flex-1 flex flex-col overflow-auto">
           {children}
         </main>
-        {clientLoaded && showOnboardingModal && (
+        {clientLoaded && showWelcomeScreen && (
+           <WelcomeScreen isOpen={showWelcomeScreen} onClose={handleWelcomeScreenClose} />
+        )}
+        {clientLoaded && !showWelcomeScreen && showOnboardingModal && (
           <OnboardingModal
             isOpen={showOnboardingModal}
             onClose={handleOnboardingClose}
