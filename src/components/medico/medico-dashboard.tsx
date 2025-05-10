@@ -13,7 +13,8 @@ import { ClinicalCaseSimulator } from './clinical-case-simulator';
 import { AnatomyVisualizer } from './anatomy-visualizer';
 import { MnemonicsGenerator } from './mnemonics-generator';
 import { DifferentialDiagnosisTrainer } from './differential-diagnosis-trainer';
-import { VirtualPatientRounds } from './virtual-patient-rounds'; // Added import
+import { VirtualPatientRounds } from './virtual-patient-rounds';
+import { HighYieldTopicPredictor } from './high-yield-topic-predictor'; // Added import
 import { 
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy, 
   Users, Eye, Brain, TrendingUp, Calculator, FlaskConical, Workflow 
@@ -56,8 +57,8 @@ const medicoToolsList: MedicoTool[] = [
   { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Describe anatomical structures.', icon: Eye, component: AnatomyVisualizer },
   { id: 'mnemonics', title: 'Mnemonics Generator', description: 'Create memory aids for complex topics.', icon: Lightbulb, component: MnemonicsGenerator },
   { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'Practice listing diagnoses based on symptoms.', icon: Brain, component: DifferentialDiagnosisTrainer },
-  { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds }, // Changed comingSoon to false and added component
-  { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study.', icon: TrendingUp, comingSoon: true },
+  { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds },
+  { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study.', icon: TrendingUp, component: HighYieldTopicPredictor, comingSoon: false }, // Changed comingSoon and added component
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, comingSoon: true },
   { id: 'papers', title: 'Solved Question Papers', description: 'Access past exam papers with solutions.', icon: BookCopy, comingSoon: true },
   { id: 'flowcharts', title: 'Flowchart Creator', description: 'Create diagnostic or treatment flowcharts.', icon: Workflow, comingSoon: true },
@@ -148,4 +149,3 @@ export function MedicoDashboard() {
     </div>
   );
 }
-
