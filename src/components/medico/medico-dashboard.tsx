@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { StudyNotesGenerator } from './study-notes-generator';
 import { McqGenerator } from './mcq-generator';
 import { StudyTimetableCreator } from './study-timetable-creator';
-import { FlashcardGenerator } from './flashcard-generator'; // Import the new component
+import { FlashcardGenerator } from './flashcard-generator';
+import { ClinicalCaseSimulator } from './clinical-case-simulator'; // Import the new component
 import { 
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy, 
   Users, Eye, Brain, TrendingUp, Calculator, FlaskConical, Workflow 
@@ -46,8 +47,8 @@ const medicoToolsList: MedicoTool[] = [
   { id: 'notes', title: 'Study Notes Generator', description: 'Generate concise notes on medical topics.', icon: NotebookText, component: StudyNotesGenerator },
   { id: 'mcq', title: 'MCQ Generator', description: 'Create multiple-choice questions for practice.', icon: FileQuestion, component: McqGenerator },
   { id: 'timetable', title: 'Study Timetable Creator', description: 'Help students plan study schedules.', icon: CalendarClock, component: StudyTimetableCreator },
-  { id: 'flashcards', title: 'Flashcard Generator', description: 'Provide digital flashcards for quick revision.', icon: Layers, component: FlashcardGenerator }, // Enabled this tool
-  { id: 'cases', title: 'Clinical Case Simulations', description: 'Offer interactive patient scenarios.', icon: CaseUpper, comingSoon: true },
+  { id: 'flashcards', title: 'Flashcard Generator', description: 'Provide digital flashcards for quick revision.', icon: Layers, component: FlashcardGenerator },
+  { id: 'cases', title: 'Clinical Case Simulations', description: 'Offer interactive patient scenarios.', icon: CaseUpper, component: ClinicalCaseSimulator }, // Enabled this tool
   { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Describe anatomical structures.', icon: Eye, comingSoon: true },
   { id: 'mnemonics', title: 'Mnemonics Generator', description: 'Create memory aids for complex topics.', icon: Lightbulb, comingSoon: true },
   { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'Practice listing diagnoses based on symptoms.', icon: Brain, comingSoon: true },
@@ -143,4 +144,3 @@ export function MedicoDashboard() {
     </div>
   );
 }
-
