@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
-import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, MoreVertical, Sparkles, Info } from 'lucide-react';
+import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, Users, BriefcaseMedical, School, Stethoscope } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
@@ -22,9 +22,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuGroup,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
 import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { Badge } from '@/components/ui/badge';
@@ -45,7 +49,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [clientLoaded, setClientLoaded] = useState(false);
-  const { isProMode, toggleProMode, userRole, selectUserRole } = useProMode();
+  const { isProMode, userRole, selectUserRole } = useProMode();
 
 
   useEffect(() => {
@@ -57,7 +61,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
       if (!onboardingComplete || !storedUserRole) {
         setShowOnboardingModal(true);
-      } else if (storedUserRole && !userRole) { // Sync context if localStorage has role but context doesn't
+      } else if (storedUserRole && !userRole) { 
         selectUserRole(storedUserRole);
       }
     }
@@ -76,7 +80,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
     setShowOnboardingModal(false);
     if (typeof window !== 'undefined') { 
       localStorage.setItem('onboardingComplete', 'true');
-      // userRole should have been set by the modal via selectUserRole
     }
   };
   
@@ -119,10 +122,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
           
           <nav className="flex items-center gap-4">
-            {isProMode && (
+            {isProMode && ( // isProMode is now derived from userRole === 'pro'
               <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10 hidden sm:flex items-center gap-1.5 py-1 px-2.5">
                 <Sparkles className="h-3.5 w-3.5" />
-                Pro Mode
+                Pro Features
               </Badge>
             )}
             <DropdownMenu>
@@ -134,7 +137,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuContent align="end" className="w-72"> {/* Increased width for role selection */}
                  <DropdownMenuLabel className="flex items-start gap-2">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
@@ -157,24 +160,38 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="focus:bg-transparent">
-                  <div className="flex items-center justify-between w-full">
-                    <Label htmlFor="pro-mode-switch" className="flex items-center gap-2 cursor-pointer">
-                      <Sparkles className="mr-2 h-4 w-4 text-primary" />
-                      <span>Pro Mode</span>
-                    </Label>
-                    <Switch
-                      id="pro-mode-switch"
-                      checked={isProMode}
-                      onCheckedChange={toggleProMode}
-                      aria-label="Toggle Pro Mode"
-                    />
-                  </div>
-                </DropdownMenuItem>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <Users className="mr-2 h-4 w-4" />
+                    <span>Change Role</span>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuRadioGroup 
+                        value={userRole ?? ""} 
+                        onValueChange={(value) => selectUserRole(value as UserRole)}
+                      >
+                        <DropdownMenuRadioItem value="pro" className="cursor-pointer">
+                          <BriefcaseMedical className="mr-2 h-4 w-4 text-primary" />
+                          Professional
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="medico" className="cursor-pointer">
+                          <School className="mr-2 h-4 w-4 text-primary" />
+                           Medical Student
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="diagnosis" className="cursor-pointer">
+                          <Stethoscope className="mr-2 h-4 w-4 text-primary" />
+                           Patient/User
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+                
                 {isProMode && (
                   <DropdownMenuItem disabled className="text-xs text-muted-foreground p-2 focus:bg-transparent">
                     <Info className="mr-2 h-3 w-3 text-primary"/>
-                    <span>Advanced features enabled.</span>
+                    <span>Professional features enabled.</span>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
