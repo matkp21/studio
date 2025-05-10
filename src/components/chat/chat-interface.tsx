@@ -72,6 +72,43 @@ export function ChatInterface() {
     }
   }, [toast, isListening]);
 
+  const speakText = (text: string) => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window && text) {
+      speechSynthesis.cancel(); // Cancel any ongoing speech
+      const utterance = new SpeechSynthesisUtterance(text);
+      speechSynthesis.speak(utterance);
+    } else if (!text) {
+      console.warn("SpeakText: No text to speak.");
+    }
+     else {
+      console.warn("Speech Synthesis API not supported or no text provided.");
+    }
+  };
+
+  useEffect(() => {
+    // Send a welcome message only once when the component mounts
+    // and if there are no messages yet.
+    if (messages.length === 0 && !isLoading) {
+      const initialWelcomeMessageText = "Welcome to MediAssistant Chat! I'm here to assist with your medical queries. How can I help you today?";
+      const welcomeMessage: Message = {
+        id: `welcome-bot-${Date.now()}`,
+        content: (
+          <TypewriterText
+            text={initialWelcomeMessageText}
+            speed={50} 
+          />
+        ),
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      setMessages([welcomeMessage]);
+      if (isVoiceOutputEnabled) {
+        speakText(initialWelcomeMessageText);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
+
   const toggleListening = async () => {
     if (isListening) {
       recognitionRef.current?.stop();
@@ -106,19 +143,6 @@ export function ChatInterface() {
     }
   };
 
-  const speakText = (text: string) => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window && text) {
-      speechSynthesis.cancel(); // Cancel any ongoing speech
-      const utterance = new SpeechSynthesisUtterance(text);
-      speechSynthesis.speak(utterance);
-    } else if (!text) {
-      console.warn("SpeakText: No text to speak.");
-    }
-     else {
-      console.warn("Speech Synthesis API not supported or no text provided.");
-    }
-  };
-
 
   const handleSendMessage = async (messageContent?: string) => {
     const currentMessage = (typeof messageContent === 'string' ? messageContent : inputValue).trim();
@@ -139,27 +163,7 @@ export function ChatInterface() {
     try {
       const chatInput: ChatMessageInput = { message: userMessage.content as string };
       const result = await processChatMessage(chatInput);
-
       const botResponseContent = result.response;
-      const finalHelperMessageText = "I'm here for you always to help you.";
-
-      const addFinalHelperMessage = () => {
-        const finalMessage: Message = {
-          id: (Date.now() + Math.random()).toString(), // More robust unique ID
-          content: (
-            <TypewriterText
-              text={finalHelperMessageText}
-              speed={150} // Speed in ms per word/whitespace segment
-            />
-          ),
-          sender: 'bot',
-          timestamp: new Date(),
-        };
-        setMessages((prevMessages) => [...prevMessages, finalMessage]);
-        if (isVoiceOutputEnabled) {
-           setTimeout(() => speakText(finalHelperMessageText), 100); 
-        }
-      };
 
       const botMessage: Message = {
         id: (Date.now() + Math.random()).toString(),
@@ -167,10 +171,7 @@ export function ChatInterface() {
           <TypewriterText
             text={botResponseContent}
             speed={50} 
-            onComplete={() => {
-              // Delay adding the final helper message slightly for better flow
-              setTimeout(addFinalHelperMessage, 300);
-            }}
+            // onComplete removed as the final helper message is no longer chained here
           />
         ),
         sender: 'bot',
@@ -185,26 +186,6 @@ export function ChatInterface() {
     } catch (error) {
       console.error("Chat processing error:", error);
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
-      const finalHelperMessageTextOnError = "I'm here for you always to help you, even when things go wrong.";
-
-
-      const addFinalHelperMessageOnError = () => {
-        const finalMessage: Message = {
-          id: (Date.now() + Math.random() + 2).toString(),
-          content: (
-            <TypewriterText
-              text={finalHelperMessageTextOnError}
-              speed={150} 
-            />
-          ),
-          sender: 'bot',
-          timestamp: new Date(),
-        };
-        setMessages((prevMessages) => [...prevMessages, finalMessage]);
-        if (isVoiceOutputEnabled) {
-           setTimeout(() => speakText(finalHelperMessageTextOnError), 100); 
-        }
-      };
       
       const errorBotResponse: Message = {
         id: (Date.now() + Math.random() + 1).toString(),
@@ -212,9 +193,7 @@ export function ChatInterface() {
           <TypewriterText
             text={`Sorry, I encountered an error: ${errorMessage}`}
             speed={50} 
-            onComplete={() => {
-              setTimeout(addFinalHelperMessageOnError, 300);
-            }}
+             // onComplete removed as the final helper message (error variant) is no longer chained here
           />
         ),
         sender: 'bot',
