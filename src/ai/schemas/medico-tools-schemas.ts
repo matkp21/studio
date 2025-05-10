@@ -44,9 +44,142 @@ export const MedicoMCQGeneratorOutputSchema = z.object({
 });
 export type MedicoMCQGeneratorOutput = z.infer<typeof MedicoMCQGeneratorOutputSchema>;
 
-// Schemas for other Medico tools (to be implemented)
-// StudyTimetableCreator schemas would go here
-// FlashcardGenerator schemas would go here
-// ClinicalCaseSimulations schemas would go here
-// InteractiveAnatomyVisualizer schemas would go here
-// MnemonicsGenerator schemas would go here
+// Schema for Study Timetable Creator
+export const MedicoStudyTimetableInputSchema = z.object({
+  examName: z.string().min(3, { message: "Exam name must be at least 3 characters." }).describe('Name of the examination (e.g., "Final MBBS Prof").'),
+  examDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Exam date must be in YYYY-MM-DD format." }).describe('Date of the examination in YYYY-MM-DD format.'),
+  subjects: z.array(z.string().min(1)).min(1, { message: "At least one subject is required." }).describe('List of subjects to study.'),
+  studyHoursPerWeek: z.number().min(1).max(100).describe('Total number of study hours available per week.'),
+});
+export type MedicoStudyTimetableInput = z.infer<typeof MedicoStudyTimetableInputSchema>;
+
+export const MedicoStudyTimetableOutputSchema = z.object({
+  timetable: z.string().describe('A structured study timetable, possibly in Markdown or JSON format for display.'),
+  // Could be more structured, e.g., z.record(z.array(z.object({ subject: z.string(), timeSlot: z.string() })))
+});
+export type MedicoStudyTimetableOutput = z.infer<typeof MedicoStudyTimetableOutputSchema>;
+
+// Schema for Flashcard Generator
+export const MedicoFlashcardGeneratorInputSchema = z.object({
+  topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).describe('The medical topic for flashcards.'),
+  count: z.number().int().min(1).max(20).default(10).describe('Number of flashcards to generate (1-20).'),
+});
+export type MedicoFlashcardGeneratorInput = z.infer<typeof MedicoFlashcardGeneratorInputSchema>;
+
+export const MedicoFlashcardSchema = z.object({
+  front: z.string().describe('The front side of the flashcard (question/term).'),
+  back: z.string().describe('The back side of the flashcard (answer/definition).'),
+});
+export type MedicoFlashcard = z.infer<typeof MedicoFlashcardSchema>;
+
+export const MedicoFlashcardGeneratorOutputSchema = z.object({
+  flashcards: z.array(MedicoFlashcardSchema).describe('An array of generated flashcards.'),
+  topicGenerated: z.string().describe('The topic for which these flashcards were generated.'),
+});
+export type MedicoFlashcardGeneratorOutput = z.infer<typeof MedicoFlashcardGeneratorOutputSchema>;
+
+// Schema for Clinical Case Simulations
+export const MedicoClinicalCaseInputSchema = z.object({
+  caseId: z.string().optional().describe('ID of an ongoing case, or leave empty to start a new one.'),
+  userResponse: z.string().optional().describe('User response to the current case prompt.'),
+  topic: z.string().optional().describe('Topic for a new case if caseId is not provided (e.g., "Severe Acute Malnutrition").'),
+});
+export type MedicoClinicalCaseInput = z.infer<typeof MedicoClinicalCaseInputSchema>;
+
+export const MedicoClinicalCaseOutputSchema = z.object({
+  caseId: z.string().describe('ID of the current case simulation.'),
+  prompt: z.string().describe('The next prompt or question in the case simulation for the user.'),
+  feedback: z.string().optional().describe('Feedback on the user s previous response.'),
+  isCompleted: z.boolean().default(false).describe('Indicates if the case simulation has ended.'),
+  summary: z.string().optional().describe('Summary of the case if completed.'),
+});
+export type MedicoClinicalCaseOutput = z.infer<typeof MedicoClinicalCaseOutputSchema>;
+
+// Schema for Interactive Anatomy Visualizer
+export const MedicoAnatomyVisualizerInputSchema = z.object({
+  anatomicalStructure: z.string().min(3, { message: "Structure name must be at least 3 characters." }).describe('The anatomical structure to visualize/describe (e.g., "Liver", "Femur").'),
+});
+export type MedicoAnatomyVisualizerInput = z.infer<typeof MedicoAnatomyVisualizerInputSchema>;
+
+export const MedicoAnatomyVisualizerOutputSchema = z.object({
+  description: z.string().describe('Detailed description of the anatomical structure, including its function, location, and key features.'),
+  imageUrl: z.string().url().optional().describe('Optional URL to an image or diagram of the structure.'),
+  relatedStructures: z.array(z.string()).optional().describe('List of related anatomical structures.'),
+});
+export type MedicoAnatomyVisualizerOutput = z.infer<typeof MedicoAnatomyVisualizerOutputSchema>;
+
+// Schema for Mnemonics Generator
+export const MedicoMnemonicsGeneratorInputSchema = z.object({
+  topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).describe('The medical topic or list for which to generate a mnemonic (e.g., "Cranial Nerves", "Causes of Pancreatitis").'),
+});
+export type MedicoMnemonicsGeneratorInput = z.infer<typeof MedicoMnemonicsGeneratorInputSchema>;
+
+export const MedicoMnemonicsGeneratorOutputSchema = z.object({
+  mnemonic: z.string().describe('The generated mnemonic.'),
+  explanation: z.string().optional().describe('Explanation of how the mnemonic works or what it represents.'),
+  topicGenerated: z.string().describe('The topic for which the mnemonic was generated.'),
+});
+export type MedicoMnemonicsGeneratorOutput = z.infer<typeof MedicoMnemonicsGeneratorOutputSchema>;
+
+// Schema for Differential Diagnosis Trainer
+export const MedicoDDTrainerInputSchema = z.object({
+  symptoms: z.string().min(10, { message: "Symptoms description must be at least 10 characters." }).describe('A clinical scenario or list of symptoms presented to the student.'),
+  // studentAttempt: z.array(z.string()).optional().describe('Student s attempt at differential diagnoses.'), // For interactive training
+});
+export type MedicoDDTrainerInput = z.infer<typeof MedicoDDTrainerInputSchema>;
+
+export const MedicoDDTrainerOutputSchema = z.object({
+  potentialDiagnoses: z.array(z.string()).describe('A list of potential differential diagnoses for the given symptoms.'),
+  // feedback: z.string().optional().describe('Feedback on the student s attempt, if provided.'), // For interactive training
+  explanation: z.string().optional().describe('Brief explanation for why these diagnoses are considered.'),
+});
+export type MedicoDDTrainerOutput = z.infer<typeof MedicoDDTrainerOutputSchema>;
+
+// Schema for Virtual Patient Rounds
+export const MedicoVirtualRoundsInputSchema = z.object({
+  caseId: z.string().optional().describe('ID of an ongoing virtual round/patient, or empty to start a new one.'),
+  patientFocus: z.string().optional().describe('Specific patient type or condition for new round (e.g., "Pediatric Asthma Exacerbation").'),
+  userAction: z.string().optional().describe('Student s action/query during the round (e.g., "Check vitals", "Ask about medication history").'),
+});
+export type MedicoVirtualRoundsInput = z.infer<typeof MedicoVirtualRoundsInputSchema>;
+
+export const MedicoVirtualRoundsOutputSchema = z.object({
+  caseId: z.string().describe('ID of the current virtual patient case.'),
+  patientSummary: z.string().describe('Current summary of the patient s status and history.'),
+  currentObservation: z.string().describe('Result of the user s last action or current observation prompt.'),
+  nextPrompt: z.string().describe('Guidance or question for the student s next step in the round.'),
+  isCompleted: z.boolean().default(false).describe('Indicates if this patient encounter in the round is completed.'),
+});
+export type MedicoVirtualRoundsOutput = z.infer<typeof MedicoVirtualRoundsOutputSchema>;
+
+// Schema for High-Yield Topic Predictor
+export const MedicoTopicPredictorInputSchema = z.object({
+  examType: z.string().min(3, { message: "Exam type must be specified." }).describe('Type of exam (e.g., "MBBS Final Year", "USMLE Step 1", "NEET-PG").'),
+  subject: z.string().optional().describe('Specific subject to focus on (e.g., "Surgery", "Pediatrics").'),
+});
+export type MedicoTopicPredictorInput = z.infer<typeof MedicoTopicPredictorInputSchema>;
+
+export const MedicoTopicPredictorOutputSchema = z.object({
+  predictedTopics: z.array(z.string()).describe('List of predicted high-yield topics for the specified exam/subject.'),
+  rationale: z.string().optional().describe('Brief rationale behind the predictions (e.g., based on past trends, syllabus weightage).'),
+});
+export type MedicoTopicPredictorOutput = z.infer<typeof MedicoTopicPredictorOutputSchema>;
+
+// Schema for Drug Dosage Calculator
+export const MedicoDrugDosageInputSchema = z.object({
+  drugName: z.string().min(2, { message: "Drug name is required." }).describe('Name of the drug.'),
+  patientWeightKg: z.number().positive({ message: "Patient weight must be a positive number." }).describe('Patient s weight in kilograms.'),
+  patientAgeYears: z.number().min(0).optional().describe('Patient s age in years (optional).'),
+  indication: z.string().optional().describe('Medical indication for the drug (optional).'),
+  concentrationAvailable: z.string().optional().describe('Concentration of the drug available, if non-standard (e.g., "250mg/5ml").'),
+});
+export type MedicoDrugDosageInput = z.infer<typeof MedicoDrugDosageInputSchema>;
+
+export const MedicoDrugDosageOutputSchema = z.object({
+  calculatedDose: z.string().describe('The calculated dose (e.g., "500 mg", "7.5 ml").'),
+  calculationExplanation: z.string().describe('Step-by-step explanation of how the dose was calculated.'),
+  warnings: z.array(z.string()).optional().describe('Any relevant warnings or considerations (e.g., "Adjust for renal impairment", "Max dose 2g/day").'),
+});
+export type MedicoDrugDosageOutput = z.infer<typeof MedicoDrugDosageOutputSchema>;
+
+// ... Potentially other schemas as features expand

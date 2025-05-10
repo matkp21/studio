@@ -6,25 +6,55 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { StudyNotesGenerator } from './study-notes-generator';
 import { McqGenerator } from './mcq-generator';
-import { NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy } from 'lucide-react';
+import { 
+  NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy, 
+  Users, Eye, Brain, TrendingUp, Calculator, FlaskConical // Added new icons
+} from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '../ui/dialog'; // Added DialogDescription
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { cn } from '@/lib/utils';
 
-type ActiveTool = 'notes' | 'mcq' | null;
+type ActiveToolId = 
+  | 'notes' 
+  | 'mcq'
+  | 'timetable'
+  | 'flashcards'
+  | 'cases'
+  | 'anatomy'
+  | 'mnemonics'
+  | 'ddx'
+  | 'rounds'
+  | 'topics'
+  | 'dosage'
+  | null;
 
-const medicoTools = [
+interface MedicoTool {
+  id: ActiveToolId;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  component?: React.ElementType; // Optional: specific component for the dialog
+  comingSoon?: boolean;
+}
+
+const medicoToolsList: MedicoTool[] = [
   { id: 'notes', title: 'Study Notes Generator', description: 'Generate concise notes on medical topics.', icon: NotebookText, component: StudyNotesGenerator },
   { id: 'mcq', title: 'MCQ Generator', description: 'Create multiple-choice questions for practice.', icon: FileQuestion, component: McqGenerator },
+  { id: 'timetable', title: 'Study Timetable Creator', description: 'Help students plan study schedules.', icon: CalendarClock, comingSoon: true },
+  { id: 'flashcards', title: 'Flashcard Generator', description: 'Provide digital flashcards for quick revision.', icon: Layers, comingSoon: true },
+  { id: 'cases', title: 'Clinical Case Simulations', description: 'Offer interactive patient scenarios.', icon: CaseUpper, comingSoon: true },
+  { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Describe anatomical structures.', icon: Eye, comingSoon: true },
+  { id: 'mnemonics', title: 'Mnemonics Generator', description: 'Create memory aids for complex topics.', icon: Lightbulb, comingSoon: true },
+  { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'Practice listing diagnoses based on symptoms.', icon: Brain, comingSoon: true },
+  { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, comingSoon: true },
+  { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study.', icon: TrendingUp, comingSoon: true },
+  { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, comingSoon: true },
   { id: 'papers', title: 'Solved Question Papers', description: 'Access past exam papers with solutions.', icon: BookCopy, comingSoon: true },
-  { id: 'timetable', title: 'Study Timetable Creator', description: 'Plan your study schedule effectively.', icon: CalendarClock, comingSoon: true },
-  { id: 'flashcards', title: 'Flashcard Generator', description: 'Create digital flashcards for revision.', icon: Layers, comingSoon: true },
-  { id: 'cases', title: 'Clinical Case Simulations', description: 'Practice with interactive patient scenarios.', icon: CaseUpper, comingSoon: true },
-  { id: 'mnemonics', title: 'Exam Tips & Mnemonics', description: 'Get memory aids and study strategies.', icon: Lightbulb, comingSoon: true },
 ];
 
+
 export function MedicoDashboard() {
-  const [activeDialog, setActiveDialog] = useState<string | null>(null);
+  const [activeDialog, setActiveDialog] = useState<ActiveToolId>(null);
 
   return (
     <div className="container mx-auto py-8">
@@ -35,23 +65,25 @@ export function MedicoDashboard() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {medicoTools.map((tool) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {medicoToolsList.map((tool) => (
           <Dialog key={tool.id} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
             <DialogTrigger asChild>
               <Card 
                 className={cn(
-                  "shadow-lg rounded-xl overflow-hidden hover:shadow-primary/20 transition-shadow duration-300 cursor-pointer h-full flex flex-col",
-                  tool.comingSoon && "opacity-60 hover:shadow-md"
+                  "shadow-lg rounded-xl overflow-hidden hover:shadow-primary/20 transition-shadow duration-300 cursor-pointer h-full flex flex-col group",
+                  tool.comingSoon && "opacity-70 hover:shadow-md cursor-not-allowed"
                 )}
                 onClick={() => !tool.comingSoon && setActiveDialog(tool.id)}
                 role="button"
-                tabIndex={0}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') !tool.comingSoon && setActiveDialog(tool.id)}}
+                tabIndex={tool.comingSoon ? -1 : 0}
+                onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !tool.comingSoon) setActiveDialog(tool.id)}}
+                aria-disabled={tool.comingSoon}
+                aria-label={`Launch ${tool.title}`}
               >
-                <CardHeader className="bg-muted/30 pb-4">
+                <CardHeader className="bg-muted/30 pb-4 group-hover:bg-muted/50 transition-colors">
                   <div className="flex items-center gap-3 mb-2">
-                    <tool.icon className="h-8 w-8 text-primary" />
+                    <tool.icon className="h-8 w-8 text-primary group-hover:scale-110 transition-transform" />
                     <CardTitle className="text-xl">{tool.title}</CardTitle>
                   </div>
                   <CardDescription>{tool.description}</CardDescription>
@@ -71,7 +103,7 @@ export function MedicoDashboard() {
             </DialogTrigger>
             {!tool.comingSoon && tool.component && (
               <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-[90vh] flex flex-col p-0">
-                <DialogHeader className="p-6 pb-0">
+                <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
                   <DialogTitle className="text-2xl flex items-center gap-2">
                     <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
                   </DialogTitle>
@@ -82,6 +114,21 @@ export function MedicoDashboard() {
                     <tool.component />
                   </div>
                 </ScrollArea>
+              </DialogContent>
+            )}
+            {!tool.comingSoon && !tool.component && ( // Placeholder for tools without a specific component yet
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl flex items-center gap-2">
+                     <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
+                  </DialogTitle>
+                  <DialogDescription>
+                    This tool is under development. Basic interaction might be available via chat commands soon.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <p className="text-muted-foreground">Full UI for {tool.title} will be available here.</p>
+                </div>
               </DialogContent>
             )}
           </Dialog>
