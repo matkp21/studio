@@ -7,12 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { SendHorizonal, HeartPulse, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+import { SendHorizonal, HeartPulse, Mic, MicOff, Volume2, VolumeX, ChevronDown, ArrowDownCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { processChatMessage, type ChatMessageInput } from '@/ai/flows/chat-flow';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { TypewriterText } from './typewriter-text';
+import { cn } from '@/lib/utils';
 
 interface Message {
   id: string;
@@ -26,12 +27,14 @@ export function ChatInterface() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const [isListening, setIsListening] = useState(false);
   const [isVoiceOutputEnabled, setIsVoiceOutputEnabled] = useState(false);
   const [hasMicPermission, setHasMicPermission] = useState<boolean | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
 
   useEffect(() => {
@@ -47,8 +50,6 @@ export function ChatInterface() {
           const transcript = event.results[event.results.length - 1][0].transcript.trim();
           setInputValue(transcript);
           setIsListening(false);
-          // Optionally auto-send message after voice input:
-          // if (transcript) handleSendMessage(transcript);
         };
 
         recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
@@ -62,8 +63,8 @@ export function ChatInterface() {
         };
 
         recognitionRef.current.onend = () => {
-          if(isListening) { // if isListening is still true, it means it stopped unexpectedly
-             // setIsListening(false); // Already handled by onresult and onerror generally
+          if(isListening) { 
+            // setIsListening(false); // Already handled by onresult and onerror
           }
         };
       }
@@ -74,7 +75,7 @@ export function ChatInterface() {
 
   const speakText = (text: string) => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window && text) {
-      speechSynthesis.cancel(); // Cancel any ongoing speech
+      speechSynthesis.cancel(); 
       const utterance = new SpeechSynthesisUtterance(text);
       speechSynthesis.speak(utterance);
     } else if (!text) {
@@ -86,8 +87,6 @@ export function ChatInterface() {
   };
 
   useEffect(() => {
-    // Send a welcome message only once when the component mounts
-    // and if there are no messages yet.
     if (messages.length === 0 && !isLoading) {
       const initialWelcomeMessageText = "Welcome to MediAssistant Chat! I'm here to assist with your medical queries. How can I help you today?";
       const welcomeMessage: Message = {
@@ -96,6 +95,9 @@ export function ChatInterface() {
           <TypewriterText
             text={initialWelcomeMessageText}
             speed={50} 
+            onComplete={() => {
+              // This is where the "I'm here for you always" message was, it's removed per prior request.
+            }}
           />
         ),
         sender: 'bot',
@@ -107,7 +109,7 @@ export function ChatInterface() {
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run once on mount
+  }, []); 
 
   const toggleListening = async () => {
     if (isListening) {
@@ -170,8 +172,7 @@ export function ChatInterface() {
         content: (
           <TypewriterText
             text={botResponseContent}
-            speed={50} 
-            // onComplete removed as the final helper message is no longer chained here
+            speed={50}
           />
         ),
         sender: 'bot',
@@ -193,7 +194,6 @@ export function ChatInterface() {
           <TypewriterText
             text={`Sorry, I encountered an error: ${errorMessage}`}
             speed={50} 
-             // onComplete removed as the final helper message (error variant) is no longer chained here
           />
         ),
         sender: 'bot',
@@ -210,19 +210,44 @@ export function ChatInterface() {
     }
   };
 
-  useEffect(() => {
-    if (scrollAreaRef.current) {
-      const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-      if (viewport) {
-        viewport.scrollTop = viewport.scrollHeight;
-      }
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    if (viewportRef.current) {
+      viewportRef.current.scrollTo({ top: viewportRef.current.scrollHeight, behavior });
     }
+  };
+  
+  useEffect(() => {
+    scrollToBottom('auto');
   }, [messages]);
 
+
+  const handleScroll = () => {
+    if (viewportRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = viewportRef.current;
+      // Show button if user has scrolled up more than a certain threshold (e.g., 100px)
+      // and is not already at the bottom.
+      const atBottom = scrollHeight - scrollTop <= clientHeight + 5; // +5 for a little tolerance
+      setShowScrollToBottom(!atBottom && scrollTop < scrollHeight - clientHeight - 50);
+    }
+  };
+
+  useEffect(() => {
+    const currentViewport = viewportRef.current;
+    if (currentViewport) {
+      currentViewport.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      if (currentViewport) {
+        currentViewport.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
+
+
   return (
-    <Card className="flex-1 flex flex-col shadow-lg rounded-lg overflow-hidden h-full">
+    <Card className="flex-1 flex flex-col shadow-lg rounded-lg overflow-hidden h-full relative">
       <CardContent className="flex-1 p-0 flex flex-col overflow-hidden">
-        <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
+        <ScrollArea className="flex-grow p-4" viewportRef={viewportRef} ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message) => (
               <div
@@ -277,6 +302,17 @@ export function ChatInterface() {
             )}
           </div>
         </ScrollArea>
+         {showScrollToBottom && (
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute bottom-4 right-4 h-10 w-10 rounded-full bg-background/70 backdrop-blur-sm shadow-lg hover:bg-primary/20 z-10"
+            onClick={() => scrollToBottom()}
+            aria-label="Scroll to bottom"
+          >
+            <ArrowDownCircle className="h-5 w-5 text-primary" />
+          </Button>
+        )}
       </CardContent>
       <div className="border-t p-4 bg-background">
         {hasMicPermission === false && (
