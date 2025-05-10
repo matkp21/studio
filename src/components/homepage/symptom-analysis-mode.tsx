@@ -5,15 +5,15 @@ import { useState } from 'react';
 import { SymptomForm } from '@/components/symptom-analyzer/symptom-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, ListChecks, Sparkles } from 'lucide-react';
+import { Loader2, ListChecks, Sparkles, BookOpen } from 'lucide-react'; // Added BookOpen for medico mode
 import type { SymptomAnalyzerOutput } from '@/ai/flows/symptom-analyzer-flow';
-import { useProMode } from '@/contexts/pro-mode-context'; // Import useProMode
+import { useProMode } from '@/contexts/pro-mode-context'; 
 
 export function SymptomAnalysisMode() {
   const [analysisResult, setAnalysisResult] = useState<SymptomAnalyzerOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { isProMode } = useProMode(); // Consume ProModeContext
+  const { isProMode, userRole } = useProMode(); 
 
   const handleAnalysisComplete = (result: SymptomAnalyzerOutput | null, err?: string) => {
     setAnalysisResult(result);
@@ -29,7 +29,7 @@ export function SymptomAnalysisMode() {
           <CardDescription>Describe the symptoms. Our AI will provide potential insights. Not for self-diagnosis.</CardDescription>
         </CardHeader>
         <CardContent>
-          <SymptomForm onAnalysisComplete={handleAnalysisComplete} setIsLoading={setIsLoading} />
+          <SymptomForm onAnalysisComplete={handleAnalysisComplete} setIsLoading={setIsLoading} isLoading={isLoading} />
         </CardContent>
       </Card>
 
@@ -66,12 +66,21 @@ export function SymptomAnalysisMode() {
               ) : (
                 <p className="text-muted-foreground">No specific considerations could be determined based on the input.</p>
               )}
-              {isProMode && (
+              {isProMode && userRole === 'pro' && (
                 <Alert variant="default" className="mt-4 border-primary/50 bg-primary/10 rounded-lg">
                   <Sparkles className="h-5 w-5 text-primary" />
                   <AlertTitle className="text-primary font-semibold">Pro Mode Active</AlertTitle>
                   <AlertDescription className="text-primary/80">
                     Detailed JSON output and advanced analysis would be available for clinicians.
+                  </AlertDescription>
+                </Alert>
+              )}
+              {userRole === 'medico' && (
+                 <Alert variant="default" className="mt-4 border-sky-500/50 bg-sky-500/10 rounded-lg">
+                  <BookOpen className="h-5 w-5 text-sky-600" />
+                  <AlertTitle className="text-sky-700 dark:text-sky-500 font-semibold">Medico Study Mode</AlertTitle>
+                  <AlertDescription className="text-sky-600/80 dark:text-sky-500/80">
+                    Access learning-focused analysis, differential diagnosis examples, and case study insights.
                   </AlertDescription>
                 </Alert>
               )}

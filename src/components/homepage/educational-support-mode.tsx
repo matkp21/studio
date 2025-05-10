@@ -5,14 +5,16 @@ import { useState } from 'react';
 import { GuidelineQueryForm } from '@/components/guideline-retrieval/guideline-query-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, Info, BookMarked } from 'lucide-react';
+import { Loader2, Info, BookMarked, School } from 'lucide-react'; // Added School for medico mode
 import type { GuidelineRetrievalOutput } from '@/ai/flows/guideline-retrieval';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useProMode } from '@/contexts/pro-mode-context';
 
 export function EducationalSupportMode() {
   const [retrievalResult, setRetrievalResult] = useState<GuidelineRetrievalOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { userRole } = useProMode();
 
   const handleRetrievalComplete = (result: GuidelineRetrievalOutput | null, err?: string) => {
     setRetrievalResult(result);
@@ -60,6 +62,15 @@ export function EducationalSupportMode() {
                 <BookMarked className="mr-2 h-5 w-5 text-primary" />
                 Guidelines & Information:
               </h3>
+              {userRole === 'medico' && (
+                <Alert variant="default" className="my-2 border-sky-500/50 bg-sky-500/10 rounded-lg">
+                  <School className="h-5 w-5 text-sky-600" />
+                  <AlertTitle className="text-sky-700 dark:text-sky-500 font-semibold">Medico Study Focus</AlertTitle>
+                  <AlertDescription className="text-sky-600/80 dark:text-sky-500/80">
+                    Utilize this information for your studies, research, and exam preparation.
+                  </AlertDescription>
+                </Alert>
+              )}
               <ScrollArea className="h-72">
                 <div className="bg-secondary/50 p-4 rounded-lg text-secondary-foreground whitespace-pre-wrap">
                   {retrievalResult.guidelines}
