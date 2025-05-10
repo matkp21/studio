@@ -5,13 +5,15 @@ import { useState } from 'react';
 import { SymptomForm } from '@/components/symptom-analyzer/symptom-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, ListChecks } from 'lucide-react';
-import type { SymptomAnalyzerOutput } from '@/ai/flows/symptom-analyzer';
+import { Loader2, ListChecks, Sparkles } from 'lucide-react';
+import type { SymptomAnalyzerOutput } from '@/ai/flows/symptom-analyzer-flow';
+import { useProMode } from '@/contexts/pro-mode-context'; // Import useProMode
 
 export function SymptomAnalysisMode() {
   const [analysisResult, setAnalysisResult] = useState<SymptomAnalyzerOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isProMode } = useProMode(); // Consume ProModeContext
 
   const handleAnalysisComplete = (result: SymptomAnalyzerOutput | null, err?: string) => {
     setAnalysisResult(result);
@@ -27,7 +29,7 @@ export function SymptomAnalysisMode() {
           <CardDescription>Describe the symptoms. Our AI will provide potential insights. Not for self-diagnosis.</CardDescription>
         </CardHeader>
         <CardContent>
-          <SymptomForm onAnalysisComplete={handleAnalysisComplete} setIsLoading={setIsLoading} isLoading={isLoading} />
+          <SymptomForm onAnalysisComplete={handleAnalysisComplete} setIsLoading={setIsLoading} />
         </CardContent>
       </Card>
 
@@ -64,6 +66,15 @@ export function SymptomAnalysisMode() {
               ) : (
                 <p className="text-muted-foreground">No specific considerations could be determined based on the input.</p>
               )}
+              {isProMode && (
+                <Alert variant="default" className="mt-4 border-primary/50 bg-primary/10 rounded-lg">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <AlertTitle className="text-primary font-semibold">Pro Mode Active</AlertTitle>
+                  <AlertDescription className="text-primary/80">
+                    Detailed JSON output and advanced analysis would be available for clinicians.
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
           )}
           {!isLoading && !analysisResult && !error && (
@@ -76,4 +87,3 @@ export function SymptomAnalysisMode() {
     </div>
   );
 }
-

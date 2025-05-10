@@ -1,4 +1,3 @@
-
 // src/components/layout/app-layout.tsx
 "use client";
 
@@ -7,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
-import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, MoreVertical } from 'lucide-react';
+import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, MoreVertical, Sparkles } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
@@ -21,8 +20,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
+import { useProMode } from '@/contexts/pro-mode-context';
 
 const ToggleSidebarButton = () => {
   const { state, toggleSidebar, isMobile } = useSidebar();
@@ -40,12 +43,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [clientLoaded, setClientLoaded] = useState(false);
+  const { isProMode, toggleProMode } = useProMode();
 
 
   useEffect(() => {
-    setClientLoaded(true); // Indicates component has mounted on client
+    setClientLoaded(true); 
 
-    // Check for onboarding completion only on client
     if (typeof window !== 'undefined' && localStorage.getItem('onboardingComplete') !== 'true') {
       setShowOnboardingModal(true);
     }
@@ -61,7 +64,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   const handleOnboardingClose = () => {
     setShowOnboardingModal(false);
-    if (typeof window !== 'undefined') { // Ensure localStorage is available
+    if (typeof window !== 'undefined') { 
       localStorage.setItem('onboardingComplete', 'true');
     }
   };
@@ -106,7 +109,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                    <span className="sr-only">Open user menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-64"> {/* Increased width for Pro Mode switch */}
                  <DropdownMenuLabel className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
@@ -115,13 +118,30 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     <span>My Account</span>
                   </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <UserCircle className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="focus:bg-transparent">
+                  <div className="flex items-center justify-between w-full">
+                    <Label htmlFor="pro-mode-switch" className="flex items-center gap-2 cursor-pointer">
+                      <Sparkles className="mr-2 h-4 w-4 text-primary" />
+                      <span>Pro Mode</span>
+                    </Label>
+                    <Switch
+                      id="pro-mode-switch"
+                      checked={isProMode}
+                      onCheckedChange={toggleProMode}
+                      aria-label="Toggle Pro Mode"
+                    />
+                  </div>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>

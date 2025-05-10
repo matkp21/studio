@@ -6,14 +6,16 @@ import Image from 'next/image';
 import { ImageUploader } from '@/components/image-analyzer/image-uploader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, ImageOff, ScanEye } from 'lucide-react';
+import { Loader2, ImageOff, ScanEye, Sparkles } from 'lucide-react'; // Added Sparkles
 import type { AnalyzeImageOutput } from '@/ai/flows/image-analyzer';
+import { useProMode } from '@/contexts/pro-mode-context'; // Import useProMode
 
 export function ImageProcessingMode() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeImageOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const { isProMode } = useProMode(); // Consume ProModeContext
 
   const handleAnalysisComplete = (result: AnalyzeImageOutput | null, imageUrl?: string, err?: string) => {
     setAnalysisResult(result);
@@ -69,6 +71,15 @@ export function ImageProcessingMode() {
                     {analysisResult.annotations}
                   </p>
                 </div>
+              )}
+              {isProMode && analysisResult && ( // Show Pro Mode hint if Pro Mode is active and there's a result
+                <Alert variant="default" className="mt-4 border-primary/50 bg-primary/10 rounded-lg">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <AlertTitle className="text-primary font-semibold">Pro Mode Active</AlertTitle>
+                  <AlertDescription className="text-primary/80">
+                    Advanced clinical annotations, detailed JSON data, and further analytical tools would be available.
+                  </AlertDescription>
+                </Alert>
               )}
               {!uploadedImage && !analysisResult && (
                 <div className="flex flex-col items-center justify-center text-muted-foreground">
