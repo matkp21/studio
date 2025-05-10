@@ -20,23 +20,11 @@ import { TreatmentProtocolNavigator } from './treatment-protocol-navigator';
 import { RoundsTool } from './rounds-tool';
 import { PharmacopeiaChecker } from './pharmacopeia-checker';
 import { SmartDictation } from './smart-dictation';
-import { ClinicalCalculatorSuite } from './clinical-calculator-suite'; // New import
-
-
-// Placeholder components for Pro tools that are still "coming soon"
-const PlaceholderTool = ({ title }: { title: string }) => (
-  <div className="p-4 text-center text-muted-foreground">
-    <Lightbulb className="mx-auto h-12 w-12 mb-4 text-primary/50" />
-    <h3 className="text-lg font-semibold mb-2">{title}</h3>
-    <p className="text-sm">This tool is under development. Full functionality coming soon.</p>
-  </div>
-);
-
-const ReferralStreamliner = () => <PlaceholderTool title="Referral & Consultation Streamliner" />;
-const PersonalizedDashboard = () => <PlaceholderTool title="Personalized Clinical Dashboard (View)" />; // This is the overall page
-const PatientCommunicationDrafter = () => <PlaceholderTool title="AI-Assisted Patient Communication Drafter" />;
-const OnCallHandoverAssistant = () => <PlaceholderTool title="Intelligent On-Call Handover Assistant" />;
-const ResearchSummarizer = () => <PlaceholderTool title="AI-Powered Research & Literature Summarizer" />;
+import { ClinicalCalculatorSuite } from './clinical-calculator-suite';
+import { ReferralStreamliner } from './referral-streamliner'; // New import
+import { PatientCommunicationDrafter } from './patient-communication-drafter'; // New import
+import { OnCallHandoverAssistant } from './on-call-handover-assistant'; // New import
+import { ResearchSummarizer } from './research-summarizer'; // New import
 
 
 type ActiveToolId = 
@@ -70,10 +58,10 @@ const proToolsList: ProTool[] = [
   { id: 'pharmacopeia', title: 'Pharmacopeia & Interaction Checker', description: 'Comprehensive drug database and interaction analysis.', icon: Pill, component: PharmacopeiaChecker, comingSoon: false },
   { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation, comingSoon: false },
   { id: 'calculators', title: 'Intelligent Clinical Calculators', description: 'Suite of scores and criteria (GRACE, Wells\', etc.).', icon: BarChart3, component: ClinicalCalculatorSuite, comingSoon: false },
-  { id: 'referral', title: 'Referral & Consultation Streamliner', description: 'Templates and quick summary generation for referrals.', icon: PhoneForwarded, component: ReferralStreamliner, comingSoon: true },
-  { id: 'patientComm', title: 'Patient Communication Drafter', description: 'AI drafts for patient-friendly explanations and instructions.', icon: MessageSquareHeart, component: PatientCommunicationDrafter, comingSoon: true },
-  { id: 'onCallHandover', title: 'On-Call Handover Assistant', description: 'Structured handovers with "if-then" scenarios and escalation.', icon: Users, component: OnCallHandoverAssistant, comingSoon: true }, 
-  { id: 'research', title: 'Research & Literature Summarizer', description: 'AI summaries of key papers for clinical questions.', icon: Library, component: ResearchSummarizer, comingSoon: true },
+  { id: 'referral', title: 'Referral & Consultation Streamliner', description: 'Templates and quick summary generation for referrals.', icon: PhoneForwarded, component: ReferralStreamliner, comingSoon: false },
+  { id: 'patientComm', title: 'Patient Communication Drafter', description: 'AI drafts for patient-friendly explanations and instructions.', icon: MessageSquareHeart, component: PatientCommunicationDrafter, comingSoon: false },
+  { id: 'onCallHandover', title: 'On-Call Handover Assistant', description: 'Structured handovers with "if-then" scenarios and escalation.', icon: Users, component: OnCallHandoverAssistant, comingSoon: false }, 
+  { id: 'research', title: 'Research & Literature Summarizer', description: 'AI summaries of key papers for clinical questions.', icon: Library, component: ResearchSummarizer, comingSoon: false },
 ];
 
 

@@ -17,6 +17,7 @@ import { HighYieldTopicPredictor } from './high-yield-topic-predictor';
 import { DrugDosageCalculator } from './drug-dosage-calculator';
 import { SolvedQuestionPapersViewer } from './solved-question-papers-viewer';
 import { FlowchartCreator } from './flowchart-creator';
+import { ProgressTracker } from './progress-tracker'; // Added import
 import { 
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy, 
   Users, Eye, Brain, TrendingUp, Calculator, FlaskConical, Workflow, Award, ArrowRight 
@@ -65,7 +66,7 @@ const medicoToolsList: MedicoTool[] = [
   { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Explore anatomical structures.', icon: Eye, component: AnatomyVisualizer, comingSoon: false },
   { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds, comingSoon: false },
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator, comingSoon: false },
-  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: undefined, comingSoon: true },
+  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
 ];
 
 
@@ -102,8 +103,8 @@ export function MedicoDashboard() {
                     <tool.icon className="h-8 w-8 text-primary group-hover:scale-110 transition-transform" />
                     <CardTitle className="text-xl">{tool.title}</CardTitle>
                   </div>
-                  <CardDescription className="text-sm leading-relaxed line-clamp-3">{tool.description}</CardHeader>
-                </CardContent>
+                  <CardDescription className="text-sm leading-relaxed line-clamp-3">{tool.description}</CardDescription>
+                </CardHeader>
                 <CardContent className="pt-4 flex-grow flex items-end">
                   {tool.comingSoon ? (
                     <div className="text-center text-sm text-amber-600 dark:text-amber-400 font-semibold p-2 bg-amber-500/10 rounded-md w-full">
@@ -133,25 +134,9 @@ export function MedicoDashboard() {
                 </ScrollArea>
               </DialogContent>
             )}
-            {!tool.comingSoon && !tool.component && ( 
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl flex items-center gap-2">
-                     <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
-                  </DialogTitle>
-                  <DialogDescription>
-                    This tool is under development. Check back soon for updates!
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="py-4">
-                  <p className="text-muted-foreground">Full UI for {tool.title} will be available here.</p>
-                </div>
-              </DialogContent>
-            )}
           </Dialog>
         ))}
       </div>
     </div>
   );
 }
-
