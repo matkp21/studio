@@ -34,9 +34,8 @@ const ToggleSidebarButton = () => {
   if (isMobile) return null;
 
   return (
-    <Button variant="ghost" size="icon" onClick={toggleSidebar} className="hidden md:flex text-foreground/80 hover:text-foreground">
+    <Button variant="ghost" size="icon" onClick={toggleSidebar} className="hidden md:flex text-foreground/80 hover:text-foreground" aria-label={state === 'collapsed' ? "Expand sidebar" : "Collapse sidebar"}>
       {state === 'collapsed' ? <PanelRightOpen /> : <PanelLeftOpen />}
-      <span className="sr-only">Toggle sidebar</span>
     </Button>
   );
 };
@@ -56,6 +55,17 @@ export function AppLayout({ children }: { children: ReactNode }) {
       if (localStorage.getItem('onboardingComplete') !== 'true') {
         setShowOnboardingModal(true);
       }
+
+      // TODO: Implement push notification permission request here
+      // Example:
+      // if ('Notification' in window && navigator.serviceWorker) {
+      //   Notification.requestPermission().then(permission => {
+      //     if (permission === 'granted') {
+      //       console.log('Notification permission granted.');
+      //       // Get subscription and send to backend
+      //     }
+      //   });
+      // }
     }
 
     const handleScroll = () => {
@@ -101,7 +111,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <ToggleSidebarButton />
             </div>
             <div className={cn("transition-all duration-300", scrolled ? "opacity-0 md:opacity-100" : "opacity-100")}>
-              <Link href="/" className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2" aria-label="Go to homepage">
                 <Logo simple={scrolled} />
               </Link>
             </div>
@@ -116,12 +126,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full text-foreground/80 hover:text-foreground">
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full text-foreground/80 hover:text-foreground" aria-label="Open user menu">
                    <Avatar className="h-8 w-8">
                     <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
                     <AvatarFallback>DR</AvatarFallback>
                   </Avatar>
-                   <span className="sr-only">Open user menu</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64">

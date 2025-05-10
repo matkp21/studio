@@ -20,10 +20,10 @@ type SymptomFormValues = z.infer<typeof formSchema>;
 interface SymptomFormProps {
   onAnalysisComplete: (result: SymptomAnalyzerOutput | null, error?: string) => void;
   setIsLoading: (loading: boolean) => void;
-  isLoading: boolean; // Added isLoading prop
+  isLoading?: boolean; 
 }
 
-export function SymptomForm({ onAnalysisComplete, setIsLoading, isLoading }: SymptomFormProps) {
+export function SymptomForm({ onAnalysisComplete, setIsLoading, isLoading = false }: SymptomFormProps) {
   const { toast } = useToast();
   const form = useForm<SymptomFormValues>({
     resolver: zodResolver(formSchema),
@@ -71,17 +71,18 @@ export function SymptomForm({ onAnalysisComplete, setIsLoading, isLoading }: Sym
                   id="symptoms-input"
                   placeholder="e.g., persistent cough, fever for 3 days, headache..."
                   className="min-h-[120px] resize-none rounded-lg border-border/70 focus:border-primary"
+                  aria-describedby="symptoms-description"
                   {...field}
                 />
               </FormControl>
-              <FormDescription>
+              <FormDescription id="symptoms-description">
                 Provide as much detail as possible for a more relevant analysis.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full rounded-lg py-3 text-base group" disabled={form.formState.isSubmitting || isLoading}>
+        <Button type="submit" className="w-full rounded-lg py-3 text-base group" disabled={form.formState.isSubmitting || isLoading} aria-label="Submit symptoms for analysis">
           {isLoading ? 'Analyzing...' : 'Diagnose'}
           {!isLoading && <Send className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />}
         </Button>

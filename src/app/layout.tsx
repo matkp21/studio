@@ -16,6 +16,22 @@ export const metadata: Metadata = {
   title: 'MediAssistant',
   description: 'AI-Powered Medical Assistant',
   manifest: '/manifest.json', // PWA manifest
+  applicationName: "MediAssistant",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "MediAssistant",
+    // startupImage: [ // TODO: Add startup images for various iOS devices
+    //   { url: '/splash/iphone5_splash.png', media: '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)' },
+    // ],
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  other: {
+    "msapplication-TileColor": "#008080", // Teal
+    "msapplication-tap-highlight": "no",
+  }
 };
 
 export default function RootLayout({
@@ -23,28 +39,34 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // TODO: Register service worker here for PWA offline capabilities and push notifications in a useEffect hook.
+  // Example:
+  // useEffect(() => {
+  //   if ('serviceWorker' in navigator) {
+  //     window.addEventListener('load', () => {
+  //       navigator.serviceWorker.register('/sw.js').then(registration => {
+  //         console.log('SW registered: ', registration);
+  //       }).catch(registrationError => {
+  //         console.log('SW registration failed: ', registrationError);
+  //       });
+  //     });
+  //   }
+  // }, []);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="application-name" content="MediAssistant" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="MediAssistant" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="msapplication-config" content="/icons/browserconfig.xml" />
-        <meta name="msapplication-TileColor" content="#266D99" /> 
-        <meta name="msapplication-tap-highlight" content="no" />
-        <meta name="theme-color" content="hsl(210, 100%, 50%)" />
-
+        {/* Standard PWA meta tags are handled by Next.js metadata object */}
+        <meta name="theme-color" content="hsl(180, 100%, 25%)" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="hsl(216, 65%, 11%)" media="(prefers-color-scheme: dark)" />
+        
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-        <link rel="apple-touch-icon" sizes="152x152" href="/icons/touch-icon-ipad.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/icons/touch-icon-iphone-retina.png" />
-        <link rel="apple-touch-icon" sizes="167x167" href="/icons/touch-icon-ipad-retina.png" />
-
+        {/* Add more apple-touch-icon sizes if available */}
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
         
+        {/* Other meta tags from previous state */}
+        <meta name="msapplication-config" content="/icons/browserconfig.xml" />
       </head>
       <body className={`${poppins.variable} antialiased`}>
         <ProModeProvider>

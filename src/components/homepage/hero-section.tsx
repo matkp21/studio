@@ -40,6 +40,7 @@ export function HeroSection() {
         <svg
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-auto text-primary/10 dark:text-primary/5 opacity-50"
           width="1000" height="300" viewBox="0 0 1000 300" fill="none" xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
         >
           <path d="M-100 150H200L250 100L350 200L400 150L450 180L500 150L750 150L800 120L850 150H1100" stroke="currentColor" strokeWidth="4" className="heartbeat-line" />
         </svg>
@@ -82,17 +83,17 @@ export function HeroSection() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1.2, duration: 0.5 }}
         >
-          <Button asChild size="lg" className="rounded-lg group px-8 py-6 text-lg shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-primary/30 transition-all duration-300 transform hover:scale-105">
+          <Button asChild size="lg" className="rounded-lg group px-8 py-6 text-lg shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-primary/30 transition-all duration-300 transform hover:scale-105" aria-label="Get started with MediAssistant features">
             <Link href="#mode-switcher" className="flex items-center">
               Get Started
-              <HeartPulse className="ml-2 h-6 w-6 animate-pulse-medical text-red-400 group-hover:scale-110 group-hover:text-red-300" style={{"--medical-pulse-opacity-base": "0.7", "--medical-pulse-opacity-peak": "1"} as React.CSSProperties}/>
+              <HeartPulse className="ml-2 h-6 w-6 animate-pulse-medical text-red-400 group-hover:scale-110 group-hover:text-red-300" style={{"--medical-pulse-opacity-base": "0.7", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.25"} as React.CSSProperties}/>
             </Link>
           </Button>
         </motion.div>
       </div>
        {/* Subtle decorative elements */}
-       <div className="absolute top-1/4 left-10 w-20 h-20 bg-primary/10 rounded-full opacity-30 animate-pulse delay-500"></div>
-       <div className="absolute bottom-1/4 right-10 w-24 h-24 bg-accent/10 rounded-lg opacity-20 animate-pulse delay-1000 transform rotate-45"></div>
+       <div aria-hidden="true" className="absolute top-1/4 left-10 w-20 h-20 bg-primary/10 rounded-full opacity-30 animate-pulse delay-500"></div>
+       <div aria-hidden="true" className="absolute bottom-1/4 right-10 w-24 h-24 bg-accent/10 rounded-lg opacity-20 animate-pulse delay-1000 transform rotate-45"></div>
     </section>
   );
 }

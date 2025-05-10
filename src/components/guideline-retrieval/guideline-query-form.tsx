@@ -20,7 +20,7 @@ type GuidelineQueryFormValues = z.infer<typeof formSchema>;
 interface GuidelineQueryFormProps {
   onRetrievalComplete: (result: GuidelineRetrievalOutput | null, error?: string) => void;
   setIsLoading: (loading: boolean) => void;
-  isLoading: boolean; // Added isLoading prop
+  isLoading: boolean; 
 }
 
 export function GuidelineQueryForm({ onRetrievalComplete, setIsLoading, isLoading }: GuidelineQueryFormProps) {
@@ -67,24 +67,25 @@ export function GuidelineQueryForm({ onRetrievalComplete, setIsLoading, isLoadin
             <FormItem className="input-focus-glow rounded-lg">
               <FormLabel htmlFor="guideline-query-input" className="text-foreground/90">Medical Topic or Condition</FormLabel>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" aria-hidden="true"/>
                 <FormControl>
                   <Input
                     id="guideline-query-input"
                     placeholder="e.g., 'treatment for type 2 diabetes', 'Thalassemia Major'"
                     className="pl-10 rounded-lg border-border/70 focus:border-primary"
+                    aria-describedby="guideline-query-description"
                     {...field}
                   />
                 </FormControl>
               </div>
-              <FormDescription>
+              <FormDescription id="guideline-query-description">
                 Enter a topic to search for related guidelines or educational information.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full rounded-lg py-3 text-base group" disabled={form.formState.isSubmitting || isLoading}>
+        <Button type="submit" className="w-full rounded-lg py-3 text-base group" disabled={form.formState.isSubmitting || isLoading} aria-label="Retrieve medical guidelines and information">
           {isLoading ? 'Searching...' : 'Retrieve Information'}
           {!isLoading && <Send className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />}
         </Button>
@@ -92,4 +93,3 @@ export function GuidelineQueryForm({ onRetrievalComplete, setIsLoading, isLoadin
     </Form>
   );
 }
-

@@ -149,7 +149,7 @@ export function ChatInterface() {
           content: (
             <TypewriterText
               text={finalHelperMessageText}
-              speed={150} // Word speed
+              speed={50} 
             />
           ),
           sender: 'bot',
@@ -166,7 +166,7 @@ export function ChatInterface() {
         content: (
           <TypewriterText
             text={botResponseContent}
-            speed={150} // Word speed
+            speed={50} 
             onComplete={() => {
               // Delay adding the final helper message slightly for better flow
               setTimeout(addFinalHelperMessage, 300);
@@ -194,7 +194,7 @@ export function ChatInterface() {
           content: (
             <TypewriterText
               text={finalHelperMessageTextOnError}
-              speed={150} // Word speed
+              speed={50} 
             />
           ),
           sender: 'bot',
@@ -211,7 +211,7 @@ export function ChatInterface() {
         content: (
           <TypewriterText
             text={`Sorry, I encountered an error: ${errorMessage}`}
-            speed={150} // Word speed
+            speed={50} 
             onComplete={() => {
               setTimeout(addFinalHelperMessageOnError, 300);
             }}
@@ -318,7 +318,7 @@ export function ChatInterface() {
             size="icon"
             onClick={toggleListening}
             disabled={hasMicPermission === false || !(typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window))}
-            aria-label={isListening ? "Stop listening" : "Start voice input"}
+            aria-label={isListening ? "Stop voice input" : "Start voice input"}
           >
             {isListening ? <MicOff className="h-5 w-5 text-destructive" /> : <Mic className="h-5 w-5" />}
           </Button>
@@ -336,6 +336,7 @@ export function ChatInterface() {
                 }
               }}
               disabled={isLoading || isListening}
+              aria-label="Message input"
             />
              {inputValue === '' && !isListening && (
               <div
@@ -366,4 +367,3 @@ export function ChatInterface() {
     </Card>
   );
 }
-

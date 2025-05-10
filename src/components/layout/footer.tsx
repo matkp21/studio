@@ -17,6 +17,7 @@ export function Footer() {
           <p className="text-xs mt-1 opacity-70">&copy; {new Date().getFullYear()} MediAssistant. All rights reserved.</p>
         </div>
         <nav className="flex space-x-4 sm:space-x-6 text-sm">
+          <Link href="/feedback" className="hover:text-primary transition-colors">Feedback</Link>
           <Link href="#" className="hover:text-primary transition-colors">Privacy Policy</Link>
           <Link href="#" className="hover:text-primary transition-colors">Terms of Use</Link>
           <Link href="#" className="hover:text-primary transition-colors">Contact Us</Link>

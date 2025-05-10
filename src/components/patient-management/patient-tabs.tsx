@@ -72,11 +72,11 @@ export function PatientTabs() {
     setReminderText('');
   };
 
-  const deleteRoundNote = (id: string) => {
+  const deleteRoundNote = (id: string, patientName: string) => {
     setRoundNotes(prev => prev.filter(note => note.id !== id));
   };
 
-  const deleteReminder = (id: string) => {
+  const deleteReminder = (id: string, patientName: string) => {
     setReminders(prev => prev.filter(reminder => reminder.id !== id));
   };
 
@@ -127,6 +127,7 @@ export function PatientTabs() {
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
+                      id="round-date"
                       variant={"outline"}
                       className={cn(
                         "w-full justify-start text-left font-normal rounded-lg",
@@ -143,6 +144,7 @@ export function PatientTabs() {
                       selected={roundDate}
                       onSelect={setRoundDate}
                       initialFocus
+                      aria-label="Select round date"
                     />
                   </PopoverContent>
                 </Popover>
@@ -152,7 +154,7 @@ export function PatientTabs() {
               <Label htmlFor="round-notes">Notes</Label>
               <Textarea id="round-notes" placeholder="Enter round notes..." value={roundNoteText} onChange={e => setRoundNoteText(e.target.value)} className="min-h-[100px] rounded-lg" />
             </div>
-            <Button onClick={handleAddRoundNote} className="w-full rounded-lg py-3 text-base group">
+            <Button onClick={handleAddRoundNote} className="w-full rounded-lg py-3 text-base group" aria-label="Add new round note">
               <PlusCircle className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-90" /> Add Round Note
             </Button>
             
@@ -165,7 +167,7 @@ export function PatientTabs() {
                       <CardTitle className="text-md font-semibold text-foreground">{note.patientName}</CardTitle>
                       <CardDescription className="text-xs text-muted-foreground">{format(note.date, "PPP, EEEE")}</CardDescription>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteRoundNote(note.id)} className="text-destructive hover:bg-destructive/10 rounded-full">
+                    <Button variant="ghost" size="icon" onClick={() => deleteRoundNote(note.id, note.patientName)} className="text-destructive hover:bg-destructive/10 rounded-full" aria-label={`Delete round note for ${note.patientName} on ${format(note.date, "PPP")}`}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </CardHeader>
@@ -208,10 +210,11 @@ export function PatientTabs() {
                     <Input id="reminder-patient-name" placeholder="Enter patient name" value={reminderPatientName} onChange={e => setReminderPatientName(e.target.value)} className="rounded-lg" />
                 </div>
                 <div className="space-y-2">
-                <Label htmlFor="reminder-datetime">Date & Time</Label>
+                <Label htmlFor="reminder-datetime-trigger">Date & Time</Label>
                 <Popover>
                     <PopoverTrigger asChild>
                     <Button
+                        id="reminder-datetime-trigger"
                         variant={"outline"}
                         className={cn(
                         "w-full justify-start text-left font-normal rounded-lg",
@@ -237,6 +240,7 @@ export function PatientTabs() {
                             }
                         }}
                         initialFocus
+                        aria-label="Select reminder date"
                     />
                     <div className="p-2 border-t border-border/50">
                         <Label htmlFor="reminder-time" className="text-sm">Time</Label>
@@ -259,7 +263,9 @@ export function PatientTabs() {
                                   newDate.setMilliseconds(0);
                                   setReminderDateTime(newDate);
                                 }
-                            }}/>
+                            }}
+                            aria-label="Select reminder time"
+                            />
                     </div>
                     </PopoverContent>
                 </Popover>
@@ -269,7 +275,7 @@ export function PatientTabs() {
               <Label htmlFor="reminder-text">Reminder Details</Label>
               <Textarea id="reminder-text" placeholder="e.g., Administer medication, Check vitals" value={reminderText} onChange={e => setReminderText(e.target.value)} className="rounded-lg" />
             </div>
-            <Button onClick={handleAddReminder} className="w-full rounded-lg py-3 text-base group">
+            <Button onClick={handleAddReminder} className="w-full rounded-lg py-3 text-base group" aria-label="Add new reminder">
                 <BellPlus className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:animate-pulse" /> Add Reminder
             </Button>
 
@@ -285,7 +291,7 @@ export function PatientTabs() {
                         {format(reminder.dateTime, "PPP, HH:mm ('"+format(reminder.dateTime, "EEEE")+")")}
                       </CardDescription>
                     </div>
-                     <Button variant="ghost" size="icon" onClick={() => deleteReminder(reminder.id)} className="text-destructive-foreground hover:bg-destructive/20 rounded-full">
+                     <Button variant="ghost" size="icon" onClick={() => deleteReminder(reminder.id, reminder.patientName)} className="text-destructive-foreground hover:bg-destructive/20 rounded-full" aria-label={`Delete reminder for ${reminder.patientName} scheduled for ${format(reminder.dateTime, "PPP HH:mm")}`}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </CardHeader>
@@ -301,5 +307,3 @@ export function PatientTabs() {
     </Tabs>
   );
 }
-
-    

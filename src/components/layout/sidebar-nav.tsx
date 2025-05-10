@@ -15,7 +15,7 @@ import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Home,
-  MessageCircleMore, // Changed chat icon
+  MessageCircleMore,
   ClipboardList, 
   ScanEye,       
   Settings2,     
@@ -24,10 +24,10 @@ import {
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/chat', label: 'Chat', icon: MessageCircleMore },
-  { href: '/patient-management', label: 'Patient Management', icon: ClipboardList },
-  { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye },
+  { href: '/', label: 'Home', icon: Home, ariaLabel: 'Go to Home page' },
+  { href: '/chat', label: 'Chat', icon: MessageCircleMore, ariaLabel: 'Open Chat interface' },
+  { href: '/patient-management', label: 'Patient Management', icon: ClipboardList, ariaLabel: 'Open Patient Management' },
+  { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye, ariaLabel: 'Open AR Viewer' },
 ];
 
 export function SidebarNav() {
@@ -47,6 +47,7 @@ export function SidebarNav() {
                   asChild
                   isActive={pathname === item.href}
                   tooltip={item.label}
+                  aria-label={item.ariaLabel}
                   className={cn(
                     "justify-start w-full", 
                     pathname === item.href && "bg-sidebar-accent text-sidebar-accent-foreground"
@@ -65,13 +66,13 @@ export function SidebarNav() {
       <SidebarFooter className="p-2 border-t border-sidebar-border/50">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="justify-start w-full" tooltip="Settings">
+            <SidebarMenuButton className="justify-start w-full" tooltip="Settings" aria-label="Open Settings">
               <Settings2 className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-item:scale-110" />
               <span>Settings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-             <SidebarMenuButton className="justify-start w-full" tooltip="Logout">
+             <SidebarMenuButton className="justify-start w-full" tooltip="Logout" aria-label="Logout">
               <LogOut className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-item:scale-110" />
               <span>Logout</span>
             </SidebarMenuButton>
