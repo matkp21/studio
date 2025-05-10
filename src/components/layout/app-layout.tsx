@@ -1,3 +1,4 @@
+
 // src/components/layout/app-layout.tsx
 "use client";
 
@@ -101,15 +102,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full text-foreground/80 hover:text-foreground">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
-                    <AvatarFallback>DR</AvatarFallback>
-                  </Avatar>
+                   <MoreVertical className="h-5 w-5" />
                    <span className="sr-only">Open user menu</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                 <DropdownMenuLabel className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
+                      <AvatarFallback>DR</AvatarFallback>
+                    </Avatar>
+                    <span>My Account</span>
+                  </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <UserCircle className="mr-2 h-4 w-4" />
