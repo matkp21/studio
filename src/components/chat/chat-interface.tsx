@@ -30,48 +30,112 @@ export function ChatInterface() {
   const [isListening, setIsListening] = useState(false);
   const [isVoiceOutputEnabled, setIsVoiceOutputEnabled] = useState(false);
   const [hasMicPermission, setHasMicPermission] = useState<boolean | null>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
 
-  // Placeholder for speech recognition and synthesis
   useEffect(() => {
-    if (isListening && hasMicPermission === null) {
-      navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(() => {
+    if (typeof window !== 'undefined' && 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = false;
+        recognitionRef.current.lang = 'en-US';
+
+        recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
+          const transcript = event.results[event.results.length - 1][0].transcript.trim();
+          setInputValue(transcript);
+          setIsListening(false);
+          // Optionally auto-send message after voice input:
+          // if (transcript) handleSendMessage(transcript); 
+        };
+
+        recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
+          console.error('Speech recognition error:', event.error);
+          toast({
+            variant: 'destructive',
+            title: 'Voice Input Error',
+            description: `Could not recognize speech: ${event.error}`,
+          });
+          setIsListening(false);
+        };
+        
+        recognitionRef.current.onend = () => {
+          if(isListening) { // if isListening is still true, it means it stopped unexpectedly
+             // setIsListening(false); // Already handled by onresult and onerror generally
+          }
+        };
+      }
+    } else {
+      console.warn("Speech Recognition API not supported in this browser.");
+    }
+  }, [toast, isListening]);
+  
+  const toggleListening = async () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      if (hasMicPermission === null) {
+        try {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
           setHasMicPermission(true);
           toast({ title: "Microphone access granted." });
-          // Start actual speech recognition here in a real implementation
-        })
-        .catch(err => {
+          recognitionRef.current?.start();
+          setIsListening(true);
+        } catch (err) {
           setHasMicPermission(false);
-          setIsListening(false);
           toast({
             variant: "destructive",
             title: "Microphone Access Denied",
-            description: "Please enable microphone permissions to use voice input.",
+            description: "Please enable microphone permissions for voice input.",
           });
           console.error("Mic permission error:", err);
+        }
+      } else if (hasMicPermission) {
+        recognitionRef.current?.start();
+        setIsListening(true);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Microphone Access Required",
+          description: "Microphone permission was previously denied. Enable it in browser settings.",
         });
-    } else if (isListening && !hasMicPermission) {
-        setIsListening(false); // Turn off if permission was denied previously
-         toast({
-            variant: "destructive",
-            title: "Microphone Access Required",
-            description: "Microphone permission was previously denied. Please enable it in your browser settings.",
-          });
+      }
     }
-  }, [isListening, hasMicPermission, toast]);
+  };
 
-  const handleSendMessage = async () => {
-    if (inputValue.trim() === '') return;
+  const speakText = (text: string) => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window && text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      // You might want to configure voice, rate, pitch, etc.
+      // utterance.voice = speechSynthesis.getVoices().find(voice => voice.lang === 'en-US');
+      // utterance.pitch = 1;
+      // utterance.rate = 1;
+      speechSynthesis.speak(utterance);
+    } else if (!text) {
+      console.warn("SpeakText: No text to speak.");
+    }
+     else {
+      console.warn("Speech Synthesis API not supported or no text provided.");
+    }
+  };
+
+
+  const handleSendMessage = async (messageContent?: string) => {
+    const currentMessage = (typeof messageContent === 'string' ? messageContent : inputValue).trim();
+    if (currentMessage === '') return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: inputValue,
+      content: currentMessage,
       sender: 'user',
       timestamp: new Date(),
     };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setInputValue('');
+    if (typeof messageContent !== 'string') { // only clear input if not called with specific content
+        setInputValue('');
+    }
     setIsLoading(true);
 
     try {
@@ -87,10 +151,7 @@ export function ChatInterface() {
       setMessages((prevMessages) => [...prevMessages, botResponse]);
 
       if (isVoiceOutputEnabled && result.response) {
-        // Placeholder for speech synthesis
-        // const utterance = new SpeechSynthesisUtterance(result.response);
-        // window.speechSynthesis.speak(utterance);
-        console.log("TTS (simulated):", result.response);
+        speakText(result.response);
       }
 
     } catch (error) {
@@ -182,20 +243,28 @@ export function ChatInterface() {
         </ScrollArea>
       </CardContent>
       <div className="border-t p-4 bg-background">
-        {hasMicPermission === false && !isListening && (
+        {hasMicPermission === false && (
              <Alert variant="destructive" className="mb-2">
               <AlertTitle>Microphone Access Denied</AlertTitle>
               <AlertDescription>
-                Voice input is disabled. Please enable microphone permissions in your browser settings and refresh the page.
+                Voice input is disabled. Please enable microphone permissions in your browser settings.
               </AlertDescription>
             </Alert>
+        )}
+        {typeof window !== 'undefined' && !('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) && (
+          <Alert variant="destructive" className="mb-2">
+            <AlertTitle>Voice Input Not Supported</AlertTitle>
+            <AlertDescription>
+              Your browser does not support voice input. Try a different browser like Chrome or Edge.
+            </AlertDescription>
+          </Alert>
         )}
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setIsListening(prev => !prev)}
-            disabled={hasMicPermission === false}
+            onClick={toggleListening}
+            disabled={hasMicPermission === false || !(typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window))}
             aria-label={isListening ? "Stop listening" : "Start voice input"}
           >
             {isListening ? <MicOff className="h-5 w-5 text-destructive" /> : <Mic className="h-5 w-5" />}
@@ -206,7 +275,7 @@ export function ChatInterface() {
               onChange={(e) => setInputValue(e.target.value)}
               className="w-full resize-none pr-3"
               rows={1}
-              placeholder={isListening ? "Listening..." : "Type your message..."}
+              placeholder={isListening ? "Listening..." : ""}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -227,7 +296,7 @@ export function ChatInterface() {
               </div>
             )}
           </div>
-          <Button onClick={handleSendMessage} size="icon" aria-label="Send message" disabled={isLoading || inputValue.trim() === ''}>
+          <Button onClick={() => handleSendMessage()} size="icon" aria-label="Send message" disabled={isLoading || inputValue.trim() === ''}>
             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <SendHorizonal className="h-5 w-5" />}
           </Button>
           <Button
@@ -235,6 +304,7 @@ export function ChatInterface() {
             size="icon"
             onClick={() => setIsVoiceOutputEnabled(prev => !prev)}
             aria-label={isVoiceOutputEnabled ? "Disable voice output" : "Enable voice output"}
+            disabled={!(typeof window !== 'undefined' && 'speechSynthesis' in window)}
           >
             {isVoiceOutputEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5 text-muted-foreground" />}
           </Button>
