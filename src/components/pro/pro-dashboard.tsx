@@ -19,7 +19,8 @@ import { DischargeSummaryGenerator } from './discharge-summary-generator';
 import { TreatmentProtocolNavigator } from './treatment-protocol-navigator';
 import { RoundsTool } from './rounds-tool';
 import { PharmacopeiaChecker } from './pharmacopeia-checker';
-import { SmartDictation } from './smart-dictation'; // Import the new component
+import { SmartDictation } from './smart-dictation';
+import { ClinicalCalculatorSuite } from './clinical-calculator-suite'; // New import
 
 
 // Placeholder components for Pro tools that are still "coming soon"
@@ -31,7 +32,6 @@ const PlaceholderTool = ({ title }: { title: string }) => (
   </div>
 );
 
-const ClinicalCalculatorSuite = () => <PlaceholderTool title="Intelligent Clinical Calculator Suite" />;
 const ReferralStreamliner = () => <PlaceholderTool title="Referral & Consultation Streamliner" />;
 const PersonalizedDashboard = () => <PlaceholderTool title="Personalized Clinical Dashboard (View)" />; // This is the overall page
 const PatientCommunicationDrafter = () => <PlaceholderTool title="AI-Assisted Patient Communication Drafter" />;
@@ -69,7 +69,7 @@ const proToolsList: ProTool[] = [
   { id: 'rounds', title: 'Rounds Tool 2.0', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool, comingSoon: false },
   { id: 'pharmacopeia', title: 'Pharmacopeia & Interaction Checker', description: 'Comprehensive drug database and interaction analysis.', icon: Pill, component: PharmacopeiaChecker, comingSoon: false },
   { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation, comingSoon: false },
-  { id: 'calculators', title: 'Intelligent Clinical Calculators', description: 'Suite of scores and criteria (GRACE, Wells\', etc.).', icon: BarChart3, component: ClinicalCalculatorSuite, comingSoon: true },
+  { id: 'calculators', title: 'Intelligent Clinical Calculators', description: 'Suite of scores and criteria (GRACE, Wells\', etc.).', icon: BarChart3, component: ClinicalCalculatorSuite, comingSoon: false },
   { id: 'referral', title: 'Referral & Consultation Streamliner', description: 'Templates and quick summary generation for referrals.', icon: PhoneForwarded, component: ReferralStreamliner, comingSoon: true },
   { id: 'patientComm', title: 'Patient Communication Drafter', description: 'AI drafts for patient-friendly explanations and instructions.', icon: MessageSquareHeart, component: PatientCommunicationDrafter, comingSoon: true },
   { id: 'onCallHandover', title: 'On-Call Handover Assistant', description: 'Structured handovers with "if-then" scenarios and escalation.', icon: Users, component: OnCallHandoverAssistant, comingSoon: true }, 
