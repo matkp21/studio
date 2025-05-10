@@ -8,10 +8,10 @@ import { StudyNotesGenerator } from './study-notes-generator';
 import { McqGenerator } from './mcq-generator';
 import { 
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy, 
-  Users, Eye, Brain, TrendingUp, Calculator, FlaskConical // Added new icons
+  Users, Eye, Brain, TrendingUp, Calculator, FlaskConical 
 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import { cn } from '@/lib/utils';
 
 type ActiveToolId = 
@@ -26,6 +26,7 @@ type ActiveToolId =
   | 'rounds'
   | 'topics'
   | 'dosage'
+  | 'papers' // Added based on the new subtool list from prompt
   | null;
 
 interface MedicoTool {
@@ -33,7 +34,7 @@ interface MedicoTool {
   title: string;
   description: string;
   icon: React.ElementType;
-  component?: React.ElementType; // Optional: specific component for the dialog
+  component?: React.ElementType; 
   comingSoon?: boolean;
 }
 
@@ -49,7 +50,7 @@ const medicoToolsList: MedicoTool[] = [
   { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, comingSoon: true },
   { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study.', icon: TrendingUp, comingSoon: true },
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, comingSoon: true },
-  { id: 'papers', title: 'Solved Question Papers', description: 'Access past exam papers with solutions.', icon: BookCopy, comingSoon: true },
+  { id: 'papers', title: 'Solved Question Papers', description: 'Access past exam papers with solutions.', icon: BookCopy, comingSoon: true }, // Added as per the prompt
 ];
 
 
@@ -137,3 +138,5 @@ export function MedicoDashboard() {
     </div>
   );
 }
+
+```
