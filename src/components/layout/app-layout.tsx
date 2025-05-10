@@ -26,7 +26,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
-import { useProMode } from '@/contexts/pro-mode-context';
+import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { Badge } from '@/components/ui/badge';
 
 
@@ -45,28 +45,21 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [clientLoaded, setClientLoaded] = useState(false);
-  const { isProMode, toggleProMode } = useProMode();
+  const { isProMode, toggleProMode, userRole, selectUserRole } = useProMode();
 
 
   useEffect(() => {
-    setClientLoaded(true); // Indicate that the component has mounted on the client
+    setClientLoaded(true); 
 
-    // Check for onboarding completion only on the client-side
     if (typeof window !== 'undefined') {
-      if (localStorage.getItem('onboardingComplete') !== 'true') {
-        setShowOnboardingModal(true);
-      }
+      const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+      const storedUserRole = localStorage.getItem('userRole') as UserRole;
 
-      // TODO: Implement push notification permission request here (from previous PWA work)
-      // Example:
-      // if ('Notification' in window && navigator.serviceWorker) {
-      //   Notification.requestPermission().then(permission => {
-      //     if (permission === 'granted') {
-      //       console.log('Notification permission granted.');
-      //       // Get subscription and send to backend
-      //     }
-      //   });
-      // }
+      if (!onboardingComplete || !storedUserRole) {
+        setShowOnboardingModal(true);
+      } else if (storedUserRole && !userRole) { // Sync context if localStorage has role but context doesn't
+        selectUserRole(storedUserRole);
+      }
     }
     
     const handleScroll = () => {
@@ -76,16 +69,23 @@ export function AppLayout({ children }: { children: ReactNode }) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [userRole, selectUserRole]);
   
 
   const handleOnboardingClose = () => {
     setShowOnboardingModal(false);
     if (typeof window !== 'undefined') { 
       localStorage.setItem('onboardingComplete', 'true');
+      // userRole should have been set by the modal via selectUserRole
     }
   };
   
+  const getRoleDisplayString = (role: UserRole): string => {
+    if (role === 'pro') return 'Professional';
+    if (role === 'medico') return 'Medical Student';
+    if (role === 'diagnosis') return 'Patient/User';
+    return 'User';
+  }
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -135,12 +135,15 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64">
-                 <DropdownMenuLabel className="flex items-center gap-2">
+                 <DropdownMenuLabel className="flex items-start gap-2">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
                       <AvatarFallback>DR</AvatarFallback>
                     </Avatar>
-                    <span>My Account</span>
+                    <div className="flex flex-col">
+                      <span>My Account</span>
+                      {userRole && <span className="text-xs text-muted-foreground font-normal">{getRoleDisplayString(userRole)}</span>}
+                    </div>
                   </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
@@ -197,3 +200,4 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </SidebarProvider>
   );
 }
+

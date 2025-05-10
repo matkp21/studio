@@ -14,8 +14,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { HeartPulse, ScanSearch, BookOpenText, User, Stethoscope, GraduationCap, CheckCircle } from 'lucide-react';
+import { HeartPulse, ScanSearch, BookOpenText, User, Stethoscope, GraduationCap, CheckCircle, BriefcaseMedical, School } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useProMode, type UserRole as ContextUserRole } from '@/contexts/pro-mode-context'; // Import context
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -23,7 +24,9 @@ interface OnboardingModalProps {
 }
 
 type OnboardingStep = 'welcome' | 'features' | 'role' | 'complete';
-type UserRole = 'doctor' | 'student' | 'other';
+// Use ContextUserRole for consistency, excluding null as it's for selection state here
+type SelectableUserRole = Exclude<ContextUserRole, null>;
+
 
 interface StepContent {
   title: string;
@@ -36,7 +39,8 @@ interface StepContent {
 
 export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+  const [selectedRole, setSelectedRole] = useState<SelectableUserRole | null>(null);
+  const { selectUserRole } = useProMode(); // Get selectUserRole from context
 
   const handleNext = () => {
     switch (currentStep) {
@@ -48,15 +52,12 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
         break;
       case 'role':
         if (selectedRole) {
-          // Here you would typically save the role preference
-          // For now, just log it and proceed
-          console.log("Selected role:", selectedRole);
-          // Example: localStorage.setItem('userRole', selectedRole);
+          selectUserRole(selectedRole); // Save role to context and localStorage
           setCurrentStep('complete');
         }
         break;
       case 'complete':
-        onClose(); // This will also set localStorage 'onboardingComplete' to true in AppLayout
+        onClose(); 
         break;
     }
   };
@@ -69,7 +70,6 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
       case 'role':
         setCurrentStep('features');
         break;
-      // Cannot go back from welcome or complete
     }
   };
 
@@ -111,45 +111,45 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
     role: {
       title: "Personalize Your Experience",
       icon: <User className="h-10 w-10 text-primary mb-3" />,
-      description: "Tell us about yourself to tailor MediAssistant to your needs. This will help us customize your dashboard and feature suggestions in the future.",
+      description: "Tell us about yourself to tailor MediAssistant to your needs. This will help us customize your dashboard and feature suggestions.",
       content: (
         <RadioGroup
           value={selectedRole ?? undefined}
-          onValueChange={(value: UserRole) => setSelectedRole(value)}
+          onValueChange={(value: SelectableUserRole) => setSelectedRole(value)}
           className="my-4 space-y-3"
         >
           <Label
-            htmlFor="role-doctor"
+            htmlFor="role-pro"
             className={cn(
               "flex items-center space-x-3 p-4 border rounded-lg cursor-pointer transition-colors hover:bg-accent/50",
-              selectedRole === 'doctor' && "bg-primary/10 border-primary ring-2 ring-primary"
+              selectedRole === 'pro' && "bg-primary/10 border-primary ring-2 ring-primary"
             )}
           >
-            <RadioGroupItem value="doctor" id="role-doctor" />
-            <Stethoscope className="h-5 w-5 text-primary" />
-            <span className="font-medium">I am a Doctor / Clinician</span>
+            <RadioGroupItem value="pro" id="role-pro" />
+            <BriefcaseMedical className="h-5 w-5 text-primary" />
+            <span className="font-medium">Professional (Doctor/Clinician)</span>
           </Label>
           <Label
-            htmlFor="role-student"
+            htmlFor="role-medico"
             className={cn(
               "flex items-center space-x-3 p-4 border rounded-lg cursor-pointer transition-colors hover:bg-accent/50",
-              selectedRole === 'student' && "bg-primary/10 border-primary ring-2 ring-primary"
+              selectedRole === 'medico' && "bg-primary/10 border-primary ring-2 ring-primary"
             )}
           >
-            <RadioGroupItem value="student" id="role-student" />
-            <GraduationCap className="h-5 w-5 text-primary" />
-            <span className="font-medium">I am a Medical Student</span>
+            <RadioGroupItem value="medico" id="role-medico" />
+            <School className="h-5 w-5 text-primary" /> 
+            <span className="font-medium">Medical Student (Medico)</span>
           </Label>
            <Label
-            htmlFor="role-other"
+            htmlFor="role-diagnosis"
             className={cn(
               "flex items-center space-x-3 p-4 border rounded-lg cursor-pointer transition-colors hover:bg-accent/50",
-              selectedRole === 'other' && "bg-primary/10 border-primary ring-2 ring-primary"
+              selectedRole === 'diagnosis' && "bg-primary/10 border-primary ring-2 ring-primary"
             )}
           >
-            <RadioGroupItem value="other" id="role-other" />
-            <User className="h-5 w-5 text-primary" />
-            <span className="font-medium">Other / General Interest</span>
+            <RadioGroupItem value="diagnosis" id="role-diagnosis" />
+            <Stethoscope className="h-5 w-5 text-primary" />
+            <span className="font-medium">Patient / General Use (Diagnosis)</span>
           </Label>
         </RadioGroup>
       ),
@@ -161,9 +161,9 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
       icon: <CheckCircle className="h-12 w-12 text-green-500 mb-4" />,
       description: (
         <>
-          You&apos;re all set{selectedRole ? ` as a ${selectedRole}` : ''}. Enjoy using MediAssistant!
+          You&apos;re all set{selectedRole ? ` as a ${selectedRole === 'pro' ? 'Professional' : selectedRole === 'medico' ? 'Medical Student' : 'Patient/General User'}` : ''}. Enjoy using MediAssistant!
           <br />
-          Your dashboard and experience will be tailored based on your selection in future updates.
+          Your experience will be tailored based on your selection.
         </>
       ),
       nextButtonText: "Finish",
@@ -177,7 +177,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
       <DialogContent className="sm:max-w-lg rounded-xl shadow-2xl">
         <DialogHeader className="text-center items-center pt-6">
           {currentStepContent.icon}
-          <DialogTitle className="text-2xl font-bold">{currentStepContent.title}</DialogTitle>
+          <DialogTitle>{currentStepContent.title}</DialogTitle>
           <DialogDescription className="text-muted-foreground px-4">
             {currentStepContent.description}
           </DialogDescription>
@@ -194,7 +194,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
             <Button variant="outline" onClick={handlePrevious} className="rounded-lg">
               {currentStepContent.prevButtonText}
             </Button>
-          ) : <div />} {/* Placeholder to keep "Next" button to the right */}
+          ) : <div />} 
           <Button 
             onClick={handleNext} 
             disabled={currentStep === 'role' && !selectedRole}
@@ -207,3 +207,4 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
     </Dialog>
   );
 }
+
