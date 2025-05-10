@@ -65,7 +65,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground/90 dark:text-background/90 mb-6" // Adjusted for better visibility without animated bg
+          className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground/90 dark:text-background/90 mb-6"
         >
           Welcome to <span className="animated-gradient-text bg-clip-text text-transparent">MediAssistant</span>.
         </motion.p>
@@ -73,7 +73,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
-          className="text-lg sm:text-xl md:text-2xl text-foreground/80 dark:text-background/80 max-w-3xl mx-auto mb-10" // Adjusted for better visibility
+          className="text-lg sm:text-xl md:text-2xl text-foreground/80 dark:text-background/80 max-w-3xl mx-auto mb-10"
         >
           Your intelligent partner for AI-powered diagnostics, imaging analysis, and educational support—all at your fingertips.
         </motion.p>
@@ -84,7 +84,7 @@ export function HeroSection() {
           transition={{ delay: 1.2, duration: 0.5 }}
         >
           <Button asChild size="lg" className="rounded-lg group px-8 py-6 text-lg shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-primary/30 transition-all duration-300 transform hover:scale-105" aria-label="Get started with MediAssistant features">
-            <Link href="#mode-switcher" className="flex items-center">
+            <Link href="/chat" className="flex items-center">
               Get Started
               <HeartPulse className="ml-2 h-6 w-6 animate-pulse-medical text-red-400 group-hover:scale-110 group-hover:text-red-300" style={{"--medical-pulse-opacity-base": "0.7", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.25"} as React.CSSProperties}/>
             </Link>
