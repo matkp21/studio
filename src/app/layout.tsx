@@ -1,3 +1,4 @@
+// src/app/layout.tsx
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import './globals.css';
@@ -44,11 +45,6 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
         
-        {/* Fallback for older browsers or specific PWA scenarios */}
-        {/* <link rel="shortcut icon" href="/favicon.ico" /> */}
-
-        {/* Example placeholder for splash screens - actual images not generated */}
-        {/* <link rel="apple-touch-startup-image" href="/images/apple_splash_2048.png" sizes="2048x2732" /> */}
       </head>
       <body className={`${poppins.variable} antialiased`}>
         <ProModeProvider>

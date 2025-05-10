@@ -25,9 +25,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
-import { WelcomeScreen } from '@/components/welcome/welcome-screen'; // Added WelcomeScreen
 import { useProMode } from '@/contexts/pro-mode-context';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 
 
@@ -45,7 +43,6 @@ const ToggleSidebarButton = () => {
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
-  const [showWelcomeScreen, setShowWelcomeScreen] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [clientLoaded, setClientLoaded] = useState(false);
   const { isProMode, toggleProMode } = useProMode();
@@ -55,9 +52,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
     setClientLoaded(true);
 
     if (typeof window !== 'undefined') {
-      if (localStorage.getItem('welcomeScreenShown') !== 'true') {
-        setShowWelcomeScreen(true);
-      } else if (localStorage.getItem('onboardingComplete') !== 'true') {
+      // Only check for onboarding after client has loaded
+      if (localStorage.getItem('onboardingComplete') !== 'true') {
         setShowOnboardingModal(true);
       }
     }
@@ -70,17 +66,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleWelcomeScreenClose = () => {
-    setShowWelcomeScreen(false);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('welcomeScreenShown', 'true');
-      // After welcome screen, check if onboarding is needed
-      if (localStorage.getItem('onboardingComplete') !== 'true') {
-        setShowOnboardingModal(true);
-      }
-    }
-  };
   
 
   const handleOnboardingClose = () => {
@@ -191,10 +176,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <main className="flex-1 flex flex-col overflow-auto">
           {children}
         </main>
-        {clientLoaded && showWelcomeScreen && (
-           <WelcomeScreen isOpen={showWelcomeScreen} onClose={handleWelcomeScreenClose} />
-        )}
-        {clientLoaded && !showWelcomeScreen && showOnboardingModal && (
+        {clientLoaded && showOnboardingModal && (
           <OnboardingModal
             isOpen={showOnboardingModal}
             onClose={handleOnboardingClose}

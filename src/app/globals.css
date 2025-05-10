@@ -166,7 +166,7 @@ body {
   }
 }
 
-/* Heartbeat Animation */
+/* Heartbeat Line Animation */
 .heartbeat-line {
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
@@ -214,20 +214,26 @@ body {
   }
 }
 
-/* Pulse animation for medical icon in chat placeholder */
+/* Pulse animation for medical icon */
 @keyframes pulseMedical {
-  0%, 100% { opacity: 0.8; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.15); } /* Increased scale */
+  0%, 100% { 
+    opacity: var(--medical-pulse-opacity-base, 0.8); 
+    transform: scale(1); 
+  }
+  50% { 
+    opacity: var(--medical-pulse-opacity-peak, 0.5); 
+    transform: scale(1.2); /* Increased scale for more glow */
+  } 
 }
 
 .animate-pulse-medical {
   animation: pulseMedical 1.8s infinite ease-in-out;
-  display: inline-flex; /* For better alignment if icon is complex */
+  display: inline-flex; 
   align-items: center;
 }
 
 
-/* Welcome Screen Animations */
+/* Welcome Screen / Hero Text Animations */
 @keyframes welcome-text-color-cycle {
   0% { color: hsl(var(--welcome-color-1)); }
   25% { color: hsl(var(--welcome-color-2)); }
@@ -237,8 +243,7 @@ body {
 }
 
 .welcome-text-fg-animated {
-  /* Uses foreground variable by default but can be overridden by animation or direct styling */
-  color: hsl(var(--foreground)); /* Default text color for the welcome screen */
+  color: hsl(var(--background)); /* Default text color for animated hero text */
   animation: welcome-text-color-cycle 12s linear infinite;
 }
 
@@ -250,17 +255,16 @@ body {
 }
 
 .welcome-background-animated {
-  /* Use more distinct colors for a "colorful" effect */
-  /* Ensure these colors contrast well with the text color animation */
   background: linear-gradient(
     135deg, 
-    hsl(var(--primary)/0.7), /* Original primary, slightly transparent */
-    hsl(var(--accent)/0.7),   /* Original accent, slightly transparent */
-    hsl(var(--welcome-color-3)/0.7), /* Vibrant pink/magenta, slightly transparent */
-    hsl(var(--welcome-color-4)/0.7),  /* Bright orange/gold, slightly transparent */
-    hsl(var(--primary)/0.7) /* Loop back to primary */
+    hsl(var(--primary)/0.8), 
+    hsl(var(--accent)/0.8),   
+    hsl(var(--welcome-color-3)/0.8), 
+    hsl(var(--welcome-color-4)/0.8),  
+    hsl(var(--primary)/0.8) 
   );
   background-size: 400% 400%;
   animation: animated-gradient-background 20s ease infinite;
-  color: white; /* Ensure text is readable on this background */
+  /* Text color for elements on this background should be chosen for contrast, e.g., white or very light color */
+  /* color: hsl(var(--background)) is often a good choice for text on this kind of background */
 }
