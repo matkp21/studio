@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { processChatMessage, type ChatMessageInput } from '@/ai/flows/chat-flow';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { TypewriterText } from './typewriter-text'; // Import the new component
 
 interface Message {
   id: string;
@@ -34,7 +35,7 @@ export function ChatInterface() {
 
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+    if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (SpeechRecognition) {
         recognitionRef.current = new SpeechRecognition();
@@ -47,7 +48,7 @@ export function ChatInterface() {
           setInputValue(transcript);
           setIsListening(false);
           // Optionally auto-send message after voice input:
-          // if (transcript) handleSendMessage(transcript); 
+          // if (transcript) handleSendMessage(transcript);
         };
 
         recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
@@ -59,7 +60,7 @@ export function ChatInterface() {
           });
           setIsListening(false);
         };
-        
+
         recognitionRef.current.onend = () => {
           if(isListening) { // if isListening is still true, it means it stopped unexpectedly
              // setIsListening(false); // Already handled by onresult and onerror generally
@@ -70,7 +71,7 @@ export function ChatInterface() {
       console.warn("Speech Recognition API not supported in this browser.");
     }
   }, [toast, isListening]);
-  
+
   const toggleListening = async () => {
     if (isListening) {
       recognitionRef.current?.stop();
@@ -107,11 +108,8 @@ export function ChatInterface() {
 
   const speakText = (text: string) => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window && text) {
+      speechSynthesis.cancel(); // Cancel any ongoing speech
       const utterance = new SpeechSynthesisUtterance(text);
-      // You might want to configure voice, rate, pitch, etc.
-      // utterance.voice = speechSynthesis.getVoices().find(voice => voice.lang === 'en-US');
-      // utterance.pitch = 1;
-      // utterance.rate = 1;
       speechSynthesis.speak(utterance);
     } else if (!text) {
       console.warn("SpeakText: No text to speak.");
@@ -128,7 +126,7 @@ export function ChatInterface() {
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: currentMessage,
+      content: currentMessage, // User messages appear instantly
       sender: 'user',
       timestamp: new Date(),
     };
@@ -141,17 +139,47 @@ export function ChatInterface() {
     try {
       const chatInput: ChatMessageInput = { message: userMessage.content as string };
       const result = await processChatMessage(chatInput);
-      
-      const botResponse: Message = {
+
+      const botResponseContent = result.response;
+      const finalHelperMessageText = "I'm here for you always to help you.";
+
+      const addFinalHelperMessage = () => {
+        const finalMessage: Message = {
+          id: (Date.now() + 2).toString(), // Ensure unique ID
+          content: (
+            <TypewriterText
+              text={finalHelperMessageText}
+              speed={40} // Slightly faster for helper
+            />
+          ),
+          sender: 'bot',
+          timestamp: new Date(),
+        };
+        setMessages((prevMessages) => [...prevMessages, finalMessage]);
+        if (isVoiceOutputEnabled) {
+           setTimeout(() => speakText(finalHelperMessageText), 100); // Speak after a brief delay
+        }
+      };
+
+      const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: result.response,
+        content: (
+          <TypewriterText
+            text={botResponseContent}
+            speed={50}
+            onComplete={() => {
+              // Add a slight delay before showing the helper message for better pacing
+              setTimeout(addFinalHelperMessage, 300);
+            }}
+          />
+        ),
         sender: 'bot',
         timestamp: new Date(),
       };
-      setMessages((prevMessages) => [...prevMessages, botResponse]);
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
 
-      if (isVoiceOutputEnabled && result.response) {
-        speakText(result.response);
+      if (isVoiceOutputEnabled && botResponseContent) {
+        speakText(botResponseContent);
       }
 
     } catch (error) {
@@ -159,7 +187,12 @@ export function ChatInterface() {
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
       const errorBotResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: `Sorry, I encountered an error: ${errorMessage}`,
+        content: (
+          <TypewriterText
+            text={`Sorry, I encountered an error: ${errorMessage}`}
+            speed={50}
+          />
+        ),
         sender: 'bot',
         timestamp: new Date(),
       };
@@ -182,7 +215,7 @@ export function ChatInterface() {
       }
     }
   }, [messages]);
-  
+
   return (
     <Card className="flex-1 flex flex-col shadow-lg rounded-lg overflow-hidden h-full">
       <CardContent className="flex-1 p-0 flex flex-col overflow-hidden">
@@ -196,7 +229,7 @@ export function ChatInterface() {
                 }`}
               >
                 {message.sender === 'bot' && (
-                  <Avatar className="h-8 w-8 self-start">
+                  <Avatar className="h-8 w-8 self-start flex-shrink-0">
                     <AvatarImage src="/placeholder-bot.jpg" alt="Bot Avatar" data-ai-hint="robot avatar" />
                     <AvatarFallback>MA</AvatarFallback>
                   </Avatar>
@@ -208,17 +241,14 @@ export function ChatInterface() {
                       : 'bg-secondary text-secondary-foreground'
                   }`}
                 >
-                  {typeof message.content === 'string' ? (
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                  ): (
-                    message.content
-                  )}
-                  <p className="mt-1 text-xs opacity-70">
-                    {message.timestamp.toLocaleTimeString()}
+                  {/* Render ReactNode directly for messages */}
+                  {message.content}
+                  <p className="mt-1 text-xs opacity-70 text-right"> {/* Timestamp aligned to right */}
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
                 {message.sender === 'user' && (
-                  <Avatar className="h-8 w-8 self-start">
+                  <Avatar className="h-8 w-8 self-start flex-shrink-0">
                     <AvatarImage src="https://picsum.photos/id/237/100/100" alt="User Avatar" data-ai-hint="person doctor" />
                     <AvatarFallback>DR</AvatarFallback>
                   </Avatar>
@@ -227,7 +257,7 @@ export function ChatInterface() {
             ))}
             {isLoading && (
               <div className="flex items-end gap-2">
-                <Avatar className="h-8 w-8 self-start">
+                <Avatar className="h-8 w-8 self-start flex-shrink-0">
                   <AvatarImage src="/placeholder-bot.jpg" alt="Bot Avatar" data-ai-hint="robot avatar" />
                   <AvatarFallback>MA</AvatarFallback>
                 </Avatar>
@@ -273,9 +303,9 @@ export function ChatInterface() {
             <Textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="w-full resize-none pr-3"
+              className="w-full resize-none pr-3" // Reduced padding-right to make space for icon
               rows={1}
-              placeholder={isListening ? "Listening..." : ""}
+              placeholder={isListening ? "Listening..." : ""} // Placeholder logic unchanged
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -284,8 +314,8 @@ export function ChatInterface() {
               }}
               disabled={isLoading || isListening}
             />
-            {inputValue === '' && !isListening && (
-              <div 
+             {inputValue === '' && !isListening && (
+              <div
                 className="absolute top-1/2 left-3 transform -translate-y-1/2 text-muted-foreground pointer-events-none flex items-center"
                 aria-hidden="true"
               >
