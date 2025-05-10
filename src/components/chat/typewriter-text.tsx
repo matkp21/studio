@@ -7,36 +7,56 @@ import { cn } from '@/lib/utils';
 
 interface TypewriterTextProps extends HTMLAttributes<HTMLParagraphElement> {
   text: string;
-  speed?: number;
+  speed?: number; // Speed now means delay between words/whitespace segments
   onComplete?: () => void;
 }
 
-export function TypewriterText({ text, speed = 50, onComplete, className, ...props }: TypewriterTextProps) {
+export function TypewriterText({ text, speed = 150, onComplete, className, ...props }: TypewriterTextProps) {
   const [displayedText, setDisplayedText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [words, setWords] = useState<string[]>([]);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
-    // Reset when text or onComplete handler changes to ensure re-animation
+    // Reset when text prop changes
     setDisplayedText('');
-    setCurrentIndex(0);
-  }, [text, onComplete]); // Added onComplete to dependencies
+    setCurrentWordIndex(0);
+    setIsCompleted(false);
+    if (text) {
+      // Split by whitespace (including newlines) while keeping the delimiters
+      // This treats words and whitespace blocks (spaces, newlines) as items to animate.
+      // filter(Boolean) removes any empty strings that might result from split.
+      setWords(text.split(/(\s+)/).filter(Boolean));
+    } else {
+      setWords([]);
+    }
+  }, [text]);
 
   useEffect(() => {
-    if (!text) return; // Guard against empty or null text early
+    if (isCompleted) return;
 
-    if (currentIndex < text.length) {
+    if (words.length === 0) {
+      // If there are no words (e.g., empty or null text prop), call onComplete.
+      if (!isCompleted && (text === '' || text === null)) {
+        onComplete?.();
+        setIsCompleted(true);
+      }
+      return;
+    }
+
+    if (currentWordIndex < words.length) {
       const timeoutId = setTimeout(() => {
-        setDisplayedText((prev) => prev + text[currentIndex]);
-        setCurrentIndex((prev) => prev + 1);
+        setDisplayedText((prev) => prev + words[currentWordIndex]);
+        setCurrentWordIndex((prev) => prev + 1);
       }, speed);
       return () => clearTimeout(timeoutId);
-    } else if (currentIndex === text.length && text.length > 0) {
-      // Ensure onComplete is called only once after text is fully displayed
-      if (displayedText === text) {
-        onComplete?.();
-      }
+    } else if (currentWordIndex === words.length && !isCompleted) {
+      // All words/segments have been appended
+      onComplete?.();
+      setIsCompleted(true);
     }
-  }, [currentIndex, text, speed, onComplete, displayedText]);
+  }, [currentWordIndex, words, speed, onComplete, text, isCompleted, displayedText]);
 
   return <p className={cn("text-sm whitespace-pre-wrap", className)} {...props}>{displayedText}</p>;
 }
+

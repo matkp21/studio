@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { SendHorizonal, HeartPulse, Mic, MicOff, Volume2, VolumeX, Loader2 } from 'lucide-react';
+import { SendHorizonal, HeartPulse, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { processChatMessage, type ChatMessageInput } from '@/ai/flows/chat-flow';
 import { useToast } from '@/hooks/use-toast';
@@ -145,11 +145,11 @@ export function ChatInterface() {
 
       const addFinalHelperMessage = () => {
         const finalMessage: Message = {
-          id: (Date.now() + 2).toString(), 
+          id: (Date.now() + Math.random()).toString(), // More robust unique ID
           content: (
             <TypewriterText
               text={finalHelperMessageText}
-              speed={40}
+              speed={150} // Word speed
             />
           ),
           sender: 'bot',
@@ -162,12 +162,13 @@ export function ChatInterface() {
       };
 
       const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: (Date.now() + Math.random()).toString(),
         content: (
           <TypewriterText
             text={botResponseContent}
-            speed={50}
+            speed={150} // Word speed
             onComplete={() => {
+              // Delay adding the final helper message slightly for better flow
               setTimeout(addFinalHelperMessage, 300);
             }}
           />
@@ -184,12 +185,36 @@ export function ChatInterface() {
     } catch (error) {
       console.error("Chat processing error:", error);
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+      const finalHelperMessageTextOnError = "I'm here for you always to help you, even when things go wrong.";
+
+
+      const addFinalHelperMessageOnError = () => {
+        const finalMessage: Message = {
+          id: (Date.now() + Math.random() + 2).toString(),
+          content: (
+            <TypewriterText
+              text={finalHelperMessageTextOnError}
+              speed={150} // Word speed
+            />
+          ),
+          sender: 'bot',
+          timestamp: new Date(),
+        };
+        setMessages((prevMessages) => [...prevMessages, finalMessage]);
+        if (isVoiceOutputEnabled) {
+           setTimeout(() => speakText(finalHelperMessageTextOnError), 100); 
+        }
+      };
+      
       const errorBotResponse: Message = {
-        id: (Date.now() + 1).toString(),
+        id: (Date.now() + Math.random() + 1).toString(),
         content: (
           <TypewriterText
             text={`Sorry, I encountered an error: ${errorMessage}`}
-            speed={50}
+            speed={150} // Word speed
+            onComplete={() => {
+              setTimeout(addFinalHelperMessageOnError, 300);
+            }}
           />
         ),
         sender: 'bot',
@@ -223,7 +248,7 @@ export function ChatInterface() {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex items-end gap-2 fade-in ${ // Added fade-in for message arrival animation
+                className={`flex items-end gap-2 fade-in ${
                   message.sender === 'user' ? 'justify-end' : ''
                 }`}
               >
@@ -262,7 +287,7 @@ export function ChatInterface() {
                 <div
                   className="max-w-xs lg:max-w-md rounded-lg p-3 shadow bg-secondary text-secondary-foreground flex items-center space-x-2"
                 >
-                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  <HeartPulse className="h-5 w-5 text-primary animate-ecg-beat" />
                   <p className="text-sm italic">MediAssistant is thinking...</p>
                 </div>
               </div>
@@ -325,7 +350,7 @@ export function ChatInterface() {
             )}
           </div>
           <Button onClick={() => handleSendMessage()} size="icon" aria-label="Send message" disabled={isLoading || inputValue.trim() === ''}>
-            {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <SendHorizonal className="h-5 w-5" />}
+            {isLoading ? <HeartPulse className="h-5 w-5 animate-ecg-beat text-primary-foreground" /> : <SendHorizonal className="h-5 w-5" />}
           </Button>
           <Button
             variant="ghost"

@@ -269,3 +269,15 @@ body {
   /* Text color for elements on this background should be chosen for contrast, e.g., white or very light color */
   /* color: hsl(var(--background)) is often a good choice for text on this kind of background */
 }
+
+/* Bot thinking animation */
+@keyframes ecg-beat {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  10%, 30% { transform: scale(0.9); opacity: 0.7; }
+  20% { transform: scale(1.2); opacity: 1; } /* Peak of the beat */
+  40% { transform: scale(1); opacity: 0.8; }
+}
+
+.animate-ecg-beat {
+  animation: ecg-beat 1.5s infinite cubic-bezier(0.215, 0.610, 0.355, 1.000);
+}
