@@ -1,3 +1,4 @@
+
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
@@ -8,7 +9,7 @@ import { StudyNotesGenerator } from './study-notes-generator';
 import { McqGenerator } from './mcq-generator';
 import { 
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy, 
-  Users, Eye, Brain, TrendingUp, Calculator, FlaskConical 
+  Users, Eye, Brain, TrendingUp, Calculator, FlaskConical, Workflow // Added Workflow for Flowchart
 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
@@ -26,7 +27,8 @@ type ActiveToolId =
   | 'rounds'
   | 'topics'
   | 'dosage'
-  | 'papers' // Added based on the new subtool list from prompt
+  | 'papers' 
+  | 'flowcharts' // Added Flowchart Creator
   | null;
 
 interface MedicoTool {
@@ -50,7 +52,8 @@ const medicoToolsList: MedicoTool[] = [
   { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, comingSoon: true },
   { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study.', icon: TrendingUp, comingSoon: true },
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, comingSoon: true },
-  { id: 'papers', title: 'Solved Question Papers', description: 'Access past exam papers with solutions.', icon: BookCopy, comingSoon: true }, // Added as per the prompt
+  { id: 'papers', title: 'Solved Question Papers', description: 'Access past exam papers with solutions.', icon: BookCopy, comingSoon: true },
+  { id: 'flowcharts', title: 'Flowchart Creator', description: 'Create diagnostic or treatment flowcharts.', icon: Workflow, comingSoon: true },
 ];
 
 
@@ -138,5 +141,3 @@ export function MedicoDashboard() {
     </div>
   );
 }
-
-```
