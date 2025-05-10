@@ -5,14 +5,21 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '../ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
+import { DialogTrigger } from '@radix-ui/react-dialog';
 import { cn } from '@/lib/utils';
 import { 
   Brain, ClipboardCheck, Stethoscope, Mic, BarChart3, Users, Briefcase, 
   FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, ArrowRight, Lightbulb
 } from 'lucide-react';
 
-// Placeholder components for Pro tools
+// Import the actual component
+import { DifferentialDiagnosisAssistant } from './differential-diagnosis-assistant'; 
+import { DischargeSummaryGenerator } from './discharge-summary-generator';
+import { TreatmentProtocolNavigator } from './treatment-protocol-navigator';
+
+
+// Placeholder components for Pro tools that are still "coming soon"
 const PlaceholderTool = ({ title }: { title: string }) => (
   <div className="p-4 text-center text-muted-foreground">
     <Lightbulb className="mx-auto h-12 w-12 mb-4 text-primary/50" />
@@ -21,8 +28,7 @@ const PlaceholderTool = ({ title }: { title: string }) => (
   </div>
 );
 
-const DifferentialDiagnosisAssistant = () => <PlaceholderTool title="AI-Powered Differential Diagnosis Assistant" />;
-const TreatmentProtocolNavigator = () => <PlaceholderTool title="Evidence-Based Treatment Protocol Navigator" />;
+// const TreatmentProtocolNavigator = () => <PlaceholderTool title="Evidence-Based Treatment Protocol Navigator" />;
 const PharmacopeiaChecker = () => <PlaceholderTool title="Pharmacopeia & Drug Interaction Checker" />;
 const SmartDictation = () => <PlaceholderTool title="Smart Dictation & Note Assistant" />;
 const ClinicalCalculatorSuite = () => <PlaceholderTool title="Intelligent Clinical Calculator Suite" />;
@@ -32,7 +38,7 @@ const RoundsTool = () => <PlaceholderTool title="Rounds Tool 2.0 (Shared Tasks &
 const PatientCommunicationDrafter = () => <PlaceholderTool title="AI-Assisted Patient Communication Drafter" />;
 const OnCallHandoverAssistant = () => <PlaceholderTool title="Intelligent On-Call Handover Assistant" />;
 const ResearchSummarizer = () => <PlaceholderTool title="AI-Powered Research & Literature Summarizer" />;
-const DischargeSummaryGenerator = () => <PlaceholderTool title="Quick Discharge Summary Generator" />;
+// const DischargeSummaryGenerator = () => <PlaceholderTool title="Quick Discharge Summary Generator" />;
 
 
 type ActiveToolId = 
@@ -55,22 +61,21 @@ interface ProTool {
   description: string;
   icon: React.ElementType;
   component: React.ElementType; 
-  comingSoon?: boolean; // All are effectively coming soon for UI beyond placeholder
+  comingSoon?: boolean;
 }
 
 const proToolsList: ProTool[] = [
-  { id: 'diffDx', title: 'Differential Diagnosis Assistant', description: 'AI-powered suggestions, investigations, and initial management steps.', icon: Brain, component: DifferentialDiagnosisAssistant },
-  { id: 'discharge', title: 'Discharge Summary Generator', description: 'Ultra-streamlined, predictive discharge summary creation.', icon: FilePlus, component: DischargeSummaryGenerator },
-  { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator },
-  { id: 'rounds', title: 'Rounds Tool 2.0', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool },
-  { id: 'pharmacopeia', title: 'Pharmacopeia & Interaction Checker', description: 'Comprehensive drug database and interaction analysis.', icon: Pill, component: PharmacopeiaChecker },
-  { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation },
-  { id: 'calculators', title: 'Intelligent Clinical Calculators', description: 'Suite of scores and criteria (GRACE, Wells\', etc.).', icon: BarChart3, component: ClinicalCalculatorSuite },
-  { id: 'referral', title: 'Referral & Consultation Streamliner', description: 'Templates and quick summary generation for referrals.', icon: PhoneForwarded, component: ReferralStreamliner },
-  { id: 'patientComm', title: 'Patient Communication Drafter', description: 'AI drafts for patient-friendly explanations and instructions.', icon: MessageSquareHeart, component: PatientCommunicationDrafter },
-  { id: 'onCallHandover', title: 'On-Call Handover Assistant', description: 'Structured handovers with "if-then" scenarios and escalation.', icon: Users, component: OnCallHandoverAssistant }, // Consider a different icon if Users is too generic
-  { id: 'research', title: 'Research & Literature Summarizer', description: 'AI summaries of key papers for clinical questions.', icon: Library, component: ResearchSummarizer },
-  // Personalized Clinical Dashboard is the page itself, not a dialog tool.
+  { id: 'diffDx', title: 'Differential Diagnosis Assistant', description: 'AI-powered suggestions, investigations, and initial management steps.', icon: Brain, component: DifferentialDiagnosisAssistant, comingSoon: false },
+  { id: 'discharge', title: 'Discharge Summary Generator', description: 'Ultra-streamlined, predictive discharge summary creation.', icon: FilePlus, component: DischargeSummaryGenerator, comingSoon: true }, // Keep as coming soon for now, will enable next
+  { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator, comingSoon: true }, // Keep as coming soon
+  { id: 'rounds', title: 'Rounds Tool 2.0', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool, comingSoon: true },
+  { id: 'pharmacopeia', title: 'Pharmacopeia & Interaction Checker', description: 'Comprehensive drug database and interaction analysis.', icon: Pill, component: PharmacopeiaChecker, comingSoon: true },
+  { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation, comingSoon: true },
+  { id: 'calculators', title: 'Intelligent Clinical Calculators', description: 'Suite of scores and criteria (GRACE, Wells\', etc.).', icon: BarChart3, component: ClinicalCalculatorSuite, comingSoon: true },
+  { id: 'referral', title: 'Referral & Consultation Streamliner', description: 'Templates and quick summary generation for referrals.', icon: PhoneForwarded, component: ReferralStreamliner, comingSoon: true },
+  { id: 'patientComm', title: 'Patient Communication Drafter', description: 'AI drafts for patient-friendly explanations and instructions.', icon: MessageSquareHeart, component: PatientCommunicationDrafter, comingSoon: true },
+  { id: 'onCallHandover', title: 'On-Call Handover Assistant', description: 'Structured handovers with "if-then" scenarios and escalation.', icon: Users, component: OnCallHandoverAssistant, comingSoon: true }, 
+  { id: 'research', title: 'Research & Literature Summarizer', description: 'AI summaries of key papers for clinical questions.', icon: Library, component: ResearchSummarizer, comingSoon: true },
 ];
 
 

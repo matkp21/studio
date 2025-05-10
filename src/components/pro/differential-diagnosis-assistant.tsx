@@ -11,9 +11,7 @@ import { SymptomAnalyzerInput, SymptomAnalyzerOutput, analyzeSymptoms } from '@/
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '../ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-
-// This component is a placeholder and conceptual representation.
-// Full implementation would require robust backend logic and data integration.
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'; // Added Select
 
 interface SuggestedItem {
   id: string;
@@ -58,7 +56,6 @@ export function DifferentialDiagnosisAssistant() {
       setAnalysisResult(result);
       toast({ title: "Analysis Complete", description: "Differential diagnosis and suggestions generated." });
       
-      // Prepare items for potential To-Do list
       const initialTodo: SuggestedItem[] = [];
       result.suggestedInvestigations?.forEach((inv, index) => {
         initialTodo.push({ id: `inv-${index}`, name: inv.name, rationale: inv.rationale, type: 'investigation', addedToTodo: false });
@@ -82,7 +79,6 @@ export function DifferentialDiagnosisAssistant() {
         item.id === itemId ? { ...item, addedToTodo: !item.addedToTodo } : item
       )
     );
-    // Here you would typically integrate with a real To-Do list / Rounds Tool
     const item = todoItems.find(i => i.id === itemId);
     if (item) {
         toast({
@@ -120,12 +116,16 @@ export function DifferentialDiagnosisAssistant() {
             </div>
             <div>
                 <Label htmlFor="patient-sex">Sex (Optional)</Label>
-                <select id="patient-sex" value={patientSex ?? ''} onChange={e => setPatientSex(e.target.value as 'male' | 'female' | 'other' | undefined)} className="w-full mt-1 h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                    <option value="">Select sex</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
+                <Select value={patientSex ?? ''} onValueChange={(value) => setPatientSex(value as 'male' | 'female' | 'other' | undefined)}>
+                  <SelectTrigger id="patient-sex" className="w-full mt-1 rounded-lg">
+                    <SelectValue placeholder="Select sex" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
             </div>
              <div className="md:col-span-3">
                 <Label htmlFor="patient-history">Brief Relevant History (Optional)</Label>
