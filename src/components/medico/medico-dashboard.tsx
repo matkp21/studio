@@ -7,9 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { StudyNotesGenerator } from './study-notes-generator';
 import { McqGenerator } from './mcq-generator';
+import { StudyTimetableCreator } from './study-timetable-creator'; // Import the new component
 import { 
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy, 
-  Users, Eye, Brain, TrendingUp, Calculator, FlaskConical, Workflow // Added Workflow for Flowchart
+  Users, Eye, Brain, TrendingUp, Calculator, FlaskConical, Workflow 
 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
@@ -28,7 +29,7 @@ type ActiveToolId =
   | 'topics'
   | 'dosage'
   | 'papers' 
-  | 'flowcharts' // Added Flowchart Creator
+  | 'flowcharts'
   | null;
 
 interface MedicoTool {
@@ -43,7 +44,7 @@ interface MedicoTool {
 const medicoToolsList: MedicoTool[] = [
   { id: 'notes', title: 'Study Notes Generator', description: 'Generate concise notes on medical topics.', icon: NotebookText, component: StudyNotesGenerator },
   { id: 'mcq', title: 'MCQ Generator', description: 'Create multiple-choice questions for practice.', icon: FileQuestion, component: McqGenerator },
-  { id: 'timetable', title: 'Study Timetable Creator', description: 'Help students plan study schedules.', icon: CalendarClock, comingSoon: true },
+  { id: 'timetable', title: 'Study Timetable Creator', description: 'Help students plan study schedules.', icon: CalendarClock, component: StudyTimetableCreator }, // Enabled this tool
   { id: 'flashcards', title: 'Flashcard Generator', description: 'Provide digital flashcards for quick revision.', icon: Layers, comingSoon: true },
   { id: 'cases', title: 'Clinical Case Simulations', description: 'Offer interactive patient scenarios.', icon: CaseUpper, comingSoon: true },
   { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Describe anatomical structures.', icon: Eye, comingSoon: true },
