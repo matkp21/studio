@@ -12,7 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { processChatMessage, type ChatMessageInput } from '@/ai/flows/chat-flow';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { TypewriterText } from './typewriter-text'; // Import the new component
+import { TypewriterText } from './typewriter-text';
 
 interface Message {
   id: string;
@@ -126,12 +126,12 @@ export function ChatInterface() {
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: currentMessage, // User messages appear instantly
+      content: currentMessage,
       sender: 'user',
       timestamp: new Date(),
     };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
-    if (typeof messageContent !== 'string') { // only clear input if not called with specific content
+    if (typeof messageContent !== 'string') { 
         setInputValue('');
     }
     setIsLoading(true);
@@ -145,11 +145,11 @@ export function ChatInterface() {
 
       const addFinalHelperMessage = () => {
         const finalMessage: Message = {
-          id: (Date.now() + 2).toString(), // Ensure unique ID
+          id: (Date.now() + 2).toString(), 
           content: (
             <TypewriterText
               text={finalHelperMessageText}
-              speed={40} // Slightly faster for helper
+              speed={40}
             />
           ),
           sender: 'bot',
@@ -157,7 +157,7 @@ export function ChatInterface() {
         };
         setMessages((prevMessages) => [...prevMessages, finalMessage]);
         if (isVoiceOutputEnabled) {
-           setTimeout(() => speakText(finalHelperMessageText), 100); // Speak after a brief delay
+           setTimeout(() => speakText(finalHelperMessageText), 100); 
         }
       };
 
@@ -168,7 +168,6 @@ export function ChatInterface() {
             text={botResponseContent}
             speed={50}
             onComplete={() => {
-              // Add a slight delay before showing the helper message for better pacing
               setTimeout(addFinalHelperMessage, 300);
             }}
           />
@@ -224,7 +223,7 @@ export function ChatInterface() {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex items-end gap-2 ${
+                className={`flex items-end gap-2 fade-in ${ // Added fade-in for message arrival animation
                   message.sender === 'user' ? 'justify-end' : ''
                 }`}
               >
@@ -241,9 +240,8 @@ export function ChatInterface() {
                       : 'bg-secondary text-secondary-foreground'
                   }`}
                 >
-                  {/* Render ReactNode directly for messages */}
                   {message.content}
-                  <p className="mt-1 text-xs opacity-70 text-right"> {/* Timestamp aligned to right */}
+                  <p className="mt-1 text-xs opacity-70 text-right">
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -256,16 +254,16 @@ export function ChatInterface() {
               </div>
             ))}
             {isLoading && (
-              <div className="flex items-end gap-2">
+              <div className="flex items-end gap-2 fade-in">
                 <Avatar className="h-8 w-8 self-start flex-shrink-0">
                   <AvatarImage src="/placeholder-bot.jpg" alt="Bot Avatar" data-ai-hint="robot avatar" />
                   <AvatarFallback>MA</AvatarFallback>
                 </Avatar>
-                <div className="max-w-xs lg:max-w-md rounded-lg p-3 shadow bg-secondary text-secondary-foreground">
-                  <div className="flex items-center space-x-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <p className="text-sm">Thinking...</p>
-                  </div>
+                <div
+                  className="max-w-xs lg:max-w-md rounded-lg p-3 shadow bg-secondary text-secondary-foreground flex items-center space-x-2"
+                >
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  <p className="text-sm italic">MediAssistant is thinking...</p>
                 </div>
               </div>
             )}
@@ -303,9 +301,9 @@ export function ChatInterface() {
             <Textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="w-full resize-none pr-3" // Reduced padding-right to make space for icon
+              className="w-full resize-none pr-3" 
               rows={1}
-              placeholder={isListening ? "Listening..." : ""} // Placeholder logic unchanged
+              placeholder={isListening ? "Listening..." : ""} 
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -343,3 +341,4 @@ export function ChatInterface() {
     </Card>
   );
 }
+
