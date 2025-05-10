@@ -58,11 +58,11 @@ body {
     --chart-4: 30 80% 55%;   /* Orange */
     --chart-5: 130 50% 50%;  /* Green */
 
-     /* Welcome Screen Colors - can be dynamic or fixed */
-    --welcome-color-1: 210 100% 60%; /* Brighter Blue */
-    --welcome-color-2: 170 98% 55%; /* Brighter Teal */
-    --welcome-color-3: 330 100% 65%; /* Vibrant Pink/Magenta */
-    --welcome-color-4: 45 100% 55%;  /* Bright Orange/Gold */
+     /* Welcome Screen Colors - Firebase Inspired Gradient */
+    --welcome-color-1: 45 100% 58%; /* Bright Yellow (e.g., #FFCA28) */
+    --welcome-color-2: 36 100% 50%; /* Bright Orange (e.g., #FFA000) */
+    --welcome-color-3: 25 100% 55%; /* Orange-Red (e.g., #FF8A65) */
+    --welcome-color-4: 15 100% 60%; /* Reddish-Orange (e.g., #FF7043) */
   }
 
   .dark {
@@ -112,11 +112,11 @@ body {
     --chart-4: 40 90% 65%;   /* Bright Yellow-Orange */
     --chart-5: 140 60% 60%;  /* Bright Green */
 
-    /* Welcome Screen Colors - Dark Mode Friendly */
-    --welcome-color-1: 210 100% 70%; 
-    --welcome-color-2: 170 98% 65%; 
-    --welcome-color-3: 330 100% 75%; 
-    --welcome-color-4: 45 100% 65%;
+    /* Welcome Screen Colors - Firebase Inspired Gradient (Dark Mode Friendly) */
+    --welcome-color-1: 45 100% 65%; /* Brighter Yellow */
+    --welcome-color-2: 36 100% 60%; /* Brighter Orange */
+    --welcome-color-3: 25 100% 65%; /* Brighter Orange-Red */
+    --welcome-color-4: 15 100% 70%; /* Brighter Reddish-Orange */
   }
 }
 
@@ -222,7 +222,7 @@ body {
   }
   50% { 
     opacity: var(--medical-pulse-opacity-peak, 0.5); 
-    transform: scale(1.2); /* Increased scale for more glow */
+    transform: scale(var(--medical-pulse-scale-peak, 1.2)); /* Use CSS variable for scale */
   } 
 }
 
@@ -243,7 +243,8 @@ body {
 }
 
 .welcome-text-fg-animated {
-  color: hsl(var(--background)); /* Default text color for animated hero text */
+  /* The animation directly sets the color, this is a fallback if animation is not supported or during initial render. */
+  color: hsl(var(--welcome-color-1)); 
   animation: welcome-text-color-cycle 12s linear infinite;
 }
 
@@ -259,7 +260,7 @@ body {
     135deg, 
     hsl(var(--primary)/0.8), 
     hsl(var(--accent)/0.8),   
-    hsl(var(--welcome-color-3)/0.8), 
+    hsl(var(--welcome-color-3)/0.8), /* Using welcome colors here for thematic consistency */
     hsl(var(--welcome-color-4)/0.8),  
     hsl(var(--primary)/0.8) 
   );
