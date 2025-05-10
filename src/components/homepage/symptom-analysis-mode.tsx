@@ -1,3 +1,4 @@
+
 // src/components/homepage/symptom-analysis-mode.tsx
 "use client";
 
@@ -5,7 +6,7 @@ import { useState } from 'react';
 import { SymptomForm } from '@/components/symptom-analyzer/symptom-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, ListChecks, Sparkles, BookOpen } from 'lucide-react'; // Added BookOpen for medico mode
+import { Loader2, ListChecks, Sparkles, BookOpen, Brain } from 'lucide-react'; 
 import type { SymptomAnalyzerOutput } from '@/ai/flows/symptom-analyzer-flow';
 import { useProMode } from '@/contexts/pro-mode-context'; 
 
@@ -77,10 +78,10 @@ export function SymptomAnalysisMode() {
               )}
               {userRole === 'medico' && (
                  <Alert variant="default" className="mt-4 border-sky-500/50 bg-sky-500/10 rounded-lg">
-                  <BookOpen className="h-5 w-5 text-sky-600" />
-                  <AlertTitle className="text-sky-700 dark:text-sky-500 font-semibold">Medico Study Mode</AlertTitle>
+                  <Brain className="h-5 w-5 text-sky-600" />
+                  <AlertTitle className="text-sky-700 dark:text-sky-500 font-semibold">Medico Study Focus: Symptom Analysis</AlertTitle>
                   <AlertDescription className="text-sky-600/80 dark:text-sky-500/80">
-                    Access learning-focused analysis, differential diagnosis examples, and case study insights.
+                    Use symptom analysis to practice differential diagnosis, understand clinical presentations, and prepare for case-based questions. Consider the pathophysiology behind each symptom.
                   </AlertDescription>
                 </Alert>
               )}

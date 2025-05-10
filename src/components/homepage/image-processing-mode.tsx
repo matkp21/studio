@@ -1,3 +1,4 @@
+
 // src/components/homepage/image-processing-mode.tsx
 "use client";
 
@@ -6,16 +7,16 @@ import Image from 'next/image';
 import { ImageUploader } from '@/components/image-analyzer/image-uploader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, ImageOff, ScanEye, Sparkles, BookOpen } from 'lucide-react'; // Added BookOpen
+import { Loader2, ImageOff, ScanEye, Sparkles, BookOpen, TestTubeDiagonal } from 'lucide-react';
 import type { AnalyzeImageOutput } from '@/ai/flows/image-analyzer';
-import { useProMode } from '@/contexts/pro-mode-context'; 
+import { useProMode } from '@/contexts/pro-mode-context';
 
 export function ImageProcessingMode() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeImageOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const { isProMode, userRole } = useProMode(); 
+  const { isProMode, userRole } = useProMode();
 
   const handleAnalysisComplete = (result: AnalyzeImageOutput | null, imageUrl?: string, err?: string) => {
     setAnalysisResult(result);
@@ -72,7 +73,7 @@ export function ImageProcessingMode() {
                   </p>
                 </div>
               )}
-              {isProMode && userRole === 'pro' && analysisResult && ( 
+              {isProMode && userRole === 'pro' && analysisResult && (
                 <Alert variant="default" className="mt-4 border-primary/50 bg-primary/10 rounded-lg">
                   <Sparkles className="h-5 w-5 text-primary" />
                   <AlertTitle className="text-primary font-semibold">Pro Mode Active</AlertTitle>
@@ -83,10 +84,10 @@ export function ImageProcessingMode() {
               )}
               {userRole === 'medico' && analysisResult && (
                 <Alert variant="default" className="mt-4 border-sky-500/50 bg-sky-500/10 rounded-lg">
-                  <BookOpen className="h-5 w-5 text-sky-600" />
-                  <AlertTitle className="text-sky-700 dark:text-sky-500 font-semibold">Medico Study Mode</AlertTitle>
+                  <TestTubeDiagonal className="h-5 w-5 text-sky-600" />
+                  <AlertTitle className="text-sky-700 dark:text-sky-500 font-semibold">Medico Study Focus: Image Analysis</AlertTitle>
                   <AlertDescription className="text-sky-600/80 dark:text-sky-500/80">
-                    View images with educational annotations, learning points, and explanations.
+                    Study image annotations to learn radiological signs and pathological changes. Correlate findings with clinical knowledge. Try the Interactive Anatomy Visualizer in chat: `/anatomy <structure>`
                   </AlertDescription>
                 </Alert>
               )}
