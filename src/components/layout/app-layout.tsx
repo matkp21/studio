@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
-import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, Users, BriefcaseMedical, School, Stethoscope } from 'lucide-react';
+import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, Users, BriefcaseMedical, School, Stethoscope, UserCog } from 'lucide-react'; // Added UserCog
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
@@ -122,7 +122,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
           
           <nav className="flex items-center gap-4">
-            {isProMode && ( // isProMode is now derived from userRole === 'pro'
+            {isProMode && ( 
               <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10 hidden sm:flex items-center gap-1.5 py-1 px-2.5">
                 <Sparkles className="h-3.5 w-3.5" />
                 Pro Features
@@ -137,7 +137,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-72"> {/* Increased width for role selection */}
+              <DropdownMenuContent align="end" className="w-72"> 
                  <DropdownMenuLabel className="flex items-start gap-2">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
@@ -162,8 +162,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 <DropdownMenuSeparator />
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
-                    <Users className="mr-2 h-4 w-4" />
-                    <span>Change Role</span>
+                    <UserCog className="mr-2 h-4 w-4" /> {/* Changed icon for role context */}
+                    <span className={cn(userRole && "firebase-gradient-text font-semibold")}>
+                      {userRole ? getRoleDisplayString(userRole) : "Select Role"}
+                    </span>
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent>

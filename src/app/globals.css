@@ -293,3 +293,30 @@ body {
 .glowing-ring-firebase {
   animation: firebase-glow-ring 5s linear infinite;
 }
+
+/* Firebase Gradient Text with Glow */
+.firebase-gradient-text {
+  background-size: 200% auto;
+  background-image: linear-gradient(to right, 
+    hsl(var(--welcome-color-1)) 0%, 
+    hsl(var(--welcome-color-2)) 25%, 
+    hsl(var(--welcome-color-3)) 50%, 
+    hsl(var(--welcome-color-4)) 75%, 
+    hsl(var(--welcome-color-1)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Subtle text glow using multiple shadows for a softer effect */
+  text-shadow: 
+    0 0 4px hsl(var(--welcome-color-2)/0.5), /* Inner, softer glow */
+    0 0 8px hsl(var(--welcome-color-3)/0.3); /* Outer, more diffuse glow */
+  /* Optional: add animation for flowing gradient if desired */
+  /* animation: firebase-gradient-flow 4s linear infinite; */
+}
+
+/* Optional: animation for flowing gradient if text is long enough to show it */
+/* @keyframes firebase-gradient-flow {
+  to {
+    background-position: 200% center;
+  }
+} */
