@@ -1,7 +1,8 @@
 
 "use client";
 
-import { useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -48,12 +49,14 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
       case 'role':
         if (selectedRole) {
           // Here you would typically save the role preference
+          // For now, just log it and proceed
           console.log("Selected role:", selectedRole);
+          // Example: localStorage.setItem('userRole', selectedRole);
           setCurrentStep('complete');
         }
         break;
       case 'complete':
-        onClose();
+        onClose(); // This will also set localStorage 'onboardingComplete' to true in AppLayout
         break;
     }
   };
@@ -108,7 +111,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
     role: {
       title: "Personalize Your Experience",
       icon: <User className="h-10 w-10 text-primary mb-3" />,
-      description: "Tell us about yourself to tailor MediAssistant to your needs.",
+      description: "Tell us about yourself to tailor MediAssistant to your needs. This will help us customize your dashboard and feature suggestions in the future.",
       content: (
         <RadioGroup
           value={selectedRole ?? undefined}
@@ -156,7 +159,13 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
     complete: {
       title: "Setup Complete!",
       icon: <CheckCircle className="h-12 w-12 text-green-500 mb-4" />,
-      description: `You're all set${selectedRole ? ` as a ${selectedRole}` : ''}. Enjoy using MediAssistant!`,
+      description: (
+        <>
+          You&apos;re all set{selectedRole ? ` as a ${selectedRole}` : ''}. Enjoy using MediAssistant!
+          <br />
+          Your dashboard and experience will be tailored based on your selection in future updates.
+        </>
+      ),
       nextButtonText: "Finish",
     },
   };
@@ -166,7 +175,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-lg rounded-xl shadow-2xl">
-        <DialogHeader className="text-center items-center">
+        <DialogHeader className="text-center items-center pt-6">
           {currentStepContent.icon}
           <DialogTitle className="text-2xl font-bold">{currentStepContent.title}</DialogTitle>
           <DialogDescription className="text-muted-foreground px-4">
@@ -180,12 +189,12 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
           </div>
         )}
 
-        <DialogFooter className="gap-2 sm:justify-between pt-4">
+        <DialogFooter className="gap-2 sm:justify-between pt-4 pb-6 px-6">
           {currentStepContent.prevButtonText ? (
             <Button variant="outline" onClick={handlePrevious} className="rounded-lg">
               {currentStepContent.prevButtonText}
             </Button>
-          ) : <div />}
+          ) : <div />} {/* Placeholder to keep "Next" button to the right */}
           <Button 
             onClick={handleNext} 
             disabled={currentStep === 'role' && !selectedRole}

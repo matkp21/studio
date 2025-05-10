@@ -1,3 +1,4 @@
+
 // src/components/layout/app-layout.tsx
 "use client";
 
@@ -48,15 +49,15 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
 
   useEffect(() => {
-    setClientLoaded(true);
+    setClientLoaded(true); // Indicate that the component has mounted on the client
 
+    // Check for onboarding completion only on the client-side
     if (typeof window !== 'undefined') {
-      // Only check for onboarding after client has loaded
       if (localStorage.getItem('onboardingComplete') !== 'true') {
         setShowOnboardingModal(true);
       }
 
-      // TODO: Implement push notification permission request here
+      // TODO: Implement push notification permission request here (from previous PWA work)
       // Example:
       // if ('Notification' in window && navigator.serviceWorker) {
       //   Notification.requestPermission().then(permission => {
@@ -67,7 +68,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       //   });
       // }
     }
-
+    
     const handleScroll = () => {
       if (typeof window !== 'undefined') {
         setScrolled(window.scrollY > 20);
