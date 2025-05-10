@@ -13,12 +13,13 @@ import {
   FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, ArrowRight, Lightbulb
 } from 'lucide-react';
 
-// Import the actual component
+// Import the actual components
 import { DifferentialDiagnosisAssistant } from './differential-diagnosis-assistant'; 
 import { DischargeSummaryGenerator } from './discharge-summary-generator';
 import { TreatmentProtocolNavigator } from './treatment-protocol-navigator';
 import { RoundsTool } from './rounds-tool';
 import { PharmacopeiaChecker } from './pharmacopeia-checker';
+import { SmartDictation } from './smart-dictation'; // Import the new component
 
 
 // Placeholder components for Pro tools that are still "coming soon"
@@ -30,7 +31,6 @@ const PlaceholderTool = ({ title }: { title: string }) => (
   </div>
 );
 
-const SmartDictation = () => <PlaceholderTool title="Smart Dictation & Note Assistant" />;
 const ClinicalCalculatorSuite = () => <PlaceholderTool title="Intelligent Clinical Calculator Suite" />;
 const ReferralStreamliner = () => <PlaceholderTool title="Referral & Consultation Streamliner" />;
 const PersonalizedDashboard = () => <PlaceholderTool title="Personalized Clinical Dashboard (View)" />; // This is the overall page
@@ -68,7 +68,7 @@ const proToolsList: ProTool[] = [
   { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator, comingSoon: false }, 
   { id: 'rounds', title: 'Rounds Tool 2.0', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool, comingSoon: false },
   { id: 'pharmacopeia', title: 'Pharmacopeia & Interaction Checker', description: 'Comprehensive drug database and interaction analysis.', icon: Pill, component: PharmacopeiaChecker, comingSoon: false },
-  { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation, comingSoon: true },
+  { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation, comingSoon: false },
   { id: 'calculators', title: 'Intelligent Clinical Calculators', description: 'Suite of scores and criteria (GRACE, Wells\', etc.).', icon: BarChart3, component: ClinicalCalculatorSuite, comingSoon: true },
   { id: 'referral', title: 'Referral & Consultation Streamliner', description: 'Templates and quick summary generation for referrals.', icon: PhoneForwarded, component: ReferralStreamliner, comingSoon: true },
   { id: 'patientComm', title: 'Patient Communication Drafter', description: 'AI drafts for patient-friendly explanations and instructions.', icon: MessageSquareHeart, component: PatientCommunicationDrafter, comingSoon: true },
