@@ -14,7 +14,10 @@ import { AnatomyVisualizer } from './anatomy-visualizer';
 import { MnemonicsGenerator } from './mnemonics-generator';
 import { DifferentialDiagnosisTrainer } from './differential-diagnosis-trainer';
 import { VirtualPatientRounds } from './virtual-patient-rounds';
-import { HighYieldTopicPredictor } from './high-yield-topic-predictor'; // Added import
+import { HighYieldTopicPredictor } from './high-yield-topic-predictor';
+import { DrugDosageCalculator } from './drug-dosage-calculator';
+import { SolvedQuestionPapersViewer } from './solved-question-papers-viewer';
+import { FlowchartCreator } from './flowchart-creator';
 import { 
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy, 
   Users, Eye, Brain, TrendingUp, Calculator, FlaskConical, Workflow 
@@ -58,10 +61,10 @@ const medicoToolsList: MedicoTool[] = [
   { id: 'mnemonics', title: 'Mnemonics Generator', description: 'Create memory aids for complex topics.', icon: Lightbulb, component: MnemonicsGenerator },
   { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'Practice listing diagnoses based on symptoms.', icon: Brain, component: DifferentialDiagnosisTrainer },
   { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds },
-  { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study.', icon: TrendingUp, component: HighYieldTopicPredictor, comingSoon: false }, // Changed comingSoon and added component
-  { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, comingSoon: true },
-  { id: 'papers', title: 'Solved Question Papers', description: 'Access past exam papers with solutions.', icon: BookCopy, comingSoon: true },
-  { id: 'flowcharts', title: 'Flowchart Creator', description: 'Create diagnostic or treatment flowcharts.', icon: Workflow, comingSoon: true },
+  { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study.', icon: TrendingUp, component: HighYieldTopicPredictor },
+  { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator, comingSoon: false },
+  { id: 'papers', title: 'Solved Question Papers', description: 'Access past exam papers with solutions.', icon: BookCopy, component: SolvedQuestionPapersViewer, comingSoon: false },
+  { id: 'flowcharts', title: 'Flowchart Creator', description: 'Create diagnostic or treatment flowcharts.', icon: Workflow, component: FlowchartCreator, comingSoon: false },
 ];
 
 
