@@ -38,7 +38,6 @@ const RoundsTool = () => <PlaceholderTool title="Rounds Tool 2.0 (Shared Tasks &
 const PatientCommunicationDrafter = () => <PlaceholderTool title="AI-Assisted Patient Communication Drafter" />;
 const OnCallHandoverAssistant = () => <PlaceholderTool title="Intelligent On-Call Handover Assistant" />;
 const ResearchSummarizer = () => <PlaceholderTool title="AI-Powered Research & Literature Summarizer" />;
-// const DischargeSummaryGenerator = () => <PlaceholderTool title="Quick Discharge Summary Generator" />;
 
 
 type ActiveToolId = 
@@ -66,8 +65,8 @@ interface ProTool {
 
 const proToolsList: ProTool[] = [
   { id: 'diffDx', title: 'Differential Diagnosis Assistant', description: 'AI-powered suggestions, investigations, and initial management steps.', icon: Brain, component: DifferentialDiagnosisAssistant, comingSoon: false },
-  { id: 'discharge', title: 'Discharge Summary Generator', description: 'Ultra-streamlined, predictive discharge summary creation.', icon: FilePlus, component: DischargeSummaryGenerator, comingSoon: true }, // Keep as coming soon for now, will enable next
-  { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator, comingSoon: true }, // Keep as coming soon
+  { id: 'discharge', title: 'Discharge Summary Generator', description: 'Ultra-streamlined, predictive discharge summary creation.', icon: FilePlus, component: DischargeSummaryGenerator, comingSoon: false }, 
+  { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator, comingSoon: true }, 
   { id: 'rounds', title: 'Rounds Tool 2.0', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool, comingSoon: true },
   { id: 'pharmacopeia', title: 'Pharmacopeia & Interaction Checker', description: 'Comprehensive drug database and interaction analysis.', icon: Pill, component: PharmacopeiaChecker, comingSoon: true },
   { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation, comingSoon: true },
@@ -149,3 +148,4 @@ export function ProDashboard() {
     </div>
   );
 }
+
