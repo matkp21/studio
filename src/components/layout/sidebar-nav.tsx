@@ -1,4 +1,3 @@
-
 // src/components/layout/sidebar-nav.tsx
 "use client";
 
@@ -16,19 +15,20 @@ import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Home,
-  MessageCircleMore, // Using a more generic chat icon as BotMessageSquare might not be available or fit all contexts
+  BotMessageSquare, 
   ClipboardList, 
   ScanEye,       
   Settings2,     
   LogOut,
+  GraduationCap, 
+  HeartPulse, // Added HeartPulse
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useProMode } from '@/contexts/pro-mode-context'; // Import context
+import { useProMode } from '@/contexts/pro-mode-context'; 
 
 const baseNavItems = [
   { href: '/', label: 'Home', icon: Home, ariaLabel: 'Go to Home page' },
-  { href: '/chat', label: 'Chat', icon: MessageCircleMore, ariaLabel: 'Open Chat interface' },
-  // Patient Management will be added conditionally
+  { href: '/chat', label: 'Chat', icon: BotMessageSquare, ariaLabel: 'Open Chat interface' },
   { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye, ariaLabel: 'Open AR Viewer' },
 ];
 
@@ -39,18 +39,34 @@ const patientManagementNavItem = {
   ariaLabel: 'Open Patient Management' 
 };
 
+const medicoDashboardNavItem = {
+  href: '/medico',
+  label: 'Medico Tools',
+  icon: GraduationCap,
+  ariaLabel: 'Open Medico Dashboard'
+};
+
 export function SidebarNav() {
   const pathname = usePathname();
-  const { userRole } = useProMode(); // Get userRole from context
+  const { userRole } = useProMode(); 
 
   const navItems = [...baseNavItems];
-  if (userRole === 'pro' || userRole === 'medico') {
-    // Insert Patient Management at a specific position, e.g., after Chat
+  
+  if (userRole === 'medico') {
     const chatIndex = navItems.findIndex(item => item.href === '/chat');
     if (chatIndex !== -1) {
-      navItems.splice(chatIndex + 1, 0, patientManagementNavItem);
+      navItems.splice(chatIndex + 1, 0, medicoDashboardNavItem);
     } else {
-      navItems.push(patientManagementNavItem); // Fallback if chat isn't found
+      navItems.push(medicoDashboardNavItem);
+    }
+  }
+
+  if (userRole === 'pro' || userRole === 'medico') {
+    const referenceIndex = navItems.findIndex(item => item.href === '/medico' || item.href === '/chat');
+    if (referenceIndex !== -1) {
+      navItems.splice(referenceIndex + 1, 0, patientManagementNavItem);
+    } else {
+      navItems.push(patientManagementNavItem); 
     }
   }
 
@@ -71,12 +87,12 @@ export function SidebarNav() {
                   tooltip={item.label}
                   aria-label={item.ariaLabel}
                   className={cn(
-                    "justify-start w-full group-hover/menu-item:bg-sidebar-accent/80 group-hover/menu-item:text-sidebar-accent-foreground", 
-                    pathname === item.href && "bg-sidebar-accent text-sidebar-accent-foreground"
+                    "justify-start w-full group-hover/menu-item:bg-sidebar-accent/80 group-hover/menu-item:text-sidebar-accent-foreground transition-all duration-200 ease-in-out transform group-hover/menu-item:scale-105 group-hover/menu-item:shadow-md", 
+                    pathname === item.href && "bg-sidebar-accent text-sidebar-accent-foreground shadow-lg scale-105"
                   )}
                 >
                   <a>
-                    <item.icon className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-button:scale-110" />
+                    <item.icon className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-button:rotate-[-5deg] group-hover/menu-button:scale-110" />
                     <span>{item.label}</span>
                   </a>
                 </SidebarMenuButton>
@@ -88,14 +104,14 @@ export function SidebarNav() {
       <SidebarFooter className="p-2 border-t border-sidebar-border/50">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="justify-start w-full group-hover/menu-item:bg-sidebar-accent/80 group-hover/menu-item:text-sidebar-accent-foreground" tooltip="Settings" aria-label="Open Settings">
-              <Settings2 className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-button:scale-110" />
+            <SidebarMenuButton className="justify-start w-full group-hover/menu-item:bg-sidebar-accent/80 group-hover/menu-item:text-sidebar-accent-foreground transition-all duration-200 ease-in-out transform group-hover/menu-item:scale-105 group-hover/menu-item:shadow-md" tooltip="Settings" aria-label="Open Settings">
+              <Settings2 className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-button:rotate-[-5deg] group-hover/menu-button:scale-110" />
               <span>Settings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-             <SidebarMenuButton className="justify-start w-full group-hover/menu-item:bg-sidebar-accent/80 group-hover/menu-item:text-sidebar-accent-foreground" tooltip="Logout" aria-label="Logout">
-              <LogOut className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-button:scale-110" />
+             <SidebarMenuButton className="justify-start w-full group-hover/menu-item:bg-sidebar-accent/80 group-hover/menu-item:text-sidebar-accent-foreground transition-all duration-200 ease-in-out transform group-hover/menu-item:scale-105 group-hover/menu-item:shadow-md" tooltip="Logout" aria-label="Logout">
+              <LogOut className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-button:rotate-[-5deg] group-hover/menu-button:scale-110" />
               <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -103,7 +119,9 @@ export function SidebarNav() {
         <div className="flex items-center gap-3 p-3 mt-2">
           <Avatar className="h-10 w-10">
             <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
-            <AvatarFallback>DR</AvatarFallback>
+             <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 glowing-ring-firebase">
+              <HeartPulse className="h-4 w-4 text-white" />
+            </AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
             <span className="text-sm font-medium text-sidebar-foreground">Dr. Robot</span>
@@ -116,4 +134,3 @@ export function SidebarNav() {
     </>
   );
 }
-
