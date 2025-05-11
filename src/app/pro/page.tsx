@@ -1,7 +1,7 @@
 // src/app/pro/page.tsx
 "use client";
 
-import { ProModeDashboard } from '@/components/pro/pro-mode-dashboard'; // Updated import
+import { ProModeDashboard } from '@/components/pro/pro-dashboard'; // Updated import
 import { useProMode } from '@/contexts/pro-mode-context';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'; // Added useState
@@ -46,5 +46,5 @@ export default function ProPage() {
     );
   }
 
-  return <ProModeDashboard />; // Use the new dashboard
+  return <ProModeDashboard />; 
 }
