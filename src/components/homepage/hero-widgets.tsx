@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from "@/lib/utils";
 import { format, isSameDay } from "date-fns";
 import { CalendarIcon, ClockIcon, Dot } from "lucide-react";
+import { ClockWidget } from './clock-widget'; // New import
 
 export interface HeroTask {
   id: string;
@@ -24,14 +25,22 @@ interface CompactCalendarProps {
 }
 
 const CompactCalendar: React.FC<CompactCalendarProps> = ({ tasks }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date()); // To display current date on button
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isCalendarPopoverOpen, setIsCalendarPopoverOpen] = useState(false);
+
+
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      setCurrentDate(new Date());
+    }, 60000); // Update current date display every minute
+    return () => clearInterval(timerId);
+  }, []);
 
   const tasksForSelectedDate = tasks.filter(task => selectedDate && isSameDay(task.date, selectedDate));
 
   return (
-    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+    <Popover open={isCalendarPopoverOpen} onOpenChange={setIsCalendarPopoverOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -49,7 +58,6 @@ const CompactCalendar: React.FC<CompactCalendarProps> = ({ tasks }) => {
           onSelect={setSelectedDate}
           initialFocus
           modifiers={{
-            // Highlight days with tasks
             taskDay: tasks.map(task => task.date),
           }}
           modifiersStyles={{
@@ -95,7 +103,7 @@ const CompactCalendar: React.FC<CompactCalendarProps> = ({ tasks }) => {
   );
 };
 
-const DigitalClock = () => {
+const DigitalClockDisplay = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -106,7 +114,7 @@ const DigitalClock = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-center h-12 px-4 py-2 text-sm font-medium bg-card border border-border/50 rounded-lg shadow-sm min-w-[120px]">
+    <div className="flex items-center justify-center h-12 px-4 py-2 text-sm font-medium bg-card border border-border/50 rounded-lg shadow-sm min-w-[120px] hover:bg-accent/50 transition-colors cursor-pointer">
       <ClockIcon className="mr-2 h-4 w-4 text-primary" />
       <span className="text-foreground">{format(currentTime, "p")}</span>
     </div>
@@ -118,10 +126,19 @@ interface HeroWidgetsProps {
 }
 
 export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
+  const [isClockWidgetOpen, setIsClockWidgetOpen] = useState(false);
+
   return (
-    <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 py-4 px-2">
+    <div className="mt-6 flex w-full max-w-md mx-auto items-center justify-between gap-4 md:gap-6 py-4 px-2">
       <CompactCalendar tasks={tasks} />
-      <DigitalClock />
+      <Popover open={isClockWidgetOpen} onOpenChange={setIsClockWidgetOpen}>
+        <PopoverTrigger asChild>
+          <DigitalClockDisplay />
+        </PopoverTrigger>
+        <PopoverContent className="w-80 p-0 rounded-xl shadow-xl border-border/70" align="end">
+           <ClockWidget onClose={() => setIsClockWidgetOpen(false)} />
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };
