@@ -4,9 +4,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { CheckSquare, MessageCircle, Bell, CalendarDays, Settings, PlusCircle, Edit2, GripVertical } from "lucide-react";
-import { useState } from "react";
+import { CheckSquare, MessageCircle, Bell, CalendarDays, Settings, PlusCircle, Edit2, GripVertical, Star } from "lucide-react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+
 
 interface TaskItem {
   id: string;
@@ -30,7 +32,9 @@ interface DashboardWidget {
   title: string;
   icon: React.ElementType;
   content: React.ReactNode;
-  defaultPosition: number; // For initial ordering
+  defaultPosition: number;
+  isFrequentlyUsed?: boolean; 
+  colSpan?: string; // e.g., 'lg:col-span-1', 'lg:col-span-2'
 }
 
 
@@ -38,13 +42,37 @@ export function PersonalizedClinicalDashboard() {
   const [tasks, setTasks] = useState<TaskItem[]>(initialTasks);
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // In a real app, widgets would be more dynamic and could fetch data
   const widgets: DashboardWidget[] = [
+     {
+      id: 'patientAlerts',
+      title: 'Key Patient Alerts',
+      icon: Bell,
+      defaultPosition: 0,
+      isFrequentlyUsed: true,
+      colSpan: 'lg:col-span-2',
+      content: (
+         <ScrollArea className="h-40">
+          <ul className="space-y-2">
+            {tasks.filter(t => t.category === 'Patient Alert' && !t.completed).map(task => (
+              <li key={task.id} className="flex items-center justify-between p-2 bg-destructive/10 border border-destructive/30 rounded-md text-sm">
+                <span className="font-medium text-destructive">{task.text}</span>
+                 <Button variant="ghost" size="sm" className="text-xs text-destructive" onClick={() => setTasks(currentTasks => currentTasks.map(t => t.id === task.id ? {...t, completed: true} : t))}>
+                  Acknowledge
+                </Button>
+              </li>
+            ))}
+            {tasks.filter(t => t.category === 'Patient Alert' && !t.completed).length === 0 && <p className="text-center text-muted-foreground py-4">No active alerts.</p>}
+          </ul>
+        </ScrollArea>
+      )
+    },
     {
       id: 'pendingTasks',
       title: 'Pending Tasks',
       icon: CheckSquare,
       defaultPosition: 1,
+      isFrequentlyUsed: true, 
+      colSpan: 'lg:col-span-1',
       content: (
         <ScrollArea className="h-60">
           <ul className="space-y-2">
@@ -72,39 +100,19 @@ export function PersonalizedClinicalDashboard() {
       title: 'Messages & Communications',
       icon: MessageCircle,
       defaultPosition: 2,
+      colSpan: 'lg:col-span-1',
       content: <p className="text-muted-foreground text-sm p-4 text-center">Secure messaging interface placeholder. (e.g., unread messages count, quick reply)</p>
-    },
-    {
-      id: 'patientAlerts',
-      title: 'Key Patient Alerts',
-      icon: Bell,
-      defaultPosition: 0, // High priority
-      content: (
-         <ScrollArea className="h-40">
-          <ul className="space-y-2">
-            {tasks.filter(t => t.category === 'Patient Alert' && !t.completed).map(task => (
-              <li key={task.id} className="flex items-center justify-between p-2 bg-destructive/10 border border-destructive/30 rounded-md text-sm">
-                <span className="font-medium text-destructive">{task.text}</span>
-                 <Button variant="ghost" size="sm" className="text-xs text-destructive" onClick={() => setTasks(currentTasks => currentTasks.map(t => t.id === task.id ? {...t, completed: true} : t))}>
-                  Acknowledge
-                </Button>
-              </li>
-            ))}
-            {tasks.filter(t => t.category === 'Patient Alert' && !t.completed).length === 0 && <p className="text-center text-muted-foreground py-4">No active alerts.</p>}
-          </ul>
-        </ScrollArea>
-      )
     },
     {
       id: 'scheduleOverview',
       title: 'Schedule & On-Call',
       icon: CalendarDays,
       defaultPosition: 3,
+      colSpan: 'lg:col-span-1',
       content: <p className="text-muted-foreground text-sm p-4 text-center">Today's appointments and on-call responsibilities placeholder.</p>
     }
   ];
   
-  // Placeholder for widget order - in real app, this would be user-configurable and stored
   const [widgetOrder, setWidgetOrder] = useState<string[]>(widgets.sort((a,b) => a.defaultPosition - b.defaultPosition).map(w => w.id));
 
 
@@ -123,13 +131,12 @@ export function PersonalizedClinicalDashboard() {
           <CardHeader className="p-0 pb-2">
             <CardTitle className="text-lg text-primary">Customize Dashboard Layout</CardTitle>
             <CardDescription className="text-xs">
-              Drag and drop functionality for reordering widgets and options to show/hide widgets are planned for a future update.
-              Click "{isEditMode ? 'Save Layout' : 'Customize'}" again to exit this customization view. Actual layout saving is not yet implemented.
+              Drag and drop functionality for reordering widgets is conceptual for future versions.
+              Click "{isEditMode ? 'Save Layout' : 'Customize'}" again to exit. Actual layout saving is not yet implemented.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0 pt-2">
              <p className="text-sm text-muted-foreground">
-              Placeholder: Future controls for widget selection and reordering will appear here. 
               The grip handles <GripVertical className="inline h-4 w-4 text-muted-foreground" /> on widgets are for visual representation of this planned feature.
             </p>
           </CardContent>
@@ -141,18 +148,31 @@ export function PersonalizedClinicalDashboard() {
           const widget = widgets.find(w => w.id === widgetId);
           if (!widget) return null;
           return (
-            <Card key={widget.id} className={cn("shadow-md rounded-xl border-border/50", widget.id === 'patientAlerts' && 'lg:col-span-2')}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <div className="flex items-center gap-2">
-                  <widget.icon className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-md font-medium">{widget.title}</CardTitle>
-                </div>
-                {isEditMode && <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" title="Drag to reorder (conceptual)" />}
-              </CardHeader>
-              <CardContent>
-                {widget.content}
-              </CardContent>
-            </Card>
+            <motion.div
+              key={widget.id}
+              layout // Enables smooth animation when reordering (if D&D was implemented)
+              whileHover={!isEditMode ? { y: -3, boxShadow: "0px 8px 15px hsla(var(--primary) / 0.15)" } : {}}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className={cn(
+                "bg-card rounded-xl shadow-md border-2 border-transparent",
+                widget.colSpan || 'lg:col-span-1', // Apply colSpan
+                widget.isFrequentlyUsed && !isEditMode && "tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
+                isEditMode && "cursor-grab"
+              )}
+            >
+              <Card className={cn("h-full border-none shadow-none", widget.isFrequentlyUsed && !isEditMode && "bg-transparent")}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-4">
+                  <div className="flex items-center gap-2">
+                    <widget.icon className={cn("h-5 w-5", widget.isFrequentlyUsed ? "text-primary" : "text-muted-foreground")} />
+                    <CardTitle className="text-md font-medium">{widget.title}</CardTitle>
+                  </div>
+                  {isEditMode && <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" title="Drag to reorder (conceptual)" />}
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  {widget.content}
+                </CardContent>
+              </Card>
+            </motion.div>
           );
         })}
       </div>
@@ -164,4 +184,3 @@ export function PersonalizedClinicalDashboard() {
     </div>
   );
 }
-

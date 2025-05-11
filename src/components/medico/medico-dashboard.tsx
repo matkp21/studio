@@ -71,7 +71,6 @@ const medicoToolsList: MedicoTool[] = [
   { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
 ];
 
-// Simulate frequently used tools - in a real app, this would be dynamic
 const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['notes', 'mcq', 'papers', 'flashcards'];
 
 
@@ -91,7 +90,7 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
         className={cn(
           "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
           !isEditMode && "hover:shadow-lg cursor-pointer",
-          isFrequentlyUsed && !isEditMode && "tool-card-frequent firebase-gradient-border-hover", 
+          isFrequentlyUsed && !isEditMode && "tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow", 
           tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
           isEditMode && "cursor-grab"
         )}
@@ -103,26 +102,26 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
         aria-label={`Launch ${tool.title}`}
       >
         {isEditMode && (
-          <GripVertical className="absolute top-2 left-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder (conceptual)" />
+          <GripVertical className="absolute top-2 right-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder (conceptual)" />
         )}
-        {isFrequentlyUsed && !isEditMode && ( // Only show star if not in edit mode
+        {isFrequentlyUsed && !isEditMode && (
           <Star className="absolute top-2 right-2 h-5 w-5 text-yellow-400 fill-yellow-400 z-10" />
         )}
         <CardHeader className="pb-3 pt-4 px-4">
           <div className="flex items-center gap-3 mb-1.5">
             <div className={cn(
                 "p-2 rounded-lg bg-primary/10 text-primary transition-colors duration-300",
-                isFrequentlyUsed ? "bg-gradient-to-br from-[hsl(var(--welcome-color-1)/0.2)] to-[hsl(var(--welcome-color-3)/0.2)] text-foreground" : (!isEditMode && "group-hover:bg-primary/20")
+                isFrequentlyUsed && !isEditMode ? "bg-gradient-to-br from-[hsl(var(--welcome-color-1)/0.2)] to-[hsl(var(--welcome-color-3)/0.2)] text-foreground" : (!isEditMode && "group-hover:bg-primary/20")
             )}>
                 <tool.icon className={cn(
                     "h-7 w-7 transition-transform duration-300",
                     !isEditMode && "group-hover:scale-110",
-                    isFrequentlyUsed ? "text-primary" : "text-primary" 
+                    isFrequentlyUsed && !isEditMode ? "text-primary" : "text-primary" 
                 )} />
             </div>
             <CardTitle className={cn(
                 "text-lg leading-tight",
-                isFrequentlyUsed && "text-foreground"
+                isFrequentlyUsed && !isEditMode && "text-foreground"
             )}>{tool.title}</CardTitle>
           </div>
           <CardDescription className="text-xs leading-relaxed line-clamp-2 min-h-[2.5em]">{tool.description}</CardDescription>
@@ -136,7 +135,7 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
              <div className="w-full text-right">
                 <Button variant="link" size="sm" disabled={isEditMode} className={cn(
                     "text-primary group-hover:underline p-0 h-auto text-xs",
-                     isFrequentlyUsed && "text-foreground hover:text-primary",
+                     isFrequentlyUsed && !isEditMode && "text-foreground hover:text-primary",
                      isEditMode && "text-muted-foreground cursor-default"
                     )}>
                    Open Tool <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -153,7 +152,7 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
 export function MedicoDashboard() {
   const [activeDialog, setActiveDialog] = useState<ActiveToolId>(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [displayedTools] = useState<MedicoTool[]>(medicoToolsList); // For future customization
+  const [displayedTools] = useState<MedicoTool[]>(medicoToolsList); 
 
   const currentTool = displayedTools.find(tool => tool.id === activeDialog);
 
@@ -178,7 +177,7 @@ export function MedicoDashboard() {
       {isEditMode && (
         <div className="p-4 mb-6 border border-dashed border-primary/50 rounded-lg bg-primary/5 text-center animate-pulse-medical" style={{"--medical-pulse-opacity-base": "1", "--medical-pulse-opacity-peak": "0.9", "--medical-pulse-scale-peak": "1.01"} as React.CSSProperties}>
             <p className="text-sm text-primary">
-                Dashboard customization mode is active. (Drag-and-drop functionality is conceptual for future versions).
+                Dashboard customization mode is active. Drag tool cards to reorder. (Drag functionality is conceptual for future versions).
             </p>
         </div>
       )}
