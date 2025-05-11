@@ -43,8 +43,8 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
   return (
     <div 
       className={cn(
-        "mt-4 flex w-full max-w-md mx-auto items-center justify-between gap-2 md:gap-4 py-2 px-3 rounded-lg shadow-lg",
-        "firebase-ribbon-background text-primary-foreground" 
+        "mt-4 flex w-full max-w-md mx-auto items-center justify-between gap-2 md:gap-4 py-2 px-3 rounded-lg shadow-sm", // General layout
+        "bg-background border border-border/40" // Subtle panel style
       )}
       aria-label="Date and Time Information Panel"
     >
@@ -53,7 +53,7 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
         <PopoverTrigger asChild>
           <Button
             variant="ghost" 
-            className="flex-1 justify-center text-left font-normal text-xs sm:text-sm rounded-md h-auto p-2 text-primary-foreground hover:bg-primary-foreground/10 focus-visible:ring-primary-foreground/50"
+            className="flex-1 justify-center text-left font-normal text-xs sm:text-sm rounded-md h-auto p-2 text-foreground hover:bg-accent/10 focus-visible:ring-ring"
             aria-label="Open calendar and tasks"
           >
             <CalendarDays className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" />
@@ -114,15 +114,15 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
         </PopoverContent>
       </Popover>
 
-      {/* Separator (optional, for visual distinction) */}
-      <div className="h-6 w-px bg-primary-foreground/30" />
+      {/* Separator */}
+      <div className="h-6 w-px bg-border" />
 
       {/* Right Side: Clock */}
       <Popover open={isClockWidgetPopoverOpen} onOpenChange={setIsClockWidgetPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost" 
-            className="flex-1 justify-center text-left font-normal text-xs sm:text-sm rounded-md h-auto p-2 text-primary-foreground hover:bg-primary-foreground/10 focus-visible:ring-primary-foreground/50"
+            className="flex-1 justify-center text-left font-normal text-xs sm:text-sm rounded-md h-auto p-2 text-foreground hover:bg-accent/10 focus-visible:ring-ring"
             aria-label="Open clock, timer, and reminders widget"
           >
             <span className="font-semibold">{format(currentDateTime, "p")}</span>
