@@ -10,8 +10,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from "@/lib/utils";
 import { format, isSameDay } from "date-fns";
 import { CalendarDays, Clock, Dot, TimerIcon, BellRing, AlarmClockCheck } from "lucide-react";
-import { ClockWidget } from './clock-widget'; // ClockWidget remains for timer/reminders functionality
-import { useToast } from '@/hooks/use-toast'; // If tasks need toast notifications
+import { ClockWidget } from './clock-widget'; 
+import { useToast } from '@/hooks/use-toast'; 
 
 export interface HeroTask {
   id: string;
@@ -29,12 +29,12 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | undefined>(new Date());
   const [isCalendarPopoverOpen, setIsCalendarPopoverOpen] = useState(false);
   const [isClockWidgetPopoverOpen, setIsClockWidgetPopoverOpen] = useState(false);
-  const { toast } = useToast(); // Keep if used by task interactions
+  const { toast } = useToast(); 
 
   useEffect(() => {
     const timerId = setInterval(() => {
       setCurrentDateTime(new Date());
-    }, 1000); // Update every second for the clock
+    }, 1000); 
     return () => clearInterval(timerId);
   }, []);
 
@@ -44,7 +44,7 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
     <div 
       className={cn(
         "mt-4 flex w-full max-w-md mx-auto items-center justify-between gap-2 md:gap-4 py-2 px-3 rounded-lg shadow-lg",
-        "firebase-ribbon-background text-primary-foreground" // Apply gradient background and ensure text contrasts
+        "firebase-ribbon-background text-primary-foreground" 
       )}
       aria-label="Date and Time Information Panel"
     >
@@ -52,8 +52,8 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
       <Popover open={isCalendarPopoverOpen} onOpenChange={setIsCalendarPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="ghost" // Make it look like part of the ribbon
-            className="flex-1 justify-center text-left font-normal text-xs sm:text-sm rounded-md h-auto p-2 hover:bg-white/10 focus-visible:ring-white/50"
+            variant="ghost" 
+            className="flex-1 justify-center text-left font-normal text-xs sm:text-sm rounded-md h-auto p-2 text-primary-foreground hover:bg-primary-foreground/10 focus-visible:ring-primary-foreground/50"
             aria-label="Open calendar and tasks"
           >
             <CalendarDays className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" />
@@ -115,14 +115,14 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
       </Popover>
 
       {/* Separator (optional, for visual distinction) */}
-      <div className="h-6 w-px bg-white/30" />
+      <div className="h-6 w-px bg-primary-foreground/30" />
 
       {/* Right Side: Clock */}
       <Popover open={isClockWidgetPopoverOpen} onOpenChange={setIsClockWidgetPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="ghost" // Make it look like part of the ribbon
-            className="flex-1 justify-center text-left font-normal text-xs sm:text-sm rounded-md h-auto p-2 hover:bg-white/10 focus-visible:ring-white/50"
+            variant="ghost" 
+            className="flex-1 justify-center text-left font-normal text-xs sm:text-sm rounded-md h-auto p-2 text-primary-foreground hover:bg-primary-foreground/10 focus-visible:ring-primary-foreground/50"
             aria-label="Open clock, timer, and reminders widget"
           >
             <span className="font-semibold">{format(currentDateTime, "p")}</span>
