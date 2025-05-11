@@ -112,7 +112,7 @@ export function PersonalizedClinicalDashboard() {
     <div className="p-1 fade-in">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold text-foreground">My Clinical Dashboard</h2>
-        <Button variant="outline" onClick={() => setIsEditMode(!isEditMode)} size="sm" className="rounded-md group">
+        <Button variant="outline" onClick={() => setIsEditMode(!isEditMode)} size="sm" className="rounded-lg group">
           {isEditMode ? <CheckSquare className="mr-2 h-4 w-4"/> : <Settings className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-45"/>}
           {isEditMode ? "Save Layout" : "Customize"}
         </Button>
@@ -164,3 +164,4 @@ export function PersonalizedClinicalDashboard() {
     </div>
   );
 }
+

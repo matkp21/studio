@@ -1,4 +1,4 @@
-// src/components/pro/pro-mode-dashboard.tsx
+// src/components/pro/pro-dashboard.tsx
 "use client";
 
 import type { ReactNode } from 'react';
@@ -166,7 +166,7 @@ export function ProModeDashboard() {
         </div>
         <Button variant="outline" onClick={() => setIsEditMode(!isEditMode)} size="sm" className="rounded-lg group">
           {isEditMode ? <CheckSquare className="mr-2 h-4 w-4"/> : <Settings className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-45"/>}
-          {isEditMode ? 'Save Layout' : 'Customize Dashboard'}
+          {isEditMode ? 'Save Layout' : 'Customize'}
         </Button>
       </div>
 
