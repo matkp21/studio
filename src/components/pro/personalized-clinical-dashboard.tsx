@@ -122,11 +122,16 @@ export function PersonalizedClinicalDashboard() {
         <Card className="mb-6 p-4 bg-primary/5 border-primary/20">
           <CardHeader className="p-0 pb-2">
             <CardTitle className="text-lg text-primary">Customize Dashboard Layout</CardTitle>
-            <CardDescription className="text-xs">Drag and drop widgets to reorder them. (Drag functionality is conceptual for this placeholder.)</CardDescription>
+            <CardDescription className="text-xs">
+              Drag and drop functionality for reordering widgets and options to show/hide widgets are planned for a future update.
+              Click "{isEditMode ? 'Save Layout' : 'Customize'}" again to exit this customization view. Actual layout saving is not yet implemented.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="p-0">
-            {/* Placeholder for widget selection/reordering UI */}
-            <p className="text-sm text-muted-foreground">Future: Add checkboxes to show/hide widgets and drag handles to reorder.</p>
+          <CardContent className="p-0 pt-2">
+             <p className="text-sm text-muted-foreground">
+              Placeholder: Future controls for widget selection and reordering will appear here. 
+              The grip handles <GripVertical className="inline h-4 w-4 text-muted-foreground" /> on widgets are for visual representation of this planned feature.
+            </p>
           </CardContent>
         </Card>
       )}
@@ -142,7 +147,7 @@ export function PersonalizedClinicalDashboard() {
                   <widget.icon className="h-5 w-5 text-primary" />
                   <CardTitle className="text-md font-medium">{widget.title}</CardTitle>
                 </div>
-                {isEditMode && <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />}
+                {isEditMode && <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" title="Drag to reorder (conceptual)" />}
               </CardHeader>
               <CardContent>
                 {widget.content}
