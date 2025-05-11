@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Users, Lightbulb, Edit3, ClipboardCopy, SendHorizonal, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Users, Lightbulb, Edit3, ClipboardCopy, SendHorizonal, AlertTriangle, ShieldCheck, UserPlus } from 'lucide-react'; // Added UserPlus
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Checkbox } from '@/components/ui/checkbox';
 
