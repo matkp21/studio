@@ -5,7 +5,7 @@ import type { CSSProperties } from 'react';
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { HeartPulse, BookHeart, BriefcaseMedical, BotMessageSquare } from "lucide-react"; 
+import { HeartPulse, BookHeart, BriefcaseMedical } from "lucide-react"; 
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProMode } from '@/contexts/pro-mode-context';
@@ -35,6 +35,7 @@ export function HeroSection() {
       setCurrentGreetingIndex((prevIndex) => (prevIndex + 1) % greetings.length);
     }, 3000);
 
+    // Sample tasks for pro users - replace with actual data fetching if needed
     if (userRole === 'pro') {
       const today = new Date();
       const tomorrow = new Date(today);
@@ -49,7 +50,7 @@ export function HeroSection() {
         { id: '4', date: dayAfterTomorrow, title: 'Case Conference', description: 'Discuss complex cases' },
       ]);
     } else {
-      setHeroTasks([]);
+      setHeroTasks([]); // No tasks for other roles or clear existing if role changes
     }
 
     return () => clearInterval(interval);
@@ -66,18 +67,18 @@ export function HeroSection() {
     ctaText = "Medico Study Hub";
     CtaIcon = BookHeart;
     ctaAriaLabel = "Go to Medico Study Hub";
-    ctaColorClasses = "bg-gradient-to-r from-sky-500 to-sky-700 hover:from-sky-600 hover:to-sky-800 text-white hover:shadow-sky-500/40"; // Subtle gradient
+    ctaColorClasses = "bg-gradient-to-r from-sky-500 via-sky-600 to-sky-700 hover:from-sky-600 hover:to-sky-800 text-white hover:shadow-sky-500/40";
   } else if (userRole === 'pro') {
     ctaLink = "/pro";
     ctaText = "Pro Clinical Suite";
     CtaIcon = BriefcaseMedical;
     ctaAriaLabel = "Go to Professional Clinical Suite";
-    ctaColorClasses = "bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white hover:shadow-purple-500/40"; // Subtle gradient
+    ctaColorClasses = "bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white hover:shadow-purple-500/40";
   }
 
 
   return (
-    <section className="relative bg-background py-16 md:py-24 overflow-hidden">
+    <section className="relative bg-background py-16 md:py-20 overflow-hidden"> {/* Adjusted padding */}
       <div className="absolute inset-0 pointer-events-none">
         <svg
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translatey-1/2 w-full h-auto text-primary/10 dark:text-primary/5 opacity-50"
@@ -124,7 +125,7 @@ export function HeroSection() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1.2, duration: 0.5 }}
-          className="mb-12" // Increased margin-bottom for spacing
+          className="mb-10" // Adjusted margin for spacing before ribbon
         >
           <Button 
             asChild 
@@ -148,13 +149,13 @@ export function HeroSection() {
           </Button>
         </motion.div>
 
-        {/* Conditionally render HeroWidgets for 'pro' users, now always shown if pro */}
+        {/* Conditionally render HeroWidgets (now the ribbon) for 'pro' users */}
         {userRole === 'pro' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.5, duration: 0.5 }}
-            className="mt-8" // Added margin-top for explicit spacing after button
+            className="mt-6" // Ensure spacing above the ribbon
           >
             <HeroWidgets tasks={heroTasks} />
           </motion.div>

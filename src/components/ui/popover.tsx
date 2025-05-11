@@ -13,7 +13,7 @@ const PopoverTrigger = PopoverPrimitive.Trigger
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
->(({ className, align = "start", sideOffset = 4, ...props }, ref) => ( // Changed default align to "start"
+>(({ className, align = "center", sideOffset = 4, ...props }, ref) => ( // Changed default align to "center"
   <PopoverPrimitive.Portal>
     <PopoverPrimitive.Content
       ref={ref}

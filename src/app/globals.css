@@ -255,6 +255,7 @@ body {
   100% { background-position: 0% 50%; }
 }
 
+/* Used for Hero Section background */
 .welcome-background-animated {
   background: linear-gradient(
     135deg, 
@@ -266,9 +267,30 @@ body {
   );
   background-size: 400% 400%;
   animation: animated-gradient-background 20s ease infinite;
-  /* Text color for elements on this background should be chosen for contrast, e.g., white or very light color */
-  /* color: hsl(var(--background)) is often a good choice for text on this kind of background */
 }
+
+/* New Firebase Ribbon Background */
+@keyframes animated-firebase-ribbon-background {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.firebase-ribbon-background {
+  background: linear-gradient(
+    135deg, 
+    hsl(var(--welcome-color-1)/0.95), 
+    hsl(var(--welcome-color-2)/0.95), 
+    hsl(var(--welcome-color-3)/0.95), 
+    hsl(var(--welcome-color-4)/0.95),
+    hsl(var(--welcome-color-1)/0.95)
+  );
+  background-size: 250% 250%; /* Slightly faster/more noticeable animation */
+  animation: animated-firebase-ribbon-background 10s ease infinite; /* Faster animation cycle */
+  /* Text color should provide good contrast. Using primary-foreground as it's typically white/light */
+  color: hsl(var(--primary-foreground)); 
+}
+
 
 /* Bot thinking animation */
 @keyframes ecg-beat {
