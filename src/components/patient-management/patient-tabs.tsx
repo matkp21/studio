@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { useState, useEffect } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Clock, PlusCircle, Trash2, ListFilter, Activity, BellPlus } from "lucide-react";
+import { CalendarIcon, Clock, PlusCircle, Trash2, ListFilter, Activity, BellPlus, BriefcaseMedical } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +19,7 @@ interface RoundNote {
   date: Date;
   notes: string;
   patientName: string;
+  admissionOpdNumber?: string; // Added Admission/OPD Number
 }
 
 interface Reminder {
@@ -33,6 +34,7 @@ export function PatientTabs() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   
   const [roundPatientName, setRoundPatientName] = useState('');
+  const [roundAdmissionOpdNumber, setRoundAdmissionOpdNumber] = useState(''); // State for Admission/OPD Number
   const [roundNoteText, setRoundNoteText] = useState('');
   const [roundDate, setRoundDate] = useState<Date | undefined>(new Date());
 
@@ -51,11 +53,13 @@ export function PatientTabs() {
     const newNote: RoundNote = {
       id: Date.now().toString(),
       patientName: roundPatientName,
+      admissionOpdNumber: roundAdmissionOpdNumber, // Include Admission/OPD Number
       date: roundDate,
       notes: roundNoteText,
     };
     setRoundNotes(prev => [newNote, ...prev]);
     setRoundPatientName('');
+    setRoundAdmissionOpdNumber(''); // Reset Admission/OPD Number
     setRoundNoteText('');
   };
 
@@ -72,11 +76,11 @@ export function PatientTabs() {
     setReminderText('');
   };
 
-  const deleteRoundNote = (id: string, patientName: string) => {
+  const deleteRoundNote = (id: string) => { // Removed patientName as it's not used here
     setRoundNotes(prev => prev.filter(note => note.id !== id));
   };
 
-  const deleteReminder = (id: string, patientName: string) => {
+  const deleteReminder = (id: string) => { // Removed patientName as it's not used here
     setReminders(prev => prev.filter(reminder => reminder.id !== id));
   };
 
@@ -87,9 +91,7 @@ export function PatientTabs() {
 
   const tabTriggerClassName = cn(
     "flex-1 justify-center px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium transition-all duration-300 ease-in-out transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-muted",
-    // Inactive state (default)
     "text-foreground/70 hover:bg-background/50 hover:text-foreground",
-    // Active state override
     "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm data-[state=active]:hover:bg-primary/90"
   );
 
@@ -123,6 +125,10 @@ export function PatientTabs() {
                 <Input id="round-patient-name" placeholder="Enter patient name" value={roundPatientName} onChange={e => setRoundPatientName(e.target.value)} className="rounded-lg"/>
               </div>
               <div className="space-y-2">
+                <Label htmlFor="round-admission-opd">Admission/OPD No.</Label>
+                <Input id="round-admission-opd" placeholder="e.g., A123 / OPD456" value={roundAdmissionOpdNumber} onChange={e => setRoundAdmissionOpdNumber(e.target.value)} className="rounded-lg"/>
+              </div>
+              <div className="space-y-2 md:col-span-2"> {/* Date picker full width on small screens */}
                 <Label htmlFor="round-date">Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -165,9 +171,14 @@ export function PatientTabs() {
                   <CardHeader className="flex flex-row justify-between items-start pb-2 pt-4 px-4">
                     <div>
                       <CardTitle className="text-md font-semibold text-foreground">{note.patientName}</CardTitle>
+                      {note.admissionOpdNumber && (
+                        <CardDescription className="text-xs text-muted-foreground">
+                          <BriefcaseMedical className="inline-block h-3 w-3 mr-1 opacity-70"/> {note.admissionOpdNumber}
+                        </CardDescription>
+                      )}
                       <CardDescription className="text-xs text-muted-foreground">{format(note.date, "PPP, EEEE")}</CardDescription>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteRoundNote(note.id, note.patientName)} className="text-destructive hover:bg-destructive/10 rounded-full" aria-label={`Delete round note for ${note.patientName} on ${format(note.date, "PPP")}`}>
+                    <Button variant="ghost" size="icon" onClick={() => deleteRoundNote(note.id)} className="text-destructive hover:bg-destructive/10 rounded-full" aria-label={`Delete round note for ${note.patientName} on ${format(note.date, "PPP")}`}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </CardHeader>
@@ -254,7 +265,6 @@ export function PatientTabs() {
                                     newDate.setMinutes(parseInt(minutes, 10));
                                     setReminderDateTime(newDate);
                                 } else {
-                                  // Handle case where reminderDateTime is not set yet
                                   const newDate = new Date();
                                   const [hours, minutes] = e.target.value.split(':');
                                   newDate.setHours(parseInt(hours, 10));
@@ -291,7 +301,7 @@ export function PatientTabs() {
                         {format(reminder.dateTime, "PPP, HH:mm ('"+format(reminder.dateTime, "EEEE")+")")}
                       </CardDescription>
                     </div>
-                     <Button variant="ghost" size="icon" onClick={() => deleteReminder(reminder.id, reminder.patientName)} className="text-destructive-foreground hover:bg-destructive/20 rounded-full" aria-label={`Delete reminder for ${reminder.patientName} scheduled for ${format(reminder.dateTime, "PPP HH:mm")}`}>
+                     <Button variant="ghost" size="icon" onClick={() => deleteReminder(reminder.id)} className="text-destructive-foreground hover:bg-destructive/20 rounded-full" aria-label={`Delete reminder for ${reminder.patientName} scheduled for ${format(reminder.dateTime, "PPP HH:mm")}`}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </CardHeader>
@@ -307,3 +317,4 @@ export function PatientTabs() {
     </Tabs>
   );
 }
+
