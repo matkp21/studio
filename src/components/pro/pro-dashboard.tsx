@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { cn } from '@/lib/utils';
 import { 
   Brain, ClipboardCheck, Users, Mic, BarChart3, Briefcase, 
-  FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, ArrowRight, Settings, Star, GripVertical
+  FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, ArrowRight, Settings, Star, GripVertical, CheckSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -71,38 +71,45 @@ interface ToolCardProps {
   tool: ProTool;
   onLaunch: (toolId: ActiveToolId) => void;
   isFrequentlyUsed?: boolean;
+  isEditMode?: boolean; // Pass edit mode state
 }
 
-const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed }) => {
+const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, isEditMode }) => {
   return (
     <DialogTrigger asChild>
       <motion.div
-        whileHover={{ y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.2)" }}
+        whileHover={!isEditMode ? { y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.2)" } : {}}
         transition={{ type: "spring", stiffness: 300 }}
         className={cn(
-          "bg-card rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer h-full flex flex-col group relative border-2 border-transparent",
-          isFrequentlyUsed && "tool-card-frequent firebase-gradient-border-hover", // Apply gradient border on hover for frequent tools
-          tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed"
+          "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
+          !isEditMode && "hover:shadow-lg cursor-pointer",
+          isFrequentlyUsed && !isEditMode && "tool-card-frequent firebase-gradient-border-hover", 
+          tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
+          isEditMode && "cursor-grab" // Indicate draggable in edit mode
         )}
-        onClick={() => !tool.comingSoon && onLaunch(tool.id)}
+        onClick={() => !isEditMode && !tool.comingSoon && onLaunch(tool.id)}
         role="button"
-        tabIndex={tool.comingSoon ? -1 : 0}
-        onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !tool.comingSoon) onLaunch(tool.id); }}
-        aria-disabled={tool.comingSoon}
+        tabIndex={tool.comingSoon || isEditMode ? -1 : 0}
+        onKeyDown={(e) => { if (!isEditMode && (e.key === 'Enter' || e.key === ' ') && !tool.comingSoon) onLaunch(tool.id); }}
+        aria-disabled={tool.comingSoon || isEditMode}
         aria-label={`Launch ${tool.title}`}
       >
+        {isEditMode && (
+          <GripVertical className="absolute top-2 left-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder" />
+        )}
         {isFrequentlyUsed && (
-          <Star className="absolute top-2 right-2 h-5 w-5 text-yellow-400 fill-yellow-400" />
+          <Star className="absolute top-2 right-2 h-5 w-5 text-yellow-400 fill-yellow-400 z-10" />
         )}
         <CardHeader className="pb-3 pt-4 px-4">
           <div className="flex items-center gap-3 mb-1.5">
             <div className={cn(
                 "p-2 rounded-lg bg-primary/10 text-primary transition-colors duration-300",
-                isFrequentlyUsed ? "bg-gradient-to-br from-[hsl(var(--welcome-color-1)/0.2)] to-[hsl(var(--welcome-color-3)/0.2)] text-foreground" : "group-hover:bg-primary/20"
+                isFrequentlyUsed ? "bg-gradient-to-br from-[hsl(var(--welcome-color-1)/0.2)] to-[hsl(var(--welcome-color-3)/0.2)] text-foreground" : (!isEditMode && "group-hover:bg-primary/20")
             )}>
                 <tool.icon className={cn(
-                    "h-7 w-7 transition-transform duration-300 group-hover:scale-110",
-                    isFrequentlyUsed ? "text-primary" : "text-primary" // Icon color remains primary for frequent, but bg changes
+                    "h-7 w-7 transition-transform duration-300",
+                    !isEditMode && "group-hover:scale-110",
+                    isFrequentlyUsed ? "text-primary" : "text-primary" 
                 )} />
             </div>
             <CardTitle className={cn(
@@ -119,9 +126,10 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed })
             </div>
           ) : (
              <div className="w-full text-right">
-                <Button variant="link" size="sm" className={cn(
+                <Button variant="link" size="sm" disabled={isEditMode} className={cn(
                     "text-primary group-hover:underline p-0 h-auto text-xs",
-                     isFrequentlyUsed && "text-foreground hover:text-primary"
+                     isFrequentlyUsed && "text-foreground hover:text-primary",
+                     isEditMode && "text-muted-foreground cursor-default"
                     )}>
                    Open Tool <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
                 </Button>
@@ -156,16 +164,16 @@ export function ProModeDashboard() {
             Your personalized command center for advanced AI clinical tools.
             </p>
         </div>
-        <Button variant="outline" onClick={() => setIsEditMode(!isEditMode)} className="rounded-lg group">
-          <Settings className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
+        <Button variant="outline" onClick={() => setIsEditMode(!isEditMode)} size="sm" className="rounded-lg group">
+          {isEditMode ? <CheckSquare className="mr-2 h-4 w-4"/> : <Settings className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-45"/>}
           {isEditMode ? 'Save Layout' : 'Customize Dashboard'}
         </Button>
       </div>
 
       {isEditMode && (
-        <div className="p-4 mb-6 border border-dashed border-primary/50 rounded-lg bg-primary/5 text-center">
+        <div className="p-4 mb-6 border border-dashed border-primary/50 rounded-lg bg-primary/5 text-center animate-pulse-medical" style={{"--medical-pulse-opacity-base": "1", "--medical-pulse-opacity-peak": "0.9", "--medical-pulse-scale-peak": "1.01"} as React.CSSProperties}>
             <p className="text-sm text-primary">
-                Dashboard customization mode is active. (Drag-and-drop and tool selection are conceptual for now).
+                Dashboard customization mode is active. Drag tool cards to reorder. (Drag functionality is conceptual).
             </p>
         </div>
       )}
@@ -179,7 +187,7 @@ export function ProModeDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {frequentlyUsedTools.map((tool) => (
               <Dialog key={`${tool.id}-freq`} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
-                <ToolCard tool={tool} onLaunch={setActiveDialog} isFrequentlyUsed />
+                <ToolCard tool={tool} onLaunch={setActiveDialog} isFrequentlyUsed isEditMode={isEditMode} />
                 {!tool.comingSoon && tool.component && activeDialog === tool.id && (
                     <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
                         <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
@@ -207,7 +215,7 @@ export function ProModeDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {otherTools.map((tool) => (
             <Dialog key={tool.id} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
-                <ToolCard tool={tool} onLaunch={setActiveDialog} />
+                <ToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
                 {!tool.comingSoon && tool.component && activeDialog === tool.id && (
                      <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
                         <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
