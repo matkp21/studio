@@ -310,16 +310,14 @@ body {
   text-shadow: 
     0 0 4px hsl(var(--welcome-color-2)/0.5), /* Inner, softer glow */
     0 0 8px hsl(var(--welcome-color-3)/0.3); /* Outer, more diffuse glow */
-  /* Optional: add animation for flowing gradient if desired */
-  /* animation: firebase-gradient-flow 4s linear infinite; */
+  animation: gradient-flow 4s linear infinite; /* Added flow animation */
 }
 
-/* Optional: animation for flowing gradient if text is long enough to show it */
-/* @keyframes firebase-gradient-flow {
+@keyframes firebase-gradient-flow {
   to {
     background-position: 200% center;
   }
-} */
+}
 
 
 /* Error Message Highlight Animation */
@@ -337,4 +335,46 @@ body {
 .animate-error-highlight {
   animation: error-highlight-animation 2s infinite ease-in-out;
   /* Tailwind classes like bg-destructive/10, border-destructive/40, text-destructive will define base styles */
+}
+
+/* Pro Mode Dashboard Tool Card Animations */
+.tool-card-frequent.firebase-gradient-border-hover:hover {
+  position: relative; /* Needed for pseudo-element positioning */
+  border-color: transparent; /* Hide the default border on hover */
+}
+
+.tool-card-frequent.firebase-gradient-border-hover:hover::before {
+  content: "";
+  position: absolute;
+  inset: -2px; /* Controls the thickness of the gradient border */
+  border-radius: var(--radius); /* Match card's border-radius */
+  padding: 2px; /* Must match inset to make the border appear */
+  background: linear-gradient(135deg, 
+    hsl(var(--welcome-color-1)), 
+    hsl(var(--welcome-color-2)), 
+    hsl(var(--welcome-color-3)), 
+    hsl(var(--welcome-color-4)),
+    hsl(var(--welcome-color-1))
+  );
+  background-size: 400% 400%;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: animated-gradient-background 5s ease infinite; /* Reuse existing animation */
+  z-index: -1; /* Place behind the card content */
+}
+
+/* Subtle pulse/glow for tool cards (can be applied conditionally) */
+@keyframes subtle-pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05); }
+  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1); }
+}
+
+.animate-subtle-pulse-glow {
+  animation: subtle-pulse-glow 2.5s infinite ease-in-out;
 }
