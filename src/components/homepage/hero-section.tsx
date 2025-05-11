@@ -1,6 +1,7 @@
 // src/components/homepage/hero-section.tsx
 "use client";
 
+import type { CSSProperties } from 'react';
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -8,6 +9,7 @@ import { HeartPulse, BookHeart, Briefcase } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProMode } from '@/contexts/pro-mode-context';
+import { HeroWidgets, type HeroTask } from './hero-widgets'; // Import HeroWidgets
 
 const greetings = [
   { lang: "en", text: "Hello" },
@@ -26,14 +28,33 @@ const greetings = [
 export function HeroSection() {
   const [currentGreetingIndex, setCurrentGreetingIndex] = useState(0);
   const { userRole } = useProMode();
+  const [heroTasks, setHeroTasks] = useState<HeroTask[]>([]); // Placeholder for tasks
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentGreetingIndex((prevIndex) => (prevIndex + 1) % greetings.length);
     }, 3000); // Change greeting every 3 seconds
 
+    // Simulate fetching tasks for 'pro' user
+    if (userRole === 'pro') {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      const dayAfterTomorrow = new Date(today);
+      dayAfterTomorrow.setDate(today.getDate() + 2);
+
+      setHeroTasks([
+        { id: '1', date: today, title: 'Review Mr. Smith\'s X-Ray', description: 'Uploaded at 10:00 AM' },
+        { id: '2', date: today, title: 'Team Meeting', description: 'Scheduled for 2:00 PM' },
+        { id: '3', date: tomorrow, title: 'Follow-up: Patient A', description: 'Check medication adherence' },
+        { id: '4', date: dayAfterTomorrow, title: 'Case Conference', description: 'Discuss complex cases' },
+      ]);
+    } else {
+      setHeroTasks([]);
+    }
+
     return () => clearInterval(interval);
-  }, []);
+  }, [userRole]);
 
   let ctaLink = "/chat";
   let ctaText = "Get Started";
@@ -57,11 +78,10 @@ export function HeroSection() {
 
 
   return (
-    <section className="relative bg-background py-20 md:py-32 overflow-hidden">
+    <section className="relative bg-background py-16 md:py-24 overflow-hidden"> {/* Adjusted padding */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Subtle animated heartbeat line */}
         <svg
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-auto text-primary/10 dark:text-primary/5 opacity-50"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translatey-1/2 w-full h-auto text-primary/10 dark:text-primary/5 opacity-50"
           width="1000" height="300" viewBox="0 0 1000 300" fill="none" xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
         >
@@ -77,7 +97,7 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="text-6xl sm:text-7xl md:text-8xl font-bold text-center firebase-gradient-text mb-8"
+            className="text-5xl sm:text-6xl md:text-7xl font-bold text-center firebase-gradient-text mb-6" // Adjusted sizes
             lang={greetings[currentGreetingIndex].lang}
           >
             {greetings[currentGreetingIndex].text}
@@ -88,7 +108,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground/90 dark:text-foreground/90 mb-6"
+          className="text-xl sm:text-2xl md:text-3xl font-semibold text-foreground/90 dark:text-foreground/90 mb-4" // Adjusted sizes
         >
           Welcome to <span className="animated-gradient-text bg-clip-text text-transparent">MediAssistant</span>.
         </motion.p>
@@ -96,7 +116,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
-          className="text-lg sm:text-xl md:text-2xl text-foreground/80 dark:text-foreground/80 max-w-3xl mx-auto mb-10"
+          className="text-md sm:text-lg md:text-xl text-foreground/80 dark:text-foreground/80 max-w-3xl mx-auto mb-8" // Adjusted sizes
         >
           Your intelligent partner for AI-powered diagnostics, imaging analysis, and educational support—all at your fingertips.
         </motion.p>
@@ -105,6 +125,7 @@ export function HeroSection() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1.2, duration: 0.5 }}
+          className="mb-8" // Add margin bottom for spacing before widgets
         >
           <Button 
             asChild 
@@ -120,13 +141,24 @@ export function HeroSection() {
               <CtaIcon 
                 className={cn(
                   "ml-2 h-7 w-7 group-hover:scale-110 animate-pulse-medical",
-                  (userRole === 'medico' || userRole === 'pro') ? "text-white" : "text-red-400 group-hover:text-red-300"
+                   "text-white" // Simplified to always be white for these buttons
                 )} 
-                style={{"--medical-pulse-opacity-base": "0.7", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.35"} as React.CSSProperties}
+                style={{"--medical-pulse-opacity-base": "0.7", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.35"} as CSSProperties}
               />
             </Link>
           </Button>
         </motion.div>
+
+        {/* Conditionally render HeroWidgets for 'pro' users */}
+        {userRole === 'pro' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.5, duration: 0.5 }}
+          >
+            <HeroWidgets tasks={heroTasks} />
+          </motion.div>
+        )}
       </div>
        {/* Subtle decorative elements */}
        <div aria-hidden="true" className="absolute top-1/4 left-10 w-20 h-20 bg-primary/10 rounded-full opacity-30 animate-pulse delay-500"></div>
@@ -134,4 +166,3 @@ export function HeroSection() {
     </section>
   );
 }
-

@@ -1,18 +1,26 @@
+// src/components/ui/calendar.tsx
 "use client"
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import { DayPicker, type DayContentProps } from "react-day-picker" // Import DayContentProps
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  components?: {
+    DayContent?: React.ComponentType<DayContentProps>;
+    IconLeft?: React.ComponentType<{ className?: string }>;
+    IconRight?: React.ComponentType<{ className?: string }>;
+  };
+}
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  components: componentsProp, // Destructure components prop
   ...props
 }: CalendarProps) {
   return (
@@ -54,12 +62,13 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
-        ),
-        IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn("h-4 w-4", className)} {...props} />
-        ),
+        IconLeft: componentsProp?.IconLeft || (({ className, ...rest }) => (
+          <ChevronLeft className={cn("h-4 w-4", className)} {...rest} />
+        )),
+        IconRight: componentsProp?.IconRight || (({ className, ...rest }) => (
+          <ChevronRight className={cn("h-4 w-4", className)} {...rest} />
+        )),
+        DayContent: componentsProp?.DayContent, // Pass DayContent if provided
       }}
       {...props}
     />
