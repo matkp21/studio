@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { DatePicker } from "@/components/ui/date-picker";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { AlarmClockCheck, TimerIcon, BellRing, PlusCircle, Play, Pause, RotateCcw, Trash2 } from 'lucide-react';
+import { AlarmClockCheck, TimerIcon, BellRing, PlusCircle, Play, Pause, RotateCcw, Trash2, ClockIcon } from 'lucide-react';
 import { format, addSeconds, differenceInSeconds } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -63,6 +63,13 @@ export function ClockWidget({ onClose }: ClockWidgetProps) {
           clearInterval(newIntervalId);
           setIsTimerRunning(false);
           toast({ title: "Timer Finished!", description: "Your timer has ended." });
+          // Play a sound
+          try {
+            const audio = new Audio('/sounds/timer-finish.mp3'); // Ensure you have this sound file
+            audio.play();
+          } catch (e) {
+            console.warn("Could not play timer sound", e);
+          }
           return 0;
         }
         return prev - 1;
@@ -120,9 +127,18 @@ export function ClockWidget({ onClose }: ClockWidgetProps) {
     toast({ title: "Reminder Deleted" });
   };
 
+  // Analogue clock calculations
+  const hoursForClock = currentTime.getHours() % 12;
+  const minutesForClock = currentTime.getMinutes();
+  const secondsForClock = currentTime.getSeconds();
+
+  const hourAngle = (hoursForClock + minutesForClock / 60) * 30;
+  const minuteAngle = (minutesForClock + secondsForClock / 60) * 6;
+  const secondAngle = secondsForClock * 6;
+
 
   return (
-    <Card className="border-none shadow-none bg-transparent"> {/* Made card transparent for popover content */}
+    <Card className="border-none shadow-none bg-transparent">
       <Tabs defaultValue="clock" className="w-full">
         <TabsList className="grid w-full grid-cols-3 h-12 rounded-t-xl rounded-b-none bg-muted/50 border-b border-[hsl(var(--welcome-color-1))/30]">
           <TabsTrigger value="clock" className="text-xs h-full data-[state=active]:bg-[hsl(var(--welcome-color-1))] data-[state=active]:text-black rounded-tl-lg transition-colors duration-300"><AlarmClockCheck className="mr-1 h-4 w-4" />Clock</TabsTrigger>
@@ -135,6 +151,81 @@ export function ClockWidget({ onClose }: ClockWidgetProps) {
             <p className="text-5xl font-bold tabular-nums firebase-gradient-text">{format(currentTime, "HH:mm")}</p>
             <p className="text-sm text-muted-foreground">{format(currentTime, "ss 'sec'")}</p>
             <p className="text-lg text-foreground mt-1">{format(currentTime, "eeee, MMMM do")}</p>
+          </div>
+          <div className="relative w-32 h-32 mx-auto mt-6" aria-label="Analogue clock">
+            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+              {/* Clock face */}
+              <circle cx="50" cy="50" r="48" stroke="hsl(var(--border))" strokeWidth="2" fill="hsl(var(--card))" />
+              {/* Hour markers */}
+              {[...Array(12)].map((_, i) => {
+                const angle = i * 30;
+                return (
+                  <line
+                    key={`h-marker-${i}`}
+                    x1="50"
+                    y1="10"
+                    x2="50"
+                    y2="14"
+                    stroke="hsl(var(--foreground))"
+                    strokeWidth="1.5"
+                    transform={`rotate(${angle} 50 50)`}
+                  />
+                );
+              })}
+               {/* Minute markers */}
+               {[...Array(60)].map((_, i) => {
+                if (i % 5 === 0) return null; // Skip hour marker positions
+                const angle = i * 6;
+                return (
+                  <line
+                    key={`m-marker-${i}`}
+                    x1="50"
+                    y1="10"
+                    x2="50"
+                    y2="12"
+                    stroke="hsl(var(--muted-foreground))"
+                    strokeWidth="0.5"
+                    transform={`rotate(${angle} 50 50)`}
+                  />
+                );
+              })}
+
+              {/* Hour hand */}
+              <line
+                x1="50"
+                y1="50"
+                x2="50"
+                y2="30" 
+                stroke="hsl(var(--foreground))"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                transform={`rotate(${hourAngle} 50 50)`}
+              />
+              {/* Minute hand */}
+              <line
+                x1="50"
+                y1="50"
+                x2="50"
+                y2="20"
+                stroke="hsl(var(--foreground))"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                transform={`rotate(${minuteAngle} 50 50)`}
+              />
+              {/* Second hand */}
+              <line
+                x1="50"
+                y1="50"
+                x2="50"
+                y2="15"
+                stroke="hsl(var(--primary))"
+                strokeWidth="1"
+                strokeLinecap="round"
+                transform={`rotate(${secondAngle} 50 50)`}
+              />
+              {/* Center dot */}
+              <circle cx="50" cy="50" r="2.5" fill="hsl(var(--primary))" stroke="hsl(var(--card))" strokeWidth="1"/>
+            </svg>
           </div>
         </TabsContent>
 
@@ -185,21 +276,24 @@ export function ClockWidget({ onClose }: ClockWidgetProps) {
               <Label htmlFor="reminder-text" className="text-xs">Reminder Note</Label>
               <Input id="reminder-text" value={newReminderText} onChange={e => setNewReminderText(e.target.value)} placeholder="e.g., Call patient Smith" className="h-8 text-sm rounded-md border-[hsl(var(--input))] focus:border-[hsl(var(--welcome-color-3))]" />
             </div>
-            <div>
-              <Label htmlFor="reminder-datetime" className="text-xs">Date & Time</Label>
-              <DatePicker date={newReminderDateTime} setDate={setNewReminderDateTime} buttonId="reminder-datetime" buttonClassName="h-8 text-sm rounded-md w-full border-[hsl(var(--input))] focus:border-[hsl(var(--welcome-color-3))]" />
-            </div>
-            <div className="pt-1">
-                 <Input type="time" className="h-8 text-sm rounded-md w-full border-[hsl(var(--input))] focus:border-[hsl(var(--welcome-color-3))]"
-                    value={newReminderDateTime ? format(newReminderDateTime, "HH:mm") : ""}
-                    onChange={(e) => {
-                        const newDate = newReminderDateTime ? new Date(newReminderDateTime) : new Date();
-                        const [hours, minutes] = e.target.value.split(':');
-                        newDate.setHours(parseInt(hours, 10));
-                        newDate.setMinutes(parseInt(minutes, 10));
-                        setNewReminderDateTime(newDate);
-                    }}
-                 />
+            <div className="flex gap-2">
+              <div className="flex-grow">
+                <Label htmlFor="reminder-date-picker" className="text-xs">Date</Label>
+                <DatePicker date={newReminderDateTime} setDate={setNewReminderDateTime} buttonId="reminder-date-picker" buttonClassName="h-8 text-sm rounded-md w-full border-[hsl(var(--input))] focus:border-[hsl(var(--welcome-color-3))]" />
+              </div>
+              <div className="w-28">
+                <Label htmlFor="reminder-time-input" className="text-xs">Time</Label>
+                <Input type="time" id="reminder-time-input" className="h-8 text-sm rounded-md w-full border-[hsl(var(--input))] focus:border-[hsl(var(--welcome-color-3))]"
+                      value={newReminderDateTime ? format(newReminderDateTime, "HH:mm") : ""}
+                      onChange={(e) => {
+                          const newDate = newReminderDateTime ? new Date(newReminderDateTime) : new Date();
+                          const [hours, minutes] = e.target.value.split(':');
+                          newDate.setHours(parseInt(hours, 10));
+                          newDate.setMinutes(parseInt(minutes, 10));
+                          setNewReminderDateTime(newDate);
+                      }}
+                />
+              </div>
             </div>
             <Button onClick={handleAddReminder} size="sm" className="w-full rounded-md bg-[hsl(var(--welcome-color-3))] hover:bg-[hsl(var(--welcome-color-3))]/90 text-white">
               <PlusCircle className="mr-1 h-4 w-4"/> Add Reminder
