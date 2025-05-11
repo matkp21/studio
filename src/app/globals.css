@@ -395,3 +395,17 @@ body {
   background: linear-gradient(to right, transparent 20%, hsl(var(--primary)/0.1) 50%, transparent 80%);
   background-size: 1000px 100%;
 }
+
+/* Additional Firebase-inspired button focus/hover */
+.firebase-button-interactive {
+  transition: all 0.3s ease;
+}
+.firebase-button-interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsla(var(--welcome-color-2)/0.3);
+}
+.firebase-button-interactive:focus-visible {
+  outline: 2px solid hsl(var(--welcome-color-1));
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px hsla(var(--welcome-color-1)/0.2);
+}

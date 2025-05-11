@@ -10,8 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from "@/lib/utils";
 import { format, isSameDay } from "date-fns";
-import { CalendarIcon, ClockIcon, Dot } from "lucide-react";
-import { ClockWidget } from './clock-widget'; // New import
+import { CalendarDays, Clock, Dot } from "lucide-react"; // Changed icons
+import { ClockWidget } from './clock-widget';
 
 export interface HeroTask {
   id: string;
@@ -25,15 +25,14 @@ interface CompactCalendarProps {
 }
 
 const CompactCalendar: React.FC<CompactCalendarProps> = ({ tasks }) => {
-  const [currentDate, setCurrentDate] = useState(new Date()); // To display current date on button
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isCalendarPopoverOpen, setIsCalendarPopoverOpen] = useState(false);
-
 
   useEffect(() => {
     const timerId = setInterval(() => {
       setCurrentDate(new Date());
-    }, 60000); // Update current date display every minute
+    }, 60000);
     return () => clearInterval(timerId);
   }, []);
 
@@ -44,14 +43,14 @@ const CompactCalendar: React.FC<CompactCalendarProps> = ({ tasks }) => {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="w-auto min-w-[160px] justify-start text-left font-normal text-sm rounded-lg shadow-sm hover:bg-accent/50 transition-colors h-12"
+          className="w-auto min-w-[160px] justify-start text-left font-normal text-sm rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 h-12 bg-card hover:bg-card/90 border-2 border-[hsl(var(--welcome-color-1))] text-foreground"
           aria-label="Open calendar"
         >
-          <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
-          <span>{format(currentDate, "E, MMM d")}</span>
+          <CalendarDays className="mr-2 h-5 w-5 text-[hsl(var(--welcome-color-1))]" />
+          <span className="font-semibold">{format(currentDate, "E, MMM d")}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 rounded-xl shadow-xl border-border/70" align="start">
+      <PopoverContent className="w-auto p-0 rounded-xl shadow-xl border-2 border-[hsl(var(--welcome-color-1))] bg-card" align="start">
         <Calendar
           mode="single"
           selected={selectedDate}
@@ -61,7 +60,13 @@ const CompactCalendar: React.FC<CompactCalendarProps> = ({ tasks }) => {
             taskDay: tasks.map(task => task.date),
           }}
           modifiersStyles={{
-            taskDay: { position: 'relative' }
+            taskDay: { position: 'relative' },
+            selected: { backgroundColor: 'hsl(var(--welcome-color-2))', color: 'hsl(var(--background))' },
+            today: { borderColor: 'hsl(var(--welcome-color-2))', fontWeight: 'bold'},
+          }}
+          classNames={{
+            day_selected: "bg-[hsl(var(--welcome-color-2))] text-background hover:bg-[hsl(var(--welcome-color-2))] hover:text-background",
+            day_today: "border-2 border-[hsl(var(--welcome-color-2))] text-[hsl(var(--welcome-color-1))] font-bold",
           }}
           components={{
             DayContent: (props) => {
@@ -69,19 +74,19 @@ const CompactCalendar: React.FC<CompactCalendarProps> = ({ tasks }) => {
               return (
                 <div className="relative flex items-center justify-center h-full w-full">
                   {props.date.getDate()}
-                  {isTaskDay && <Dot className="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-4 w-4 text-primary fill-primary" />}
+                  {isTaskDay && <Dot className="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-4 w-4 text-[hsl(var(--welcome-color-2))] fill-[hsl(var(--welcome-color-2))]" />}
                 </div>
               );
             }
           }}
         />
         {selectedDate && tasksForSelectedDate.length > 0 && (
-          <div className="p-4 border-t border-border/50">
-            <h4 className="text-sm font-semibold mb-2">Tasks for {format(selectedDate, "PPP")}:</h4>
+          <div className="p-4 border-t border-[hsl(var(--welcome-color-1))/30]">
+            <h4 className="text-sm font-semibold mb-2 text-[hsl(var(--welcome-color-1))]">Tasks for {format(selectedDate, "PPP")}:</h4>
             <ScrollArea className="h-[100px]">
               <ul className="space-y-1.5 text-xs">
                 {tasksForSelectedDate.map(task => (
-                  <li key={task.id} className="p-1.5 bg-secondary/50 rounded-md">
+                  <li key={task.id} className="p-1.5 bg-secondary/50 rounded-md border border-[hsl(var(--welcome-color-1))/20]">
                     <p className="font-medium text-secondary-foreground">{task.title}</p>
                     <p className="text-muted-foreground">{task.description}</p>
                   </li>
@@ -91,19 +96,19 @@ const CompactCalendar: React.FC<CompactCalendarProps> = ({ tasks }) => {
           </div>
         )}
         {selectedDate && tasksForSelectedDate.length === 0 && (
-            <div className="p-4 border-t border-border/50 text-center">
+            <div className="p-4 border-t border-[hsl(var(--welcome-color-1))/30] text-center">
                  <p className="text-xs text-muted-foreground">No tasks for {format(selectedDate, "PPP")}.</p>
             </div>
         )}
-         <div className="p-2 border-t border-border/50 text-center">
-             <Button variant="link" size="sm" className="text-xs text-primary">View Full Schedule (Conceptual)</Button>
+         <div className="p-2 border-t border-[hsl(var(--welcome-color-1))/30] text-center">
+             <Button variant="link" size="sm" className="text-xs text-[hsl(var(--welcome-color-1))] hover:text-[hsl(var(--welcome-color-2))]">View Full Schedule</Button>
          </div>
       </PopoverContent>
     </Popover>
   );
 };
 
-const DigitalClockDisplay = () => {
+const DigitalClockDisplayTrigger = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -114,10 +119,14 @@ const DigitalClockDisplay = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-center h-12 px-4 py-2 text-sm font-medium bg-card border border-border/50 rounded-lg shadow-sm min-w-[120px] hover:bg-accent/50 transition-colors cursor-pointer">
-      <ClockIcon className="mr-2 h-4 w-4 text-primary" />
-      <span className="text-foreground">{format(currentTime, "p")}</span>
-    </div>
+    <Button
+        variant="outline"
+        className="w-auto min-w-[120px] justify-start text-left font-normal text-sm rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 h-12 bg-card hover:bg-card/90 border-2 border-[hsl(var(--welcome-color-3))] text-foreground"
+        aria-label="Open clock widget"
+      >
+      <Clock className="mr-2 h-5 w-5 text-[hsl(var(--welcome-color-3))]" />
+      <span className="font-semibold">{format(currentTime, "p")}</span>
+    </Button>
   );
 };
 
@@ -129,13 +138,13 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
   const [isClockWidgetOpen, setIsClockWidgetOpen] = useState(false);
 
   return (
-    <div className="mt-6 flex w-full max-w-md mx-auto items-center justify-between gap-4 md:gap-6 py-4 px-2">
+    <div className="mt-12 flex w-full max-w-lg mx-auto items-center justify-between gap-4 md:gap-8 py-4 px-2"> {/* Increased mt, max-w, gap */}
       <CompactCalendar tasks={tasks} />
       <Popover open={isClockWidgetOpen} onOpenChange={setIsClockWidgetOpen}>
         <PopoverTrigger asChild>
-          <DigitalClockDisplay />
+          <DigitalClockDisplayTrigger />
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-0 rounded-xl shadow-xl border-border/70" align="end">
+        <PopoverContent className="w-80 p-0 rounded-xl shadow-xl border-2 border-[hsl(var(--welcome-color-3))] bg-card" align="end">
            <ClockWidget onClose={() => setIsClockWidgetOpen(false)} />
         </PopoverContent>
       </Popover>
