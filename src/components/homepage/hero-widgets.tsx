@@ -2,8 +2,7 @@
 "use client";
 
 import type { ReactNode } from 'react';
-import { useState, useEffect, useCallback }
-from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -44,12 +43,12 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
   return (
     <div 
       className={cn(
-        "mt-4 flex w-full max-w-md mx-auto items-center justify-between gap-2 md:gap-4 py-2 px-3 rounded-xl shadow-lg", // General layout
+        "mt-4 flex w-full max-w-md mx-auto items-center justify-between gap-2 md:gap-4 py-2 px-3 rounded-xl shadow-lg",
         "bg-card border border-border/60" // Apple-like panel style
       )}
       aria-label="Date and Time Information Panel"
     >
-      {/* Left Side: Compact Functional Calendar */}
+      {/* Left Side: Compact Functional Calendar - Apple Theme */}
       <Popover open={isCalendarPopoverOpen} onOpenChange={setIsCalendarPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -76,11 +75,11 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
             classNames={{
               caption_label: "text-sm font-semibold text-foreground",
               nav_button: cn(
-                buttonVariants({ variant: "ghost" }), // Using ghost for minimal look
+                buttonVariants({ variant: "ghost" }),
                 "h-7 w-7 bg-transparent p-0 opacity-70 hover:opacity-100 text-muted-foreground hover:text-foreground"
               ),
               day_selected: "bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary focus:text-primary-foreground",
-              day_today: "ring-1 ring-primary text-primary font-semibold", // Subtle ring for today
+              day_today: "ring-1 ring-primary text-primary font-semibold",
               cell: "h-9 w-9 text-center text-sm p-0 relative first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20 [&:has([aria-selected].day-outside)]:bg-accent/30 [&:has([aria-selected])]:bg-accent/50",
               day_outside: "day-outside text-muted-foreground/50 aria-selected:text-muted-foreground/70",
             }}
@@ -125,7 +124,7 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
       {/* Separator */}
       <div className="h-6 w-px bg-border/70" />
 
-      {/* Right Side: Clock */}
+      {/* Right Side: Clock Popover - Apple Theme Trigger, Original Functional ClockWidget Content */}
       <Popover open={isClockWidgetPopoverOpen} onOpenChange={setIsClockWidgetPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -138,6 +137,7 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80 p-0 rounded-xl shadow-xl border border-border/50 bg-card" align="end">
+          {/* Reverted ClockWidget with full functionality (tabs, timer, reminders) */}
           <ClockWidget onClose={() => setIsClockWidgetPopoverOpen(false)} />
         </PopoverContent>
       </Popover>
