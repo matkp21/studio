@@ -21,11 +21,13 @@ import {
   Settings2,     
   LogOut,
   GraduationCap, 
-  HeartPulse,
-  Briefcase, // Icon for Pro Tools
-  Users,     // Placeholder for some pro tools, can be more specific
-  FileText,  // Placeholder for some pro tools
-  FlaskConical, // Placeholder for some pro tools (e.g. Lab/Pharmacopeia)
+  HeartPulse, // Default fallback, used in Avatar
+  BriefcaseMedical, 
+  BookOpenText,   // Icon for Educational Support
+  LayoutDashboard, // Icon for Clinical Dashboard
+  Users,     
+  FileText,  
+  FlaskConical, 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useProMode } from '@/contexts/pro-mode-context'; 
@@ -52,10 +54,19 @@ const medicoDashboardNavItem = {
 
 const proToolsNavItem = {
   href: '/pro',
-  label: 'Pro Tools',
-  icon: Briefcase, // Using Briefcase for general "Professional Tools"
-  ariaLabel: 'Open Professional Tools Dashboard'
+  label: 'Pro Suite', // Changed from Pro Tools for brevity
+  icon: BriefcaseMedical, 
+  ariaLabel: 'Open Professional Clinical Suite'
 };
+
+// Educational Support / Clinical Dashboard (depends on role)
+const dynamicThirdNavItem = (userRole: string | null) => {
+  if (userRole === 'pro') {
+    return { href: '/pro/dashboard', label: 'Clinical Dashboard', icon: LayoutDashboard, ariaLabel: 'Open Clinical Dashboard'};
+  }
+  return { href: '/education', label: 'Educational Support', icon: BookOpenText, ariaLabel: 'Open Educational Support'};
+};
+
 
 export function SidebarNav() {
   const pathname = usePathname();
@@ -63,31 +74,23 @@ export function SidebarNav() {
 
   let navItems = [...baseNavItems];
   
+  // Add dynamic third nav item (Educational Support or Clinical Dashboard)
+  // For now, let's assume /education and /pro/dashboard routes exist or will be handled.
+  // We can refine this logic based on how these pages are structured.
+  // The ModeSwitcher on the homepage already handles showing the right component for 'education' vs 'dashboard' mode.
+  // This sidebar navigation might need a more generic link or be conditional.
+  // For simplicity, let's add a general 'Tools' or 'Features' link, or make it conditional.
+
   if (userRole === 'medico') {
-    const chatIndex = navItems.findIndex(item => item.href === '/chat');
-    if (chatIndex !== -1) {
-      navItems.splice(chatIndex + 1, 0, medicoDashboardNavItem);
-    } else {
-      navItems.push(medicoDashboardNavItem);
-    }
-    // Medico can also access patient management if needed for learning
-    if (!navItems.find(item => item.href === '/patient-management')) {
-      const medicoToolsIndex = navItems.findIndex(item => item.href === '/medico');
-      if (medicoToolsIndex !== -1) {
-        navItems.splice(medicoToolsIndex + 1, 0, patientManagementNavItem);
-      } else {
-        navItems.push(patientManagementNavItem);
-      }
-    }
+    navItems.push(medicoDashboardNavItem);
+    navItems.push(patientManagementNavItem); 
   } else if (userRole === 'pro') {
-    const chatIndex = navItems.findIndex(item => item.href === '/chat');
-    // Add Pro Tools first, then Patient Management
-    if (chatIndex !== -1) {
-      navItems.splice(chatIndex + 1, 0, proToolsNavItem, patientManagementNavItem);
-    } else {
-      navItems.push(proToolsNavItem, patientManagementNavItem);
-    }
+    navItems.push(proToolsNavItem);
+    navItems.push(patientManagementNavItem);
   }
+  // If no specific role, or for general users, they get the base items.
+  // The 'Educational Support' link could be one of the base items if always visible.
+  // Or, the mode switcher on homepage is the primary way to access these different functional areas.
 
 
   return (
@@ -106,12 +109,20 @@ export function SidebarNav() {
                   tooltip={item.label}
                   aria-label={item.ariaLabel}
                   className={cn(
-                    "justify-start w-full group-hover/menu-item:bg-sidebar-accent/80 group-hover/menu-item:text-sidebar-accent-foreground transition-all duration-200 ease-in-out transform group-hover/menu-item:scale-105 group-hover/menu-item:shadow-md", 
-                    pathname === item.href && "bg-sidebar-accent text-sidebar-accent-foreground shadow-lg scale-105"
+                    "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out",
+                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
+                    pathname === item.href 
+                      ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold" 
+                      : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
+                    "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background" // Added focus styling
                   )}
                 >
                   <a>
-                    <item.icon className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-button:rotate-[-5deg] group-hover/menu-button:scale-110" />
+                    <item.icon className={cn(
+                        "h-5 w-5 transition-transform duration-200 ease-in-out",
+                        "group-hover:scale-110"
+                       )} 
+                     />
                     <span>{item.label}</span>
                   </a>
                 </SidebarMenuButton>
@@ -126,41 +137,66 @@ export function SidebarNav() {
             <Link href="/feedback" passHref legacyBehavior>
               <SidebarMenuButton 
                 asChild
-                className="justify-start w-full group-hover/menu-item:bg-sidebar-accent/80 group-hover/menu-item:text-sidebar-accent-foreground transition-all duration-200 ease-in-out transform group-hover/menu-item:scale-105 group-hover/menu-item:shadow-md" 
+                className={cn(
+                  "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out",
+                  "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
+                   pathname === '/feedback' 
+                    ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold" 
+                    : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
+                  "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
+                )}
                 tooltip="Feedback" 
                 aria-label="Submit Feedback"
                 isActive={pathname === '/feedback'}
                >
                  <a>
-                  <MessageCircleHeart className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-button:rotate-[-5deg] group-hover/menu-button:scale-110" />
+                  <MessageCircleHeart className={cn("h-5 w-5 transition-transform duration-200 ease-in-out", "group-hover:scale-110")} />
                   <span>Feedback</span>
                 </a>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton className="justify-start w-full group-hover/menu-item:bg-sidebar-accent/80 group-hover/menu-item:text-sidebar-accent-foreground transition-all duration-200 ease-in-out transform group-hover/menu-item:scale-105 group-hover/menu-item:shadow-md" tooltip="Settings" aria-label="Open Settings">
-              <Settings2 className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-button:rotate-[-5deg] group-hover/menu-button:scale-110" />
+            <SidebarMenuButton 
+                className={cn(
+                  "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out",
+                  "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
+                  "text-sidebar-foreground/80 hover:text-sidebar-foreground",
+                  "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
+                )} 
+                tooltip="Settings" 
+                aria-label="Open Settings"
+            >
+              <Settings2 className={cn("h-5 w-5 transition-transform duration-200 ease-in-out", "group-hover:scale-110")} />
               <span>Settings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-             <SidebarMenuButton className="justify-start w-full group-hover/menu-item:bg-sidebar-accent/80 group-hover/menu-item:text-sidebar-accent-foreground transition-all duration-200 ease-in-out transform group-hover/menu-item:scale-105 group-hover/menu-item:shadow-md" tooltip="Logout" aria-label="Logout">
-              <LogOut className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover/menu-button:rotate-[-5deg] group-hover/menu-button:scale-110" />
+             <SidebarMenuButton 
+                className={cn(
+                  "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out",
+                  "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
+                   "text-sidebar-foreground/80 hover:text-sidebar-foreground",
+                  "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
+                )} 
+                tooltip="Logout" 
+                aria-label="Logout"
+            >
+              <LogOut className={cn("h-5 w-5 transition-transform duration-200 ease-in-out", "group-hover:scale-110")} />
               <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
         <div className="flex items-center gap-3 p-3 mt-2">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
-             <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 glowing-ring-firebase">
-              <HeartPulse className="h-4 w-4 text-white" />
+          <Avatar className="h-10 w-10 border-2 border-sidebar-accent">
+            <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user doctor" />
+             <AvatarFallback className="bg-gradient-to-br from-sidebar-accent to-sidebar-primary/30 text-sidebar-primary-foreground glowing-ring-firebase">
+              <HeartPulse className="h-5 w-5" />
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium text-sidebar-foreground">Dr. Robot</span>
-            <span className="text-xs text-sidebar-foreground/70">
+          <div className="flex flex-col overflow-hidden">
+            <span className="text-sm font-medium text-sidebar-foreground truncate">Dr. Robot</span>
+            <span className="text-xs text-sidebar-foreground/70 truncate">
               {userRole === 'pro' ? 'Professional' : userRole === 'medico' ? 'Medical Student' : userRole === 'diagnosis' ? 'Patient/User' : 'Clinician'}
             </span>
           </div>
@@ -169,4 +205,3 @@ export function SidebarNav() {
     </>
   );
 }
-

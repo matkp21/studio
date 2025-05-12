@@ -41,14 +41,16 @@ body {
 
     --radius: 0.75rem; /* Apple-like rounded corners */
 
-    /* Sidebar specific colors - Light Mode */
-    --sidebar-background: 210 25% 97%; 
-    --sidebar-foreground: 220 25% 20%; 
-    --sidebar-primary: hsl(var(--primary));
+    /* Sidebar specific colors - Light Mode (Gemini Inspired) */
+    --sidebar-background: 220 20% 97%; /* Lighter, cleaner grey */
+    --sidebar-foreground: 220 25% 28%; /* Slightly softer dark grey for text */
+    --sidebar-primary: hsl(var(--primary)); /* Keep primary for consistency or change to a Gemini blue */
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 210 20% 90%; 
-    --sidebar-accent-foreground: 220 25% 15%;
-    --sidebar-border: 210 20% 85%;
+    --sidebar-accent: 220 80% 92%; /* Light, subtle blue accent for hover */
+    --sidebar-accent-foreground: 220 80% 40%; /* Darker blue for text on accent */
+    --sidebar-active-background: hsl(var(--primary)); /* Active item uses primary color */
+    --sidebar-active-foreground: hsl(var(--primary-foreground));
+    --sidebar-border: 220 15% 88%; /* Softer border */
     --sidebar-ring: hsl(var(--ring));
     
     /* Chart Colors - Light Mode */
@@ -95,14 +97,16 @@ body {
     --input: 216 50% 28%; /* Input Background / Border */
     --ring: 210 100% 65%; /* Brighter Primary for focus rings */
 
-    /* Sidebar specific colors - Dark Mode */
-    --sidebar-background: 216 65% 9%; 
-    --sidebar-foreground: 215 20% 90%; 
+    /* Sidebar specific colors - Dark Mode (Gemini Inspired) */
+    --sidebar-background: 220 30% 12%; /* Darker, sophisticated blue/grey */
+    --sidebar-foreground: 220 15% 88%; /* Brighter off-white for text */
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 216 50% 22%; 
-    --sidebar-accent-foreground: 215 20% 95%;
-    --sidebar-border: 216 40% 25%;
+    --sidebar-accent: 220 40% 22%; /* Subtle darker blue for hover */
+    --sidebar-accent-foreground: 220 80% 80%; /* Lighter blue for text on accent */
+    --sidebar-active-background: hsl(var(--primary)); /* Active item uses primary color */
+    --sidebar-active-foreground: hsl(var(--primary-foreground)); /* Ensure contrast */
+    --sidebar-border: 220 25% 20%; /* Darker border */
     --sidebar-ring: hsl(var(--ring));
 
     /* Chart Colors - Dark Mode */
@@ -430,4 +434,19 @@ body {
   outline: 2px solid hsl(var(--welcome-color-1));
   outline-offset: 2px;
   box-shadow: 0 0 0 4px hsla(var(--welcome-color-1)/0.2);
+}
+
+/* Gemini Inspired CTA Button Glow */
+@keyframes gemini-cta-glow {
+  0%, 100% { 
+    box-shadow: 0 0 5px hsl(var(--primary)/0.3), 0 0 10px hsl(var(--primary)/0.2), 0 0 15px hsl(var(--accent)/0.2);
+  }
+  50% { 
+    box-shadow: 0 0 10px hsl(var(--primary)/0.5), 0 0 20px hsl(var(--primary)/0.3), 0 0 30px hsl(var(--accent)/0.3);
+  }
+}
+
+.gemini-cta-button {
+  /* Base styles are defined in the component via Tailwind */
+  animation: gemini-cta-glow 3s infinite ease-in-out;
 }
