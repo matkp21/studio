@@ -436,17 +436,62 @@ body {
   box-shadow: 0 0 0 4px hsla(var(--welcome-color-1)/0.2);
 }
 
-/* Gemini Inspired CTA Button Glow */
+/* Gemini Inspired CTA Button Glow - Now Firebase Inspired */
 @keyframes gemini-cta-glow {
   0%, 100% { 
-    box-shadow: 0 0 5px hsl(var(--primary)/0.3), 0 0 10px hsl(var(--primary)/0.2), 0 0 15px hsl(var(--accent)/0.2);
+    box-shadow: 0 0 5px hsl(var(--welcome-color-1)/0.3), 0 0 10px hsl(var(--welcome-color-2)/0.2), 0 0 15px hsl(var(--welcome-color-3)/0.2);
   }
   50% { 
-    box-shadow: 0 0 10px hsl(var(--primary)/0.5), 0 0 20px hsl(var(--primary)/0.3), 0 0 30px hsl(var(--accent)/0.3);
+    box-shadow: 0 0 10px hsl(var(--welcome-color-2)/0.5), 0 0 20px hsl(var(--welcome-color-3)/0.3), 0 0 30px hsl(var(--welcome-color-4)/0.3);
   }
 }
 
-.gemini-cta-button {
+.gemini-cta-button { /* Class name kept for simplicity, but animation is now Firebase-themed */
   /* Base styles are defined in the component via Tailwind */
   animation: gemini-cta-glow 3s infinite ease-in-out;
+}
+
+/* Sidebar Active Item Glow */
+@keyframes sidebar-active-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px hsl(var(--sidebar-primary)/0.3), 0 0 12px hsl(var(--sidebar-primary)/0.2), inset 0 0 5px hsl(var(--sidebar-primary)/0.1);
+  }
+  50% {
+    box-shadow: 0 0 12px hsl(var(--sidebar-primary)/0.5), 0 0 18px hsl(var(--sidebar-primary)/0.3), inset 0 0 8px hsl(var(--sidebar-primary)/0.2);
+  }
+}
+
+.sidebar-active-item-glow {
+  animation: sidebar-active-glow 2.5s infinite ease-in-out;
+  /* Ensure the base active background is set via --sidebar-active-background */
+}
+
+/* Sidebar Item Hover Shine Effect */
+.sidebar-item-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-item-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: linear-gradient(
+    to right,
+    transparent 0%,
+    hsla(var(--sidebar-accent-foreground)/0.1) 20%,
+    hsla(var(--sidebar-accent-foreground)/0.3) 40%,
+    hsla(var(--sidebar-accent-foreground)/0.1) 60%,
+    transparent 100%
+  );
+  transform: translateX(-150%) translateY(-25%) rotate(25deg);
+  transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none; /* Ensure it doesn't block interactions */
+}
+
+.sidebar-item-shine:hover::after {
+  transform: translateX(50%) translateY(-25%) rotate(25deg);
 }
