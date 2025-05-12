@@ -68,16 +68,15 @@ export function HeroSection() {
     ctaText = "Medico Study Hub";
     CtaIcon = BookHeart;
     ctaAriaLabel = "Go to Medico Study Hub";
-    // Using a subtle gradient inspired by Firebase welcome colors, but toned for a button
-    ctaBaseClasses = "bg-gradient-to-r from-[hsl(var(--welcome-color-2))] via-[hsl(var(--welcome-color-3))] to-[hsl(var(--welcome-color-4))] hover:from-[hsl(var(--welcome-color-1))] hover:to-[hsl(var(--welcome-color-3))] text-white hover:shadow-lg";
-    ctaSpecificAnimation = "firebase-button-interactive"; // Use a general interactive class
+    ctaBaseClasses = "bg-gradient-to-r from-[hsl(var(--welcome-color-1)/0.9)] via-[hsl(var(--welcome-color-2)/0.9)] to-[hsl(var(--welcome-color-3)/0.9)] hover:from-[hsl(var(--welcome-color-1))] hover:to-[hsl(var(--welcome-color-3))] text-white hover:shadow-lg firebase-button-interactive";
+    ctaSpecificAnimation = ""; 
   } else if (userRole === 'pro') {
     ctaLink = "/pro";
     ctaText = "Pro Clinical Suite";
     CtaIcon = BriefcaseMedical;
     ctaAriaLabel = "Go to Professional Clinical Suite";
     ctaBaseClasses = "bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white hover:shadow-purple-500/40";
-    ctaSpecificAnimation = "gemini-cta-button"; // Specific Gemini-inspired glow for Pro button
+    ctaSpecificAnimation = "gemini-cta-button firebase-button-interactive"; 
   }
 
 
@@ -122,7 +121,7 @@ export function HeroSection() {
           transition={{ delay: 0.8, duration: 0.5 }}
           className="text-md sm:text-lg md:text-xl text-foreground/80 dark:text-foreground/80 max-w-3xl mx-auto mb-8"
         >
-          Your intelligent partner for AI-powered diagnostics, imaging analysis, and educational support—all at your fingertips.
+          Your intelligent partner for AI-powered diagnostics, interactive learning, clinical workflow optimization, and educational support—all at your fingertips.
         </motion.p>
 
         <motion.div
@@ -137,7 +136,7 @@ export function HeroSection() {
             className={cn(
               "rounded-lg group px-8 py-6 text-lg shadow-lg transition-all duration-300 transform hover:scale-105",
               ctaBaseClasses,
-              ctaSpecificAnimation // Apply the specific animation class here
+              ctaSpecificAnimation 
             )} 
             aria-label={ctaAriaLabel}
           >
@@ -146,7 +145,7 @@ export function HeroSection() {
               <CtaIcon 
                 className={cn(
                   "ml-2 h-7 w-7 group-hover:scale-110 animate-pulse-medical",
-                   "text-white" 
+                   userRole === 'pro' || userRole === 'medico' ? "text-white" : "text-primary-foreground" // Adjust icon color based on button
                 )} 
                 style={{"--medical-pulse-opacity-base": "0.8", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.35"} as CSSProperties}
               />
@@ -159,7 +158,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.5, duration: 0.5 }}
-            className="mt-12" // Ensure spacing above the ribbon
+            className="mt-12" 
           >
             <HeroWidgets tasks={heroTasks} />
           </motion.div>

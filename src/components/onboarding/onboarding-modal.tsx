@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { ReactNode } from 'react';
@@ -14,9 +13,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { HeartPulse, ScanSearch, BookOpenText, User, Stethoscope, GraduationCap, CheckCircle, BriefcaseMedical, School } from 'lucide-react';
+import { HeartPulse, ScanSearch, BookOpenText, User, Stethoscope, GraduationCap, CheckCircle, BriefcaseMedical, School, Bot, Palette, Telescope } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useProMode, type UserRole as ContextUserRole } from '@/contexts/pro-mode-context'; // Import context
+import { useProMode, type UserRole as ContextUserRole } from '@/contexts/pro-mode-context'; 
+import { Logo } from '@/components/logo';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -24,12 +24,11 @@ interface OnboardingModalProps {
 }
 
 type OnboardingStep = 'welcome' | 'features' | 'role' | 'complete';
-// Use ContextUserRole for consistency, excluding null as it's for selection state here
 type SelectableUserRole = Exclude<ContextUserRole, null>;
 
 
 interface StepContent {
-  title: string;
+  title: ReactNode;
   description: ReactNode;
   icon?: ReactNode;
   content?: ReactNode;
@@ -40,7 +39,7 @@ interface StepContent {
 export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
   const [selectedRole, setSelectedRole] = useState<SelectableUserRole | null>(null);
-  const { selectUserRole } = useProMode(); // Get selectUserRole from context
+  const { selectUserRole } = useProMode(); 
 
   const handleNext = () => {
     switch (currentStep) {
@@ -52,7 +51,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
         break;
       case 'role':
         if (selectedRole) {
-          selectUserRole(selectedRole); // Save role to context and localStorage
+          selectUserRole(selectedRole); 
           setCurrentStep('complete');
         }
         break;
@@ -75,32 +74,42 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
 
   const steps: Record<OnboardingStep, StepContent> = {
     welcome: {
-      title: "Welcome to MediAssistant!",
-      icon: <HeartPulse className="h-12 w-12 text-primary mb-4" />,
+      title: (
+        <div className="flex items-center justify-center gap-2">
+          Welcome to <Logo simple />!
+        </div>
+      ),
+      icon: <HeartPulse className="h-12 w-12 text-primary mb-4 animate-pulse-medical" style={{animationDuration: '1.5s'}} />,
       description: "Your intelligent partner in healthcare. Let's quickly set up your experience.",
       nextButtonText: "Get Started",
     },
     features: {
       title: "Discover Key Features",
-      description: "MediAssistant offers powerful tools to support your medical journey:",
+      description: "MediAssistant offers powerful tools tailored to your needs:",
       content: (
-        <ul className="space-y-4 my-4 text-sm text-muted-foreground list-none p-0">
-          <li className="flex items-start gap-3 p-3 bg-secondary/50 rounded-lg">
-            <Stethoscope className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+        <ul className="space-y-3 my-4 text-sm text-muted-foreground list-none p-0">
+          <li className="flex items-start gap-3 p-3 bg-secondary/50 rounded-lg shadow-sm">
+            <Bot className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
             <div>
-              <span className="font-semibold text-foreground">Symptom Analyzer:</span> Get AI-powered insights from symptom descriptions.
+              <span className="font-semibold text-foreground">Advanced AI Chat:</span> Engage in intelligent conversations, get symptom insights, and access medico study tools directly via chat. Features voice input/output for hands-free use.
             </div>
           </li>
-          <li className="flex items-start gap-3 p-3 bg-secondary/50 rounded-lg">
+          <li className="flex items-start gap-3 p-3 bg-secondary/50 rounded-lg shadow-sm">
             <ScanSearch className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
             <div>
-              <span className="font-semibold text-foreground">Image Analyzer:</span> Upload and analyze medical images like X-rays and CT scans.
+              <span className="font-semibold text-foreground">Enhanced Image Analysis & AR:</span> Upload medical images for AI-powered annotations and explore them with interactive Augmented Reality features.
             </div>
           </li>
-          <li className="flex items-start gap-3 p-3 bg-secondary/50 rounded-lg">
-            <BookOpenText className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+          <li className="flex items-start gap-3 p-3 bg-secondary/50 rounded-lg shadow-sm">
+            <Palette className="h-6 w-6 text-primary flex-shrink-0 mt-1" /> {/* Icon for personalized dashboards */}
             <div>
-             <span className="font-semibold text-foreground">Educational Support:</span> Access clinical guidelines and medical knowledge.
+             <span className="font-semibold text-foreground">Personalized Dashboards:</span> Tailor your workspace with customizable dashboards for Professionals (Clinical Suite) and Medical Students (Medico Study Hub).
+            </div>
+          </li>
+          <li className="flex items-start gap-3 p-3 bg-secondary/50 rounded-lg shadow-sm">
+            <Telescope className="h-6 w-6 text-primary flex-shrink-0 mt-1" /> {/* Icon for specialized tools */}
+            <div>
+             <span className="font-semibold text-foreground">Specialized Tool Suites:</span> Access a comprehensive set of tools for Medicos (notes, MCQs, case sims) and Professionals (DDx, discharge summaries, protocol navigation).
             </div>
           </li>
         </ul>
@@ -111,7 +120,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
     role: {
       title: "Personalize Your Experience",
       icon: <User className="h-10 w-10 text-primary mb-3" />,
-      description: "Tell us about yourself to tailor MediAssistant to your needs. This will help us customize your dashboard and feature suggestions.",
+      description: "Tell us about yourself to tailor MediAssistant to your needs. This will customize your dashboard and feature suggestions.",
       content: (
         <RadioGroup
           value={selectedRole ?? undefined}
@@ -149,7 +158,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
           >
             <RadioGroupItem value="diagnosis" id="role-diagnosis" />
             <Stethoscope className="h-5 w-5 text-primary" />
-            <span className="font-medium">Patient / General Use (Diagnosis)</span>
+            <span className="font-medium">Patient / General Use</span>
           </Label>
         </RadioGroup>
       ),
@@ -177,8 +186,10 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
       <DialogContent className="sm:max-w-lg rounded-xl shadow-2xl">
         <DialogHeader className="text-center items-center pt-6">
           {currentStepContent.icon}
-          <DialogTitle>{currentStepContent.title}</DialogTitle>
-          <DialogDescription className="text-muted-foreground px-4">
+          <DialogTitle className="text-2xl font-bold tracking-tight"> {/* Increased font weight and tracking */}
+            {currentStepContent.title}
+          </DialogTitle>
+          <DialogDescription className="text-muted-foreground px-4 text-sm"> {/* Ensure consistent text size */}
             {currentStepContent.description}
           </DialogDescription>
         </DialogHeader>
@@ -198,7 +209,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
           <Button 
             onClick={handleNext} 
             disabled={currentStep === 'role' && !selectedRole}
-            className="rounded-lg"
+            className="rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground" // Ensure primary button styling
           >
             {currentStepContent.nextButtonText || "Next"}
           </Button>
@@ -207,4 +218,3 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
     </Dialog>
   );
 }
-
