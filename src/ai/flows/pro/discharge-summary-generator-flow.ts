@@ -6,13 +6,14 @@
  * - generateDischargeSummary - A function that takes patient details and clinical anchors
  *   to draft a comprehensive discharge summary.
  * - DischargeSummaryInput - The input type for the flow.
+ * - DischargeSummaryInputSchema - The Zod schema for the input.
  * - DischargeSummaryOutput - The return type for the flow.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-const DischargeSummaryInputSchema = z.object({
+export const DischargeSummaryInputSchema = z.object({
   patientName: z.string().optional().describe("Patient's full name."),
   patientAge: z.string().optional().describe("Patient's age (e.g., '45 years', '6 months')."),
   admissionNumber: z.string().min(1, {message: "Admission/OPD number is required."}).describe("Unique patient admission or OPD number for context."),
@@ -84,3 +85,4 @@ const dischargeSummaryFlow = ai.defineFlow(
     return output;
   }
 );
+
