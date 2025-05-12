@@ -2,107 +2,134 @@
 "use client";
 
 import { useState } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { FilePlus, Lightbulb, Loader2, Download, Share2, Edit3 } from 'lucide-react';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FilePlus, Lightbulb, Loader2, Download, Share2, Edit3, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '../ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { generateDischargeSummary, DischargeSummaryInputSchema, type DischargeSummaryInput, type DischargeSummaryOutput } from '@/ai/flows/pro/discharge-summary-generator-flow';
 
-// This component is a placeholder and conceptual representation.
-// Full implementation would involve robust AI, data integration, and NLP.
-
-interface DischargeSummaryData {
-  patientName: string;
-  patientAge: string;
-  admissionNumber: string;
-  primaryDiagnosis: string; // Clinical Anchor
-  keySymptomsOrProcedure?: string; // Clinical Anchor
-
-  hospitalCourse: string;
-  dischargeMedications: string[];
-  followUpPlans: string[];
-  patientEducation: string[];
-  redFlags: string[];
-  // Potentially many more fields
-}
-
-const initialSummaryState: DischargeSummaryData = {
-    patientName: '',
-    patientAge: '',
-    admissionNumber: '',
-    primaryDiagnosis: '',
-    keySymptomsOrProcedure: '',
-    hospitalCourse: 'Patient admitted on [Date] with [Symptoms/Reason]. Investigations revealed [...]. Management included [...]. Patient responded well/had complications [...]. Stable for discharge.',
-    dischargeMedications: ['Medication 1: Dose, Route, Frequency, Duration (e.g., Paracetamol 500mg PO QID PRN for 3 days)'],
-    followUpPlans: ['Follow up with GP in 1 week.', 'Outpatient clinic appointment on [Date] at [Time].'],
-    patientEducation: ['Educated on medication compliance.', 'Advised on diet and activity levels.'],
-    redFlags: ['Seek immediate medical attention if: fever >38.5°C, severe pain unrelieved by medication, shortness of breath.'],
-};
-
+type DischargeSummaryFormValues = DischargeSummaryInput;
 
 export function DischargeSummaryGenerator() {
-  const [patientName, setPatientName] = useState('');
-  const [patientAge, setPatientAge] = useState('');
-  const [admissionNumber, setAdmissionNumber] = useState('');
-  const [clinicalAnchorDiagnosis, setClinicalAnchorDiagnosis] = useState('');
-  const [clinicalAnchorSymptoms, setClinicalAnchorSymptoms] = useState('');
-
-  const [generatedSummary, setGeneratedSummary] = useState<DischargeSummaryData | null>(null);
+  const [generatedSummary, setGeneratedSummary] = useState<DischargeSummaryOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleGenerateSummary = async () => {
-    if (!admissionNumber.trim() || !clinicalAnchorDiagnosis.trim()) {
-      toast({ 
-        title: "Input Required", 
-        description: "Please enter Admission Number and Primary Diagnosis (Clinical Anchor).", 
-        variant: "destructive" 
-      });
-      return;
-    }
+  const form = useForm<DischargeSummaryFormValues>({
+    resolver: zodResolver(DischargeSummaryInputSchema),
+    defaultValues: {
+      patientName: '',
+      patientAge: '',
+      admissionNumber: '',
+      primaryDiagnosis: '',
+      keySymptomsOrProcedure: '',
+      additionalContext: '',
+    },
+  });
+
+  const handleGenerateSummary: SubmitHandler<DischargeSummaryFormValues> = async (data) => {
     setIsLoading(true);
-    setGeneratedSummary(null); // Clear previous summary
+    setGeneratedSummary(null); 
 
-    // Simulate AI data aggregation and predictive drafting
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
-
-    // For demo, we'll use a pre-filled template and customize it slightly
-    // In a real app, this would be a complex AI process.
-    const draftSummary: DischargeSummaryData = {
-      ...initialSummaryState,
-      patientName: patientName || "John Doe", // Use entered or default
-      patientAge: patientAge || "45",
-      admissionNumber: admissionNumber,
-      primaryDiagnosis: clinicalAnchorDiagnosis,
-      keySymptomsOrProcedure: clinicalAnchorSymptoms,
-      // AI would populate these more intelligently based on 'clinicalAnchorDiagnosis' & patient data
-      hospitalCourse: `Patient ${patientName || 'N/A'}, ${patientAge || 'N/A'} y/o, admitted via ER with ${clinicalAnchorSymptoms || 'presenting complaints related to ' + clinicalAnchorDiagnosis}. Investigations confirmed ${clinicalAnchorDiagnosis}. Treatment initiated included [Specific Treatments for ${clinicalAnchorDiagnosis}]. Patient's condition improved. Stable for discharge.`,
-      dischargeMedications: [
-        `Prescription for ${clinicalAnchorDiagnosis}-specific medication (e.g., Antibiotic X 500mg BID x 7 days)`,
-        "Paracetamol 1g PO QDS PRN for pain/fever."
-      ],
-      followUpPlans: [
-        `Follow-up with primary care physician in 1 week to review progress regarding ${clinicalAnchorDiagnosis}.`,
-        "Specialist appointment for [Related Specialty] on [Future Date]."
-      ],
-      redFlags: [
-        `Return to hospital immediately if experiencing worsening of ${clinicalAnchorDiagnosis} symptoms, high fever, or severe pain.`
-      ]
-    };
-
-    setGeneratedSummary(draftSummary);
-    setIsLoading(false);
-    toast({ title: "Draft Summary Generated", description: "Review and refine the AI-generated discharge summary." });
+    try {
+      const result = await generateDischargeSummary(data);
+      setGeneratedSummary(result);
+      toast({ title: "Draft Summary Generated", description: "Review and refine the AI-generated discharge summary." });
+    } catch (error) {
+        console.error("Discharge summary generation error:", error);
+        toast({
+            title: "Generation Failed",
+            description: (error as Error).message || "Could not generate draft summary.",
+            variant: "destructive",
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
   
-  const handleSummaryChange = (field: keyof DischargeSummaryData, value: string | string[]) => {
-    if (generatedSummary) {
-        setGeneratedSummary(prev => prev ? {...prev, [field]: value} : null);
+  const handleSummaryFieldChange = <K extends keyof DischargeSummaryOutput>(
+    field: K,
+    value: DischargeSummaryOutput[K]
+  ) => {
+    setGeneratedSummary(prev => prev ? { ...prev, [field]: value } : null);
+  };
+
+  const handleArrayItemChange = (
+    field: keyof Pick<DischargeSummaryOutput, 'dischargeMedications' | 'followUpPlans' | 'patientEducation' | 'redFlags'>,
+    index: number,
+    value: string
+  ) => {
+    if (!generatedSummary) return;
+    const currentArray = generatedSummary[field] as string[] | undefined;
+    if (currentArray) {
+      const newArray = [...currentArray];
+      newArray[index] = value;
+      handleSummaryFieldChange(field, newArray as any);
     }
+  };
+  
+  const addArrayItem = (
+    field: keyof Pick<DischargeSummaryOutput, 'dischargeMedications' | 'followUpPlans' | 'patientEducation' | 'redFlags'>
+  ) => {
+    if (!generatedSummary) return;
+    const currentArray = generatedSummary[field] as string[] | undefined;
+    const newArray = currentArray ? [...currentArray, ''] : [''];
+    handleSummaryFieldChange(field, newArray as any);
+  };
+
+  const removeArrayItem = (
+    field: keyof Pick<DischargeSummaryOutput, 'dischargeMedications' | 'followUpPlans' | 'patientEducation' | 'redFlags'>,
+    index: number
+  ) => {
+    if (!generatedSummary) return;
+    const currentArray = generatedSummary[field] as string[] | undefined;
+    if (currentArray) {
+      const newArray = currentArray.filter((_, i) => i !== index);
+      handleSummaryFieldChange(field, newArray as any);
+    }
+  };
+
+  const renderEditableArrayField = (
+    fieldKey: keyof Pick<DischargeSummaryOutput, 'dischargeMedications' | 'followUpPlans' | 'patientEducation' | 'redFlags'>,
+    label: string
+  ) => {
+    const items = generatedSummary?.[fieldKey] as string[] | undefined;
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-1">
+          <Label htmlFor={`summary-${fieldKey}`} className="text-md font-semibold text-foreground/90">{label}</Label>
+          <Button variant="outline" size="sm" onClick={() => addArrayItem(fieldKey)} className="rounded-md h-7 px-2 text-xs">
+            <PlusCircle className="mr-1 h-3.5 w-3.5"/> Add Item
+          </Button>
+        </div>
+        {items && items.length > 0 ? (
+          items.map((item, index) => (
+            <div key={`${fieldKey}-${index}`} className="flex items-center gap-2 mb-1.5">
+              <Textarea
+                id={`summary-${fieldKey}-${index}`}
+                value={item}
+                onChange={(e) => handleArrayItemChange(fieldKey, index, e.target.value)}
+                className="mt-1 rounded-md min-h-[60px] border-border/70 focus:border-primary flex-grow"
+                placeholder={`Edit ${label} item ${index + 1}`}
+              />
+              <Button variant="ghost" size="iconSm" onClick={() => removeArrayItem(fieldKey, index)} className="text-destructive hover:bg-destructive/10 rounded-full mt-1">
+                <Trash2 className="h-4 w-4"/>
+              </Button>
+            </div>
+          ))
+        ) : (
+          <p className="text-xs text-muted-foreground mt-1">No items for {label.toLowerCase()} yet. Add one if needed.</p>
+        )}
+      </div>
+    );
   };
 
 
@@ -118,87 +145,130 @@ export function DischargeSummaryGenerator() {
       </Alert>
 
       <Card className="shadow-md rounded-xl border-sky-500/30 bg-gradient-to-br from-card via-card to-sky-500/5">
-        <CardHeader>
-          <CardTitle className="text-xl flex items-center gap-2">
-            <FilePlus className="h-6 w-6 text-sky-600" />
-            Generate Discharge Summary
-          </CardTitle>
-          <CardDescription>Provide minimal identifiers and clinical anchors to initiate AI drafting.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <Label htmlFor="admission-number">Admission/OPD Number (Required)</Label>
-                    <Input id="admission-number" value={admissionNumber} onChange={e => setAdmissionNumber(e.target.value)} placeholder="e.g., MRN12345" className="mt-1 rounded-lg"/>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleGenerateSummary)}>
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <FilePlus className="h-6 w-6 text-sky-600" />
+                Generate Discharge Summary
+              </CardTitle>
+              <CardDescription>Provide minimal identifiers and clinical anchors to initiate AI drafting.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                        control={form.control}
+                        name="admissionNumber"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor="admission-number">Admission/OPD Number</FormLabel>
+                                <FormControl><Input id="admission-number" placeholder="e.g., MRN12345" {...field} className="mt-1 rounded-lg"/></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="primaryDiagnosis"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor="primary-diagnosis">Primary Diagnosis (Clinical Anchor)</FormLabel>
+                                <FormControl><Input id="primary-diagnosis" placeholder="e.g., Acute Myocardial Infarction" {...field} className="mt-1 rounded-lg"/></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="patientName"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor="patient-name-ds">Patient Name (Optional)</FormLabel>
+                                <FormControl><Input id="patient-name-ds" placeholder="e.g., John Doe" {...field} className="mt-1 rounded-lg"/></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="patientAge"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor="patient-age-ds">Patient Age (Optional)</FormLabel>
+                                <FormControl><Input id="patient-age-ds" placeholder="e.g., 45 years" {...field} className="mt-1 rounded-lg"/></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="keySymptomsOrProcedure"
+                        render={({ field }) => (
+                            <FormItem className="md:col-span-2">
+                                <FormLabel htmlFor="key-symptoms">Key Symptoms / Procedure (Optional Anchor)</FormLabel>
+                                <FormControl><Input id="key-symptoms" placeholder="e.g., Severe abdominal pain, Laparoscopic Cholecystectomy" {...field} className="mt-1 rounded-lg"/></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                     <FormField
+                        control={form.control}
+                        name="additionalContext"
+                        render={({ field }) => (
+                            <FormItem className="md:col-span-2">
+                                <FormLabel htmlFor="additional-context">Additional Context (Optional)</FormLabel>
+                                <FormControl><Textarea id="additional-context" placeholder="e.g., Complicated by AKI, Known allergy to penicillin" {...field} className="mt-1 rounded-lg min-h-[80px]"/></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 </div>
-                 <div>
-                    <Label htmlFor="primary-diagnosis">Primary Diagnosis (Clinical Anchor - Required)</Label>
-                    <Input id="primary-diagnosis" value={clinicalAnchorDiagnosis} onChange={e => setClinicalAnchorDiagnosis(e.target.value)} placeholder="e.g., Acute Myocardial Infarction" className="mt-1 rounded-lg"/>
-                </div>
-                 <div>
-                    <Label htmlFor="patient-name-ds">Patient Name (Optional)</Label>
-                    <Input id="patient-name-ds" value={patientName} onChange={e => setPatientName(e.target.value)} placeholder="e.g., John Doe" className="mt-1 rounded-lg"/>
-                </div>
-                 <div>
-                    <Label htmlFor="patient-age-ds">Patient Age (Optional)</Label>
-                    <Input id="patient-age-ds" value={patientAge} onChange={e => setPatientAge(e.target.value)} placeholder="e.g., 45" className="mt-1 rounded-lg"/>
-                </div>
-                <div className="md:col-span-2">
-                    <Label htmlFor="key-symptoms">Key Symptoms / Procedure (Optional Clinical Anchor)</Label>
-                    <Input id="key-symptoms" value={clinicalAnchorSymptoms} onChange={e => setClinicalAnchorSymptoms(e.target.value)} placeholder="e.g., Severe abdominal pain, Laparoscopic Cholecystectomy" className="mt-1 rounded-lg"/>
-                </div>
-            </div>
-          <Button onClick={handleGenerateSummary} disabled={isLoading} className="w-full sm:w-auto rounded-lg py-3 text-base group">
-            {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Edit3 className="mr-2 h-5 w-5" />}
-            Generate Draft Summary
-          </Button>
-        </CardContent>
+              <Button type="submit" disabled={isLoading} className="w-full sm:w-auto rounded-lg py-3 text-base group">
+                {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Edit3 className="mr-2 h-5 w-5" />}
+                Generate Draft Summary
+              </Button>
+            </CardContent>
+          </form>
+        </Form>
       </Card>
 
       {generatedSummary && (
         <Card className="mt-6 shadow-lg rounded-xl border-green-500/30">
           <CardHeader>
-            <CardTitle className="text-xl text-green-700 dark:text-green-400">Draft Discharge Summary for: {generatedSummary.patientName || generatedSummary.admissionNumber}</CardTitle>
+            <CardTitle className="text-xl text-green-700 dark:text-green-400">Draft Discharge Summary for: {generatedSummary.patientName || form.getValues("admissionNumber")}</CardTitle>
             <CardDescription>Review, edit, and complete the sections below. AI suggestions are provided.</CardDescription>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[60vh] p-1 border bg-background rounded-lg">
                 <div className="p-4 space-y-6">
-                    {Object.entries(generatedSummary).map(([key, value]) => {
-                        if (key === 'admissionNumber' || key === 'primaryDiagnosis' || key === 'keySymptomsOrProcedure' || key === 'patientName' || key === 'patientAge') return null; // Already captured or part of header
-                        
-                        const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                    <div>
+                        <Label htmlFor="summary-hospitalCourse" className="text-md font-semibold text-foreground/90">Hospital Course</Label>
+                        <Textarea
+                            id="summary-hospitalCourse"
+                            value={generatedSummary.hospitalCourse}
+                            onChange={(e) => handleSummaryFieldChange('hospitalCourse', e.target.value)}
+                            className="mt-1 rounded-md min-h-[120px] border-border/70 focus:border-primary"
+                            placeholder="Edit Hospital Course"
+                        />
+                    </div>
+                    
+                    {renderEditableArrayField('dischargeMedications', 'Discharge Medications')}
+                    {renderEditableArrayField('followUpPlans', 'Follow-up Plans')}
+                    {renderEditableArrayField('patientEducation', 'Patient Education')}
+                    {renderEditableArrayField('redFlags', 'Red Flag Warnings')}
 
-                        return (
-                            <div key={key}>
-                                <Label htmlFor={`summary-${key}`} className="text-md font-semibold text-foreground/90">{label}</Label>
-                                {Array.isArray(value) ? (
-                                    value.map((item, index) => (
-                                        <Textarea
-                                            key={`${key}-${index}`}
-                                            id={`summary-${key}-${index}`}
-                                            value={item}
-                                            onChange={(e) => {
-                                                const newArray = [...value];
-                                                newArray[index] = e.target.value;
-                                                handleSummaryChange(key as keyof DischargeSummaryData, newArray);
-                                            }}
-                                            className="mt-1 rounded-md min-h-[60px] border-border/70 focus:border-primary"
-                                            placeholder={`Edit ${label} item ${index + 1}`}
-                                        />
-                                    ))
-                                ) : (
-                                    <Textarea
-                                        id={`summary-${key}`}
-                                        value={value as string}
-                                        onChange={(e) => handleSummaryChange(key as keyof DischargeSummaryData, e.target.value)}
-                                        className="mt-1 rounded-md min-h-[100px] border-border/70 focus:border-primary"
-                                        placeholder={`Edit ${label}`}
-                                    />
-                                )}
-                            </div>
-                        );
-                    })}
+                    {generatedSummary.notesForDoctor && (
+                       <div>
+                            <Label htmlFor="summary-notesForDoctor" className="text-md font-semibold text-foreground/90">Notes for Doctor (AI Suggestion)</Label>
+                            <Textarea
+                                id="summary-notesForDoctor"
+                                value={generatedSummary.notesForDoctor}
+                                onChange={(e) => handleSummaryFieldChange('notesForDoctor', e.target.value)}
+                                className="mt-1 rounded-md min-h-[60px] border-border/70 focus:border-primary bg-amber-500/10 border-amber-500/30"
+                                placeholder="Edit AI notes for doctor"
+                            />
+                        </div>
+                    )}
                 </div>
             </ScrollArea>
           </CardContent>

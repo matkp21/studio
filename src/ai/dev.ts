@@ -1,4 +1,3 @@
-
 import { config } from 'dotenv';
 config();
 
@@ -19,3 +18,6 @@ import '@/ai/flows/medico/differential-diagnosis-trainer-flow.ts';
 import '@/ai/flows/medico/virtual-patient-rounds-flow.ts';
 import '@/ai/flows/medico/high-yield-topic-predictor-flow.ts';
 import '@/ai/flows/medico/drug-dosage-calculator-flow.ts';
+
+// Professional tools
+import '@/ai/flows/pro/discharge-summary-generator-flow.ts';
