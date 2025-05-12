@@ -1,3 +1,4 @@
+
 // src/components/pro/discharge-summary-generator.tsx
 "use client";
 
@@ -10,11 +11,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { FilePlus, Lightbulb, Loader2, Download, Share2, Edit3, Trash2 } from 'lucide-react';
+import { FilePlus, Lightbulb, Loader2, Download, Share2, Edit3, Trash2, PlusCircle } from 'lucide-react'; // Added PlusCircle
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '../ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { generateDischargeSummary, DischargeSummaryInputSchema, type DischargeSummaryInput, type DischargeSummaryOutput } from '@/ai/flows/pro/discharge-summary-generator-flow';
+import { generateDischargeSummary, type DischargeSummaryInput, type DischargeSummaryOutput } from '@/ai/flows/pro/discharge-summary-generator-flow';
+import { DischargeSummaryInputSchema } from '@/ai/schemas/pro-schemas'; // Updated import path
 
 type DischargeSummaryFormValues = DischargeSummaryInput;
 
@@ -235,7 +237,7 @@ export function DischargeSummaryGenerator() {
       {generatedSummary && (
         <Card className="mt-6 shadow-lg rounded-xl border-green-500/30">
           <CardHeader>
-            <CardTitle className="text-xl text-green-700 dark:text-green-400">Draft Discharge Summary for: {generatedSummary.patientName || form.getValues("admissionNumber")}</CardTitle>
+            <CardTitle className="text-xl text-green-700 dark:text-green-400">Draft Discharge Summary for: {form.getValues("patientName") || form.getValues("admissionNumber")}</CardTitle>
             <CardDescription>Review, edit, and complete the sections below. AI suggestions are provided.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -276,7 +278,7 @@ export function DischargeSummaryGenerator() {
             <Button variant="outline" className="rounded-lg">
                 <Share2 className="mr-2 h-4 w-4"/> Share / Export
             </Button>
-            <Button className="rounded-lg bg-green-600 hover:bg-green-500">
+            <Button className="rounded-lg bg-green-600 hover:bg-green-700 text-white">
                 <Download className="mr-2 h-4 w-4"/> Finalize & Save
             </Button>
           </CardFooter>
