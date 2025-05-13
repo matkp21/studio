@@ -4,7 +4,7 @@
 import type { CSSProperties } from 'react';
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquareHeart, Bot, Sparkles } from 'lucide-react'; 
+import { MessageSquareHeart, Sparkles, HeartPulse } from 'lucide-react'; 
 
 interface ChatInterfaceAnimationProps {
   onAnimationComplete: () => void;
@@ -110,7 +110,7 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
     >
       <motion.div variants={iconContainerVariants} className="relative mb-8">
         <motion.div variants={botIconVariants} initial="initial" animate="animate">
-            <Bot
+            <HeartPulse // Changed from Bot to HeartPulse
                 className="h-24 w-24 sm:h-28 sm:w-28 text-primary opacity-90 drop-shadow-lg"
                 style={{
                     filter: 'drop-shadow(0 0 10px hsl(var(--primary)/0.5))'
@@ -197,3 +197,4 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
     </motion.div>
   );
 }
+
