@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
-import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog } from 'lucide-react';
+import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, HeartPulse } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
@@ -65,9 +65,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
       if (!onboardingComplete) {
         setShowOnboardingModal(true);
       } else {
-        // Onboarding is complete
         if (!welcomeDisplayShownThisSession) {
-          setShowWelcomeDisplay(true); // Show welcome display if not shown this session
+          setShowWelcomeDisplay(true); 
         }
         if (storedUserRole && !userRole) { 
           selectUserRole(storedUserRole);
@@ -89,7 +88,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
     setShowOnboardingModal(false);
     if (typeof window !== 'undefined') { 
       localStorage.setItem('onboardingComplete', 'true');
-      // After onboarding, show welcome display if it hasn't been shown this session
       const welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
       if (!welcomeDisplayShownThisSession) {
         setShowWelcomeDisplay(true);
@@ -112,7 +110,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
   }
 
   if (!clientLoaded) {
-    // You might want a very basic loading spinner here or just null
     return null; 
   }
 
@@ -179,8 +176,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                    <Avatar className="h-8 w-8">
                     <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
                     <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 glowing-ring-firebase">
-                      {/* Replaced with specific icon */}
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white lucide lucide-heart-pulse"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.7-1.44.7 2.88.7-1.44H15"/></svg>
+                       <HeartPulse className="h-4 w-4 text-white"/>
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -190,8 +186,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
                       <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 glowing-ring-firebase">
-                       {/* Replaced with specific icon */}
-                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white lucide lucide-heart-pulse"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.7-1.44.7 2.88.7-1.44H15"/></svg>
+                        <HeartPulse className="h-4 w-4 text-white"/>
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
@@ -201,9 +196,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <UserCircle className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile">
+                      <UserCircle className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Settings className="mr-2 h-4 w-4" />
@@ -265,7 +262,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <main className="flex-1 flex flex-col overflow-auto">
           {children}
         </main>
-        {/* OnboardingModal is now handled at the top level of the component */}
         <Footer />
       </SidebarInset>
     </SidebarProvider>
