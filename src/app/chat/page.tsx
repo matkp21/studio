@@ -1,21 +1,19 @@
 // src/app/chat/page.tsx
-"use client"; // Add "use client" for useState and useEffect
+"use client"; 
 
-import { useState, useEffect } from 'react'; // Import useState and useEffect
+import { useState, useEffect } from 'react'; 
 import { ChatInterface } from '@/components/chat/chat-interface';
 import { PageWrapper } from '@/components/layout/page-wrapper';
-import { ChatInterfaceAnimation } from '@/components/chat/chat-interface-animation'; // Import the animation
+import { ChatInterfaceAnimation } from '@/components/chat/chat-interface-animation'; 
 import { Loader2 } from 'lucide-react';
 
 export default function ChatPage() {
-  const [showAnimation, setShowAnimation] = useState(true); // State to control animation
+  const [showAnimation, setShowAnimation] = useState(true); 
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-    // Logic to show animation only once per session or based on some condition could be added here
-    // For now, it shows every time the page is loaded.
-    // To show only once per session, you could use sessionStorage:
+    // Logic for showing animation once per session (optional)
     // const animationShown = sessionStorage.getItem('chatAnimationShown');
     // if (animationShown) {
     //   setShowAnimation(false);
@@ -40,7 +38,7 @@ export default function ChatPage() {
   }
 
   return (
-    <PageWrapper title="MediAssistant Chat" className="flex-1 flex flex-col h-full p-0 sm:p-0">
+    <PageWrapper title="MediAssistant Chat" className="flex-1 flex flex-col h-[calc(100vh-var(--header-height,4rem)-var(--footer-height,0rem))] p-0 sm:p-0">
       <div className="flex-1 flex flex-col h-full p-2 sm:p-4">
          <ChatInterface />
       </div>

@@ -4,7 +4,7 @@
 import type { CSSProperties } from 'react';
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquareHeart, Bot } from 'lucide-react'; 
+import { MessageSquareHeart, Bot, Sparkles } from 'lucide-react'; 
 
 interface ChatInterfaceAnimationProps {
   onAnimationComplete: () => void;
@@ -14,110 +14,185 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
   useEffect(() => {
     const timer = setTimeout(() => {
       onAnimationComplete();
-    }, 3500); // Animation duration + buffer
+    }, 3800); // Slightly increased duration for a more graceful animation
 
     return () => clearTimeout(timer);
   }, [onAnimationComplete]);
 
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
-      transition: { duration: 0.5 }
+      scale: 1,
+      transition: { duration: 0.6, ease: "circOut" }
     },
     exit: {
       opacity: 0,
-      transition: { duration: 0.5, delay: 3 }
+      scale: 0.95,
+      transition: { duration: 0.4, ease: "circIn", delay: 3.2 }
     }
   };
 
-  const iconVariants = {
-    hidden: { scale: 0.5, opacity: 0, y: 20 },
+  const iconContainerVariants = {
+    hidden: { opacity: 0, y: -30 },
     visible: {
-      scale: 1,
       opacity: 1,
       y: 0,
-      transition: { delay: 0.3, duration: 0.9, type: "spring", stiffness: 120, damping: 10 }
+      transition: { delay: 0.2, duration: 0.8, type: "spring", stiffness: 100, damping: 12 }
     },
   };
 
-  const textVariants = (delay: number) => ({
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { delay: delay, duration: 0.8, ease: "easeOut" }
+  const botIconVariants = {
+    initial: { scale: 0.8, rotate: -10 },
+    animate: { 
+      scale: [0.8, 1.1, 1], 
+      rotate: [-10, 10, 0],
+      transition: { duration: 1, ease: "easeInOut", delay: 0.5 }
     },
+  };
+  
+  const heartIconVariants = {
+    initial: { scale: 0, opacity: 0, x: 10, y:10 },
+    animate: {
+        scale: [0, 1.2, 1],
+        opacity: [0, 1, 0.9],
+        x: [10, 0, 5],
+        y: [10, -5, 0],
+        transition: { duration: 0.9, ease: "easeOut", delay: 0.8 }
+    }
+  };
+
+  const sparklesVariants = (i: number) => ({
+    initial: { opacity: 0, scale: 0 },
+    animate: {
+      opacity: [0, 1, 0],
+      scale: [0, 1.2, 0],
+      x: Math.random() * 40 - 20,
+      y: Math.random() * 40 - 20,
+      transition: {
+        delay: 1.2 + i * 0.15,
+        duration: 1.2,
+        repeat: Infinity,
+        repeatDelay: 1.5,
+        ease: "easeInOut"
+      }
+    }
   });
 
-  const bubbleVariants = (delay: number, xOffset: number = 0) => ({
-    hidden: { opacity: 0, y: 20, x: xOffset },
+
+  const textVariants = (delay: number) => ({
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
+      transition: { delay: delay, duration: 0.9, ease: "circOut" }
+    },
+  });
+  
+  const bubbleVariants = (delay: number, fromRight: boolean = false) => ({
+    hidden: { opacity: 0, scale: 0.8, x: fromRight ? 30 : -30 },
+    visible: {
+      opacity: 1,
+      scale: 1,
       x: 0,
-      transition: { delay: 1.2 + delay, duration: 0.6, type: "spring", stiffness: 100 }
+      transition: { delay: 1.5 + delay, duration: 0.6, type: "spring", stiffness: 120, damping: 15 }
     }
   });
 
 
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-gradient-to-br from-background via-secondary to-background text-white overflow-hidden p-4"
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-gradient-to-br from-background via-card to-secondary/20 text-foreground overflow-hidden p-4"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
     >
-      <motion.div variants={iconVariants} className="relative mb-6">
-        <Bot
-            className="h-20 w-20 sm:h-24 sm:w-24 text-primary opacity-90 animate-pulse-medical"
+      <motion.div variants={iconContainerVariants} className="relative mb-8">
+        <motion.div variants={botIconVariants} initial="initial" animate="animate">
+            <Bot
+                className="h-24 w-24 sm:h-28 sm:w-28 text-primary opacity-90 drop-shadow-lg"
+                style={{
+                    filter: 'drop-shadow(0 0 10px hsl(var(--primary)/0.5))'
+                } as CSSProperties}
+            />
+        </motion.div>
+         <motion.div variants={heartIconVariants} initial="initial" animate="animate" className="absolute -bottom-3 -right-4">
+            <MessageSquareHeart
+                className="h-12 w-12 text-accent opacity-90 transform rotate-[15deg] drop-shadow-md"
+                 style={{
+                    filter: 'drop-shadow(0 0 8px hsl(var(--accent)/0.4))'
+                } as CSSProperties}
+            />
+        </motion.div>
+        {[...Array(3)].map((_, i) => (
+          <motion.div
+            key={`sparkle-${i}`}
+            variants={sparklesVariants(i)}
+            initial="initial"
+            animate="animate"
+            className="absolute"
             style={{
-                "--medical-pulse-scale-peak": "1.1",
-                "--medical-pulse-opacity-peak": "0.7",
-                animationDuration: '2.2s'
-            } as CSSProperties}
-        />
-         <MessageSquareHeart
-            className="absolute -bottom-2 -right-3 h-10 w-10 text-accent opacity-80 transform rotate-12"
-        />
+              left: `${40 + Math.random() * 20}%`, // Randomize position around the main icon
+              top: `${40 + Math.random() * 20}%`,
+            }}
+          >
+            <Sparkles className="h-5 w-5 text-yellow-400 opacity-80" />
+          </motion.div>
+        ))}
       </motion.div>
 
       <motion.h1
-        className="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 text-center text-transparent bg-clip-text animated-gradient-text"
-        variants={textVariants(0.7)}
+        className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-center text-transparent bg-clip-text animated-gradient-text"
+        variants={textVariants(0.5)}
       >
         MediAssistant Chat
       </motion.h1>
 
       <motion.p
-        className="text-md sm:text-lg md:text-xl text-foreground/80 text-center"
-        variants={textVariants(0.9)}
+        className="text-md sm:text-lg md:text-xl text-foreground/70 text-center mb-10"
+        variants={textVariants(0.7)}
       >
-        Connecting to your AI assistant...
+        Connecting to your AI medical partner...
       </motion.p>
 
-      {/* Conceptual animated chat bubbles */}
-      <div className="absolute bottom-10 w-full max-w-xs flex flex-col items-center space-y-2 opacity-50">
+      <div className="w-full max-w-sm flex flex-col space-y-3 opacity-80">
          <motion.div
-            variants={bubbleVariants(0, -20)}
-            className="self-start bg-primary/20 text-primary-foreground/80 p-2 rounded-lg rounded-bl-none shadow-md text-xs max-w-[70%]"
+            variants={bubbleVariants(0.2)}
+            className="self-start bg-primary/80 text-primary-foreground p-3 rounded-xl rounded-bl-sm shadow-lg text-sm max-w-[75%]"
           >
-            Hello! How can I help you today?
+            Hello! I'm ready to assist you.
           </motion.div>
           <motion.div
-            variants={bubbleVariants(0.3, 20)}
-            className="self-end bg-secondary/30 text-secondary-foreground/80 p-2 rounded-lg rounded-br-none shadow-md text-xs max-w-[70%]"
+            variants={bubbleVariants(0.5, true)}
+            className="self-end bg-secondary text-secondary-foreground p-3 rounded-xl rounded-br-sm shadow-lg text-sm max-w-[75%]"
           >
-            I have a question about...
+            Great! I have a question about my symptoms...
           </motion.div>
            <motion.div
-            variants={bubbleVariants(0.6, -20)}
-            className="self-start bg-primary/20 text-primary-foreground/80 p-2 rounded-lg rounded-bl-none shadow-md text-xs max-w-[70%]"
+            variants={bubbleVariants(0.8)}
+            className="self-start bg-primary/80 text-primary-foreground p-3 rounded-xl rounded-bl-sm shadow-lg text-sm max-w-[60%]"
           >
-            Thinking... <span className="animate-ping inline-block w-1 h-1 bg-current rounded-full"></span>
+            Processing your query... <span className="inline-block ml-1">
+                <span className="animate-pulse-dot delay-0 inline-block w-1.5 h-1.5 bg-current rounded-full"></span>
+                <span className="animate-pulse-dot delay-150 inline-block w-1.5 h-1.5 bg-current rounded-full ml-0.5"></span>
+                <span className="animate-pulse-dot delay-300 inline-block w-1.5 h-1.5 bg-current rounded-full ml-0.5"></span>
+            </span>
           </motion.div>
       </div>
+      
+      <style jsx global>{`
+        @keyframes pulseDot {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 1; }
+        }
+        .animate-pulse-dot {
+          animation: pulseDot 1.2s infinite ease-in-out;
+        }
+        .delay-0 { animation-delay: 0s; }
+        .delay-150 { animation-delay: 0.15s; }
+        .delay-300 { animation-delay: 0.3s; }
+      `}</style>
 
     </motion.div>
   );
