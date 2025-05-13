@@ -15,20 +15,19 @@ import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Home,
-  MessageCircleHeart, 
-  ClipboardList, 
-  ScanEye,       
-  Settings2,     
+  MessageCircleHeart,
+  ClipboardList,
+  ScanEye,
+  Settings2,
   LogOut,
-  GraduationCap, 
+  GraduationCap,
+  BriefcaseMedical,
+  Info,
   HeartPulse, 
-  BriefcaseMedical, 
-  BookOpenText,   
-  LayoutDashboard, 
-  Info, // Added Info for Feedback in footer
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useProMode, type UserRole } from '@/contexts/pro-mode-context'; 
+import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
+import { useToast } from '@/hooks/use-toast';
 
 const baseNavItems = [
   { href: '/', label: 'Home', icon: Home, ariaLabel: 'Go to Home page' },
@@ -36,41 +35,52 @@ const baseNavItems = [
   { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye, ariaLabel: 'Open AR Viewer' },
 ];
 
-const patientManagementNavItem = { 
-  href: '/patient-management', 
-  label: 'Patient Management', 
-  icon: ClipboardList, 
-  ariaLabel: 'Open Patient Management' 
+const patientManagementNavItem = {
+  href: '/patient-management',
+  label: 'Patient Management',
+  icon: ClipboardList,
+  ariaLabel: 'Open Patient Management'
 };
 
 const medicoDashboardNavItem = {
   href: '/medico',
-  label: 'Medico Hub', // Consistent naming with page title
+  label: 'Medico Hub',
   icon: GraduationCap,
   ariaLabel: 'Open Medico Study Hub'
 };
 
 const proToolsNavItem = {
   href: '/pro',
-  label: 'Clinical Suite', // Consistent naming
-  icon: BriefcaseMedical, 
+  label: 'Clinical Suite',
+  icon: BriefcaseMedical,
   ariaLabel: 'Open Professional Clinical Suite'
 };
 
 
 export function SidebarNav() {
   const pathname = usePathname();
-  const { userRole } = useProMode(); 
+  const { userRole } = useProMode();
+  const { toast } = useToast();
 
   let navItems = [...baseNavItems];
-  
+
   if (userRole === 'medico') {
     navItems.push(medicoDashboardNavItem);
-    navItems.push(patientManagementNavItem); 
+    navItems.push(patientManagementNavItem);
   } else if (userRole === 'pro') {
     navItems.push(proToolsNavItem);
     navItems.push(patientManagementNavItem);
   }
+
+  const handleLogout = () => {
+    // In a real app, this would trigger actual logout logic
+    // (e.g., Firebase signOut, clearing session, redirecting to login page)
+    toast({
+      title: "Logout Action",
+      description: "Logout functionality would be implemented here. For now, you remain logged in.",
+    });
+    // Example: router.push('/login'); // (requires importing useRouter)
+  };
 
 
   return (
@@ -81,8 +91,8 @@ export function SidebarNav() {
       <SidebarContent className="p-2">
         <SidebarMenu>
           {navItems.map((item) => {
-            const isActive = item.href === '/' 
-              ? pathname === '/' 
+            const isActive = item.href === '/'
+              ? pathname === '/'
               : pathname.startsWith(item.href);
 
             return (
@@ -94,10 +104,10 @@ export function SidebarNav() {
                     tooltip={item.label}
                     aria-label={item.ariaLabel}
                     className={cn(
-                      "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine", // Added sidebar-item-shine
+                      "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
                       "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
-                      isActive 
-                        ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow" 
+                      isActive
+                        ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
                         : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
                       "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
                     )}
@@ -106,8 +116,8 @@ export function SidebarNav() {
                       <item.icon className={cn(
                           "h-5 w-5 transition-transform duration-200 ease-in-out",
                           "group-hover:scale-110",
-                          isActive && "text-sidebar-active-foreground" 
-                         )} 
+                          isActive && "text-sidebar-active-foreground"
+                         )}
                        />
                       <span>{item.label}</span>
                     </a>
@@ -122,23 +132,23 @@ export function SidebarNav() {
         <SidebarMenu>
           <SidebarMenuItem>
             <Link href="/feedback" passHref legacyBehavior>
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 asChild
                 isActive={pathname === '/feedback'}
-                tooltip="Feedback" 
+                tooltip="Feedback"
                 aria-label="Submit Feedback"
                 className={cn(
                   "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
                   "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
-                   pathname === '/feedback' 
-                    ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow" 
+                   pathname === '/feedback'
+                    ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
                     : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
                   "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
                 )}
                >
                  <a>
                   <Info className={cn(
-                      "h-5 w-5 transition-transform duration-200 ease-in-out", 
+                      "h-5 w-5 transition-transform duration-200 ease-in-out",
                       "group-hover:scale-110",
                       pathname === '/feedback' && "text-sidebar-active-foreground"
                       )} />
@@ -148,30 +158,43 @@ export function SidebarNav() {
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton 
-                className={cn(
-                  "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
-                  "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
-                  "text-sidebar-foreground/80 hover:text-sidebar-foreground",
-                  "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
-                )} 
-                tooltip="Settings" 
-                aria-label="Open Settings"
-            >
-              <Settings2 className={cn("h-5 w-5 transition-transform duration-200 ease-in-out", "group-hover:scale-110")} />
-              <span>Settings</span>
-            </SidebarMenuButton>
+             <Link href="/profile" passHref legacyBehavior>
+                <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/profile')}
+                    tooltip="Profile & Settings"
+                    aria-label="Open Profile and Settings"
+                    className={cn(
+                        "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
+                        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
+                        pathname.startsWith('/profile')
+                        ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
+                        : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
+                        "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
+                    )}
+                >
+                    <a>
+                        <Settings2 className={cn(
+                            "h-5 w-5 transition-transform duration-200 ease-in-out",
+                            "group-hover:scale-110",
+                            pathname.startsWith('/profile') && "text-sidebar-active-foreground"
+                        )} />
+                        <span>Profile & Settings</span>
+                    </a>
+                </SidebarMenuButton>
+             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-             <SidebarMenuButton 
+             <SidebarMenuButton
+                onClick={handleLogout}
+                tooltip="Logout"
+                aria-label="Logout"
                 className={cn(
                   "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
                   "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
                    "text-sidebar-foreground/80 hover:text-sidebar-foreground",
                   "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
-                )} 
-                tooltip="Logout" 
-                aria-label="Logout"
+                )}
             >
               <LogOut className={cn("h-5 w-5 transition-transform duration-200 ease-in-out", "group-hover:scale-110")} />
               <span>Logout</span>
@@ -186,7 +209,7 @@ export function SidebarNav() {
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden">
-            <span className="text-sm font-medium text-sidebar-foreground truncate">Dr. Robot</span>
+            <span className="text-sm font-medium text-sidebar-foreground truncate">Dr. Robot</span> {/* Placeholder name */}
             <span className="text-xs text-sidebar-foreground/70 truncate">
               {userRole === 'pro' ? 'Professional' : userRole === 'medico' ? 'Medical Student' : userRole === 'diagnosis' ? 'Patient/User' : 'Clinician'}
             </span>
