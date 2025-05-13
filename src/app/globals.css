@@ -526,3 +526,28 @@ body {
 .sidebar-item-shine:hover::after {
   transform: translateX(50%) translateY(-25%) rotate(25deg);
 }
+
+/* Welcome Display Text Readability */
+.welcome-display-readable-text .animated-gradient-text, /* Logo text */
+.welcome-display-readable-text .firebase-gradient-text { /* Tagline dynamic word & emoji */
+  background-image: none !important; /* Remove any gradient */
+  color: #FFFFFF !important; /* Force solid white */
+  -webkit-background-clip: initial !important; /* Reset clipping for text-transparent */
+  background-clip: initial !important; /* Reset clipping for text-transparent */
+  /* Unified strong shadow for readability */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7), 0 0 8px rgba(0, 0, 0, 0.4) !important; 
+}
+
+/* Class for containers whose direct text children (like static tagline parts) need shadow */
+.welcome-display-readable-text .apply-text-shadow-to-children,
+.welcome-display-readable-text .apply-text-shadow-to-children > span { /* Target direct span children */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7), 0 0 8px rgba(0, 0, 0, 0.4);
+  /* Ensure static parts of tagline are white if not overridden by !text-white in component call */
+  color: #FFFFFF; /* This might be redundant if !text-white is used, but good fallback */
+}
+
+/* Ensure the emoji also respects this rule if it's not covered by .firebase-gradient-text */
+.welcome-display-readable-text .apply-text-shadow-to-children .animated-tagline-emoji {
+  color: #FFFFFF !important; /* If it has its own color styling that needs override */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7), 0 0 8px rgba(0, 0, 0, 0.4) !important;
+}

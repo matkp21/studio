@@ -22,7 +22,10 @@ export function WelcomeDisplay({ onDisplayComplete }: WelcomeDisplayProps) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-center overflow-hidden welcome-background-animated"
+      className={cn(
+        "fixed inset-0 z-[200] flex flex-col items-center justify-center overflow-hidden welcome-background-animated",
+        "welcome-display-readable-text" // Added class for specific text styling
+      )}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -32,18 +35,19 @@ export function WelcomeDisplay({ onDisplayComplete }: WelcomeDisplayProps) {
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.5, duration: 1, type: "spring", stiffness: 100 }}
-        className="mb-8"
+        className="mb-8" // Wrapper for Logo
       >
-        <Logo simple={false} /> {/* Use the non-simple, larger logo */}
+        <Logo simple={false} />
       </motion.div>
 
       <motion.div
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 1.0, duration: 0.9, ease: "circOut" }}
-        className="text-center"
+        className="text-center apply-text-shadow-to-children" // Added class for text shadow on static tagline parts
       >
-        <AnimatedTagline className="text-2xl sm:text-3xl md:text-4xl !text-white" /> 
+        {/* The !text-white ensures static parts are white, apply-text-shadow-to-children adds shadow */}
+        <AnimatedTagline className="text-2xl sm:text-3xl md:text-4xl !text-white" />
       </motion.div>
     </motion.div>
   );
