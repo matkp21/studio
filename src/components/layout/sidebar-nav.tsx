@@ -21,16 +21,14 @@ import {
   Settings2,     
   LogOut,
   GraduationCap, 
-  HeartPulse, // Default fallback, used in Avatar
+  HeartPulse, 
   BriefcaseMedical, 
-  BookOpenText,   // Icon for Educational Support
-  LayoutDashboard, // Icon for Clinical Dashboard
-  Users,     
-  FileText,  
-  FlaskConical, 
+  BookOpenText,   
+  LayoutDashboard, 
+  Info, // Added Info for Feedback in footer
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useProMode } from '@/contexts/pro-mode-context'; 
+import { useProMode, type UserRole } from '@/contexts/pro-mode-context'; 
 
 const baseNavItems = [
   { href: '/', label: 'Home', icon: Home, ariaLabel: 'Go to Home page' },
@@ -47,24 +45,16 @@ const patientManagementNavItem = {
 
 const medicoDashboardNavItem = {
   href: '/medico',
-  label: 'Medico Tools',
+  label: 'Medico Hub', // Consistent naming with page title
   icon: GraduationCap,
-  ariaLabel: 'Open Medico Dashboard'
+  ariaLabel: 'Open Medico Study Hub'
 };
 
 const proToolsNavItem = {
   href: '/pro',
-  label: 'Pro Suite', // Changed from Pro Tools for brevity
+  label: 'Clinical Suite', // Consistent naming
   icon: BriefcaseMedical, 
   ariaLabel: 'Open Professional Clinical Suite'
-};
-
-// Educational Support / Clinical Dashboard (depends on role)
-const dynamicThirdNavItem = (userRole: string | null) => {
-  if (userRole === 'pro') {
-    return { href: '/pro/dashboard', label: 'Clinical Dashboard', icon: LayoutDashboard, ariaLabel: 'Open Clinical Dashboard'};
-  }
-  return { href: '/education', label: 'Educational Support', icon: BookOpenText, ariaLabel: 'Open Educational Support'};
 };
 
 
@@ -74,13 +64,6 @@ export function SidebarNav() {
 
   let navItems = [...baseNavItems];
   
-  // Add dynamic third nav item (Educational Support or Clinical Dashboard)
-  // For now, let's assume /education and /pro/dashboard routes exist or will be handled.
-  // We can refine this logic based on how these pages are structured.
-  // The ModeSwitcher on the homepage already handles showing the right component for 'education' vs 'dashboard' mode.
-  // This sidebar navigation might need a more generic link or be conditional.
-  // For simplicity, let's add a general 'Tools' or 'Features' link, or make it conditional.
-
   if (userRole === 'medico') {
     navItems.push(medicoDashboardNavItem);
     navItems.push(patientManagementNavItem); 
@@ -88,9 +71,6 @@ export function SidebarNav() {
     navItems.push(proToolsNavItem);
     navItems.push(patientManagementNavItem);
   }
-  // If no specific role, or for general users, they get the base items.
-  // The 'Educational Support' link could be one of the base items if always visible.
-  // Or, the mode switcher on homepage is the primary way to access these different functional areas.
 
 
   return (
@@ -100,35 +80,42 @@ export function SidebarNav() {
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
-          {navItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <Link href={item.href} passHref legacyBehavior>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === item.href}
-                  tooltip={item.label}
-                  aria-label={item.ariaLabel}
-                  className={cn(
-                    "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out",
-                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
-                    pathname === item.href 
-                      ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold" 
-                      : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
-                    "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background" // Added focus styling
-                  )}
-                >
-                  <a>
-                    <item.icon className={cn(
-                        "h-5 w-5 transition-transform duration-200 ease-in-out",
-                        "group-hover:scale-110"
-                       )} 
-                     />
-                    <span>{item.label}</span>
-                  </a>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-          ))}
+          {navItems.map((item) => {
+            const isActive = item.href === '/' 
+              ? pathname === '/' 
+              : pathname.startsWith(item.href);
+
+            return (
+              <SidebarMenuItem key={item.href}>
+                <Link href={item.href} passHref legacyBehavior>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    tooltip={item.label}
+                    aria-label={item.ariaLabel}
+                    className={cn(
+                      "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine", // Added sidebar-item-shine
+                      "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
+                      isActive 
+                        ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow" 
+                        : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
+                      "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
+                    )}
+                  >
+                    <a>
+                      <item.icon className={cn(
+                          "h-5 w-5 transition-transform duration-200 ease-in-out",
+                          "group-hover:scale-110",
+                          isActive && "text-sidebar-active-foreground" 
+                         )} 
+                       />
+                      <span>{item.label}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="p-2 border-t border-sidebar-border/50">
@@ -137,20 +124,24 @@ export function SidebarNav() {
             <Link href="/feedback" passHref legacyBehavior>
               <SidebarMenuButton 
                 asChild
+                isActive={pathname === '/feedback'}
+                tooltip="Feedback" 
+                aria-label="Submit Feedback"
                 className={cn(
-                  "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out",
+                  "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
                   "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
                    pathname === '/feedback' 
-                    ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold" 
+                    ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow" 
                     : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
                   "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
                 )}
-                tooltip="Feedback" 
-                aria-label="Submit Feedback"
-                isActive={pathname === '/feedback'}
                >
                  <a>
-                  <MessageCircleHeart className={cn("h-5 w-5 transition-transform duration-200 ease-in-out", "group-hover:scale-110")} />
+                  <Info className={cn(
+                      "h-5 w-5 transition-transform duration-200 ease-in-out", 
+                      "group-hover:scale-110",
+                      pathname === '/feedback' && "text-sidebar-active-foreground"
+                      )} />
                   <span>Feedback</span>
                 </a>
               </SidebarMenuButton>
@@ -159,7 +150,7 @@ export function SidebarNav() {
           <SidebarMenuItem>
             <SidebarMenuButton 
                 className={cn(
-                  "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out",
+                  "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
                   "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
                   "text-sidebar-foreground/80 hover:text-sidebar-foreground",
                   "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
@@ -174,7 +165,7 @@ export function SidebarNav() {
           <SidebarMenuItem>
              <SidebarMenuButton 
                 className={cn(
-                  "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out",
+                  "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
                   "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
                    "text-sidebar-foreground/80 hover:text-sidebar-foreground",
                   "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
