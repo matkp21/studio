@@ -1,4 +1,3 @@
-
 // src/components/layout/app-layout.tsx
 "use client";
 
@@ -7,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
-import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, Users, BriefcaseMedical, School, Stethoscope, UserCog } from 'lucide-react'; // Added UserCog
+import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, Users, BriefcaseMedical, School, Stethoscope, UserCog, HeartPulse, MessageSquareHeart } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
@@ -32,6 +31,8 @@ import {
 import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
 import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { Badge } from '@/components/ui/badge';
+import { AnimatedTagline } from './animated-tagline';
+import { WelcomeDisplay } from '@/components/welcome/welcome-display';
 
 
 const ToggleSidebarButton = () => {
@@ -49,6 +50,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [clientLoaded, setClientLoaded] = useState(false);
+  const [showWelcomeDisplay, setShowWelcomeDisplay] = useState(false);
   const { isProMode, userRole, selectUserRole } = useProMode();
 
 
@@ -57,12 +59,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
     if (typeof window !== 'undefined') {
       const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+      const welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
       const storedUserRole = localStorage.getItem('userRole') as UserRole;
 
-      if (!onboardingComplete || !storedUserRole) {
+      if (!onboardingComplete) {
         setShowOnboardingModal(true);
-      } else if (storedUserRole && !userRole) { 
-        selectUserRole(storedUserRole);
+      } else {
+        // Onboarding is complete
+        if (!welcomeDisplayShownThisSession) {
+          setShowWelcomeDisplay(true); // Show welcome display if not shown this session
+        }
+        if (storedUserRole && !userRole) { 
+          selectUserRole(storedUserRole);
+        }
       }
     }
     
@@ -80,6 +89,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
     setShowOnboardingModal(false);
     if (typeof window !== 'undefined') { 
       localStorage.setItem('onboardingComplete', 'true');
+      // After onboarding, show welcome display if it hasn't been shown this session
+      const welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
+      if (!welcomeDisplayShownThisSession) {
+        setShowWelcomeDisplay(true);
+      }
+    }
+  };
+
+  const handleWelcomeDisplayComplete = () => {
+    setShowWelcomeDisplay(false);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('welcomeDisplayShown', 'true');
     }
   };
   
@@ -90,13 +111,33 @@ export function AppLayout({ children }: { children: ReactNode }) {
     return 'User';
   }
 
+  if (!clientLoaded) {
+    // You might want a very basic loading spinner here or just null
+    return null; 
+  }
+
+  if (showOnboardingModal) {
+    return (
+      <OnboardingModal
+        isOpen={showOnboardingModal}
+        onClose={handleOnboardingClose}
+      />
+    );
+  }
+
+  if (showWelcomeDisplay) {
+    return (
+      <WelcomeDisplay onDisplayComplete={handleWelcomeDisplayComplete} />
+    );
+  }
+
   return (
     <SidebarProvider defaultOpen={true}>
       <Sidebar
         variant="sidebar"
         collapsible="icon"
         side="left"
-        className="border-r border-border/50"
+        className="border-r border-sidebar-border/50"
       >
         <SidebarNav />
       </Sidebar>
@@ -121,6 +162,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
             </div>
           </div>
           
+          <div className="hidden md:flex flex-1 items-center justify-center px-4">
+            {clientLoaded && !showOnboardingModal && !showWelcomeDisplay && <AnimatedTagline />}
+          </div>
+          
           <nav className="flex items-center gap-4">
             {isProMode && ( 
               <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10 hidden sm:flex items-center gap-1.5 py-1 px-2.5">
@@ -133,7 +178,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full text-foreground/80 hover:text-foreground" aria-label="Open user menu">
                    <Avatar className="h-8 w-8">
                     <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
-                    <AvatarFallback>DR</AvatarFallback>
+                    <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 glowing-ring-firebase">
+                      <HeartPulse className="h-4 w-4 text-white" />
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -141,7 +188,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
                  <DropdownMenuLabel className="flex items-start gap-2">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
-                      <AvatarFallback>DR</AvatarFallback>
+                      <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 glowing-ring-firebase">
+                       <HeartPulse className="h-4 w-4 text-white" />
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
                       <span>My Account</span>
@@ -162,7 +211,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 <DropdownMenuSeparator />
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
-                    <UserCog className="mr-2 h-4 w-4" /> {/* Changed icon for role context */}
+                    <UserCog className="mr-2 h-4 w-4" /> 
                     <span className={cn(userRole && "firebase-gradient-text font-semibold")}>
                       {userRole ? getRoleDisplayString(userRole) : "Select Role"}
                     </span>
@@ -196,6 +245,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     <span>Professional features enabled.</span>
                   </DropdownMenuItem>
                 )}
+                 {userRole === 'medico' && (
+                  <DropdownMenuItem disabled className="text-xs text-muted-foreground p-2 focus:bg-transparent">
+                    <MessageSquareHeart className="mr-2 h-3 w-3 text-primary"/>
+                    <span>Medico study tools available.</span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
@@ -208,15 +263,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <main className="flex-1 flex flex-col overflow-auto">
           {children}
         </main>
-        {clientLoaded && showOnboardingModal && (
-          <OnboardingModal
-            isOpen={showOnboardingModal}
-            onClose={handleOnboardingClose}
-          />
-        )}
+        {/* OnboardingModal is now handled at the top level of the component */}
         <Footer />
       </SidebarInset>
     </SidebarProvider>
   );
 }
-
