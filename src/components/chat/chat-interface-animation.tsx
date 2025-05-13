@@ -4,7 +4,7 @@
 import type { CSSProperties } from 'react';
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquareHeart, Sparkles, HeartPulse } from 'lucide-react'; 
+import { MessageSquareHeart, Star, HeartPulse } from 'lucide-react'; 
 
 interface ChatInterfaceAnimationProps {
   onAnimationComplete: () => void;
@@ -62,19 +62,20 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
     }
   };
 
-  const sparklesVariants = (i: number) => ({
+  const starVariants = (i: number) => ({ // Changed from sparklesVariants
     initial: { opacity: 0, scale: 0 },
     animate: {
-      opacity: [0, 1, 0],
-      scale: [0, 1.2, 0],
-      x: Math.random() * 40 - 20,
-      y: Math.random() * 40 - 20,
+      opacity: [0, 0.9, 0], // Adjusted opacity
+      scale: [0, 1.1, 0], // Adjusted scale
+      x: Math.random() * 50 - 25, // Slightly wider spread
+      y: Math.random() * 50 - 25,
+      rotate: Math.random() * 360, // Add random rotation
       transition: {
-        delay: 1.2 + i * 0.15,
-        duration: 1.2,
+        delay: 1.2 + i * 0.18, // Slightly adjusted delay
+        duration: 1.3, // Adjusted duration
         repeat: Infinity,
-        repeatDelay: 1.5,
-        ease: "easeInOut"
+        repeatDelay: 1.8, // Adjusted repeat delay
+        ease: "circOut" // Changed ease
       }
     }
   });
@@ -110,7 +111,7 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
     >
       <motion.div variants={iconContainerVariants} className="relative mb-8">
         <motion.div variants={botIconVariants} initial="initial" animate="animate">
-            <HeartPulse // Changed from Bot to HeartPulse
+            <HeartPulse 
                 className="h-24 w-24 sm:h-28 sm:w-28 text-primary opacity-90 drop-shadow-lg"
                 style={{
                     filter: 'drop-shadow(0 0 10px hsl(var(--primary)/0.5))'
@@ -125,19 +126,19 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
                 } as CSSProperties}
             />
         </motion.div>
-        {[...Array(3)].map((_, i) => (
+        {[...Array(5)].map((_, i) => ( // Increased count of stars
           <motion.div
-            key={`sparkle-${i}`}
-            variants={sparklesVariants(i)}
+            key={`star-${i}`} // Changed key prefix
+            variants={starVariants(i)} // Use starVariants
             initial="initial"
             animate="animate"
             className="absolute"
             style={{
-              left: `${40 + Math.random() * 20}%`, // Randomize position around the main icon
+              left: `${40 + Math.random() * 20}%`, 
               top: `${40 + Math.random() * 20}%`,
             }}
           >
-            <Sparkles className="h-5 w-5 text-yellow-400 opacity-80" />
+            <Star className="h-4 w-4 text-accent opacity-70" /> {/* Changed Sparkles to Star and color */}
           </motion.div>
         ))}
       </motion.div>
@@ -197,4 +198,3 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
     </motion.div>
   );
 }
-
