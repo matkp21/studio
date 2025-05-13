@@ -23,31 +23,32 @@ export function WelcomeDisplay({ onDisplayComplete }: WelcomeDisplayProps) {
   return (
     <motion.div
       className={cn(
-        "fixed inset-0 z-[200] flex flex-col items-center justify-center overflow-hidden welcome-background-animated",
-        "welcome-display-readable-text" // Added class for specific text styling
+        "fixed inset-0 z-[200] flex flex-col items-center justify-center overflow-hidden",
+        "bg-gray-100 dark:bg-gray-900", // Apple-inspired clean background
+        "text-gray-800 dark:text-gray-100" // Ensuring text contrast
       )}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
+      transition={{ duration: 0.7, ease: "easeInOut" }}
     >
       <motion.div
-        initial={{ y: -50, opacity: 0 }}
+        initial={{ y: -30, opacity: 0 }} // Gentle slide from top
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.5, duration: 1, type: "spring", stiffness: 100 }}
-        className="mb-8" // Wrapper for Logo
+        transition={{ delay: 0.4, duration: 0.9, ease: [0.16, 1, 0.3, 1] }} // Smoother, Apple-like ease
+        className="mb-8" 
       >
         <Logo simple={false} />
       </motion.div>
 
       <motion.div
-        initial={{ y: 50, opacity: 0 }}
+        initial={{ y: 30, opacity: 0 }} // Gentle slide from bottom
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 1.0, duration: 0.9, ease: "circOut" }}
-        className="text-center apply-text-shadow-to-children" // Added class for text shadow on static tagline parts
+        transition={{ delay: 0.8, duration: 0.9, ease: [0.16, 1, 0.3, 1] }} // Smoother, Apple-like ease
+        className="text-center"
       >
-        {/* The !text-white ensures static parts are white, apply-text-shadow-to-children adds shadow */}
-        <AnimatedTagline className="text-2xl sm:text-3xl md:text-4xl !text-white" />
+        {/* AnimatedTagline uses gradient text; kept as per prior requests for dynamic elements */}
+        <AnimatedTagline className="text-2xl sm:text-3xl md:text-4xl" />
       </motion.div>
     </motion.div>
   );
