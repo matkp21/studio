@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
-import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, Users, BriefcaseMedical, School, Stethoscope, UserCog, HeartPulse, MessageSquareHeart } from 'lucide-react';
+import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
@@ -31,7 +31,7 @@ import {
 import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
 import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { Badge } from '@/components/ui/badge';
-import { AnimatedTagline } from './animated-tagline';
+import { AnimatedTagline } from '@/components/layout/animated-tagline';
 import { WelcomeDisplay } from '@/components/welcome/welcome-display';
 
 
@@ -49,8 +49,8 @@ const ToggleSidebarButton = () => {
 export function AppLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-  const [clientLoaded, setClientLoaded] = useState(false);
   const [showWelcomeDisplay, setShowWelcomeDisplay] = useState(false);
+  const [clientLoaded, setClientLoaded] = useState(false);
   const { isProMode, userRole, selectUserRole } = useProMode();
 
 
@@ -179,7 +179,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
                    <Avatar className="h-8 w-8">
                     <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
                     <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 glowing-ring-firebase">
-                      <HeartPulse className="h-4 w-4 text-white" />
+                      {/* Replaced with specific icon */}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white lucide lucide-heart-pulse"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.7-1.44.7 2.88.7-1.44H15"/></svg>
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -189,7 +190,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
                       <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 glowing-ring-firebase">
-                       <HeartPulse className="h-4 w-4 text-white" />
+                       {/* Replaced with specific icon */}
+                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white lucide lucide-heart-pulse"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.7-1.44.7 2.88.7-1.44H15"/></svg>
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">

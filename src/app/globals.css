@@ -72,6 +72,11 @@ body {
     --welcome-color-2: var(--firebase-color-2-light);
     --welcome-color-3: var(--firebase-color-3-light);
     --welcome-color-4: var(--firebase-color-4-light);
+
+    /* New Welcome Screen Gradient (Apple/Gemini Inspired - Light Mode) */
+    --welcome-gradient-start-light: 210 60% 95%; /* Soft Light Blue */
+    --welcome-gradient-mid-light: 240 50% 97%;   /* Soft Light Lavender */
+    --welcome-gradient-end-light: 200 40% 98%;   /* Very Light Cool Gray */
   }
 
   .dark {
@@ -134,6 +139,11 @@ body {
     --welcome-color-2: var(--firebase-color-2-dark);
     --welcome-color-3: var(--firebase-color-3-dark);
     --welcome-color-4: var(--firebase-color-4-dark);
+
+     /* New Welcome Screen Gradient (Apple/Gemini Inspired - Dark Mode) */
+    --welcome-gradient-start-dark: 220 40% 10%;  /* Deep Dark Blue */
+    --welcome-gradient-mid-dark: 260 30% 12%;    /* Dark Purple */
+    --welcome-gradient-end-dark: 210 35% 15%;    /* Dark Cool Gray-Blue */
   }
 }
 
@@ -518,4 +528,35 @@ body {
 
 .sidebar-item-shine:hover::after {
   transform: translateX(50%) translateY(-25%) rotate(25deg);
+}
+
+/* Welcome Screen Gradient Background Animation */
+@keyframes welcome-gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.welcome-screen-gradient {
+  background: linear-gradient(
+    -45deg,
+    hsl(var(--welcome-gradient-start-light)),
+    hsl(var(--welcome-gradient-mid-light)),
+    hsl(var(--welcome-gradient-end-light)),
+    hsl(var(--primary)/0.8) /* Adding primary color influence */
+  );
+  background-size: 300% 300%;
+  animation: welcome-gradient-animation 15s ease infinite;
+}
+
+.dark .welcome-screen-gradient {
+  background: linear-gradient(
+    -45deg,
+    hsl(var(--welcome-gradient-start-dark)),
+    hsl(var(--welcome-gradient-mid-dark)),
+    hsl(var(--welcome-gradient-end-dark)),
+    hsl(var(--primary)/0.8) /* Adding primary color influence */
+  );
+  background-size: 300% 300%;
+  animation: welcome-gradient-animation 15s ease infinite;
 }
