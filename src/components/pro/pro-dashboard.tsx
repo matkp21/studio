@@ -9,7 +9,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import { cn } from '@/lib/utils';
 import { 
-  Brain, ClipboardCheck, Users, Mic, BarChart3, Briefcase, 
+  Brain, ClipboardCheck, Users, Mic, BarChart3, BriefcaseMedical, 
   FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, ArrowRight, Settings, Star, GripVertical, CheckSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -54,7 +54,7 @@ const allProToolsList: ProTool[] = [
   { id: 'diffDx', title: 'Differential Diagnosis Assistant', description: 'AI-powered suggestions, investigations, and initial management steps.', icon: Brain, component: DifferentialDiagnosisAssistant, comingSoon: false },
   { id: 'discharge', title: 'Discharge Summary Generator', description: 'Ultra-streamlined, predictive discharge summary creation.', icon: FilePlus, component: DischargeSummaryGenerator, comingSoon: false }, 
   { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator, comingSoon: false }, 
-  { id: 'rounds', title: 'Rounds Tool 2.0', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool, comingSoon: false },
+  { id: 'rounds', title: 'Patient Rounds Tool', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool, comingSoon: false }, // Renamed from "Rounds Tool 2.0"
   { id: 'pharmacopeia', title: 'Pharmacopeia & Interaction Checker', description: 'Comprehensive drug database and interaction analysis.', icon: Pill, component: PharmacopeiaChecker, comingSoon: false },
   { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation, comingSoon: false },
   { id: 'calculators', title: 'Intelligent Clinical Calculators', description: 'Suite of scores and criteria (GRACE, Wells\', etc.).', icon: BarChart3, component: ClinicalCalculatorSuite, comingSoon: false },
@@ -91,30 +91,30 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
         role="button"
         tabIndex={tool.comingSoon || isEditMode ? -1 : 0}
         onKeyDown={(e) => { if (!isEditMode && (e.key === 'Enter' || e.key === ' ') && !tool.comingSoon) onLaunch(tool.id); }}
-        aria-disabled={tool.comingSoon || isEditMode}
+        aria-disabled={!!(tool.comingSoon || isEditMode)}
         aria-label={`Launch ${tool.title}`}
       >
         {isEditMode && (
-          <GripVertical className="absolute top-2 left-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder" />
+          <GripVertical className="absolute top-2 left-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder (conceptual)" />
         )}
-        {isFrequentlyUsed && (
+        {isFrequentlyUsed && !isEditMode && (
           <Star className="absolute top-2 right-2 h-5 w-5 text-yellow-400 fill-yellow-400 z-10" />
         )}
         <CardHeader className="pb-3 pt-4 px-4">
           <div className="flex items-center gap-3 mb-1.5">
             <div className={cn(
                 "p-2 rounded-lg bg-primary/10 text-primary transition-colors duration-300",
-                isFrequentlyUsed ? "bg-gradient-to-br from-[hsl(var(--welcome-color-1)/0.2)] to-[hsl(var(--welcome-color-3)/0.2)] text-foreground" : (!isEditMode && "group-hover:bg-primary/20")
+                isFrequentlyUsed && !isEditMode ? "bg-gradient-to-br from-[hsl(var(--welcome-color-1)/0.2)] to-[hsl(var(--welcome-color-3)/0.2)] text-foreground" : (!isEditMode && "group-hover:bg-primary/20")
             )}>
                 <tool.icon className={cn(
                     "h-7 w-7 transition-transform duration-300",
                     !isEditMode && "group-hover:scale-110",
-                    isFrequentlyUsed ? "text-primary" : "text-primary" 
+                    isFrequentlyUsed && !isEditMode ? "text-purple-500" : "text-primary" // Updated icon color for frequently used
                 )} />
             </div>
             <CardTitle className={cn(
                 "text-lg leading-tight",
-                isFrequentlyUsed && "text-foreground"
+                isFrequentlyUsed && !isEditMode && "text-foreground"
             )}>{tool.title}</CardTitle>
           </div>
           <CardDescription className="text-xs leading-relaxed line-clamp-2 min-h-[2.5em]">{tool.description}</CardDescription>
@@ -128,7 +128,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
              <div className="w-full text-right">
                 <Button variant="link" size="sm" disabled={isEditMode} className={cn(
                     "text-primary group-hover:underline p-0 h-auto text-xs",
-                     isFrequentlyUsed && "text-foreground hover:text-primary",
+                     isFrequentlyUsed && !isEditMode && "text-foreground hover:text-primary",
                      isEditMode && "text-muted-foreground cursor-default"
                     )}>
                    Open Tool <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -190,11 +190,11 @@ export function ProModeDashboard() {
                 <ToolCard tool={tool} onLaunch={setActiveDialog} isFrequentlyUsed isEditMode={isEditMode} />
                 {!tool.comingSoon && tool.component && activeDialog === tool.id && (
                     <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
-                        <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
+                        <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
                         <DialogTitle className="text-2xl flex items-center gap-2">
                             <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
                         </DialogTitle>
-                        <DialogDescription>{tool.description}</DialogDescription>
+                        <DialogDescription className="text-sm">{tool.description}</DialogDescription>
                         </DialogHeader>
                         <ScrollArea className="flex-grow overflow-y-auto">
                         <div className="p-6 pt-2">
@@ -218,11 +218,11 @@ export function ProModeDashboard() {
                 <ToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
                 {!tool.comingSoon && tool.component && activeDialog === tool.id && (
                      <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
-                        <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
+                        <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
                         <DialogTitle className="text-2xl flex items-center gap-2">
                             <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
                         </DialogTitle>
-                        <DialogDescription>{tool.description}</DialogDescription>
+                        <DialogDescription className="text-sm">{tool.description}</DialogDescription>
                         </DialogHeader>
                         <ScrollArea className="flex-grow overflow-y-auto">
                         <div className="p-6 pt-2">
