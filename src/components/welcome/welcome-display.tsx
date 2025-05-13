@@ -15,41 +15,67 @@ export function WelcomeDisplay({ onDisplayComplete }: WelcomeDisplayProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onDisplayComplete();
-    }, 3500); // Display for 3.5 seconds
+    }, 3500); // Total display time for the welcome screen
 
     return () => clearTimeout(timer);
   }, [onDisplayComplete]);
+
+  const logoVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 1, ease: [0.42, 0, 0.58, 1] } // Smoother ease-out like
+    },
+  };
+
+  const taglineVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.7, ease: "easeOut" }
+    },
+  };
 
   return (
     <motion.div
       className={cn(
         "fixed inset-0 z-[200] flex flex-col items-center justify-center overflow-hidden",
-        "bg-gray-100 dark:bg-gray-900", // Apple-inspired clean background
-        "text-gray-800 dark:text-gray-100" // Ensuring text contrast
+        "bg-background dark:bg-background", // Use theme background for consistency
+        "text-foreground dark:text-foreground" 
       )}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.7, ease: "easeInOut" }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
     >
+      {/* Logo with increased size and subtle animation */}
       <motion.div
-        initial={{ y: -30, opacity: 0 }} // Gentle slide from top
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.4, duration: 0.9, ease: [0.16, 1, 0.3, 1] }} // Smoother, Apple-like ease
-        className="mb-8" 
+        variants={logoVariants}
+        initial="hidden"
+        animate="visible"
+        className="mb-6 transform-gpu" // Added transform-gpu for potentially smoother scaling
       >
-        <Logo simple={false} />
+        {/* Apply scaling via CSS or by adjusting Logo's internal simple prop, or wrapper if Logo doesn't support direct scaling easily */}
+        <div className="scale-[1.3]"> {/* Increased logo size; adjust scale factor as needed */}
+          <Logo simple={false} /> {/* simple={false} usually means larger version of logo */}
+        </div>
       </motion.div>
 
+      {/* Animated Tagline with delayed appearance */}
       <motion.div
-        initial={{ y: 30, opacity: 0 }} // Gentle slide from bottom
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.9, ease: [0.16, 1, 0.3, 1] }} // Smoother, Apple-like ease
+        variants={taglineVariants}
+        initial="hidden"
+        animate="visible"
+        // Delay tagline animation to start after logo animation + a brief pause
+        // Logo animation is 1s. Pause of 0.3s. So, delay is 1.3s.
+        transition={{ delay: 1.3, duration: 0.7, ease: "easeOut" }} 
         className="text-center"
       >
-        {/* AnimatedTagline uses gradient text; kept as per prior requests for dynamic elements */}
         <AnimatedTagline className="text-2xl sm:text-3xl md:text-4xl" />
       </motion.div>
     </motion.div>
   );
 }
+

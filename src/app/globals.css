@@ -44,13 +44,13 @@ body {
     /* Sidebar specific colors - Light Mode (Gemini Inspired) */
     --sidebar-background: 220 20% 97%; /* Lighter, cleaner grey */
     --sidebar-foreground: 220 25% 28%; /* Slightly softer dark grey for text */
-    --sidebar-primary: hsl(var(--primary)); /* Keep primary for consistency or change to a Gemini blue */
+    --sidebar-primary: hsl(var(--primary)); 
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
     --sidebar-accent: 220 80% 92%; /* Light, subtle blue accent for hover */
     --sidebar-accent-foreground: 220 80% 40%; /* Darker blue for text on accent */
-    --sidebar-active-background: hsl(var(--primary)); /* Active item uses primary color */
+    --sidebar-active-background: hsl(var(--primary)); 
     --sidebar-active-foreground: hsl(var(--primary-foreground));
-    --sidebar-border: 220 15% 88%; /* Softer border */
+    --sidebar-border: 220 15% 88%; 
     --sidebar-ring: hsl(var(--ring));
     
     /* Chart Colors - Light Mode */
@@ -60,11 +60,18 @@ body {
     --chart-4: 30 80% 55%;   /* Orange */
     --chart-5: 130 50% 50%;  /* Green */
 
-     /* Welcome Screen Colors - Firebase Inspired Gradient */
-    --welcome-color-1: 45 100% 58%; /* Bright Yellow (e.g., #FFCA28) */
-    --welcome-color-2: 36 100% 50%; /* Bright Orange (e.g., #FFA000) */
-    --welcome-color-3: 25 100% 55%; /* Orange-Red (e.g., #FF8A65) */
-    --welcome-color-4: 15 100% 60%; /* Reddish-Orange (e.g., #FF7043) */
+    /* Welcome Screen & Firebase Inspired Gradient Colors (Light Mode) */
+    --welcome-bg-light: 210 33% 98%; /* Same as main background for seamless feel */
+    --firebase-color-1-light: 45 100% 58%; /* Bright Yellow (e.g., #FFCA28) */
+    --firebase-color-2-light: 36 100% 50%; /* Bright Orange (e.g., #FFA000) */
+    --firebase-color-3-light: 25 100% 55%; /* Orange-Red (e.g., #FF8A65) */
+    --firebase-color-4-light: 15 100% 60%; /* Reddish-Orange (e.g., #FF7043) */
+
+    /* Ensure these variables are used by animations that need them */
+    --welcome-color-1: var(--firebase-color-1-light);
+    --welcome-color-2: var(--firebase-color-2-light);
+    --welcome-color-3: var(--firebase-color-3-light);
+    --welcome-color-4: var(--firebase-color-4-light);
   }
 
   .dark {
@@ -104,9 +111,9 @@ body {
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
     --sidebar-accent: 220 40% 22%; /* Subtle darker blue for hover */
     --sidebar-accent-foreground: 220 80% 80%; /* Lighter blue for text on accent */
-    --sidebar-active-background: hsl(var(--primary)); /* Active item uses primary color */
-    --sidebar-active-foreground: hsl(var(--primary-foreground)); /* Ensure contrast */
-    --sidebar-border: 220 25% 20%; /* Darker border */
+    --sidebar-active-background: hsl(var(--primary)); 
+    --sidebar-active-foreground: hsl(var(--primary-foreground)); 
+    --sidebar-border: 220 25% 20%; 
     --sidebar-ring: hsl(var(--ring));
 
     /* Chart Colors - Dark Mode */
@@ -116,11 +123,17 @@ body {
     --chart-4: 40 90% 65%;   /* Bright Yellow-Orange */
     --chart-5: 140 60% 60%;  /* Bright Green */
 
-    /* Welcome Screen Colors - Firebase Inspired Gradient (Dark Mode Friendly) */
-    --welcome-color-1: 45 100% 65%; /* Brighter Yellow */
-    --welcome-color-2: 36 100% 60%; /* Brighter Orange */
-    --welcome-color-3: 25 100% 65%; /* Brighter Orange-Red */
-    --welcome-color-4: 15 100% 70%; /* Brighter Reddish-Orange */
+    /* Welcome Screen & Firebase Inspired Gradient Colors (Dark Mode) */
+    --welcome-bg-dark: 216 65% 11%; /* Same as main background */
+    --firebase-color-1-dark: 45 100% 65%; /* Brighter Yellow */
+    --firebase-color-2-dark: 36 100% 60%; /* Brighter Orange */
+    --firebase-color-3-dark: 25 100% 65%; /* Brighter Orange-Red */
+    --firebase-color-4-dark: 15 100% 70%; /* Brighter Reddish-Orange */
+    
+    --welcome-color-1: var(--firebase-color-1-dark);
+    --welcome-color-2: var(--firebase-color-2-dark);
+    --welcome-color-3: var(--firebase-color-3-dark);
+    --welcome-color-4: var(--firebase-color-4-dark);
   }
 }
 
@@ -203,7 +216,7 @@ body {
   box-shadow: 0 0 0 2px hsl(var(--primary) / 0.4);
 }
 
-/* Animated Gradient Text for Logo */
+/* Animated Gradient Text for Logo and other elements */
 .animated-gradient-text {
   background-size: 200% auto;
   background-image: linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--primary)) 100%);
@@ -237,7 +250,7 @@ body {
 }
 
 
-/* Welcome Screen / Hero Text Animations */
+/* Welcome Screen / Hero Text Animations (Firebase Color Cycle) */
 @keyframes welcome-text-color-cycle {
   0% { color: hsl(var(--welcome-color-1)); }
   25% { color: hsl(var(--welcome-color-2)); }
@@ -247,9 +260,8 @@ body {
 }
 
 .welcome-text-fg-animated {
-  /* The animation directly sets the color, this is a fallback if animation is not supported or during initial render. */
   color: hsl(var(--welcome-color-1)); 
-  animation: welcome-text-color-cycle 12s linear infinite;
+  animation: welcome-text-color-cycle 10s linear infinite; /* Adjusted duration */
 }
 
 
@@ -275,9 +287,8 @@ body {
     hsl(var(--welcome-color-4)/0.95),
     hsl(var(--welcome-color-1)/0.95)
   );
-  background-size: 250% 250%; /* Slightly faster/more noticeable animation */
-  animation: animated-firebase-ribbon-background 10s ease infinite; /* Faster animation cycle */
-  /* Text color should provide good contrast. Using primary-foreground as it's typically white/light */
+  background-size: 250% 250%; 
+  animation: animated-firebase-ribbon-background 10s ease infinite; 
   color: hsl(var(--primary-foreground)); 
 }
 
@@ -286,7 +297,7 @@ body {
 @keyframes ecg-beat {
   0%, 100% { transform: scale(1); opacity: 0.8; }
   10%, 30% { transform: scale(0.9); opacity: 0.7; }
-  20% { transform: scale(1.2); opacity: 1; } /* Peak of the beat */
+  20% { transform: scale(1.2); opacity: 1; } 
   40% { transform: scale(1); opacity: 0.8; }
 }
 
@@ -306,7 +317,7 @@ body {
   animation: firebase-glow-ring 5s linear infinite;
 }
 
-/* Firebase Gradient Text with Glow */
+/* Firebase Gradient Text with Glow and Flow */
 .firebase-gradient-text {
   background-size: 200% auto;
   background-image: linear-gradient(to right, 
@@ -318,11 +329,10 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  /* Subtle text glow using multiple shadows for a softer effect */
   text-shadow: 
-    0 0 4px hsl(var(--welcome-color-2)/0.5), /* Inner, softer glow */
-    0 0 8px hsl(var(--welcome-color-3)/0.3); /* Outer, more diffuse glow */
-  animation: firebase-gradient-flow 4s linear infinite; /* Added flow animation */
+    0 0 4px hsl(var(--welcome-color-2)/0.5), 
+    0 0 8px hsl(var(--welcome-color-3)/0.3); 
+  animation: firebase-gradient-flow 4s linear infinite; 
 }
 
 @keyframes firebase-gradient-flow {
@@ -336,31 +346,30 @@ body {
 @keyframes error-highlight-animation {
   0%, 100% {
     box-shadow: 0 0 4px hsl(var(--destructive) / 0.3);
-    border-color: hsl(var(--destructive) / 0.4); /* Use current border color or a slightly lighter one */
+    border-color: hsl(var(--destructive) / 0.4); 
   }
   50% {
     box-shadow: 0 0 8px hsl(var(--destructive) / 0.6), 0 0 12px hsl(var(--destructive) / 0.4);
-    border-color: hsl(var(--destructive) / 0.7); /* Make border slightly more prominent */
+    border-color: hsl(var(--destructive) / 0.7); 
   }
 }
 
 .animate-error-highlight {
   animation: error-highlight-animation 2s infinite ease-in-out;
-  /* Tailwind classes like bg-destructive/10, border-destructive/40, text-destructive will define base styles */
 }
 
 /* Pro Mode Dashboard Tool Card Animations */
 .tool-card-frequent.firebase-gradient-border-hover:hover {
-  position: relative; /* Needed for pseudo-element positioning */
-  border-color: transparent !important; /* Hide the default border on hover, !important to override card's border */
+  position: relative; 
+  border-color: transparent !important; 
 }
 
 .tool-card-frequent.firebase-gradient-border-hover:hover::before {
   content: "";
   position: absolute;
-  inset: -2px; /* Controls the thickness of the gradient border */
-  border-radius: calc(var(--radius) + 2px); /* Match card's border-radius, adjust for inset */
-  padding: 2px; /* Must match inset to make the border appear */
+  inset: -2px; 
+  border-radius: calc(var(--radius) + 2px); 
+  padding: 2px; 
   background: linear-gradient(135deg, 
     hsl(var(--welcome-color-1)), 
     hsl(var(--welcome-color-2)), 
@@ -377,8 +386,8 @@ body {
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  animation: animated-gradient-background 5s ease infinite; /* Reuse existing animation */
-  z-index: 0; /* Place behind the card content but above card's own background if it has one */
+  animation: animated-gradient-background 5s ease infinite; 
+  z-index: 0; 
 }
 
 /* Subtle pulse/glow for tool cards (can be applied conditionally) */
@@ -432,8 +441,7 @@ body {
   }
 }
 
-.gemini-cta-button { /* Class name kept for simplicity, but animation is now Firebase-themed */
-  /* Base styles are defined in the component via Tailwind */
+.gemini-cta-button { 
   animation: gemini-cta-glow 3s infinite ease-in-out;
 }
 
@@ -447,10 +455,9 @@ body {
   }
 }
 
-/* .sidebar-active-item-glow applied in SidebarNav based on isActive state */
 .sidebar-active-item-glow {
-  position: relative; /* Needed for pseudo-element positioning for the indicator */
-  /* animation: sidebar-active-glow 2.5s infinite ease-in-out; */ /* Maintained box-shadow in globals.css for active items */
+  position: relative; 
+  /* animation: sidebar-active-glow 2.5s infinite ease-in-out; */ 
 }
 
 /* New Sidebar Active Item Indicator Bar (Gemini-Inspired) */
@@ -460,7 +467,7 @@ body {
   left: 0;
   top: 20%; 
   bottom: 20%;
-  width: 4px; /* Thickness of the indicator bar */
+  width: 4px; 
   background-image: linear-gradient(to bottom, hsl(var(--sidebar-primary)/0.8), hsl(var(--sidebar-accent)/0.8));
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
@@ -498,15 +505,15 @@ body {
   background-image: linear-gradient(
     to right,
     transparent 0%,
-    hsla(var(--sidebar-accent-foreground)/0.05) 30%, /* More subtle shine */
+    hsla(var(--sidebar-accent-foreground)/0.05) 30%, 
     hsla(var(--sidebar-accent-foreground)/0.15) 50%,
     hsla(var(--sidebar-accent-foreground)/0.05) 70%,
     transparent 100%
   );
   transform: translateX(-150%) translateY(-25%) rotate(25deg);
   transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
-  pointer-events: none; /* Ensure it doesn't block interactions */
-  z-index: 1; /* Ensure it's above the text */
+  pointer-events: none; 
+  z-index: 1; 
 }
 
 .sidebar-item-shine:hover::after {
