@@ -14,7 +14,7 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
   useEffect(() => {
     const timer = setTimeout(() => {
       onAnimationComplete();
-    }, 3800); // Slightly increased duration for a more graceful animation
+    }, 3800); 
 
     return () => clearTimeout(timer);
   }, [onAnimationComplete]);
@@ -62,20 +62,20 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
     }
   };
 
-  const starVariants = (i: number) => ({ // Changed from sparklesVariants
+  const starVariants = (i: number) => ({
     initial: { opacity: 0, scale: 0 },
     animate: {
-      opacity: [0, 0.9, 0], // Adjusted opacity
-      scale: [0, 1.1, 0], // Adjusted scale
-      x: Math.random() * 50 - 25, // Slightly wider spread
-      y: Math.random() * 50 - 25,
-      rotate: Math.random() * 360, // Add random rotation
+      opacity: [0, 0.8, 0], 
+      scale: [0, 1.1, 0], 
+      x: Math.random() * 60 - 30, 
+      y: Math.random() * 60 - 30,
+      rotate: Math.random() * 360,
       transition: {
-        delay: 1.2 + i * 0.18, // Slightly adjusted delay
-        duration: 1.3, // Adjusted duration
+        delay: 1.2 + i * 0.15, 
+        duration: 1.2, 
         repeat: Infinity,
-        repeatDelay: 1.8, // Adjusted repeat delay
-        ease: "circOut" // Changed ease
+        repeatDelay: 2, 
+        ease: "circOut"
       }
     }
   });
@@ -103,7 +103,7 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
 
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-gradient-to-br from-background via-card to-secondary/20 text-foreground overflow-hidden p-4"
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-gradient-to-br from-blue-800 via-teal-800 to-sky-900 text-white overflow-hidden p-4"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -112,24 +112,24 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
       <motion.div variants={iconContainerVariants} className="relative mb-8">
         <motion.div variants={botIconVariants} initial="initial" animate="animate">
             <HeartPulse 
-                className="h-24 w-24 sm:h-28 sm:w-28 text-primary opacity-90 drop-shadow-lg"
+                className="h-24 w-24 sm:h-28 sm:w-28 text-sky-300 opacity-90"
                 style={{
-                    filter: 'drop-shadow(0 0 10px hsl(var(--primary)/0.5))'
+                    filter: 'drop-shadow(0 0 12px hsl(var(--primary)/0.6))' // Using primary color for shadow from theme
                 } as CSSProperties}
             />
         </motion.div>
          <motion.div variants={heartIconVariants} initial="initial" animate="animate" className="absolute -bottom-3 -right-4">
             <MessageSquareHeart
-                className="h-12 w-12 text-accent opacity-90 transform rotate-[15deg] drop-shadow-md"
+                className="h-12 w-12 text-teal-300 opacity-90 transform rotate-[15deg]"
                  style={{
-                    filter: 'drop-shadow(0 0 8px hsl(var(--accent)/0.4))'
+                    filter: 'drop-shadow(0 0 10px hsl(var(--accent)/0.5))' // Using accent color for shadow
                 } as CSSProperties}
             />
         </motion.div>
-        {[...Array(5)].map((_, i) => ( // Increased count of stars
+        {[...Array(6)].map((_, i) => (
           <motion.div
-            key={`star-${i}`} // Changed key prefix
-            variants={starVariants(i)} // Use starVariants
+            key={`star-${i}`}
+            variants={starVariants(i)}
             initial="initial"
             animate="animate"
             className="absolute"
@@ -138,61 +138,76 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
               top: `${40 + Math.random() * 20}%`,
             }}
           >
-            <Star className="h-4 w-4 text-accent opacity-70" /> {/* Changed Sparkles to Star and color */}
+            <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-300 opacity-70" />
           </motion.div>
         ))}
       </motion.div>
 
       <motion.h1
-        className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-center text-transparent bg-clip-text animated-gradient-text"
+        className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-sky-200 via-teal-300 to-cyan-200"
         variants={textVariants(0.5)}
+        style={{ filter: 'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.3))' }} // Light blue glow for title
       >
         MediAssistant Chat
       </motion.h1>
 
       <motion.p
-        className="text-md sm:text-lg md:text-xl text-foreground/70 text-center mb-10"
+        className="text-md sm:text-lg md:text-xl text-sky-100/80 text-center mb-10"
         variants={textVariants(0.7)}
       >
         Connecting to your AI medical partner...
       </motion.p>
 
-      <div className="w-full max-w-sm flex flex-col space-y-3 opacity-80">
+      <div className="w-full max-w-sm flex flex-col space-y-3 opacity-90">
          <motion.div
             variants={bubbleVariants(0.2)}
-            className="self-start bg-primary/80 text-primary-foreground p-3 rounded-xl rounded-bl-sm shadow-lg text-sm max-w-[75%]"
+            className="self-start bg-sky-700/80 text-sky-50 p-3 rounded-xl rounded-bl-sm shadow-lg text-sm max-w-[75%]"
           >
-            Hello! I'm ready to assist you.
+            Hello! I&apos;m ready to assist you.
           </motion.div>
           <motion.div
             variants={bubbleVariants(0.5, true)}
-            className="self-end bg-secondary text-secondary-foreground p-3 rounded-xl rounded-br-sm shadow-lg text-sm max-w-[75%]"
+            className="self-end bg-teal-700/80 text-teal-50 p-3 rounded-xl rounded-br-sm shadow-lg text-sm max-w-[75%]"
           >
             Great! I have a question about my symptoms...
           </motion.div>
            <motion.div
             variants={bubbleVariants(0.8)}
-            className="self-start bg-primary/80 text-primary-foreground p-3 rounded-xl rounded-bl-sm shadow-lg text-sm max-w-[60%]"
+            className="self-start bg-sky-700/80 text-sky-50 p-3 rounded-xl rounded-bl-sm shadow-lg text-sm max-w-[60%]"
           >
             Processing your query... <span className="inline-block ml-1">
-                <span className="animate-pulse-dot delay-0 inline-block w-1.5 h-1.5 bg-current rounded-full"></span>
-                <span className="animate-pulse-dot delay-150 inline-block w-1.5 h-1.5 bg-current rounded-full ml-0.5"></span>
-                <span className="animate-pulse-dot delay-300 inline-block w-1.5 h-1.5 bg-current rounded-full ml-0.5"></span>
+                <span className="animate-pulse-dot-light delay-0 inline-block w-1.5 h-1.5 bg-sky-100 rounded-full"></span>
+                <span className="animate-pulse-dot-light delay-150 inline-block w-1.5 h-1.5 bg-sky-100 rounded-full ml-0.5"></span>
+                <span className="animate-pulse-dot-light delay-300 inline-block w-1.5 h-1.5 bg-sky-100 rounded-full ml-0.5"></span>
             </span>
           </motion.div>
       </div>
       
       <style jsx global>{`
-        @keyframes pulseDot {
-          0%, 100% { opacity: 0.3; }
+        @keyframes pulseDotLight { // Renamed for clarity
+          0%, 100% { opacity: 0.4; }
           50% { opacity: 1; }
         }
-        .animate-pulse-dot {
-          animation: pulseDot 1.2s infinite ease-in-out;
+        .animate-pulse-dot-light {
+          animation: pulseDotLight 1.2s infinite ease-in-out;
         }
         .delay-0 { animation-delay: 0s; }
         .delay-150 { animation-delay: 0.15s; }
         .delay-300 { animation-delay: 0.3s; }
+
+        /* For the title gradient animation if needed, but Framer Motion handles textVariants */
+        /* If you were to use the CSS gradient animation directly: */
+        /*
+        @keyframes chatTitleGradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animated-chat-title {
+            background-size: 200% 200%;
+            animation: chatTitleGradientFlow 8s ease infinite;
+        }
+        */
       `}</style>
 
     </motion.div>
