@@ -10,14 +10,14 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
-  useSidebar, // Import useSidebar
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Home,
-  MessageCircleHeart, // Updated icon
-  ClipboardList,      // Kept for Patient Management
+  MessageCircleHeart,
+  ClipboardList,
   ScanEye,
   Settings2,
   LogOut,
@@ -30,7 +30,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip"; // Import Tooltip components
+} from "@/components/ui/tooltip";
 import { cn } from '@/lib/utils';
 import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { useToast } from '@/hooks/use-toast';
@@ -67,18 +67,18 @@ export function SidebarNav() {
   const pathname = usePathname();
   const { userRole } = useProMode();
   const { toast } = useToast();
-  const { isMobile, state: sidebarState } = useSidebar(); // Get sidebar state for tooltip visibility
+  const { isMobile, state: sidebarState } = useSidebar();
 
   let navItems = [...baseNavItems];
 
   if (userRole === 'medico') {
     navItems.push(medicoDashboardNavItem);
-    if (!navItems.find(item => item.href === '/patient-management')) { // Add if not already present (e.g. from base)
+    if (!navItems.find(item => item.href === '/patient-management')) {
       navItems.push(patientManagementNavItem);
     }
   } else if (userRole === 'pro') {
     navItems.push(proToolsNavItem);
-    if (!navItems.find(item => item.href === '/patient-management')) { // Add if not already present
+    if (!navItems.find(item => item.href === '/patient-management')) {
       navItems.push(patientManagementNavItem);
     }
   }
@@ -111,7 +111,7 @@ export function SidebarNav() {
                       <SidebarMenuButton
                         asChild
                         isActive={isActive}
-                        aria-label={item.ariaLabel} // tooltip prop removed
+                        aria-label={item.ariaLabel}
                         className={cn(
                           "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
                           "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
@@ -155,7 +155,7 @@ export function SidebarNav() {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === '/feedback'}
-                    aria-label="Submit Feedback" // tooltip prop removed
+                    aria-label="Submit Feedback"
                     className={cn(
                       "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
                       "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
@@ -188,11 +188,12 @@ export function SidebarNav() {
           <SidebarMenuItem>
             <Tooltip>
               <TooltipTrigger asChild>
+                 {/* Ensured Link has only SidebarMenuButton as direct child */}
                 <Link href="/settings" passHref legacyBehavior>
                   <SidebarMenuButton
                       asChild
                       isActive={pathname.startsWith('/settings')}
-                      aria-label="Open Settings" // tooltip prop removed
+                      aria-label="Open Settings"
                       className={cn(
                           "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
                           "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
@@ -227,7 +228,7 @@ export function SidebarNav() {
               <TooltipTrigger asChild>
                 <SidebarMenuButton
                   onClick={handleLogout}
-                  aria-label="Logout" // tooltip prop removed
+                  aria-label="Logout"
                   className={cn(
                     "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
                     "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
