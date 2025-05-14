@@ -1,7 +1,7 @@
 // src/components/medications/medication-form.tsx
 "use client";
 
-import { useState } from 'react';
+import { useState, type ChangeEvent } from 'react'; // Added ChangeEvent
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,11 +12,12 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Pill, CalendarClock, Repeat } from 'lucide-react';
+import { PlusCircle, Pill, CalendarClock, Repeat, ImagePlus, StickyNote } from 'lucide-react'; // Added ImagePlus, StickyNote
 import type { Medication, MedicationFormType, MedicationRouteType, MedicationFrequencyType, DayOfWeek } from '@/types/medication';
 import { medicationFrequencyTypes, daysOfWeek } from '@/types/medication';
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import Image from 'next/image'; // For image preview
 
 const medicationFormSchema = z.object({
   name: z.string().min(2, { message: "Medication name must be at least 2 characters." }).max(100),
@@ -29,7 +30,9 @@ const medicationFormSchema = z.object({
   duration: z.string().max(50).optional(),
   quantityPerPrescription: z.coerce.number().int().positive().optional(),
   instructions: z.string().max(500).optional(),
-  
+  personalNotes: z.string().max(1000).optional(), // Added personalNotes
+  photoUrl: z.string().url({ message: "Please enter a valid URL for the photo." }).optional().or(z.literal('')), // For data URI or URL
+
   // Schedule fields
   scheduleType: z.enum(medicationFrequencyTypes).optional(),
   scheduleTimes: z.array(z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)")).optional(), // Array of HH:MM strings
@@ -52,6 +55,7 @@ const medicationRoutesList: MedicationRouteType[] = ["Oral", "Topical", "Inhaled
 export function MedicationForm({ onAddMedication, existingMedication }: MedicationFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(existingMedication?.photoUrl || null);
 
   const form = useForm<MedicationFormValues>({
     resolver: zodResolver(medicationFormSchema),
@@ -66,6 +70,9 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       duration: existingMedication?.duration || "",
       quantityPerPrescription: existingMedication?.quantityPerPrescription || undefined,
       instructions: existingMedication?.instructions || "",
+      personalNotes: existingMedication?.personalNotes || "", // Added
+      photoUrl: existingMedication?.photoUrl || "", // Added
+
       scheduleType: existingMedication?.schedule?.type || undefined,
       scheduleTimes: existingMedication?.schedule?.times || [],
       scheduleIntervalHours: existingMedication?.schedule?.intervalHours || undefined,
@@ -76,6 +83,23 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
   });
 
   const watchScheduleType = form.watch("scheduleType");
+
+  const handleImageFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast({ title: "Invalid File", description: "Please select an image file.", variant: "destructive" });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUri = reader.result as string;
+        setImagePreview(dataUri);
+        form.setValue('photoUrl', dataUri); // Store data URI
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const onSubmit: SubmitHandler<MedicationFormValues> = async (data) => {
     setIsSubmitting(true);
@@ -91,23 +115,27 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       duration: data.duration,
       quantityPerPrescription: data.quantityPerPrescription,
       instructions: data.instructions,
+      personalNotes: data.personalNotes, // Added
+      photoUrl: imagePreview || data.photoUrl, // Prefer preview if available, fallback to direct URL if user typed one
+
       schedule: data.scheduleType ? {
         type: data.scheduleType,
         times: data.scheduleType === "Once daily" || data.scheduleType === "Twice daily" || data.scheduleType === "Three times daily" || data.scheduleType === "Four times daily" || data.scheduleType === "Specific days of week" ? data.scheduleTimes : undefined,
         intervalHours: data.scheduleType === "Every X hours" ? data.scheduleIntervalHours : undefined,
         daysOfWeek: data.scheduleType === "Specific days of week" ? data.scheduleDaysOfWeek : undefined,
         specificDate: data.scheduleType === "Specific date (one-time)" ? data.scheduleSpecificDate : undefined,
-        customInstructions: data.scheduleType === "Other (custom)" ? data.scheduleCustomInstructions : data.scheduleCustomInstructions, // Also allow custom instructions for any type
+        customInstructions: data.scheduleType === "Other (custom)" ? data.scheduleCustomInstructions : data.scheduleCustomInstructions,
       } : undefined,
     };
-    
+
     onAddMedication(newMedication);
 
     toast({
       title: existingMedication ? "Medication Updated!" : "Medication Added!",
       description: `${data.name} has been ${existingMedication ? 'updated' : 'added to your list'}.`,
     });
-    form.reset({ prescriptionDate: new Date(), form: undefined, route: undefined, scheduleType: undefined, scheduleTimes: [], scheduleDaysOfWeek: [] });
+    form.reset({ prescriptionDate: new Date(), form: undefined, route: undefined, scheduleType: undefined, scheduleTimes: [], scheduleDaysOfWeek: [], personalNotes: "", photoUrl: "" });
+    setImagePreview(null); // Reset image preview
     setIsSubmitting(false);
   };
 
@@ -115,24 +143,91 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-4 border rounded-xl shadow-lg bg-card">
         <CardHeader className="p-0 mb-2">
-            <CardTitle className="text-xl flex items-center gap-2 text-primary">
-                <Pill className="h-6 w-6" />
-                {existingMedication ? "Edit Medication" : "Add New Medication"}
-            </CardTitle>
+          <CardTitle className="text-xl flex items-center gap-2 text-primary">
+            <Pill className="h-6 w-6" />
+            {existingMedication ? "Edit Medication" : "Add New Medication"}
+          </CardTitle>
         </CardHeader>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Medication Name</FormLabel><FormControl><Input placeholder="e.g., Amoxicillin" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="dosageStrength" render={({ field }) => (<FormItem><FormLabel>Dosage & Strength</FormLabel><FormControl><Input placeholder="e.g., 500 mg, 10 units" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="form" render={({ field }) => (<FormItem><FormLabel>Form</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select form" /></SelectTrigger></FormControl><SelectContent>{medicationFormsList.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="route" render={({ field }) => (<FormItem><FormLabel>Route</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select route" /></SelectTrigger></FormControl><SelectContent>{medicationRoutesList.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="prescriptionDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="mb-1">Prescription Date</FormLabel><DatePicker date={field.value} setDate={field.onChange} buttonClassName="rounded-lg" /><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="duration" render={({ field }) => (<FormItem><FormLabel>Duration (Optional)</FormLabel><FormControl><Input placeholder="e.g., 7 days, Ongoing" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="reason" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Reason/Condition (Optional)</FormLabel><FormControl><Input placeholder="e.g., For bacterial infection" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="prescribingDoctor" render={({ field }) => (<FormItem><FormLabel>Prescribing Doctor (Optional)</FormLabel><FormControl><Input placeholder="e.g., Dr. Smith" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="quantityPerPrescription" render={({ field }) => (<FormItem><FormLabel>Quantity per Rx (Optional)</FormLabel><FormControl><Input type="number" placeholder="e.g., 30" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="instructions" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Instructions (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., Take with food, avoid alcohol..." {...field} className="rounded-lg min-h-[80px]" /></FormControl><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Medication Name</FormLabel><FormControl><Input placeholder="e.g., Amoxicillin" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="dosageStrength" render={({ field }) => (<FormItem><FormLabel>Dosage & Strength</FormLabel><FormControl><Input placeholder="e.g., 500 mg, 10 units" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="form" render={({ field }) => (<FormItem><FormLabel>Form</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select form" /></SelectTrigger></FormControl><SelectContent>{medicationFormsList.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="route" render={({ field }) => (<FormItem><FormLabel>Route</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select route" /></SelectTrigger></FormControl><SelectContent>{medicationRoutesList.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="prescriptionDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="mb-1">Prescription Date</FormLabel><DatePicker date={field.value} setDate={field.onChange} buttonClassName="rounded-lg" /><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="duration" render={({ field }) => (<FormItem><FormLabel>Duration (Optional)</FormLabel><FormControl><Input placeholder="e.g., 7 days, Ongoing" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="reason" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Reason/Condition (Optional)</FormLabel><FormControl><Input placeholder="e.g., For bacterial infection" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="prescribingDoctor" render={({ field }) => (<FormItem><FormLabel>Prescribing Doctor (Optional)</FormLabel><FormControl><Input placeholder="e.g., Dr. Smith" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="quantityPerPrescription" render={({ field }) => (<FormItem><FormLabel>Quantity per Rx (Optional)</FormLabel><FormControl><Input type="number" placeholder="e.g., 30" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
         </div>
+
+        {/* Image Upload Section */}
+        <div className="space-y-2 pt-4 border-t">
+            <h3 className="text-lg font-medium flex items-center gap-2"><ImagePlus className="h-5 w-5 text-primary" /> Medication Photo (Optional)</h3>
+            <FormField
+                control={form.control}
+                name="photoUrl" // This field will store the data URI or an external URL
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Upload Photo or Enter URL</FormLabel>
+                    <FormControl>
+                    <>
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageFileChange}
+                            className="rounded-lg text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30"
+                        />
+                         <Input
+                            placeholder="Or paste image URL here (e.g., https://...)"
+                            onChange={(e) => {
+                                field.onChange(e.target.value);
+                                if(!e.target.value.startsWith('data:image')) { // Don't overwrite preview if it's from file upload
+                                    setImagePreview(e.target.value || null);
+                                }
+                            }}
+                            value={field.value?.startsWith('data:image') ? '' : field.value || ''} // Don't show data URI in input
+                            className="rounded-lg mt-1"
+                        />
+                    </>
+                    </FormControl>
+                    {imagePreview && (
+                    <div className="mt-2 border rounded-lg p-2 inline-block bg-muted/50">
+                        <Image src={imagePreview} alt="Medication preview" width={100} height={100} className="rounded object-contain" data-ai-hint="medication pill" />
+                        <Button variant="link" size="xs" type="button" onClick={() => { setImagePreview(null); form.setValue('photoUrl', ''); }} className="text-destructive text-xs mt-1">Remove</Button>
+                    </div>
+                    )}
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+        </div>
+
+
+        <FormField control={form.control} name="instructions" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Instructions (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., Take with food, avoid alcohol..." {...field} className="rounded-lg min-h-[80px]" /></FormControl><FormMessage /></FormItem>)} />
+        
+        {/* Personal Notes Section */}
+         <div className="space-y-2 pt-4 border-t">
+            <h3 className="text-lg font-medium flex items-center gap-2"><StickyNote className="h-5 w-5 text-primary" /> Personal Notes (Optional)</h3>
+            <FormField
+                control={form.control}
+                name="personalNotes"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel className="sr-only">Personal Notes</FormLabel>
+                    <FormControl>
+                    <Textarea
+                        placeholder="e.g., Makes me drowsy, Remember to ask Dr about X..."
+                        {...field}
+                        className="rounded-lg min-h-[80px]"
+                    />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+        </div>
+
 
         {/* Schedule Section */}
         <div className="space-y-4 pt-4 border-t">
@@ -161,8 +256,7 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Specific Times (HH:MM)</FormLabel>
-                  {/* Basic implementation: single time input. Could be expanded to dynamic list of time inputs */}
-                  <FormControl><Input type="time" {...field} onChange={e => field.onChange([e.target.value])} value={field.value?.[0] || ""} className="rounded-lg"/></FormControl>
+                  <FormControl><Input type="time" {...field} onChange={e => field.onChange([e.target.value])} value={field.value?.[0] || ""} className="rounded-lg" /></FormControl>
                   <FormDescription>For multiple times, add more fields or use custom instructions.</FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -214,9 +308,9 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
               <FormMessage />
             </FormItem>
           )}
-           {watchScheduleType === "Specific date (one-time)" && (
-             <FormField control={form.control} name="scheduleSpecificDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="mb-1">Specific Date</FormLabel><DatePicker date={field.value} setDate={field.onChange} buttonClassName="rounded-lg" /><FormMessage /></FormItem>)} />
-           )}
+          {watchScheduleType === "Specific date (one-time)" && (
+            <FormField control={form.control} name="scheduleSpecificDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="mb-1">Specific Date</FormLabel><DatePicker date={field.value} setDate={field.onChange} buttonClassName="rounded-lg" /><FormMessage /></FormItem>)} />
+          )}
 
           <FormField
             control={form.control}

@@ -28,7 +28,7 @@ export default function MedicationManagementPage() {
   const [editingMedication, setEditingMedication] = useState<Medication | null>(null);
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
-  const [showAnimation, setShowAnimation] = useState(true); 
+  const [showAnimation, setShowAnimation] = useState(true);
 
   // Load medications from localStorage on mount
   useEffect(() => {
@@ -37,27 +37,27 @@ export default function MedicationManagementPage() {
     if (storedMeds) {
       try {
         const parsedMeds = JSON.parse(storedMeds) as Medication[];
-        // Ensure all date fields are properly converted from string to Date objects
         const medsWithDates = parsedMeds.map(med => ({
           ...med,
-          prescriptionDate: new Date(med.prescriptionDate),
+          prescriptionDate: new Date(med.prescriptionDate), // Ensure this is a Date object
           schedule: med.schedule ? {
             ...med.schedule,
             specificDate: med.schedule.specificDate ? new Date(med.schedule.specificDate) : undefined,
           } : undefined,
-          log: med.log?.map(l => ({ 
-            ...l, 
-            date: new Date(l.date) 
-          } as MedicationLogEntry)) || [], // Initialize as empty array if undefined
+          log: med.log?.map(l => ({
+            ...l,
+            date: new Date(l.date)
+          } as MedicationLogEntry)) || [],
           refillInfo: med.refillInfo ? {
             ...med.refillInfo,
             lastRefillDate: med.refillInfo.lastRefillDate ? new Date(med.refillInfo.lastRefillDate) : undefined,
           } as MedicationRefillInfo : undefined,
+          // photoUrl and personalNotes are strings, so direct mapping is fine
         }));
         setMedications(medsWithDates);
       } catch (e) {
         console.error("Failed to parse medications from localStorage", e);
-        localStorage.removeItem('medications'); // Clear corrupted data
+        localStorage.removeItem('medications');
       }
     }
   }, []);
@@ -74,14 +74,15 @@ export default function MedicationManagementPage() {
       const existingIndex = prevMeds.findIndex(m => m.id === medication.id);
       if (existingIndex > -1) {
         const updatedMeds = [...prevMeds];
-        updatedMeds[existingIndex] = { 
-          ...medication, 
-          log: updatedMeds[existingIndex].log || [], // Preserve existing log if any
-          refillInfo: medication.refillInfo || updatedMeds[existingIndex].refillInfo // Preserve or update refill
+        updatedMeds[existingIndex] = {
+          ...medication,
+          log: updatedMeds[existingIndex].log || [],
+          refillInfo: medication.refillInfo || updatedMeds[existingIndex].refillInfo,
+          // photoUrl and personalNotes are already part of 'medication' from the form
         };
         return updatedMeds;
       } else {
-        return [{ ...medication, log: [], refillInfo: medication.refillInfo }, ...prevMeds]; // Initialize log for new meds
+        return [{ ...medication, log: [], refillInfo: medication.refillInfo }, ...prevMeds];
       }
     });
     setShowFormModal(false);
@@ -98,9 +99,8 @@ export default function MedicationManagementPage() {
     toast({ title: "Medication Removed", description: "The medication has been deleted from your list." });
   };
 
-  // Placeholder: In a real app, this would interact with the log
   const handleLogDose = (medicationId: string, status: MedicationLogEntry['status']) => {
-     setMedications(prevMeds =>
+    setMedications(prevMeds =>
       prevMeds.map(med => {
         if (med.id === medicationId) {
           const newLogEntry: MedicationLogEntry = { date: new Date(), status };
@@ -114,7 +114,7 @@ export default function MedicationManagementPage() {
     );
     toast({ title: `Dose Logged`, description: `Marked as ${status} for today.` });
   };
-  
+
   const openAddMedicationModal = () => {
     setEditingMedication(null);
     setShowFormModal(true);
@@ -166,7 +166,7 @@ export default function MedicationManagementPage() {
                 medication={med}
                 onEdit={handleEditMedication}
                 onDelete={handleDeleteMedication}
-                onLogDose={handleLogDose} // Pass the new handler
+                onLogDose={handleLogDose}
               />
             ))}
           </div>
@@ -174,22 +174,21 @@ export default function MedicationManagementPage() {
       )}
 
       <Dialog open={showFormModal} onOpenChange={(open) => {
-          setShowFormModal(open);
-          if (!open) setEditingMedication(null);
+        setShowFormModal(open);
+        if (!open) setEditingMedication(null);
       }}>
         <DialogContent className="sm:max-w-2xl p-0">
-           <DialogHeader className="p-6 pb-0">
+          <DialogHeader className="p-6 pb-0">
             {/* Title is inside MedicationForm now */}
-           </DialogHeader>
-            <ScrollArea className="max-h-[80vh]">
-              <div className="p-6 pt-0">
-                <MedicationForm
-                    onAddMedication={handleAddOrUpdateMedication}
-                    existingMedication={editingMedication}
-                />
-              </div>
-            </ScrollArea>
-          {/* DialogFooter can be added here if needed for global actions, or managed within form */}
+          </DialogHeader>
+          <ScrollArea className="max-h-[80vh]">
+            <div className="p-6 pt-0">
+              <MedicationForm
+                onAddMedication={handleAddOrUpdateMedication}
+                existingMedication={editingMedication}
+              />
+            </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
 

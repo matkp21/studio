@@ -4,12 +4,12 @@ export type MedicationFormType = "Tablet" | "Capsule" | "Liquid" | "Inhaler" | "
 export type MedicationRouteType = "Oral" | "Topical" | "Inhaled" | "Subcutaneous" | "Intramuscular" | "Intravenous" | "Rectal" | "Vaginal" | "Otic" | "Nasal" | "Ophthalmic" | "Other";
 
 export const medicationFrequencyTypes = [
-  "Once daily", 
-  "Twice daily", 
-  "Three times daily", 
-  "Four times daily", 
-  "Every X hours", 
-  "As needed (PRN)", 
+  "Once daily",
+  "Twice daily",
+  "Three times daily",
+  "Four times daily",
+  "Every X hours",
+  "As needed (PRN)",
   "Specific days of week",
   "Specific date (one-time)",
   "Other (custom)"
@@ -53,13 +53,12 @@ export interface Medication {
   duration?: string; // e.g., "7 days", "Ongoing"
   quantityPerPrescription?: number; // Optional
   instructions?: string; // Optional, e.g., "Take with food"
-  
-  schedule?: MedicationSchedule;
-  
-  log?: MedicationLogEntry[]; // Array to store adherence log
+  personalNotes?: string; // User's personal notes about the medication
+  photoUrl?: string; // URL to an image of the medication (can be data URI for local)
 
+  schedule?: MedicationSchedule;
+  log?: MedicationLogEntry[]; // Array to store adherence log
   refillInfo?: MedicationRefillInfo; // Information about refills
 
   barcode?: string; // For barcode scanning feature
-  photoUrl?: string; // URL to an image of the medication
 }
