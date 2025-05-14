@@ -103,7 +103,7 @@ export function DrugInteractionChecker() {
         foundInteractions.push({
           ...interactionWithDrug2,
           // Clarify which drug is interacting with which for the display
-          description: `Interaction of ${drug1Data.name} with ${interactionWithDrug2.interactingDrug}: ${interactionWithDrug2.description}`
+          description: `Interaction of ${drug1Data.name} with ${drug2Data.name}: ${interactionWithDrug2.description}`
         });
       }
     }
@@ -117,7 +117,7 @@ export function DrugInteractionChecker() {
         if (interactionWithDrug1) {
           foundInteractions.push({
             ...interactionWithDrug1,
-            description: `Interaction of ${drug2Data.name} with ${interactionWithDrug1.interactingDrug}: ${interactionWithDrug1.description}`
+            description: `Interaction of ${drug2Data.name} with ${drug1Data.name}: ${interactionWithDrug1.description}`
           });
         }
       }
@@ -148,6 +148,10 @@ export function DrugInteractionChecker() {
       default: return 'text-muted-foreground border-border bg-muted/50';
     }
   };
+
+  // Helper to get drug data, needed for displaying names in results
+  const drug1DataForDisplay = sampleInteractionDatabase[drug1.trim().toLowerCase()];
+  const drug2DataForDisplay = sampleInteractionDatabase[drug2.trim().toLowerCase()];
 
 
   return (
@@ -203,7 +207,12 @@ export function DrugInteractionChecker() {
               <ul className="space-y-3">
                 {interactionResult.map((interaction, index) => (
                   <li key={index} className={cn("p-3 border rounded-md", getSeverityClass(interaction.severity))}>
-                    <p className="font-semibold text-sm">{interaction.interactingDrug} with {drug1Data.name === interaction.interactingDrug ? drug2Data.name : drug1Data.name }</p> 
+                    <p className="font-semibold text-sm">
+                        {/* Correctly display the interacting drugs */}
+                        {interaction.description.startsWith(`Interaction of ${drug1DataForDisplay?.name}`) 
+                            ? `${drug1DataForDisplay?.name} with ${drug2DataForDisplay?.name}` 
+                            : `${drug2DataForDisplay?.name} with ${drug1DataForDisplay?.name}`}
+                    </p> 
                     <p className="text-xs"><span className="font-medium">Severity:</span> {interaction.severity}</p>
                     <p className="text-xs mt-0.5">{interaction.description}</p>
                   </li>
@@ -224,8 +233,3 @@ export function DrugInteractionChecker() {
     </div>
   );
 }
-
-// Helper to get drug data, needed for displaying names in results
-const drug1Data = sampleInteractionDatabase[drug1.trim().toLowerCase()];
-const drug2Data = sampleInteractionDatabase[drug2.trim().toLowerCase()];
-```
