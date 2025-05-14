@@ -13,13 +13,13 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Pill, CalendarClock, Repeat, ImagePlus, StickyNote, ScanBarcode, AlertTriangle } from 'lucide-react';
+import { PlusCircle, Pill, CalendarClock, Repeat, ImagePlus, StickyNote, AlertTriangle } from 'lucide-react';
 import type { Medication, MedicationFormType, MedicationRouteType, MedicationFrequencyType, DayOfWeek } from '@/types/medication';
 import { medicationFrequencyTypes, daysOfWeek } from '@/types/medication';
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import Image from 'next/image';
-import { Alert, AlertDescription } from '@/components/ui/alert'; // Added Alert for barcode info
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const medicationFormSchema = z.object({
   name: z.string().min(2, { message: "Medication name must be at least 2 characters." }).max(100),
@@ -34,7 +34,7 @@ const medicationFormSchema = z.object({
   instructions: z.string().max(500).optional(),
   personalNotes: z.string().max(1000).optional(),
   photoUrl: z.string().url({ message: "Please enter a valid URL for the photo." }).optional().or(z.literal('')),
-  barcode: z.string().optional(), // Added barcode field
+  // barcode: z.string().optional(), // Barcode field removed for now
 
   // Schedule fields
   scheduleType: z.enum(medicationFrequencyTypes).optional(),
@@ -55,31 +55,10 @@ interface MedicationFormProps {
 const medicationFormsList: MedicationFormType[] = ["Tablet", "Capsule", "Liquid", "Inhaler", "Injection", "Cream", "Ointment", "Drops", "Patch", "Other"];
 const medicationRoutesList: MedicationRouteType[] = ["Oral", "Topical", "Inhaled", "Subcutaneous", "Intramuscular", "Intravenous", "Rectal", "Vaginal", "Otic", "Nasal", "Ophthalmic", "Other"];
 
-// Sample data for barcode simulation
-const sampleDrugDatabase: Record<string, Partial<MedicationFormValues>> = {
-  "DUMMY_BARCODE_ AMOXICILLIN": {
-    name: "Amoxicillin",
-    dosageStrength: "250 mg",
-    form: "Capsule",
-    route: "Oral",
-    reason: "Bacterial infection",
-    instructions: "Take one capsule three times a day for 7 days.",
-  },
-  "DUMMY_BARCODE_PARACETAMOL": {
-    name: "Paracetamol",
-    dosageStrength: "500 mg",
-    form: "Tablet",
-    route: "Oral",
-    reason: "Pain/Fever relief",
-    instructions: "Take 1-2 tablets every 4-6 hours as needed. Max 8 tablets/day.",
-  },
-};
-
 
 export function MedicationForm({ onAddMedication, existingMedication }: MedicationFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isScanning, setIsScanning] = useState(false); // For barcode scan simulation
   const [imagePreview, setImagePreview] = useState<string | null>(existingMedication?.photoUrl || null);
 
   const form = useForm<MedicationFormValues>({
@@ -97,7 +76,7 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       instructions: existingMedication?.instructions || "",
       personalNotes: existingMedication?.personalNotes || "",
       photoUrl: existingMedication?.photoUrl || "",
-      barcode: existingMedication?.barcode || "",
+      // barcode: existingMedication?.barcode || "", // Barcode field removed
 
       scheduleType: existingMedication?.schedule?.type || undefined,
       scheduleTimes: existingMedication?.schedule?.times || [],
@@ -127,56 +106,6 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
     }
   };
 
-  const handleBarcodeScan = async () => {
-    setIsScanning(true);
-    toast({
-      title: "Barcode Scanner Initializing...",
-      description: "Please wait. (This is a simulation)",
-    });
-
-    // Simulate camera access and scanning
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Simulate a successful scan
-    const scannedBarcode = Math.random() > 0.5 ? "DUMMY_BARCODE_ AMOXICILLIN" : "DUMMY_BARCODE_PARACETAMOL"; // Simulate different scans
-    const drugData = sampleDrugDatabase[scannedBarcode];
-
-    if (drugData) {
-      // Pre-fill form fields. Use form.reset to update multiple fields and re-validate.
-      form.reset({
-        ...form.getValues(), // keep existing non-drug specific values if any
-        name: drugData.name || "",
-        dosageStrength: drugData.dosageStrength || "",
-        form: drugData.form || undefined,
-        route: drugData.route || undefined,
-        reason: drugData.reason || "",
-        instructions: drugData.instructions || "",
-        barcode: scannedBarcode, // Store the scanned barcode
-        // Reset other potentially drug-specific fields if needed
-        photoUrl: "", // Clear photo if new drug scanned
-        personalNotes: "",
-        scheduleType: undefined,
-        scheduleTimes: [],
-        // ... any other fields that should be reset or prefilled
-      });
-      setImagePreview(null); // Clear image preview
-
-      toast({
-        title: "Barcode Scanned!",
-        description: `Medication "${drugData.name}" data pre-filled. Please verify and complete other details.`,
-      });
-    } else {
-      toast({
-        title: "Barcode Not Recognized",
-        description: "Could not find medication data for the scanned barcode. Please enter manually.",
-        variant: "destructive",
-      });
-      form.setValue("barcode", scannedBarcode); // Still store unrecognized barcode
-    }
-    setIsScanning(false);
-  };
-
-
   const onSubmit: SubmitHandler<MedicationFormValues> = async (data) => {
     setIsSubmitting(true);
     const newMedication: Medication = {
@@ -193,7 +122,7 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       instructions: data.instructions,
       personalNotes: data.personalNotes,
       photoUrl: imagePreview || data.photoUrl,
-      barcode: data.barcode,
+      // barcode: data.barcode, // Barcode field removed
 
       schedule: data.scheduleType ? {
         type: data.scheduleType,
@@ -203,7 +132,6 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
         specificDate: data.scheduleType === "Specific date (one-time)" ? data.scheduleSpecificDate : undefined,
         customInstructions: data.scheduleType === "Other (custom)" ? data.scheduleCustomInstructions : data.scheduleCustomInstructions,
       } : undefined,
-      // Log and refillInfo are typically managed outside direct form submission for new meds
       log: existingMedication?.log || [],
       refillInfo: existingMedication?.refillInfo
     };
@@ -214,7 +142,7 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       title: existingMedication ? "Medication Updated!" : "Medication Added!",
       description: `${data.name} has been ${existingMedication ? 'updated' : 'added to your list'}.`,
     });
-    form.reset({ prescriptionDate: new Date(), form: undefined, route: undefined, scheduleType: undefined, scheduleTimes: [], scheduleDaysOfWeek: [], personalNotes: "", photoUrl: "", barcode: "" });
+    form.reset({ prescriptionDate: new Date(), form: undefined, route: undefined, scheduleType: undefined, scheduleTimes: [], scheduleDaysOfWeek: [], personalNotes: "", photoUrl: "" /* barcode: "" */ }); // Barcode reset removed
     setImagePreview(null);
     setIsSubmitting(false);
   };
@@ -229,24 +157,7 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
           </CardTitle>
         </CardHeader>
 
-        <div className="flex flex-col sm:flex-row items-center gap-3 p-3 border border-dashed rounded-lg bg-muted/50">
-          <Button type="button" onClick={handleBarcodeScan} disabled={isScanning} className="w-full sm:w-auto rounded-lg group">
-            <ScanBarcode className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:rotate-[-5deg]" />
-            {isScanning ? "Scanning..." : "Scan Medication Barcode"}
-          </Button>
-          <AlertDescription className="text-xs text-muted-foreground text-center sm:text-left">
-            (Simulation) Click to simulate scanning a barcode and pre-filling medication details.
-          </AlertDescription>
-        </div>
-         {form.getValues("barcode") && (
-            <Alert variant="default" className="mt-2">
-                <ScanBarcode className="h-4 w-4"/>
-                <AlertDescription className="text-xs">
-                    Last scanned barcode: {form.getValues("barcode")}
-                </AlertDescription>
-            </Alert>
-        )}
-
+        {/* Barcode scanning UI removed */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Medication Name</FormLabel><FormControl><Input placeholder="e.g., Amoxicillin" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
@@ -419,7 +330,7 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
           />
         </div>
 
-        <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isSubmitting || isScanning}>
+        <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isSubmitting}>
           {isSubmitting ? 'Saving...' : (existingMedication ? 'Update Medication' : 'Add Medication')}
           {!isSubmitting && <PlusCircle className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />}
         </Button>
@@ -427,3 +338,4 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
     </Form>
   );
 }
+
