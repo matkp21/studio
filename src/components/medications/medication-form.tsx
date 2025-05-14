@@ -1,7 +1,8 @@
+
 // src/components/medications/medication-form.tsx
 "use client";
 
-import { useState, type ChangeEvent } from 'react'; // Added ChangeEvent
+import { useState, type ChangeEvent } from 'react';
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,12 +13,13 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Pill, CalendarClock, Repeat, ImagePlus, StickyNote } from 'lucide-react'; // Added ImagePlus, StickyNote
+import { PlusCircle, Pill, CalendarClock, Repeat, ImagePlus, StickyNote, ScanBarcode, AlertTriangle } from 'lucide-react';
 import type { Medication, MedicationFormType, MedicationRouteType, MedicationFrequencyType, DayOfWeek } from '@/types/medication';
 import { medicationFrequencyTypes, daysOfWeek } from '@/types/medication';
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import Image from 'next/image'; // For image preview
+import Image from 'next/image';
+import { Alert, AlertDescription } from '@/components/ui/alert'; // Added Alert for barcode info
 
 const medicationFormSchema = z.object({
   name: z.string().min(2, { message: "Medication name must be at least 2 characters." }).max(100),
@@ -30,12 +32,13 @@ const medicationFormSchema = z.object({
   duration: z.string().max(50).optional(),
   quantityPerPrescription: z.coerce.number().int().positive().optional(),
   instructions: z.string().max(500).optional(),
-  personalNotes: z.string().max(1000).optional(), // Added personalNotes
-  photoUrl: z.string().url({ message: "Please enter a valid URL for the photo." }).optional().or(z.literal('')), // For data URI or URL
+  personalNotes: z.string().max(1000).optional(),
+  photoUrl: z.string().url({ message: "Please enter a valid URL for the photo." }).optional().or(z.literal('')),
+  barcode: z.string().optional(), // Added barcode field
 
   // Schedule fields
   scheduleType: z.enum(medicationFrequencyTypes).optional(),
-  scheduleTimes: z.array(z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)")).optional(), // Array of HH:MM strings
+  scheduleTimes: z.array(z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)")).optional(),
   scheduleIntervalHours: z.coerce.number().int().min(1).max(24).optional(),
   scheduleDaysOfWeek: z.array(z.enum(daysOfWeek)).optional(),
   scheduleSpecificDate: z.date().optional(),
@@ -52,9 +55,31 @@ interface MedicationFormProps {
 const medicationFormsList: MedicationFormType[] = ["Tablet", "Capsule", "Liquid", "Inhaler", "Injection", "Cream", "Ointment", "Drops", "Patch", "Other"];
 const medicationRoutesList: MedicationRouteType[] = ["Oral", "Topical", "Inhaled", "Subcutaneous", "Intramuscular", "Intravenous", "Rectal", "Vaginal", "Otic", "Nasal", "Ophthalmic", "Other"];
 
+// Sample data for barcode simulation
+const sampleDrugDatabase: Record<string, Partial<MedicationFormValues>> = {
+  "DUMMY_BARCODE_ AMOXICILLIN": {
+    name: "Amoxicillin",
+    dosageStrength: "250 mg",
+    form: "Capsule",
+    route: "Oral",
+    reason: "Bacterial infection",
+    instructions: "Take one capsule three times a day for 7 days.",
+  },
+  "DUMMY_BARCODE_PARACETAMOL": {
+    name: "Paracetamol",
+    dosageStrength: "500 mg",
+    form: "Tablet",
+    route: "Oral",
+    reason: "Pain/Fever relief",
+    instructions: "Take 1-2 tablets every 4-6 hours as needed. Max 8 tablets/day.",
+  },
+};
+
+
 export function MedicationForm({ onAddMedication, existingMedication }: MedicationFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isScanning, setIsScanning] = useState(false); // For barcode scan simulation
   const [imagePreview, setImagePreview] = useState<string | null>(existingMedication?.photoUrl || null);
 
   const form = useForm<MedicationFormValues>({
@@ -70,8 +95,9 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       duration: existingMedication?.duration || "",
       quantityPerPrescription: existingMedication?.quantityPerPrescription || undefined,
       instructions: existingMedication?.instructions || "",
-      personalNotes: existingMedication?.personalNotes || "", // Added
-      photoUrl: existingMedication?.photoUrl || "", // Added
+      personalNotes: existingMedication?.personalNotes || "",
+      photoUrl: existingMedication?.photoUrl || "",
+      barcode: existingMedication?.barcode || "",
 
       scheduleType: existingMedication?.schedule?.type || undefined,
       scheduleTimes: existingMedication?.schedule?.times || [],
@@ -95,11 +121,61 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       reader.onloadend = () => {
         const dataUri = reader.result as string;
         setImagePreview(dataUri);
-        form.setValue('photoUrl', dataUri); // Store data URI
+        form.setValue('photoUrl', dataUri);
       };
       reader.readAsDataURL(file);
     }
   };
+
+  const handleBarcodeScan = async () => {
+    setIsScanning(true);
+    toast({
+      title: "Barcode Scanner Initializing...",
+      description: "Please wait. (This is a simulation)",
+    });
+
+    // Simulate camera access and scanning
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Simulate a successful scan
+    const scannedBarcode = Math.random() > 0.5 ? "DUMMY_BARCODE_ AMOXICILLIN" : "DUMMY_BARCODE_PARACETAMOL"; // Simulate different scans
+    const drugData = sampleDrugDatabase[scannedBarcode];
+
+    if (drugData) {
+      // Pre-fill form fields. Use form.reset to update multiple fields and re-validate.
+      form.reset({
+        ...form.getValues(), // keep existing non-drug specific values if any
+        name: drugData.name || "",
+        dosageStrength: drugData.dosageStrength || "",
+        form: drugData.form || undefined,
+        route: drugData.route || undefined,
+        reason: drugData.reason || "",
+        instructions: drugData.instructions || "",
+        barcode: scannedBarcode, // Store the scanned barcode
+        // Reset other potentially drug-specific fields if needed
+        photoUrl: "", // Clear photo if new drug scanned
+        personalNotes: "",
+        scheduleType: undefined,
+        scheduleTimes: [],
+        // ... any other fields that should be reset or prefilled
+      });
+      setImagePreview(null); // Clear image preview
+
+      toast({
+        title: "Barcode Scanned!",
+        description: `Medication "${drugData.name}" data pre-filled. Please verify and complete other details.`,
+      });
+    } else {
+      toast({
+        title: "Barcode Not Recognized",
+        description: "Could not find medication data for the scanned barcode. Please enter manually.",
+        variant: "destructive",
+      });
+      form.setValue("barcode", scannedBarcode); // Still store unrecognized barcode
+    }
+    setIsScanning(false);
+  };
+
 
   const onSubmit: SubmitHandler<MedicationFormValues> = async (data) => {
     setIsSubmitting(true);
@@ -115,8 +191,9 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       duration: data.duration,
       quantityPerPrescription: data.quantityPerPrescription,
       instructions: data.instructions,
-      personalNotes: data.personalNotes, // Added
-      photoUrl: imagePreview || data.photoUrl, // Prefer preview if available, fallback to direct URL if user typed one
+      personalNotes: data.personalNotes,
+      photoUrl: imagePreview || data.photoUrl,
+      barcode: data.barcode,
 
       schedule: data.scheduleType ? {
         type: data.scheduleType,
@@ -126,6 +203,9 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
         specificDate: data.scheduleType === "Specific date (one-time)" ? data.scheduleSpecificDate : undefined,
         customInstructions: data.scheduleType === "Other (custom)" ? data.scheduleCustomInstructions : data.scheduleCustomInstructions,
       } : undefined,
+      // Log and refillInfo are typically managed outside direct form submission for new meds
+      log: existingMedication?.log || [],
+      refillInfo: existingMedication?.refillInfo
     };
 
     onAddMedication(newMedication);
@@ -134,8 +214,8 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       title: existingMedication ? "Medication Updated!" : "Medication Added!",
       description: `${data.name} has been ${existingMedication ? 'updated' : 'added to your list'}.`,
     });
-    form.reset({ prescriptionDate: new Date(), form: undefined, route: undefined, scheduleType: undefined, scheduleTimes: [], scheduleDaysOfWeek: [], personalNotes: "", photoUrl: "" });
-    setImagePreview(null); // Reset image preview
+    form.reset({ prescriptionDate: new Date(), form: undefined, route: undefined, scheduleType: undefined, scheduleTimes: [], scheduleDaysOfWeek: [], personalNotes: "", photoUrl: "", barcode: "" });
+    setImagePreview(null);
     setIsSubmitting(false);
   };
 
@@ -149,11 +229,30 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
           </CardTitle>
         </CardHeader>
 
+        <div className="flex flex-col sm:flex-row items-center gap-3 p-3 border border-dashed rounded-lg bg-muted/50">
+          <Button type="button" onClick={handleBarcodeScan} disabled={isScanning} className="w-full sm:w-auto rounded-lg group">
+            <ScanBarcode className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:rotate-[-5deg]" />
+            {isScanning ? "Scanning..." : "Scan Medication Barcode"}
+          </Button>
+          <AlertDescription className="text-xs text-muted-foreground text-center sm:text-left">
+            (Simulation) Click to simulate scanning a barcode and pre-filling medication details.
+          </AlertDescription>
+        </div>
+         {form.getValues("barcode") && (
+            <Alert variant="default" className="mt-2">
+                <ScanBarcode className="h-4 w-4"/>
+                <AlertDescription className="text-xs">
+                    Last scanned barcode: {form.getValues("barcode")}
+                </AlertDescription>
+            </Alert>
+        )}
+
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Medication Name</FormLabel><FormControl><Input placeholder="e.g., Amoxicillin" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="dosageStrength" render={({ field }) => (<FormItem><FormLabel>Dosage & Strength</FormLabel><FormControl><Input placeholder="e.g., 500 mg, 10 units" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
-          <FormField control={form.control} name="form" render={({ field }) => (<FormItem><FormLabel>Form</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select form" /></SelectTrigger></FormControl><SelectContent>{medicationFormsList.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-          <FormField control={form.control} name="route" render={({ field }) => (<FormItem><FormLabel>Route</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select route" /></SelectTrigger></FormControl><SelectContent>{medicationRoutesList.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="form" render={({ field }) => (<FormItem><FormLabel>Form</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select form" /></SelectTrigger></FormControl><SelectContent>{medicationFormsList.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="route" render={({ field }) => (<FormItem><FormLabel>Route</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select route" /></SelectTrigger></FormControl><SelectContent>{medicationRoutesList.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="prescriptionDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel className="mb-1">Prescription Date</FormLabel><DatePicker date={field.value} setDate={field.onChange} buttonClassName="rounded-lg" /><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="duration" render={({ field }) => (<FormItem><FormLabel>Duration (Optional)</FormLabel><FormControl><Input placeholder="e.g., 7 days, Ongoing" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="reason" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Reason/Condition (Optional)</FormLabel><FormControl><Input placeholder="e.g., For bacterial infection" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
@@ -161,12 +260,11 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
           <FormField control={form.control} name="quantityPerPrescription" render={({ field }) => (<FormItem><FormLabel>Quantity per Rx (Optional)</FormLabel><FormControl><Input type="number" placeholder="e.g., 30" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
         </div>
 
-        {/* Image Upload Section */}
         <div className="space-y-2 pt-4 border-t">
             <h3 className="text-lg font-medium flex items-center gap-2"><ImagePlus className="h-5 w-5 text-primary" /> Medication Photo (Optional)</h3>
             <FormField
                 control={form.control}
-                name="photoUrl" // This field will store the data URI or an external URL
+                name="photoUrl"
                 render={({ field }) => (
                 <FormItem>
                     <FormLabel>Upload Photo or Enter URL</FormLabel>
@@ -182,11 +280,11 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
                             placeholder="Or paste image URL here (e.g., https://...)"
                             onChange={(e) => {
                                 field.onChange(e.target.value);
-                                if(!e.target.value.startsWith('data:image')) { // Don't overwrite preview if it's from file upload
+                                if(!e.target.value.startsWith('data:image')) {
                                     setImagePreview(e.target.value || null);
                                 }
                             }}
-                            value={field.value?.startsWith('data:image') ? '' : field.value || ''} // Don't show data URI in input
+                            value={field.value?.startsWith('data:image') ? '' : field.value || ''}
                             className="rounded-lg mt-1"
                         />
                     </>
@@ -203,10 +301,8 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
             />
         </div>
 
-
         <FormField control={form.control} name="instructions" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Instructions (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., Take with food, avoid alcohol..." {...field} className="rounded-lg min-h-[80px]" /></FormControl><FormMessage /></FormItem>)} />
         
-        {/* Personal Notes Section */}
          <div className="space-y-2 pt-4 border-t">
             <h3 className="text-lg font-medium flex items-center gap-2"><StickyNote className="h-5 w-5 text-primary" /> Personal Notes (Optional)</h3>
             <FormField
@@ -228,8 +324,6 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
             />
         </div>
 
-
-        {/* Schedule Section */}
         <div className="space-y-4 pt-4 border-t">
           <h3 className="text-lg font-medium flex items-center gap-2"><CalendarClock className="h-5 w-5 text-primary" /> Medication Schedule</h3>
           <FormField
@@ -238,7 +332,7 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Frequency</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select frequency" /></SelectTrigger></FormControl>
                   <SelectContent>
                     {medicationFrequencyTypes.map(freq => <SelectItem key={freq} value={freq}>{freq}</SelectItem>)}
@@ -257,7 +351,7 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
                 <FormItem>
                   <FormLabel>Specific Times (HH:MM)</FormLabel>
                   <FormControl><Input type="time" {...field} onChange={e => field.onChange([e.target.value])} value={field.value?.[0] || ""} className="rounded-lg" /></FormControl>
-                  <FormDescription>For multiple times, add more fields or use custom instructions.</FormDescription>
+                  <FormDescription>For multiple times, add more fields or use custom instructions. Current UI supports one time slot for simplicity.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -325,8 +419,7 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
           />
         </div>
 
-
-        <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isSubmitting}>
+        <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isSubmitting || isScanning}>
           {isSubmitting ? 'Saving...' : (existingMedication ? 'Update Medication' : 'Add Medication')}
           {!isSubmitting && <PlusCircle className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />}
         </Button>
@@ -334,3 +427,72 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
     </Form>
   );
 }
+
+</content>
+  </change>
+  <change>
+    <file>/src/types/medication.ts</file>
+    <content><![CDATA[// src/types/medication.ts
+
+export type MedicationFormType = "Tablet" | "Capsule" | "Liquid" | "Inhaler" | "Injection" | "Cream" | "Ointment" | "Drops" | "Patch" | "Other";
+export type MedicationRouteType = "Oral" | "Topical" | "Inhaled" | "Subcutaneous" | "Intramuscular" | "Intravenous" | "Rectal" | "Vaginal" | "Otic" | "Nasal" | "Ophthalmic" | "Other";
+
+export const medicationFrequencyTypes = [
+  "Once daily",
+  "Twice daily",
+  "Three times daily",
+  "Four times daily",
+  "Every X hours",
+  "As needed (PRN)",
+  "Specific days of week",
+  "Specific date (one-time)",
+  "Other (custom)"
+] as const;
+export type MedicationFrequencyType = typeof medicationFrequencyTypes[number];
+
+export const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
+export type DayOfWeek = typeof daysOfWeek[number];
+
+export interface MedicationSchedule {
+  type: MedicationFrequencyType;
+  times?: string[]; // e.g., ["08:00", "20:00"] for "Twice daily"
+  intervalHours?: number; // for "Every X hours"
+  daysOfWeek?: DayOfWeek[]; // for "Specific days of week"
+  specificDate?: Date; // for "Specific date (one-time)"
+  customInstructions?: string; // for "Other (custom)" or general notes
+}
+
+export interface MedicationLogEntry {
+  date: Date;
+  status: 'taken' | 'skipped' | 'snoozed'; // 'snoozed' implies it was due but delayed
+  notes?: string; // Optional notes for a specific log entry
+}
+
+export interface MedicationRefillInfo {
+  lastRefillDate?: Date;
+  quantityDispensed?: number;
+  pharmacy?: string;
+  daysSupply?: number; // Optional, to help calculate next refill
+}
+
+export interface Medication {
+  id: string;
+  name: string;
+  dosageStrength: string; // e.g., "500 mg", "10 units"
+  form: MedicationFormType;
+  route: MedicationRouteType;
+  reason?: string; // Optional
+  prescribingDoctor?: string; // Optional
+  prescriptionDate: Date;
+  duration?: string; // e.g., "7 days", "Ongoing"
+  quantityPerPrescription?: number; // Optional
+  instructions?: string; // Optional, e.g., "Take with food"
+  personalNotes?: string; // User's personal notes about the medication
+  photoUrl?: string; // URL to an image of the medication (can be data URI for local)
+  barcode?: string; // For barcode scanning feature
+
+  schedule?: MedicationSchedule;
+  log?: MedicationLogEntry[]; // Array to store adherence log
+  refillInfo?: MedicationRefillInfo; // Information about refills
+}
+
