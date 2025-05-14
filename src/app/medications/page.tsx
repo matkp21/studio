@@ -5,10 +5,11 @@ import { useState, useEffect, useMemo } from 'react';
 import { PageWrapper } from '@/components/layout/page-wrapper';
 import { MedicationForm } from '@/components/medications/medication-form';
 import { MedicationListItem } from '@/components/medications/medication-list-item';
+import { DrugInteractionChecker } from '@/components/medications/drug-interaction-checker'; // New import
 import type { Medication, MedicationLogEntry, MedicationRefillInfo, MedicationSchedule } from '@/types/medication';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, PillIcon, Info, Loader2, CalendarClock } from 'lucide-react';
+import { PlusCircle, PillIcon, Info, Loader2, CalendarClock, AlertTriangle } from 'lucide-react'; // Added AlertTriangle
 import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
@@ -23,6 +24,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { MedicationManagementAnimation } from '@/components/medications/medication-management-animation';
 import { format, addHours, addDays, setHours, setMinutes, setSeconds, isFuture, parse, getDay, nextDay } from 'date-fns';
 import { daysOfWeek } from '@/types/medication';
+import { Card, CardHeader, CardTitle as CardTitleComponent, CardDescription as CardDescriptionComponent, CardContent } from '@/components/ui/card'; // Renamed for clarity
 
 
 // Helper function to calculate upcoming conceptual doses
@@ -260,7 +262,7 @@ export default function MedicationManagementPage() {
           <p className="text-sm">Click "Add Medication" to get started.</p>
         </div>
       ) : (
-        <ScrollArea className="h-[calc(100vh-var(--header-height,4rem)-280px)] pr-3 -mr-3">
+        <ScrollArea className="h-[calc(100vh-var(--header-height,4rem)-280px)] pr-3 -mr-3"> {/* Adjusted height */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {medications.map(med => (
               <MedicationListItem
@@ -329,7 +331,24 @@ export default function MedicationManagementPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Drug Interaction Checker Section */}
+      <div className="mt-12">
+        <Card className="shadow-lg rounded-xl border-border/50">
+            <CardHeader>
+                <CardTitleComponent className="text-xl flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-orange-500" />
+                    Drug Interaction Checker (Basic)
+                </CardTitleComponent>
+                <CardDescriptionComponent>
+                    Check for potential interactions between two drugs. This tool provides basic information and is not a substitute for professional advice.
+                </CardDescriptionComponent>
+            </CardHeader>
+            <CardContent>
+                <DrugInteractionChecker />
+            </CardContent>
+        </Card>
+      </div>
+
     </PageWrapper>
   );
 }
-
