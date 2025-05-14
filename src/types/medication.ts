@@ -28,6 +28,19 @@ export interface MedicationSchedule {
   customInstructions?: string; // for "Other (custom)" or general notes
 }
 
+export interface MedicationLogEntry {
+  date: Date;
+  status: 'taken' | 'skipped' | 'snoozed'; // 'snoozed' implies it was due but delayed
+  notes?: string; // Optional notes for a specific log entry
+}
+
+export interface MedicationRefillInfo {
+  lastRefillDate?: Date;
+  quantityDispensed?: number;
+  pharmacy?: string;
+  daysSupply?: number; // Optional, to help calculate next refill
+}
+
 export interface Medication {
   id: string;
   name: string;
@@ -43,14 +56,10 @@ export interface Medication {
   
   schedule?: MedicationSchedule;
   
-  log?: Array<{ date: Date; status: 'taken' | 'skipped' | 'snoozed' }>;
+  log?: MedicationLogEntry[]; // Array to store adherence log
 
-  refillInfo?: {
-    lastRefillDate?: Date;
-    quantityDispensed?: number;
-    pharmacy?: string;
-  };
+  refillInfo?: MedicationRefillInfo; // Information about refills
 
-  barcode?: string;
-  photoUrl?: string;
+  barcode?: string; // For barcode scanning feature
+  photoUrl?: string; // URL to an image of the medication
 }

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { PageWrapper } from '@/components/layout/page-wrapper';
 import { MedicationForm } from '@/components/medications/medication-form';
 import { MedicationListItem } from '@/components/medications/medication-list-item';
-import type { Medication } from '@/types/medication';
+import type { Medication, MedicationLogEntry, MedicationRefillInfo } from '@/types/medication';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, PillIcon, Info, Loader2 } from 'lucide-react';
@@ -20,7 +20,7 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { MedicationManagementAnimation } from '@/components/medications/medication-management-animation'; // New Import
+import { MedicationManagementAnimation } from '@/components/medications/medication-management-animation';
 
 export default function MedicationManagementPage() {
   const [medications, setMedications] = useState<Medication[]>([]);
@@ -28,7 +28,7 @@ export default function MedicationManagementPage() {
   const [editingMedication, setEditingMedication] = useState<Medication | null>(null);
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
-  const [showAnimation, setShowAnimation] = useState(true); // For the new animation
+  const [showAnimation, setShowAnimation] = useState(true); 
 
   // Load medications from localStorage on mount
   useEffect(() => {
@@ -37,6 +37,7 @@ export default function MedicationManagementPage() {
     if (storedMeds) {
       try {
         const parsedMeds = JSON.parse(storedMeds) as Medication[];
+        // Ensure all date fields are properly converted from string to Date objects
         const medsWithDates = parsedMeds.map(med => ({
           ...med,
           prescriptionDate: new Date(med.prescriptionDate),
@@ -44,16 +45,19 @@ export default function MedicationManagementPage() {
             ...med.schedule,
             specificDate: med.schedule.specificDate ? new Date(med.schedule.specificDate) : undefined,
           } : undefined,
-          log: med.log?.map(l => ({ ...l, date: new Date(l.date) })),
+          log: med.log?.map(l => ({ 
+            ...l, 
+            date: new Date(l.date) 
+          } as MedicationLogEntry)) || [], // Initialize as empty array if undefined
           refillInfo: med.refillInfo ? {
             ...med.refillInfo,
             lastRefillDate: med.refillInfo.lastRefillDate ? new Date(med.refillInfo.lastRefillDate) : undefined,
-          } : undefined,
+          } as MedicationRefillInfo : undefined,
         }));
         setMedications(medsWithDates);
       } catch (e) {
         console.error("Failed to parse medications from localStorage", e);
-        localStorage.removeItem('medications');
+        localStorage.removeItem('medications'); // Clear corrupted data
       }
     }
   }, []);
@@ -70,10 +74,14 @@ export default function MedicationManagementPage() {
       const existingIndex = prevMeds.findIndex(m => m.id === medication.id);
       if (existingIndex > -1) {
         const updatedMeds = [...prevMeds];
-        updatedMeds[existingIndex] = medication;
+        updatedMeds[existingIndex] = { 
+          ...medication, 
+          log: updatedMeds[existingIndex].log || [], // Preserve existing log if any
+          refillInfo: medication.refillInfo || updatedMeds[existingIndex].refillInfo // Preserve or update refill
+        };
         return updatedMeds;
       } else {
-        return [medication, ...prevMeds];
+        return [{ ...medication, log: [], refillInfo: medication.refillInfo }, ...prevMeds]; // Initialize log for new meds
       }
     });
     setShowFormModal(false);
@@ -90,8 +98,21 @@ export default function MedicationManagementPage() {
     toast({ title: "Medication Removed", description: "The medication has been deleted from your list." });
   };
 
-  const handleSetReminder = (medication: Medication) => {
-    toast({ title: "Set Reminder", description: `Reminder functionality for ${medication.name} will be implemented here.` });
+  // Placeholder: In a real app, this would interact with the log
+  const handleLogDose = (medicationId: string, status: MedicationLogEntry['status']) => {
+     setMedications(prevMeds =>
+      prevMeds.map(med => {
+        if (med.id === medicationId) {
+          const newLogEntry: MedicationLogEntry = { date: new Date(), status };
+          return {
+            ...med,
+            log: [...(med.log || []), newLogEntry],
+          };
+        }
+        return med;
+      })
+    );
+    toast({ title: `Dose Logged`, description: `Marked as ${status} for today.` });
   };
   
   const openAddMedicationModal = () => {
@@ -116,7 +137,7 @@ export default function MedicationManagementPage() {
   return (
     <PageWrapper title="Medication Management" className="pb-16">
       <div className="flex justify-between items-center mb-6">
-        <p className="text-muted-foreground">Log and manage your prescribed medications and schedules.</p>
+        <p className="text-muted-foreground">Log and manage your prescribed medications, schedules, and adherence.</p>
         <Button onClick={openAddMedicationModal} className="rounded-lg group">
           <PlusCircle className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:rotate-90" /> Add Medication
         </Button>
@@ -145,7 +166,7 @@ export default function MedicationManagementPage() {
                 medication={med}
                 onEdit={handleEditMedication}
                 onDelete={handleDeleteMedication}
-                onSetReminder={handleSetReminder}
+                onLogDose={handleLogDose} // Pass the new handler
               />
             ))}
           </div>
@@ -158,8 +179,8 @@ export default function MedicationManagementPage() {
       }}>
         <DialogContent className="sm:max-w-2xl p-0">
            <DialogHeader className="p-6 pb-0">
-             {/* Title is now inside MedicationForm */}
-          </DialogHeader>
+            {/* Title is inside MedicationForm now */}
+           </DialogHeader>
             <ScrollArea className="max-h-[80vh]">
               <div className="p-6 pt-0">
                 <MedicationForm
@@ -168,6 +189,7 @@ export default function MedicationManagementPage() {
                 />
               </div>
             </ScrollArea>
+          {/* DialogFooter can be added here if needed for global actions, or managed within form */}
         </DialogContent>
       </Dialog>
 

@@ -1,11 +1,11 @@
 // src/components/medications/medication-list-item.tsx
 "use client";
 
-import type { Medication } from '@/types/medication';
+import type { Medication, MedicationLogEntry } from '@/types/medication';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Pill, CalendarDays, Edit3, Trash2, Clock, AlertTriangle, Repeat } from 'lucide-react';
-import { format } from 'date-fns';
+import { Pill, CalendarDays, Edit3, Trash2, Clock, AlertTriangle, Repeat, CheckCircle, XCircle, MinusCircle, PackageSearch } from 'lucide-react';
+import { format, isToday } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -13,7 +13,7 @@ interface MedicationListItemProps {
   medication: Medication;
   onEdit: (medication: Medication) => void;
   onDelete: (id: string) => void;
-  onSetReminder: (medication: Medication) => void;
+  onLogDose: (medicationId: string, status: MedicationLogEntry['status']) => void;
 }
 
 function formatSchedule(schedule?: Medication['schedule']): string {
@@ -39,8 +39,10 @@ function formatSchedule(schedule?: Medication['schedule']): string {
   return scheduleString;
 }
 
+export function MedicationListItem({ medication, onEdit, onDelete, onLogDose }: MedicationListItemProps) {
+  const todayLog = medication.log?.find(entry => isToday(new Date(entry.date)));
+  const lastLog = medication.log && medication.log.length > 0 ? medication.log[medication.log.length - 1] : null;
 
-export function MedicationListItem({ medication, onEdit, onDelete, onSetReminder }: MedicationListItemProps) {
   return (
     <Card className="shadow-md rounded-xl border-border/50 overflow-hidden bg-card/90 backdrop-blur-sm flex flex-col">
       <CardHeader className="p-4 border-b bg-muted/30">
@@ -69,7 +71,6 @@ export function MedicationListItem({ medication, onEdit, onDelete, onSetReminder
         <p><span className="font-semibold">Prescribed:</span> {format(new Date(medication.prescriptionDate), "PPP")} {medication.prescribingDoctor && `by ${medication.prescribingDoctor}`}</p>
         {medication.duration && <p><span className="font-semibold">Duration:</span> {medication.duration}</p>}
         
-        {/* Schedule Display */}
         <div className="mt-2 pt-2 border-t border-dashed">
             <p className="font-semibold text-xs text-muted-foreground mb-1 flex items-center gap-1"><Repeat className="h-3.5 w-3.5"/>Schedule:</p>
             <Badge variant="secondary" className="text-xs font-normal whitespace-normal text-left py-1 h-auto leading-snug">
@@ -78,11 +79,50 @@ export function MedicationListItem({ medication, onEdit, onDelete, onSetReminder
         </div>
 
         {medication.instructions && <p className="mt-2 pt-2 border-t border-dashed"><span className="font-semibold">Instructions:</span> {medication.instructions}</p>}
-        {medication.quantityPerPrescription && <p><span className="font-semibold">Quantity per Rx:</span> {medication.quantityPerPrescription}</p>}
+        
+        {/* Adherence Log - Conceptual */}
+        <div className="mt-2 pt-2 border-t border-dashed">
+            <p className="font-semibold text-xs text-muted-foreground mb-1">Adherence (Today):</p>
+            {todayLog ? (
+                <Badge variant={todayLog.status === 'taken' ? 'default' : todayLog.status === 'skipped' ? 'destructive' : 'secondary'} className="capitalize">
+                    {todayLog.status === 'taken' && <CheckCircle className="mr-1 h-3 w-3" />}
+                    {todayLog.status === 'skipped' && <XCircle className="mr-1 h-3 w-3" />}
+                    {todayLog.status === 'snoozed' && <Clock className="mr-1 h-3 w-3" />}
+                    {todayLog.status}
+                </Badge>
+            ) : (
+                <Badge variant="outline">Not Logged Today</Badge>
+            )}
+            <div className="flex gap-1.5 mt-1.5">
+                <Button size="xs" variant="outline" onClick={() => onLogDose(medication.id, 'taken')} className="text-green-600 border-green-500 hover:bg-green-500/10">
+                  <CheckCircle className="mr-1 h-3.5 w-3.5"/> Taken
+                </Button>
+                <Button size="xs" variant="outline" onClick={() => onLogDose(medication.id, 'skipped')} className="text-red-600 border-red-500 hover:bg-red-500/10">
+                  <XCircle className="mr-1 h-3.5 w-3.5"/> Skipped
+                </Button>
+                 <Button size="xs" variant="outline" onClick={() => onLogDose(medication.id, 'snoozed')} className="text-amber-600 border-amber-500 hover:bg-amber-500/10">
+                  <Clock className="mr-1 h-3.5 w-3.5"/> Snooze
+                </Button>
+            </div>
+        </div>
+
+        {/* Refill Info - Conceptual */}
+        {medication.refillInfo && (
+             <div className="mt-2 pt-2 border-t border-dashed">
+                <p className="font-semibold text-xs text-muted-foreground mb-1 flex items-center gap-1"><PackageSearch className="h-3.5 w-3.5"/>Refill Info:</p>
+                <div className="text-xs space-y-0.5">
+                    {medication.refillInfo.lastRefillDate && <p>Last Refilled: {format(new Date(medication.refillInfo.lastRefillDate), "PPP")}</p>}
+                    {medication.refillInfo.quantityDispensed && <p>Quantity: {medication.refillInfo.quantityDispensed}</p>}
+                    {medication.refillInfo.pharmacy && <p>Pharmacy: {medication.refillInfo.pharmacy}</p>}
+                    {/* Conceptual: Next refill due ... */}
+                </div>
+            </div>
+        )}
 
       </CardContent>
       <CardFooter className="p-3 bg-muted/20 border-t flex justify-between items-center mt-auto">
-        <Button variant="outline" size="sm" onClick={() => onSetReminder(medication)} className="text-xs rounded-md">
+        {/* Reminder Button is placeholder for now */}
+        <Button variant="outline" size="sm" onClick={() => alert("Reminder functionality coming soon!")} className="text-xs rounded-md">
           <Clock className="mr-1.5 h-3.5 w-3.5" /> Set/View Reminders
         </Button>
         <Button variant="link" size="sm" onClick={() => alert("Interaction check feature coming soon!")} className="text-xs text-amber-600 dark:text-amber-500 hover:text-amber-700 p-0 h-auto">
