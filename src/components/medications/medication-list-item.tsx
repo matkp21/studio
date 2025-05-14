@@ -4,17 +4,25 @@
 import type { Medication, MedicationLogEntry } from '@/types/medication';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Pill, CalendarDays, Edit3, Trash2, Clock, AlertTriangle, Repeat, CheckCircle, XCircle, PackageSearch, ImageOff, StickyNote, CalendarClock, MinusCircle, BookOpen } from 'lucide-react'; // Added BookOpen
+import { Pill, CalendarDays, Edit3, Trash2, Clock, AlertTriangle, Repeat, CheckCircle, XCircle, PackageSearch, ImageOff, StickyNote, CalendarClock, MinusCircle, BookOpen } from 'lucide-react';
 import { format, isToday } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
-export interface SampleDrugInfo { // Exporting for use in page.tsx
+// Updated SampleDrugInfo structure
+export interface DosAndDontsItem {
+  category: string; // e.g., "How to Take", "Precautions", "When to Call Your Doctor"
+  advice: string[]; // Array of advice points for that category
+}
+
+export interface SampleDrugInfo {
   description: string;
   commonUses: string[];
   generalAdvice: string[];
+  importantInfo?: DosAndDontsItem[]; // New field for structured "Do's and Don'ts"
 }
+
 
 interface MedicationListItemProps {
   medication: Medication;
@@ -22,7 +30,7 @@ interface MedicationListItemProps {
   onDelete: (id: string) => void;
   onLogDose: (medicationId: string, status: MedicationLogEntry['status']) => void;
   onViewReminders: (medication: Medication) => void;
-  onViewDrugInfo: (medication: Medication) => void; // New prop
+  onViewDrugInfo: (medication: Medication) => void;
 }
 
 function formatSchedule(schedule?: Medication['schedule']): string {

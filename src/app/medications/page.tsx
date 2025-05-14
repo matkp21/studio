@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { PageWrapper } from '@/components/layout/page-wrapper';
 import { MedicationForm } from '@/components/medications/medication-form';
-import { MedicationListItem, type SampleDrugInfo } from '@/components/medications/medication-list-item'; // Import SampleDrugInfo
+import { MedicationListItem, type SampleDrugInfo, type DosAndDontsItem } from '@/components/medications/medication-list-item';
 import { DrugInteractionChecker } from '@/components/medications/drug-interaction-checker';
 import type { Medication, MedicationLogEntry, MedicationRefillInfo, MedicationSchedule } from '@/types/medication';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -107,16 +107,31 @@ const sampleApiDrugInfo: Record<string, SampleDrugInfo> = {
     description: "Aspirin is a nonsteroidal anti-inflammatory drug (NSAID). It was the first of this class of drugs to be discovered. It is used to reduce pain, fever, and inflammation.",
     commonUses: ["Pain relief (headaches, muscle aches, arthritis)", "Fever reduction", "Prevention of blood clots (low dose)"],
     generalAdvice: ["Take with food or milk to reduce stomach upset.", "Do not give to children or teenagers with flu-like symptoms (risk of Reye's syndrome).", "Consult your doctor if you have bleeding disorders or are taking anticoagulants."],
+    importantInfo: [
+      { category: "How to Take", advice: ["Take with a full glass of water unless your doctor tells you otherwise.", "If for daily preventive use, take it exactly as prescribed by your doctor."] },
+      { category: "Precautions", advice: ["Inform your doctor about any history of ulcers or kidney disease.", "Stop taking aspirin and tell your doctor if you have ringing in your ears or severe stomach pain."] },
+      { category: "When to Call Your Doctor", advice: ["If you experience easy bruising or bleeding, black or tarry stools, or persistent stomach upset."] }
+    ]
   },
   "metformin": {
     description: "Metformin is an oral medication used to treat type 2 diabetes. It helps control blood sugar levels by reducing glucose production by the liver and improving insulin sensitivity.",
     commonUses: ["Type 2 diabetes mellitus"],
     generalAdvice: ["Take with meals to reduce gastrointestinal side effects.", "Monitor kidney function regularly.", "Be aware of symptoms of lactic acidosis (rare but serious)."],
+    importantInfo: [
+      { category: "How to Take", advice: ["Swallow the tablet whole with a main meal.", "Do not crush or chew extended-release tablets."] },
+      { category: "Precautions", advice: ["Temporarily stop taking metformin before any surgery or medical procedure requiring contrast dye.", "Avoid excessive alcohol consumption."] },
+      { category: "When to Call Your Doctor", advice: ["If you develop symptoms of lactic acidosis like unusual muscle pain, trouble breathing, or severe weakness."] }
+    ]
   },
   "amoxicillin": {
     description: "Amoxicillin is an antibiotic in the penicillin group of drugs. It fights bacteria in your body.",
     commonUses: ["Bacterial infections (e.g., ear infections, pneumonia, bronchitis, urinary tract infections, skin infections)."],
     generalAdvice: ["Take the full course of medication as prescribed, even if you feel better.", "Inform your doctor of any allergies to penicillin or other antibiotics.", "May decrease the effectiveness of oral contraceptives."],
+    importantInfo: [
+      { category: "How to Take", advice: ["May be taken with or without food.", "If liquid form, shake well before measuring a dose."] },
+      { category: "Precautions", advice: ["Inform your doctor if you have a history of mononucleosis.", "This medication may cause diarrhea; contact your doctor if it's severe or watery."] },
+      { category: "When to Call Your Doctor", advice: ["If you experience signs of an allergic reaction (rash, hives, swelling, difficulty breathing)."] }
+    ]
   }
 };
 
@@ -303,7 +318,7 @@ export default function MedicationManagementPage() {
                 onDelete={handleDeleteMedication}
                 onLogDose={handleLogDose}
                 onViewReminders={handleViewReminders}
-                onViewDrugInfo={handleViewDrugInfo} // Pass new handler
+                onViewDrugInfo={handleViewDrugInfo}
               />
             ))}
           </div>
@@ -361,7 +376,6 @@ export default function MedicationManagementPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog for Viewing Drug Information */}
       <Dialog open={showDrugInfoDialog} onOpenChange={setShowDrugInfoDialog}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
@@ -380,7 +394,7 @@ export default function MedicationManagementPage() {
                 <p className="ml-2 text-muted-foreground">Fetching information...</p>
               </div>
             ) : fetchedDrugInfo ? (
-              <div className="space-y-3 text-sm">
+              <div className="space-y-4 text-sm">
                 <div>
                   <h4 className="font-semibold text-foreground">Description:</h4>
                   <p className="text-muted-foreground whitespace-pre-wrap">{fetchedDrugInfo.description}</p>
@@ -397,6 +411,23 @@ export default function MedicationManagementPage() {
                      {fetchedDrugInfo.generalAdvice.map((advice, i) => <li key={i}>{advice}</li>)}
                   </ul>
                 </div>
+
+                {fetchedDrugInfo.importantInfo && fetchedDrugInfo.importantInfo.length > 0 && (
+                  <div className="mt-3 pt-3 border-t">
+                    <h4 className="font-semibold text-foreground text-md mb-2">Important Information (Do's & Don'ts):</h4>
+                    <div className="space-y-2">
+                      {fetchedDrugInfo.importantInfo.map((infoCategory, index) => (
+                        <div key={index}>
+                          <h5 className="font-medium text-foreground/90">{infoCategory.category}:</h5>
+                          <ul className="list-disc list-inside ml-4 text-muted-foreground text-xs">
+                            {infoCategory.advice.map((point, pIndex) => <li key={pIndex}>{point}</li>)}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                  <Alert variant="default" className="mt-4 border-amber-500/50 bg-amber-500/10">
                     <Info className="h-5 w-5 text-amber-600" />
                     <AlertTitleComponent className="font-semibold text-amber-700 dark:text-amber-500">Disclaimer</AlertTitleComponent>
