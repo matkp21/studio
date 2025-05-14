@@ -18,7 +18,7 @@ import {
   MessageCircleHeart,
   ClipboardList,
   ScanEye,
-  Settings2,
+  Settings2, // Using Settings2 as the icon for settings page link
   LogOut,
   GraduationCap,
   BriefcaseMedical,
@@ -158,28 +158,28 @@ export function SidebarNav() {
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-             <Link href="/profile" passHref legacyBehavior>
+             <Link href="/settings" passHref legacyBehavior> {/* Changed from /profile to /settings */}
                 <SidebarMenuButton
                     asChild
-                    isActive={pathname.startsWith('/profile')}
-                    tooltip="Profile & Settings"
-                    aria-label="Open Profile and Settings"
+                    isActive={pathname.startsWith('/settings')} // Check for /settings path
+                    tooltip="Settings" // Updated tooltip
+                    aria-label="Open Settings" // Updated aria-label
                     className={cn(
                         "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
                         "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
-                        pathname.startsWith('/profile')
+                        pathname.startsWith('/settings') // Check for /settings path
                         ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
                         : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
                         "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
                     )}
                 >
                     <a>
-                        <Settings2 className={cn(
+                        <Settings2 className={cn( // Using Settings2 icon
                             "h-5 w-5 transition-transform duration-200 ease-in-out",
                             "group-hover:scale-110",
-                            pathname.startsWith('/profile') && "text-sidebar-active-foreground"
+                            pathname.startsWith('/settings') && "text-sidebar-active-foreground"
                         )} />
-                        <span>Profile & Settings</span>
+                        <span>Settings</span> {/* Updated label */}
                     </a>
                 </SidebarMenuButton>
              </Link>
