@@ -4,11 +4,17 @@
 import type { Medication, MedicationLogEntry } from '@/types/medication';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Pill, CalendarDays, Edit3, Trash2, Clock, AlertTriangle, Repeat, CheckCircle, XCircle, PackageSearch, ImageOff, StickyNote, CalendarClock, MinusCircle } from 'lucide-react';
+import { Pill, CalendarDays, Edit3, Trash2, Clock, AlertTriangle, Repeat, CheckCircle, XCircle, PackageSearch, ImageOff, StickyNote, CalendarClock, MinusCircle, BookOpen } from 'lucide-react'; // Added BookOpen
 import { format, isToday } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+
+export interface SampleDrugInfo { // Exporting for use in page.tsx
+  description: string;
+  commonUses: string[];
+  generalAdvice: string[];
+}
 
 interface MedicationListItemProps {
   medication: Medication;
@@ -16,6 +22,7 @@ interface MedicationListItemProps {
   onDelete: (id: string) => void;
   onLogDose: (medicationId: string, status: MedicationLogEntry['status']) => void;
   onViewReminders: (medication: Medication) => void;
+  onViewDrugInfo: (medication: Medication) => void; // New prop
 }
 
 function formatSchedule(schedule?: Medication['schedule']): string {
@@ -41,11 +48,9 @@ function formatSchedule(schedule?: Medication['schedule']): string {
   return scheduleString;
 }
 
-export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, onViewReminders }: MedicationListItemProps) {
+export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, onViewReminders, onViewDrugInfo }: MedicationListItemProps) {
   
-  // Show last 3 log entries
   const lastThreeLogs = medication.log?.slice(-3).reverse() || [];
-
 
   return (
     <Card className="shadow-md rounded-xl border-border/50 overflow-hidden bg-card/90 backdrop-blur-sm flex flex-col">
@@ -103,8 +108,6 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, on
             </div>
         )}
 
-
-        {/* Adherence Log Buttons */}
         <div className="mt-2 pt-2 border-t border-dashed">
           <p className="font-semibold text-xs text-muted-foreground mb-1">Log Today's Dose:</p>
           <div className="flex gap-1.5 mt-1.5">
@@ -119,7 +122,6 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, on
             </Button>
           </div>
         </div>
-         {/* Adherence Log History Display */}
         {lastThreeLogs.length > 0 && (
           <div className="mt-2 pt-2 border-t border-dashed">
             <p className="font-semibold text-xs text-muted-foreground mb-1">Recent Log:</p>
@@ -137,8 +139,6 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, on
           </div>
         )}
 
-
-        {/* Refill Info */}
         {medication.refillInfo && (
           <div className="mt-2 pt-2 border-t border-dashed">
             <p className="font-semibold text-xs text-muted-foreground mb-1 flex items-center gap-1"><PackageSearch className="h-3.5 w-3.5" />Refill Info:</p>
@@ -146,7 +146,6 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, on
               {medication.refillInfo.lastRefillDate && <p>Last Refilled: {format(new Date(medication.refillInfo.lastRefillDate), "PPP")}</p>}
               {medication.refillInfo.quantityDispensed && <p>Quantity: {medication.refillInfo.quantityDispensed}</p>}
               {medication.refillInfo.pharmacy && <p>Pharmacy: {medication.refillInfo.pharmacy}</p>}
-               {/* Conceptual: Display next refill if calculable */}
               {medication.refillInfo.daysSupply && medication.refillInfo.lastRefillDate && (
                 <p className="font-medium text-blue-600 dark:text-blue-400">
                   Estimated Next Refill: {format(new Date(new Date(medication.refillInfo.lastRefillDate).setDate(new Date(medication.refillInfo.lastRefillDate).getDate() + medication.refillInfo.daysSupply)), "PPP")}
@@ -157,15 +156,14 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, on
         )}
 
       </CardContent>
-      <CardFooter className="p-3 bg-muted/20 border-t flex justify-between items-center mt-auto">
-        <Button variant="outline" size="sm" onClick={() => onViewReminders(medication)} className="text-xs rounded-md">
+      <CardFooter className="p-3 bg-muted/20 border-t flex flex-col sm:flex-row justify-between items-center mt-auto gap-2">
+        <Button variant="outline" size="sm" onClick={() => onViewReminders(medication)} className="text-xs rounded-md w-full sm:w-auto">
           <CalendarClock className="mr-1.5 h-3.5 w-3.5" /> View Upcoming Doses
         </Button>
-        <Button variant="link" size="sm" onClick={() => alert("Interaction check feature coming soon!")} className="text-xs text-amber-600 dark:text-amber-500 hover:text-amber-700 p-0 h-auto">
-          <AlertTriangle className="mr-1 h-3.5 w-3.5" /> Check Interactions
+        <Button variant="outline" size="sm" onClick={() => onViewDrugInfo(medication)} className="text-xs rounded-md w-full sm:w-auto">
+          <BookOpen className="mr-1.5 h-3.5 w-3.5" /> View Drug Info
         </Button>
       </CardFooter>
     </Card>
   );
 }
-

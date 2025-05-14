@@ -4,12 +4,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { PageWrapper } from '@/components/layout/page-wrapper';
 import { MedicationForm } from '@/components/medications/medication-form';
-import { MedicationListItem } from '@/components/medications/medication-list-item';
-import { DrugInteractionChecker } from '@/components/medications/drug-interaction-checker'; // New import
+import { MedicationListItem, type SampleDrugInfo } from '@/components/medications/medication-list-item'; // Import SampleDrugInfo
+import { DrugInteractionChecker } from '@/components/medications/drug-interaction-checker';
 import type { Medication, MedicationLogEntry, MedicationRefillInfo, MedicationSchedule } from '@/types/medication';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, PillIcon, Info, Loader2, CalendarClock, AlertTriangle } from 'lucide-react'; // Added AlertTriangle
+import { PlusCircle, PillIcon, Info, Loader2, CalendarClock, AlertTriangle, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
@@ -20,11 +20,11 @@ import {
   DialogFooter,
   DialogClose
 } from "@/components/ui/dialog";
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle as AlertTitleComponent } from '@/components/ui/alert';
 import { MedicationManagementAnimation } from '@/components/medications/medication-management-animation';
 import { format, addHours, addDays, setHours, setMinutes, setSeconds, isFuture, parse, getDay, nextDay } from 'date-fns';
 import { daysOfWeek } from '@/types/medication';
-import { Card, CardHeader, CardTitle as CardTitleComponent, CardDescription as CardDescriptionComponent, CardContent } from '@/components/ui/card'; // Renamed for clarity
+import { Card, CardHeader, CardTitle as CardTitleComponent, CardDescription as CardDescriptionComponent, CardContent } from '@/components/ui/card';
 
 
 // Helper function to calculate upcoming conceptual doses
@@ -43,18 +43,14 @@ const getUpcomingDoses = (medication: Medication, count: number = 5): Date[] => 
   }
 
   if (type === "As needed (PRN)" || type === "Other (custom)") {
-    // Cannot predict for these types easily, could show custom instructions if available
     return [];
   }
   
   let startDate = now;
-  // For "Every X hours", might want to base off prescription time or a fixed daily start
   if (type === "Every X hours" && medication.prescriptionDate) {
       const prescriptionTime = new Date(medication.prescriptionDate);
-      // Start from the prescription time on the prescription date, or now if that's in the past
       let baseTime = setHours(setMinutes(setSeconds(new Date(medication.prescriptionDate), 0), prescriptionTime.getMinutes()), prescriptionTime.getHours());
       if (baseTime < now) {
-          // find the first relevant slot from now
           while(baseTime < now) {
             baseTime = addHours(baseTime, intervalHours || 24);
           }
@@ -62,8 +58,7 @@ const getUpcomingDoses = (medication: Medication, count: number = 5): Date[] => 
       startDate = baseTime;
   }
 
-
-  for (let i = 0; i < count * (type === "Every X hours" ? 1 : (scheduledDays?.length || 1) * (times?.length || 1) + 7); i++) { // Iterate more for safety
+  for (let i = 0; i < count * (type === "Every X hours" ? 1 : (scheduledDays?.length || 1) * (times?.length || 1) + 7); i++) {
     if (upcoming.length >= count) break;
 
     let potentialDoseDate: Date | null = null;
@@ -76,23 +71,22 @@ const getUpcomingDoses = (medication: Medication, count: number = 5): Date[] => 
             let candidateDate = setSeconds(setMinutes(setHours(addDays(now, Math.floor(i / times.length)), hour), minute), 0);
             
             if (type === "Specific days of week" && scheduledDays && scheduledDays.length > 0) {
-                const dayIndex = getDay(candidateDate); // Sunday is 0, Monday is 1
                 const dayMap = {"Sun":0, "Mon":1, "Tue":2, "Wed":3, "Thu":4, "Fri":5, "Sat":6};
                 
                 let iterationDay = candidateDate;
-                for(let k=0; k<7; k++) { // Check next 7 days including today
+                for(let k=0; k<7; k++) {
                     const currentDayJsIndex = getDay(iterationDay);
                     if (scheduledDays.some(d => dayMap[d] === currentDayJsIndex)) {
                         let finalCandidate = setSeconds(setMinutes(setHours(new Date(iterationDay),hour),minute),0);
                         if (isFuture(finalCandidate) && !upcoming.find(d => d.getTime() === finalCandidate.getTime())) {
                            potentialDoseDate = finalCandidate;
-                           break; // found a date for this time slot on a scheduled day
+                           break; 
                         }
                     }
-                    iterationDay = addDays(iterationDay, 1); // Move to next day
+                    iterationDay = addDays(iterationDay, 1); 
                 }
-                 if(potentialDoseDate) break; // break outer loop for times if one is found
-            } else { // For "Once daily", "Twice daily" etc.
+                 if(potentialDoseDate) break; 
+            } else { 
                  potentialDoseDate = candidateDate;
             }
              if (potentialDoseDate && isFuture(potentialDoseDate) && !upcoming.find(d => d.getTime() === potentialDoseDate.getTime())) {
@@ -101,10 +95,29 @@ const getUpcomingDoses = (medication: Medication, count: number = 5): Date[] => 
             }
         }
     }
-    if (type !== "Every X hours" && type !== "Specific days of week" && i > 7 && upcoming.length === 0) break; // Safety for daily types if no future found in a week
+    if (type !== "Every X hours" && type !== "Specific days of week" && i > 7 && upcoming.length === 0) break;
   }
   
   return upcoming.sort((a,b) => a.getTime() - b.getTime()).slice(0, count);
+};
+
+// Sample drug info database for API simulation
+const sampleApiDrugInfo: Record<string, SampleDrugInfo> = {
+  "aspirin": {
+    description: "Aspirin is a nonsteroidal anti-inflammatory drug (NSAID). It was the first of this class of drugs to be discovered. It is used to reduce pain, fever, and inflammation.",
+    commonUses: ["Pain relief (headaches, muscle aches, arthritis)", "Fever reduction", "Prevention of blood clots (low dose)"],
+    generalAdvice: ["Take with food or milk to reduce stomach upset.", "Do not give to children or teenagers with flu-like symptoms (risk of Reye's syndrome).", "Consult your doctor if you have bleeding disorders or are taking anticoagulants."],
+  },
+  "metformin": {
+    description: "Metformin is an oral medication used to treat type 2 diabetes. It helps control blood sugar levels by reducing glucose production by the liver and improving insulin sensitivity.",
+    commonUses: ["Type 2 diabetes mellitus"],
+    generalAdvice: ["Take with meals to reduce gastrointestinal side effects.", "Monitor kidney function regularly.", "Be aware of symptoms of lactic acidosis (rare but serious)."],
+  },
+  "amoxicillin": {
+    description: "Amoxicillin is an antibiotic in the penicillin group of drugs. It fights bacteria in your body.",
+    commonUses: ["Bacterial infections (e.g., ear infections, pneumonia, bronchitis, urinary tract infections, skin infections)."],
+    generalAdvice: ["Take the full course of medication as prescribed, even if you feel better.", "Inform your doctor of any allergies to penicillin or other antibiotics.", "May decrease the effectiveness of oral contraceptives."],
+  }
 };
 
 
@@ -119,6 +132,11 @@ export default function MedicationManagementPage() {
   const [showRemindersDialog, setShowRemindersDialog] = useState(false);
   const [selectedMedicationForReminders, setSelectedMedicationForReminders] = useState<Medication | null>(null);
 
+  const [showDrugInfoDialog, setShowDrugInfoDialog] = useState(false);
+  const [selectedMedicationForInfo, setSelectedMedicationForInfo] = useState<Medication | null>(null);
+  const [drugInfoLoading, setDrugInfoLoading] = useState(false);
+  const [fetchedDrugInfo, setFetchedDrugInfo] = useState<SampleDrugInfo | null>(null);
+
   const upcomingDoses = useMemo(() => {
     if (selectedMedicationForReminders) {
       return getUpcomingDoses(selectedMedicationForReminders);
@@ -126,7 +144,6 @@ export default function MedicationManagementPage() {
     return [];
   }, [selectedMedicationForReminders]);
 
-  // Load medications from localStorage on mount
   useEffect(() => {
     setIsClient(true);
     const storedMeds = localStorage.getItem('medications');
@@ -159,7 +176,6 @@ export default function MedicationManagementPage() {
     }
   }, []);
 
-  // Save medications to localStorage whenever they change
   useEffect(() => {
     if (isClient && (medications.length > 0 || localStorage.getItem('medications'))) {
       localStorage.setItem('medications', JSON.stringify(medications));
@@ -173,14 +189,13 @@ export default function MedicationManagementPage() {
         const updatedMeds = [...prevMeds];
         updatedMeds[existingIndex] = {
           ...medication,
-          log: updatedMeds[existingIndex].log || [], // Preserve existing log
-          refillInfo: medication.refillInfo || updatedMeds[existingIndex].refillInfo, // Preserve existing refill info
+          log: updatedMeds[existingIndex].log || [], 
+          refillInfo: medication.refillInfo || updatedMeds[existingIndex].refillInfo, 
           photoUrl: medication.photoUrl,
           personalNotes: medication.personalNotes,
         };
         return updatedMeds;
       } else {
-        // Ensure log is initialized for new medications
         return [{ ...medication, log: medication.log || [], photoUrl: medication.photoUrl, personalNotes: medication.personalNotes }, ...prevMeds];
       }
     });
@@ -205,7 +220,7 @@ export default function MedicationManagementPage() {
           const newLogEntry: MedicationLogEntry = { date: new Date(), status };
           return {
             ...med,
-            log: [...(med.log || []), newLogEntry], // Ensure log array exists
+            log: [...(med.log || []), newLogEntry], 
           };
         }
         return med;
@@ -223,6 +238,22 @@ export default function MedicationManagementPage() {
     setSelectedMedicationForReminders(medication);
     setShowRemindersDialog(true);
   };
+
+  const handleViewDrugInfo = (medication: Medication) => {
+    setSelectedMedicationForInfo(medication);
+    setDrugInfoLoading(true);
+    setFetchedDrugInfo(null);
+    setShowDrugInfoDialog(true);
+
+    // Simulate API call
+    setTimeout(() => {
+      const drugKey = medication.name.toLowerCase().split(" ")[0]; // Simple key for demo
+      const info = sampleApiDrugInfo[drugKey] || null;
+      setFetchedDrugInfo(info);
+      setDrugInfoLoading(false);
+    }, 1500);
+  };
+
 
   if (!isClient) {
     return (
@@ -249,7 +280,7 @@ export default function MedicationManagementPage() {
 
       <Alert variant="default" className="mb-6 border-amber-500/50 bg-amber-500/10">
         <Info className="h-5 w-5 text-amber-600" />
-        <AlertTitle className="font-semibold text-amber-700 dark:text-amber-500">Important Note</AlertTitle>
+        <AlertTitleComponent className="font-semibold text-amber-700 dark:text-amber-500">Important Note</AlertTitleComponent>
         <AlertDescription className="text-amber-600/90 dark:text-amber-500/90 text-xs">
           This tool is for personal medication tracking and adherence support. It is not a substitute for professional medical advice. Always consult your doctor or pharmacist regarding your medications.
         </AlertDescription>
@@ -262,7 +293,7 @@ export default function MedicationManagementPage() {
           <p className="text-sm">Click "Add Medication" to get started.</p>
         </div>
       ) : (
-        <ScrollArea className="h-[calc(100vh-var(--header-height,4rem)-280px)] pr-3 -mr-3"> {/* Adjusted height */}
+        <ScrollArea className="h-[calc(100vh-var(--header-height,4rem)-280px)] pr-3 -mr-3">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {medications.map(med => (
               <MedicationListItem
@@ -272,6 +303,7 @@ export default function MedicationManagementPage() {
                 onDelete={handleDeleteMedication}
                 onLogDose={handleLogDose}
                 onViewReminders={handleViewReminders}
+                onViewDrugInfo={handleViewDrugInfo} // Pass new handler
               />
             ))}
           </div>
@@ -283,7 +315,6 @@ export default function MedicationManagementPage() {
         if (!open) setEditingMedication(null);
       }}>
         <DialogContent className="sm:max-w-2xl p-0">
-          {/* Header is inside MedicationForm */}
           <ScrollArea className="max-h-[80vh]">
             <div className="p-6">
               <MedicationForm
@@ -295,7 +326,6 @@ export default function MedicationManagementPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog for Viewing Conceptual Reminders */}
       <Dialog open={showRemindersDialog} onOpenChange={setShowRemindersDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -331,7 +361,65 @@ export default function MedicationManagementPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Drug Interaction Checker Section */}
+      {/* Dialog for Viewing Drug Information */}
+      <Dialog open={showDrugInfoDialog} onOpenChange={setShowDrugInfoDialog}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-primary" />
+              Drug Information: {selectedMedicationForInfo?.name}
+            </DialogTitle>
+            <DialogDescription>
+              General information about the medication. This is for illustrative purposes only.
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[60vh] mt-4 pr-2">
+            {drugInfoLoading ? (
+              <div className="flex items-center justify-center py-10">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="ml-2 text-muted-foreground">Fetching information...</p>
+              </div>
+            ) : fetchedDrugInfo ? (
+              <div className="space-y-3 text-sm">
+                <div>
+                  <h4 className="font-semibold text-foreground">Description:</h4>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{fetchedDrugInfo.description}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-foreground">Common Uses:</h4>
+                  <ul className="list-disc list-inside ml-4 text-muted-foreground">
+                    {fetchedDrugInfo.commonUses.map((use, i) => <li key={i}>{use}</li>)}
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-foreground">General Advice:</h4>
+                  <ul className="list-disc list-inside ml-4 text-muted-foreground">
+                     {fetchedDrugInfo.generalAdvice.map((advice, i) => <li key={i}>{advice}</li>)}
+                  </ul>
+                </div>
+                 <Alert variant="default" className="mt-4 border-amber-500/50 bg-amber-500/10">
+                    <Info className="h-5 w-5 text-amber-600" />
+                    <AlertTitleComponent className="font-semibold text-amber-700 dark:text-amber-500">Disclaimer</AlertTitleComponent>
+                    <AlertDescription className="text-amber-600/90 dark:text-amber-500/90 text-xs">
+                        The information provided is for general knowledge and illustrative purposes only, based on a sample database. It does not substitute professional medical advice. Always consult your doctor or pharmacist for any health concerns or before making decisions about your treatment.
+                    </AlertDescription>
+                </Alert>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-center py-10">
+                No detailed information found in our sample database for "{selectedMedicationForInfo?.name}".
+              </p>
+            )}
+          </ScrollArea>
+          <DialogFooter className="mt-6">
+            <DialogClose asChild>
+              <Button type="button" variant="outline" className="rounded-md">Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
       <div className="mt-12">
         <Card className="shadow-lg rounded-xl border-border/50">
             <CardHeader>
