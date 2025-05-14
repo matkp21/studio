@@ -16,20 +16,22 @@ import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Home,
-  MessageCircleHeart,
-  ClipboardList,
-  ScanEye,
-  Settings2,
+  MessageCircleHeart, // Updated icon
+  ClipboardList, // Keep or change based on context
+  ScanEye,       // Changed from View
+  Settings2,     // Changed from Settings
   LogOut,
   GraduationCap,
   BriefcaseMedical,
   Info,
-  HeartPulse,
+  HeartPulse,    // Fallback for avatar
+  PillIcon, // For Medication Management
 } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
+  TooltipProvider, // Ensure TooltipProvider is imported for external tooltips
 } from "@/components/ui/tooltip";
 import { cn } from '@/lib/utils';
 import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
@@ -38,13 +40,14 @@ import { useToast } from '@/hooks/use-toast';
 const baseNavItems = [
   { href: '/', label: 'Home', icon: Home, ariaLabel: 'Go to Home page' },
   { href: '/chat', label: 'Chat', icon: MessageCircleHeart, ariaLabel: 'Open Chat interface' },
+  { href: '/medications', label: 'Medications', icon: PillIcon, ariaLabel: 'Manage Medications' }, // Added Medications
   { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye, ariaLabel: 'Open AR Viewer' },
 ];
 
 const patientManagementNavItem = {
   href: '/patient-management',
   label: 'Patient Management',
-  icon: ClipboardList,
+  icon: ClipboardList, // Consider ClipboardCheck, Users2, etc.
   ariaLabel: 'Open Patient Management'
 };
 
@@ -74,6 +77,8 @@ export function SidebarNav() {
   if (userRole === 'medico') {
     navItems.push(medicoDashboardNavItem);
     if (!navItems.find(item => item.href === '/patient-management')) {
+      // Medico might not need full patient management, adjust if necessary
+      // For now, let's assume they might access it for learning or simulated cases
       navItems.push(patientManagementNavItem);
     }
   } else if (userRole === 'pro') {
@@ -82,6 +87,7 @@ export function SidebarNav() {
       navItems.push(patientManagementNavItem);
     }
   }
+  // For 'diagnosis' role, baseNavItems might be sufficient unless specific patient tools are added outside 'Medications'
 
   const handleLogout = () => {
     toast({
@@ -92,7 +98,7 @@ export function SidebarNav() {
 
 
   return (
-    <>
+    <TooltipProvider>
       <SidebarHeader className="p-2 pt-3">
         <Logo />
       </SidebarHeader>
@@ -125,7 +131,7 @@ export function SidebarNav() {
                           <item.icon className={cn(
                               "h-5 w-5 transition-transform duration-200 ease-in-out",
                               "group-hover:scale-110",
-                              isActive && "text-sidebar-active-foreground"
+                              isActive && "text-sidebar-active-foreground" // Ensure active icon color matches text
                              )}
                            />
                           <span>{item.label}</span>
@@ -133,13 +139,15 @@ export function SidebarNav() {
                       </SidebarMenuButton>
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent
-                    side="right"
-                    align="center"
-                    hidden={sidebarState !== "collapsed" || isMobile}
-                  >
-                    {item.label}
-                  </TooltipContent>
+                  {(sidebarState === "collapsed" || isMobile) && (
+                    <TooltipContent
+                      side="right"
+                      align="center"
+                      className="bg-sidebar text-sidebar-foreground border-sidebar-border shadow-md"
+                    >
+                      {item.label}
+                    </TooltipContent>
+                  )}
                 </Tooltip>
               </SidebarMenuItem>
             );
@@ -176,19 +184,20 @@ export function SidebarNav() {
                   </SidebarMenuButton>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                align="center"
-                hidden={sidebarState !== "collapsed" || isMobile}
-              >
-                Feedback
-              </TooltipContent>
+              {(sidebarState === "collapsed" || isMobile) && (
+                  <TooltipContent
+                    side="right"
+                    align="center"
+                    className="bg-sidebar text-sidebar-foreground border-sidebar-border shadow-md"
+                  >
+                    Feedback
+                  </TooltipContent>
+              )}
             </Tooltip>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <Tooltip>
               <TooltipTrigger asChild>
-                 {/* Ensured Link has only SidebarMenuButton as direct child */}
                 <Link href="/settings" passHref legacyBehavior>
                   <SidebarMenuButton
                       asChild
@@ -214,13 +223,15 @@ export function SidebarNav() {
                   </SidebarMenuButton>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                align="center"
-                hidden={sidebarState !== "collapsed" || isMobile}
-              >
-                Settings
-              </TooltipContent>
+              {(sidebarState === "collapsed" || isMobile) && (
+                  <TooltipContent
+                    side="right"
+                    align="center"
+                    className="bg-sidebar text-sidebar-foreground border-sidebar-border shadow-md"
+                  >
+                    Settings
+                  </TooltipContent>
+              )}
             </Tooltip>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -240,13 +251,15 @@ export function SidebarNav() {
                   <span>Logout</span>
                 </SidebarMenuButton>
               </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                align="center"
-                hidden={sidebarState !== "collapsed" || isMobile}
-              >
-                Logout
-              </TooltipContent>
+              {(sidebarState === "collapsed" || isMobile) && (
+                <TooltipContent
+                    side="right"
+                    align="center"
+                    className="bg-sidebar text-sidebar-foreground border-sidebar-border shadow-md"
+                >
+                    Logout
+                </TooltipContent>
+              )}
             </Tooltip>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -257,14 +270,16 @@ export function SidebarNav() {
               <HeartPulse className="h-5 w-5" />
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col overflow-hidden">
-            <span className="text-sm font-medium text-sidebar-foreground truncate">Dr. Robot</span>
-            <span className="text-xs text-sidebar-foreground/70 truncate">
-              {userRole === 'pro' ? 'Professional' : userRole === 'medico' ? 'Medical Student' : userRole === 'diagnosis' ? 'Patient/User' : 'Clinician'}
-            </span>
-          </div>
+          {(sidebarState === "expanded" && !isMobile) && (
+            <div className="flex flex-col overflow-hidden">
+                <span className="text-sm font-medium text-sidebar-foreground truncate">Dr. Robot</span>
+                <span className="text-xs text-sidebar-foreground/70 truncate">
+                {userRole === 'pro' ? 'Professional' : userRole === 'medico' ? 'Medical Student' : userRole === 'diagnosis' ? 'Patient/User' : 'Clinician'}
+                </span>
+            </div>
+          )}
         </div>
       </SidebarFooter>
-    </>
+    </TooltipProvider>
   );
 }
