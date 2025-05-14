@@ -1,14 +1,14 @@
 // src/app/medications/page.tsx
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { PageWrapper } from '@/components/layout/page-wrapper';
 import { MedicationForm } from '@/components/medications/medication-form';
 import { MedicationListItem } from '@/components/medications/medication-list-item';
-import type { Medication, MedicationLogEntry, MedicationRefillInfo } from '@/types/medication';
+import type { Medication, MedicationLogEntry, MedicationRefillInfo, MedicationSchedule } from '@/types/medication';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, PillIcon, Info, Loader2 } from 'lucide-react';
+import { PlusCircle, PillIcon, Info, Loader2, CalendarClock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
@@ -21,6 +21,90 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { MedicationManagementAnimation } from '@/components/medications/medication-management-animation';
+import { format, addHours, addDays, setHours, setMinutes, setSeconds, isFuture, parse, getDay, nextDay } from 'date-fns';
+import { daysOfWeek } from '@/types/medication';
+
+
+// Helper function to calculate upcoming conceptual doses
+const getUpcomingDoses = (medication: Medication, count: number = 5): Date[] => {
+  if (!medication.schedule) return [];
+
+  const upcoming: Date[] = [];
+  const now = new Date();
+  let { type, times, intervalHours, daysOfWeek: scheduledDays, specificDate, customInstructions } = medication.schedule;
+
+  if (type === "Specific date (one-time)") {
+    if (specificDate && isFuture(new Date(specificDate))) {
+      upcoming.push(new Date(specificDate));
+    }
+    return upcoming;
+  }
+
+  if (type === "As needed (PRN)" || type === "Other (custom)") {
+    // Cannot predict for these types easily, could show custom instructions if available
+    return [];
+  }
+  
+  let startDate = now;
+  // For "Every X hours", might want to base off prescription time or a fixed daily start
+  if (type === "Every X hours" && medication.prescriptionDate) {
+      const prescriptionTime = new Date(medication.prescriptionDate);
+      // Start from the prescription time on the prescription date, or now if that's in the past
+      let baseTime = setHours(setMinutes(setSeconds(new Date(medication.prescriptionDate), 0), prescriptionTime.getMinutes()), prescriptionTime.getHours());
+      if (baseTime < now) {
+          // find the first relevant slot from now
+          while(baseTime < now) {
+            baseTime = addHours(baseTime, intervalHours || 24);
+          }
+      }
+      startDate = baseTime;
+  }
+
+
+  for (let i = 0; i < count * (type === "Every X hours" ? 1 : (scheduledDays?.length || 1) * (times?.length || 1) + 7); i++) { // Iterate more for safety
+    if (upcoming.length >= count) break;
+
+    let potentialDoseDate: Date | null = null;
+
+    if (type === "Every X hours" && intervalHours) {
+        potentialDoseDate = addHours(startDate, i * intervalHours);
+    } else if (times && times.length > 0) {
+        for (const timeStr of times) {
+            const [hour, minute] = timeStr.split(':').map(Number);
+            let candidateDate = setSeconds(setMinutes(setHours(addDays(now, Math.floor(i / times.length)), hour), minute), 0);
+            
+            if (type === "Specific days of week" && scheduledDays && scheduledDays.length > 0) {
+                const dayIndex = getDay(candidateDate); // Sunday is 0, Monday is 1
+                const dayMap = {"Sun":0, "Mon":1, "Tue":2, "Wed":3, "Thu":4, "Fri":5, "Sat":6};
+                
+                let iterationDay = candidateDate;
+                for(let k=0; k<7; k++) { // Check next 7 days including today
+                    const currentDayJsIndex = getDay(iterationDay);
+                    if (scheduledDays.some(d => dayMap[d] === currentDayJsIndex)) {
+                        let finalCandidate = setSeconds(setMinutes(setHours(new Date(iterationDay),hour),minute),0);
+                        if (isFuture(finalCandidate) && !upcoming.find(d => d.getTime() === finalCandidate.getTime())) {
+                           potentialDoseDate = finalCandidate;
+                           break; // found a date for this time slot on a scheduled day
+                        }
+                    }
+                    iterationDay = addDays(iterationDay, 1); // Move to next day
+                }
+                 if(potentialDoseDate) break; // break outer loop for times if one is found
+            } else { // For "Once daily", "Twice daily" etc.
+                 potentialDoseDate = candidateDate;
+            }
+             if (potentialDoseDate && isFuture(potentialDoseDate) && !upcoming.find(d => d.getTime() === potentialDoseDate.getTime())) {
+                upcoming.push(potentialDoseDate);
+                if (upcoming.length >= count) break;
+            }
+        }
+    }
+    if (type !== "Every X hours" && type !== "Specific days of week" && i > 7 && upcoming.length === 0) break; // Safety for daily types if no future found in a week
+  }
+  
+  return upcoming.sort((a,b) => a.getTime() - b.getTime()).slice(0, count);
+};
+
 
 export default function MedicationManagementPage() {
   const [medications, setMedications] = useState<Medication[]>([]);
@@ -29,6 +113,16 @@ export default function MedicationManagementPage() {
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
   const [showAnimation, setShowAnimation] = useState(true);
+
+  const [showRemindersDialog, setShowRemindersDialog] = useState(false);
+  const [selectedMedicationForReminders, setSelectedMedicationForReminders] = useState<Medication | null>(null);
+
+  const upcomingDoses = useMemo(() => {
+    if (selectedMedicationForReminders) {
+      return getUpcomingDoses(selectedMedicationForReminders);
+    }
+    return [];
+  }, [selectedMedicationForReminders]);
 
   // Load medications from localStorage on mount
   useEffect(() => {
@@ -39,7 +133,7 @@ export default function MedicationManagementPage() {
         const parsedMeds = JSON.parse(storedMeds) as Medication[];
         const medsWithDates = parsedMeds.map(med => ({
           ...med,
-          prescriptionDate: new Date(med.prescriptionDate), // Ensure this is a Date object
+          prescriptionDate: new Date(med.prescriptionDate),
           schedule: med.schedule ? {
             ...med.schedule,
             specificDate: med.schedule.specificDate ? new Date(med.schedule.specificDate) : undefined,
@@ -52,7 +146,8 @@ export default function MedicationManagementPage() {
             ...med.refillInfo,
             lastRefillDate: med.refillInfo.lastRefillDate ? new Date(med.refillInfo.lastRefillDate) : undefined,
           } as MedicationRefillInfo : undefined,
-          // photoUrl and personalNotes are strings, so direct mapping is fine
+          photoUrl: med.photoUrl || "",
+          personalNotes: med.personalNotes || "",
         }));
         setMedications(medsWithDates);
       } catch (e) {
@@ -76,13 +171,14 @@ export default function MedicationManagementPage() {
         const updatedMeds = [...prevMeds];
         updatedMeds[existingIndex] = {
           ...medication,
-          log: updatedMeds[existingIndex].log || [],
-          refillInfo: medication.refillInfo || updatedMeds[existingIndex].refillInfo,
-          // photoUrl and personalNotes are already part of 'medication' from the form
+          log: updatedMeds[existingIndex].log || [], // Preserve existing log
+          refillInfo: medication.refillInfo || updatedMeds[existingIndex].refillInfo, // Preserve existing refill info
+          photoUrl: medication.photoUrl,
+          personalNotes: medication.personalNotes,
         };
         return updatedMeds;
       } else {
-        return [{ ...medication, log: [], refillInfo: medication.refillInfo }, ...prevMeds];
+        return [{ ...medication, log: [], photoUrl: medication.photoUrl, personalNotes: medication.personalNotes }, ...prevMeds];
       }
     });
     setShowFormModal(false);
@@ -119,6 +215,11 @@ export default function MedicationManagementPage() {
     setEditingMedication(null);
     setShowFormModal(true);
   }
+
+  const handleViewReminders = (medication: Medication) => {
+    setSelectedMedicationForReminders(medication);
+    setShowRemindersDialog(true);
+  };
 
   if (!isClient) {
     return (
@@ -167,6 +268,7 @@ export default function MedicationManagementPage() {
                 onEdit={handleEditMedication}
                 onDelete={handleDeleteMedication}
                 onLogDose={handleLogDose}
+                onViewReminders={handleViewReminders}
               />
             ))}
           </div>
@@ -178,17 +280,51 @@ export default function MedicationManagementPage() {
         if (!open) setEditingMedication(null);
       }}>
         <DialogContent className="sm:max-w-2xl p-0">
-          <DialogHeader className="p-6 pb-0">
-            {/* Title is inside MedicationForm now */}
-          </DialogHeader>
+          {/* Header is inside MedicationForm */}
           <ScrollArea className="max-h-[80vh]">
-            <div className="p-6 pt-0">
+            <div className="p-6">
               <MedicationForm
                 onAddMedication={handleAddOrUpdateMedication}
                 existingMedication={editingMedication}
               />
             </div>
           </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Viewing Conceptual Reminders */}
+      <Dialog open={showRemindersDialog} onOpenChange={setShowRemindersDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CalendarClock className="h-5 w-5 text-primary" />
+              Upcoming Doses for {selectedMedicationForReminders?.name}
+            </DialogTitle>
+            <DialogDescription>
+              This shows conceptual upcoming scheduled times. Actual reminders need to be set up with your device.
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-60 mt-4">
+            {upcomingDoses.length > 0 ? (
+              <ul className="space-y-2 text-sm">
+                {upcomingDoses.map((doseDate, index) => (
+                  <li key={index} className="p-2 bg-muted/50 rounded-md border">
+                    {format(doseDate, "PPPp")} ({format(doseDate, "EEEE")})
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                No upcoming scheduled doses calculable for this medication, or schedule type not yet supported for conceptual view.
+                 (e.g. "As Needed" or complex "Other" schedules).
+              </p>
+            )}
+          </ScrollArea>
+          <DialogFooter className="mt-4">
+            <DialogClose asChild>
+              <Button type="button" variant="outline" className="rounded-md">Close</Button>
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

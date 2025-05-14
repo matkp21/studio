@@ -4,17 +4,18 @@
 import type { Medication, MedicationLogEntry } from '@/types/medication';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Pill, CalendarDays, Edit3, Trash2, Clock, AlertTriangle, Repeat, CheckCircle, XCircle, PackageSearch, ImageOff, StickyNote } from 'lucide-react'; // Added ImageOff, StickyNote
+import { Pill, CalendarDays, Edit3, Trash2, Clock, AlertTriangle, Repeat, CheckCircle, XCircle, PackageSearch, ImageOff, StickyNote, CalendarClock, MinusCircle } from 'lucide-react';
 import { format, isToday } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import Image from 'next/image'; // For displaying medication image
+import Image from 'next/image';
 
 interface MedicationListItemProps {
   medication: Medication;
   onEdit: (medication: Medication) => void;
   onDelete: (id: string) => void;
   onLogDose: (medicationId: string, status: MedicationLogEntry['status']) => void;
+  onViewReminders: (medication: Medication) => void;
 }
 
 function formatSchedule(schedule?: Medication['schedule']): string {
@@ -40,9 +41,12 @@ function formatSchedule(schedule?: Medication['schedule']): string {
   return scheduleString;
 }
 
-export function MedicationListItem({ medication, onEdit, onDelete, onLogDose }: MedicationListItemProps) {
+export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, onViewReminders }: MedicationListItemProps) {
   const todayLog = medication.log?.find(entry => isToday(new Date(entry.date)));
-  const lastLog = medication.log && medication.log.length > 0 ? medication.log[medication.log.length - 1] : null;
+  
+  // Show last 3 log entries
+  const lastThreeLogs = medication.log?.slice(-3).reverse() || [];
+
 
   return (
     <Card className="shadow-md rounded-xl border-border/50 overflow-hidden bg-card/90 backdrop-blur-sm flex flex-col">
@@ -101,19 +105,9 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose }: 
         )}
 
 
-        {/* Adherence Log */}
+        {/* Adherence Log Buttons */}
         <div className="mt-2 pt-2 border-t border-dashed">
-          <p className="font-semibold text-xs text-muted-foreground mb-1">Adherence (Today):</p>
-          {todayLog ? (
-            <Badge variant={todayLog.status === 'taken' ? 'default' : todayLog.status === 'skipped' ? 'destructive' : 'secondary'} className="capitalize">
-              {todayLog.status === 'taken' && <CheckCircle className="mr-1 h-3 w-3" />}
-              {todayLog.status === 'skipped' && <XCircle className="mr-1 h-3 w-3" />}
-              {todayLog.status === 'snoozed' && <Clock className="mr-1 h-3 w-3" />}
-              {todayLog.status}
-            </Badge>
-          ) : (
-            <Badge variant="outline">Not Logged Today</Badge>
-          )}
+          <p className="font-semibold text-xs text-muted-foreground mb-1">Log Today's Dose:</p>
           <div className="flex gap-1.5 mt-1.5">
             <Button size="xs" variant="outline" onClick={() => onLogDose(medication.id, 'taken')} className="text-green-600 border-green-500 hover:bg-green-500/10">
               <CheckCircle className="mr-1 h-3.5 w-3.5" /> Taken
@@ -126,6 +120,24 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose }: 
             </Button>
           </div>
         </div>
+         {/* Adherence Log History Display */}
+        {lastThreeLogs.length > 0 && (
+          <div className="mt-2 pt-2 border-t border-dashed">
+            <p className="font-semibold text-xs text-muted-foreground mb-1">Recent Log:</p>
+            <ul className="space-y-1 text-xs">
+              {lastThreeLogs.map((log, index) => (
+                <li key={index} className="flex items-center gap-1.5 p-1 bg-muted/40 rounded-sm">
+                  {log.status === 'taken' && <CheckCircle className="h-3.5 w-3.5 text-green-600" />}
+                  {log.status === 'skipped' && <XCircle className="h-3.5 w-3.5 text-red-600" />}
+                  {log.status === 'snoozed' && <Clock className="h-3.5 w-3.5 text-amber-600" />}
+                  <span className="capitalize">{log.status}</span>
+                  <span className="text-muted-foreground/80">- {format(new Date(log.date), "MMM d, HH:mm")}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
 
         {/* Refill Info */}
         {medication.refillInfo && (
@@ -141,8 +153,8 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose }: 
 
       </CardContent>
       <CardFooter className="p-3 bg-muted/20 border-t flex justify-between items-center mt-auto">
-        <Button variant="outline" size="sm" onClick={() => alert("Reminder functionality coming soon!")} className="text-xs rounded-md">
-          <Clock className="mr-1.5 h-3.5 w-3.5" /> Set/View Reminders
+        <Button variant="outline" size="sm" onClick={() => onViewReminders(medication)} className="text-xs rounded-md">
+          <CalendarClock className="mr-1.5 h-3.5 w-3.5" /> View Upcoming Doses
         </Button>
         <Button variant="link" size="sm" onClick={() => alert("Interaction check feature coming soon!")} className="text-xs text-amber-600 dark:text-amber-500 hover:text-amber-700 p-0 h-auto">
           <AlertTriangle className="mr-1 h-3.5 w-3.5" /> Check Interactions
