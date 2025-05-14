@@ -8,7 +8,7 @@ import { MedicationListItem } from '@/components/medications/medication-list-ite
 import type { Medication } from '@/types/medication';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, PillIcon, Info } from 'lucide-react';
+import { PlusCircle, PillIcon, Info, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
@@ -20,24 +20,30 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
+import { MedicationManagementAnimation } from '@/components/medications/medication-management-animation'; // New Import
 
 export default function MedicationManagementPage() {
   const [medications, setMedications] = useState<Medication[]>([]);
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingMedication, setEditingMedication] = useState<Medication | null>(null);
   const { toast } = useToast();
+  const [isClient, setIsClient] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(true); // For the new animation
 
   // Load medications from localStorage on mount
   useEffect(() => {
+    setIsClient(true);
     const storedMeds = localStorage.getItem('medications');
     if (storedMeds) {
       try {
         const parsedMeds = JSON.parse(storedMeds) as Medication[];
-        // Ensure dates are correctly parsed back into Date objects
         const medsWithDates = parsedMeds.map(med => ({
           ...med,
           prescriptionDate: new Date(med.prescriptionDate),
+          schedule: med.schedule ? {
+            ...med.schedule,
+            specificDate: med.schedule.specificDate ? new Date(med.schedule.specificDate) : undefined,
+          } : undefined,
           log: med.log?.map(l => ({ ...l, date: new Date(l.date) })),
           refillInfo: med.refillInfo ? {
             ...med.refillInfo,
@@ -47,28 +53,26 @@ export default function MedicationManagementPage() {
         setMedications(medsWithDates);
       } catch (e) {
         console.error("Failed to parse medications from localStorage", e);
-        localStorage.removeItem('medications'); // Clear corrupted data
+        localStorage.removeItem('medications');
       }
     }
   }, []);
 
   // Save medications to localStorage whenever they change
   useEffect(() => {
-    if (medications.length > 0 || localStorage.getItem('medications')) { // Only save if there's something to save or clear
-        localStorage.setItem('medications', JSON.stringify(medications));
+    if (isClient && (medications.length > 0 || localStorage.getItem('medications'))) {
+      localStorage.setItem('medications', JSON.stringify(medications));
     }
-  }, [medications]);
+  }, [medications, isClient]);
 
   const handleAddOrUpdateMedication = (medication: Medication) => {
     setMedications(prevMeds => {
       const existingIndex = prevMeds.findIndex(m => m.id === medication.id);
       if (existingIndex > -1) {
-        // Update existing
         const updatedMeds = [...prevMeds];
         updatedMeds[existingIndex] = medication;
         return updatedMeds;
       } else {
-        // Add new
         return [medication, ...prevMeds];
       }
     });
@@ -87,7 +91,6 @@ export default function MedicationManagementPage() {
   };
 
   const handleSetReminder = (medication: Medication) => {
-    // Placeholder for reminder setting UI/logic
     toast({ title: "Set Reminder", description: `Reminder functionality for ${medication.name} will be implemented here.` });
   };
   
@@ -96,10 +99,24 @@ export default function MedicationManagementPage() {
     setShowFormModal(true);
   }
 
+  if (!isClient) {
+    return (
+      <PageWrapper title="Loading Medications..." className="flex-1 flex flex-col h-full p-0 sm:p-0">
+        <div className="flex-1 flex flex-col h-full items-center justify-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  if (showAnimation) {
+    return <MedicationManagementAnimation onAnimationComplete={() => setShowAnimation(false)} />;
+  }
+
   return (
     <PageWrapper title="Medication Management" className="pb-16">
       <div className="flex justify-between items-center mb-6">
-        <p className="text-muted-foreground">Log and manage your prescribed medications.</p>
+        <p className="text-muted-foreground">Log and manage your prescribed medications and schedules.</p>
         <Button onClick={openAddMedicationModal} className="rounded-lg group">
           <PlusCircle className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:rotate-90" /> Add Medication
         </Button>
@@ -120,7 +137,7 @@ export default function MedicationManagementPage() {
           <p className="text-sm">Click "Add Medication" to get started.</p>
         </div>
       ) : (
-        <ScrollArea className="h-[calc(100vh-var(--header-height,4rem)-280px)] pr-3 -mr-3"> {/* Adjusted height */}
+        <ScrollArea className="h-[calc(100vh-var(--header-height,4rem)-280px)] pr-3 -mr-3">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {medications.map(med => (
               <MedicationListItem

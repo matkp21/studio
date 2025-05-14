@@ -560,3 +560,13 @@ body {
   background-size: 300% 300%;
   animation: welcome-gradient-animation 15s ease infinite;
 }
+
+/* Subtle Heart Pulse Animation for Tagline */
+@keyframes heartPulseSubtle {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.animate-heart-pulse-subtle {
+  animation: heartPulseSubtle 1.5s infinite ease-in-out;
+}

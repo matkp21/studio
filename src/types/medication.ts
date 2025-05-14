@@ -2,15 +2,31 @@
 
 export type MedicationFormType = "Tablet" | "Capsule" | "Liquid" | "Inhaler" | "Injection" | "Cream" | "Ointment" | "Drops" | "Patch" | "Other";
 export type MedicationRouteType = "Oral" | "Topical" | "Inhaled" | "Subcutaneous" | "Intramuscular" | "Intravenous" | "Rectal" | "Vaginal" | "Otic" | "Nasal" | "Ophthalmic" | "Other";
-export type MedicationFrequencyType = 
-  | "Once daily" 
-  | "Twice daily" 
-  | "Three times daily" 
-  | "Four times daily" 
-  | "Every X hours" 
-  | "As needed (PRN)" 
-  | "Specific days" 
-  | "Other";
+
+export const medicationFrequencyTypes = [
+  "Once daily", 
+  "Twice daily", 
+  "Three times daily", 
+  "Four times daily", 
+  "Every X hours", 
+  "As needed (PRN)", 
+  "Specific days of week",
+  "Specific date (one-time)",
+  "Other (custom)"
+] as const;
+export type MedicationFrequencyType = typeof medicationFrequencyTypes[number];
+
+export const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
+export type DayOfWeek = typeof daysOfWeek[number];
+
+export interface MedicationSchedule {
+  type: MedicationFrequencyType;
+  times?: string[]; // e.g., ["08:00", "20:00"] for "Twice daily"
+  intervalHours?: number; // for "Every X hours"
+  daysOfWeek?: DayOfWeek[]; // for "Specific days of week"
+  specificDate?: Date; // for "Specific date (one-time)"
+  customInstructions?: string; // for "Other (custom)" or general notes
+}
 
 export interface Medication {
   id: string;
@@ -25,27 +41,16 @@ export interface Medication {
   quantityPerPrescription?: number; // Optional
   instructions?: string; // Optional, e.g., "Take with food"
   
-  // For scheduling (to be expanded in next steps)
-  schedule?: {
-    type: MedicationFrequencyType;
-    times?: string[]; // e.g., ["08:00", "20:00"] if specific times
-    intervalHours?: number; // if "Every X hours"
-    daysOfWeek?: string[]; // if "Specific days", e.g., ["Mon", "Wed", "Fri"]
-  };
+  schedule?: MedicationSchedule;
   
-  // For adherence tracking (to be expanded)
   log?: Array<{ date: Date; status: 'taken' | 'skipped' | 'snoozed' }>;
 
-  // For refill reminders (to be expanded)
   refillInfo?: {
     lastRefillDate?: Date;
     quantityDispensed?: number;
     pharmacy?: string;
   };
 
-  // For barcode scanning (to be expanded)
   barcode?: string;
-
-  // For photo (to be expanded)
   photoUrl?: string;
 }

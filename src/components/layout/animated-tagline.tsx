@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { Heart } from 'lucide-react'; // Changed from Sparkles, Brain, Lightbulb, Telescope
 
 const smartWords = [
   "Smart", "Intelligent", "Caring", "Healing", "Diagnosing", "Supportive", "Better", "Helping", "Insightful", "Efficient", "Constructive", "Decisive"
@@ -15,24 +16,14 @@ interface AnimatedTaglineProps {
 
 export function AnimatedTagline({ className }: AnimatedTaglineProps) {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [currentEmoji, setCurrentEmoji] = useState("✨");
-  const emojis = ["✨", "🧠", "💡", "🚀"]; // Example emojis to cycle through
 
   useEffect(() => {
     const wordInterval = setInterval(() => {
       setCurrentWordIndex((prevIndex) => (prevIndex + 1) % smartWords.length);
     }, 2500); // Change word every 2.5 seconds
 
-    const emojiInterval = setInterval(() => {
-      setCurrentEmoji(prevEmoji => {
-        const currentIndex = emojis.indexOf(prevEmoji);
-        return emojis[(currentIndex + 1) % emojis.length];
-      });
-    }, 1250); // Change emoji slightly faster
-
     return () => {
       clearInterval(wordInterval);
-      clearInterval(emojiInterval);
     };
   }, []);
 
@@ -46,24 +37,21 @@ export function AnimatedTagline({ className }: AnimatedTaglineProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="font-semibold firebase-gradient-text" // Apply Firebase gradient here
+          className="font-semibold firebase-gradient-text"
         >
           #{smartWords[currentWordIndex]}
         </motion.span>
       </AnimatePresence>
       <span className="ml-1.5">. Always</span>
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={currentEmoji}
-          initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          exit={{ opacity: 0, scale: 0.5, rotate: 90 }}
-          transition={{ duration: 0.4, type: "spring", stiffness: 200, damping: 15 }}
-          className="ml-1.5 inline-block"
-        >
-          {currentEmoji}
-        </motion.span>
-      </AnimatePresence>
+      <motion.div
+        key="heart-icon" // Ensure key for AnimatePresence if it were to change, though here it's static
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.4, type: "spring", stiffness: 200, damping: 15 }}
+        className="ml-1.5 inline-block"
+      >
+        <Heart className="h-4 w-4 text-primary animate-heart-pulse-subtle" />
+      </motion.div>
     </div>
   );
 }
