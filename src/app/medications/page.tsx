@@ -178,7 +178,8 @@ export default function MedicationManagementPage() {
         };
         return updatedMeds;
       } else {
-        return [{ ...medication, log: [], photoUrl: medication.photoUrl, personalNotes: medication.personalNotes }, ...prevMeds];
+        // Ensure log is initialized for new medications
+        return [{ ...medication, log: medication.log || [], photoUrl: medication.photoUrl, personalNotes: medication.personalNotes }, ...prevMeds];
       }
     });
     setShowFormModal(false);
@@ -202,7 +203,7 @@ export default function MedicationManagementPage() {
           const newLogEntry: MedicationLogEntry = { date: new Date(), status };
           return {
             ...med,
-            log: [...(med.log || []), newLogEntry],
+            log: [...(med.log || []), newLogEntry], // Ensure log array exists
           };
         }
         return med;
@@ -331,3 +332,4 @@ export default function MedicationManagementPage() {
     </PageWrapper>
   );
 }
+

@@ -62,3 +62,4 @@ export interface Medication {
 
   barcode?: string; // For barcode scanning feature
 }
+

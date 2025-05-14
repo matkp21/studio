@@ -42,7 +42,6 @@ function formatSchedule(schedule?: Medication['schedule']): string {
 }
 
 export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, onViewReminders }: MedicationListItemProps) {
-  const todayLog = medication.log?.find(entry => isToday(new Date(entry.date)));
   
   // Show last 3 log entries
   const lastThreeLogs = medication.log?.slice(-3).reverse() || [];
@@ -147,6 +146,12 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, on
               {medication.refillInfo.lastRefillDate && <p>Last Refilled: {format(new Date(medication.refillInfo.lastRefillDate), "PPP")}</p>}
               {medication.refillInfo.quantityDispensed && <p>Quantity: {medication.refillInfo.quantityDispensed}</p>}
               {medication.refillInfo.pharmacy && <p>Pharmacy: {medication.refillInfo.pharmacy}</p>}
+               {/* Conceptual: Display next refill if calculable */}
+              {medication.refillInfo.daysSupply && medication.refillInfo.lastRefillDate && (
+                <p className="font-medium text-blue-600 dark:text-blue-400">
+                  Estimated Next Refill: {format(new Date(new Date(medication.refillInfo.lastRefillDate).setDate(new Date(medication.refillInfo.lastRefillDate).getDate() + medication.refillInfo.daysSupply)), "PPP")}
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -163,3 +168,4 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, on
     </Card>
   );
 }
+
