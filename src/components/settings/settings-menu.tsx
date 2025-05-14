@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import {
-  UserCircle, ShieldCheck, Palette, BellRing, Database, Lock, Users, HelpCircle, Info, LogOut, Trash2, BriefcaseMedical, School, Stethoscope, Workflow, Edit, SlidersHorizontal, Languages, EyeOff, BellOff, Volume2, MailWarning, CloudLightning, Download, Pin, FileText, BookOpen, Mic, CalculatorIcon, Phone, MessageSquareHeart, UserCog, Settings2 as SettingsIcon // Renamed Settings2 to avoid conflict
+  UserCircle, ShieldCheck, Palette, BellRing, Database, Lock, Users, HelpCircle, Info, LogOut, Trash2, BriefcaseMedical, School, Stethoscope, Workflow, Edit, SlidersHorizontal, Languages, EyeOff, BellOff, Volume2, MailWarning, CloudLightning, Download, Pin, FileText, BookOpen, Mic, CalculatorIcon, Phone, MessageSquareHeart, UserCog, Settings2 as SettingsIcon, AlertTriangle // Added AlertTriangle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
