@@ -605,14 +605,14 @@ body {
     background-color: hsl(var(--background));
     background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.2) 0%, hsl(var(--background)) 30%);
   }
-  40% { 
+  30% { 
     background-image: radial-gradient(circle at center, 
       hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.4) 10%, 
       hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.2) 40%, 
       hsla(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), var(--welcome-gradient-apple-hello-l1-l), 0.1) 70%,
       hsl(var(--background)) 100%);
   }
-  70%, 100% { 
+  60%, 100% { 
     background-image: radial-gradient(ellipse farthest-corner at center, 
       hsla(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), var(--welcome-gradient-apple-hello-l1-l), 0.9) 0%,
       hsla(var(--welcome-gradient-apple-hello-l2-h), var(--welcome-gradient-apple-hello-l2-s), var(--welcome-gradient-apple-hello-l2-l), 0.95) 35%,
@@ -631,14 +631,14 @@ body {
     background-color: hsl(var(--background));
     background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 10%), 0.2) 0%, hsl(var(--background)) 30%);
   }
-  40% {
+  30% {
     background-image: radial-gradient(circle at center, 
       hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%), 0.4) 10%, 
       hsla(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 5%), 0.2) 40%, 
       hsla(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), var(--welcome-gradient-apple-hello-d1-l), 0.1) 70%,
       hsl(var(--background)) 100%);
   }
-  70%, 100% {
+  60%, 100% {
     background-image: radial-gradient(ellipse farthest-corner at center, 
       hsla(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), var(--welcome-gradient-apple-hello-d1-l), 0.9) 0%,
       hsla(var(--welcome-gradient-apple-hello-d2-h), var(--welcome-gradient-apple-hello-d2-s), var(--welcome-gradient-apple-hello-d2-l), 0.95) 35%,
@@ -648,74 +648,69 @@ body {
   }
 }
 
+
 .welcome-screen-gradient {
-  background-size: 100% 100%; 
-  animation: welcome-gradient-radiate-animation-light 2.8s ease-out forwards; 
+  background-size: 100% 100%;
+  animation: welcome-gradient-radiate-animation-light 2.8s ease-out forwards;
 }
 
 .dark .welcome-screen-gradient {
   animation-name: welcome-gradient-radiate-animation-dark;
 }
 
-
 /* Apple Event Poster Inspired Splash Screen */
 @keyframes apple-event-background-animation-light {
-  0% {
-    background-image: 
-      radial-gradient(ellipse farthest-corner at 50% 100%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), var(--apple-event-deep-space-blue-l), 0.9) 0%, transparent 70%),
-      radial-gradient(ellipse farthest-corner at 20% 30%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), var(--apple-event-bloom-orange-l), 0.6) 0%, transparent 50%),
-      radial-gradient(ellipse farthest-corner at 80% 70%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), var(--apple-event-bloom-pink-l), 0.5) 0%, transparent 60%);
-    background-color: hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 5%); /* Very dark base */
-    background-size: 150% 150%, 80% 80%, 90% 90%;
-    background-position: 50% 50%, 20% 30%, 80% 70%;
-  }
-  50% {
-    background-image: 
-      radial-gradient(ellipse farthest-corner at 50% 100%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), calc(var(--apple-event-deep-space-blue-l) + 5%), 0.95) 0%, transparent 75%),
-      radial-gradient(ellipse farthest-corner at 80% 20%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), calc(var(--apple-event-bloom-orange-l) + 5%), 0.7) 0%, transparent 55%),
-      radial-gradient(ellipse farthest-corner at 30% 80%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), calc(var(--apple-event-bloom-pink-l) + 5%), 0.6) 0%, transparent 65%);
+  0%, 100% { /* Start and end state - can be slightly different for a slow loop */
     background-color: hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 8%);
-    background-size: 160% 160%, 85% 85%, 95% 95%;
-    background-position: 40% 60%, 80% 20%, 30% 80%;
+    background-image:
+      /* Bottom Purple Nebula */
+      radial-gradient(ellipse 80% 60% at 50% 110%, hsla(var(--apple-event-nebula-purple-h), var(--apple-event-nebula-purple-s), calc(var(--apple-event-nebula-purple-l) + 10%), 0.5) 0%, transparent 60%),
+      /* Orange Bloom - Top Left */
+      radial-gradient(ellipse 50% 40% at 20% 30%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), var(--apple-event-bloom-orange-l), 0.7) 0%, transparent 70%),
+      /* Pink/Yellow Bloom - Top Right */
+      radial-gradient(ellipse 60% 50% at 80% 25%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), var(--apple-event-bloom-pink-l), 0.6) 0%, hsla(var(--apple-event-bloom-yellow-h), var(--apple-event-bloom-yellow-s), calc(var(--apple-event-bloom-yellow-l) - 5%), 0.4) 40%, transparent 80%),
+      /* Main Deep Background */
+      radial-gradient(ellipse farthest-corner at 50% 0%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), var(--apple-event-deep-space-blue-l), 0.95) 0%, hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 5%) 70%),
+      /* Subtle Light Streak - Angled */
+      linear-gradient(135deg, transparent 40%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.1) 48%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.3) 50%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.1) 52%, transparent 60%);
+    background-position: 50% 50%, 20% 30%, 80% 25%, 50% 0%, 50% 50%;
+    background-size: 150% 150%, 100% 100%, 120% 120%, 100% 200%, 300% 300%;
   }
-  100% {
-    background-image: 
-      radial-gradient(ellipse farthest-corner at 50% 100%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), var(--apple-event-deep-space-blue-l), 0.9) 0%, transparent 70%),
-      radial-gradient(ellipse farthest-corner at 20% 30%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), var(--apple-event-bloom-orange-l), 0.6) 0%, transparent 50%),
-      radial-gradient(ellipse farthest-corner at 80% 70%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), var(--apple-event-bloom-pink-l), 0.5) 0%, transparent 60%);
-    background-color: hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 5%);
-    background-size: 150% 150%, 80% 80%, 90% 90%;
-    background-position: 50% 50%, 20% 30%, 80% 70%;
+  50% { /* Mid-animation state for subtle shifting */
+    background-color: hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 10%);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% 115%, hsla(var(--apple-event-nebula-purple-h), var(--apple-event-nebula-purple-s), calc(var(--apple-event-nebula-purple-l) + 15%), 0.55) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 25% 35%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), calc(var(--apple-event-bloom-orange-l) + 5%), 0.75) 0%, transparent 75%),
+      radial-gradient(ellipse 60% 50% at 75% 30%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), calc(var(--apple-event-bloom-pink-l) + 5%), 0.65) 0%, hsla(var(--apple-event-bloom-yellow-h), var(--apple-event-bloom-yellow-s), var(--apple-event-bloom-yellow-l), 0.45) 40%, transparent 85%),
+      radial-gradient(ellipse farthest-corner at 50% 0%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), calc(var(--apple-event-deep-space-blue-l) + 2%), 0.98) 0%, hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 7%) 75%),
+      linear-gradient(140deg, transparent 35%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) + 2%), 0.15) 48%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) + 2%), 0.35) 50%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) + 2%), 0.15) 52%, transparent 65%);
+    background-position: 50% 50%, 25% 35%, 75% 30%, 50% 0%, 50% 50%;
+    background-size: 160% 160%, 110% 110%, 130% 130%, 100% 210%, 320% 320%;
   }
 }
 
-@keyframes apple-event-background-animation-dark { /* Dark mode can be more intense */
-  0% {
-    background-image: 
-      radial-gradient(ellipse farthest-corner at 50% 100%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), calc(var(--apple-event-deep-space-blue-l) - 5%), 1) 0%, transparent 60%),
-      radial-gradient(ellipse farthest-corner at 25% 35%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), calc(var(--apple-event-bloom-orange-l) - 10%), 0.8) 0%, transparent 45%),
-      radial-gradient(ellipse farthest-corner at 75% 65%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), calc(var(--apple-event-bloom-pink-l) - 5%), 0.7) 0%, transparent 55%);
+@keyframes apple-event-background-animation-dark {
+   0%, 100% {
     background-color: hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 3%);
-    background-size: 170% 170%, 90% 90%, 100% 100%;
-    background-position: 50% 40%, 25% 35%, 75% 65%;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% 110%, hsla(var(--apple-event-nebula-purple-h), var(--apple-event-nebula-purple-s), var(--apple-event-nebula-purple-l), 0.7) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 25% 35%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), calc(var(--apple-event-bloom-orange-l) - 5%), 0.85) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 75% 30%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), calc(var(--apple-event-bloom-pink-l) - 5%), 0.75) 0%, hsla(var(--apple-event-bloom-yellow-h), var(--apple-event-bloom-yellow-s), calc(var(--apple-event-bloom-yellow-l) - 10%), 0.5) 40%, transparent 80%),
+      radial-gradient(ellipse farthest-corner at 50% 0%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), calc(var(--apple-event-deep-space-blue-l) - 2%), 1) 0%, hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 2%) 70%),
+      linear-gradient(130deg, transparent 42%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) - 5%), 0.12) 48%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) - 5%), 0.3) 50%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) - 5%), 0.12) 52%, transparent 58%);
+    background-position: 50% 50%, 25% 35%, 75% 30%, 50% 0%, 50% 50%;
+    background-size: 170% 170%, 90% 90%, 110% 110%, 100% 200%, 350% 350%;
   }
-   50% {
-    background-image: 
-      radial-gradient(ellipse farthest-corner at 50% 100%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), calc(var(--apple-event-deep-space-blue-l) - 2%), 1) 0%, transparent 65%),
-      radial-gradient(ellipse farthest-corner at 70% 25%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), calc(var(--apple-event-bloom-orange-l) - 5%), 0.9) 0%, transparent 50%),
-      radial-gradient(ellipse farthest-corner at 35% 75%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), var(--apple-event-bloom-pink-l), 0.8) 0%, transparent 60%);
+  50% {
     background-color: hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 5%);
-    background-size: 180% 180%, 95% 95%, 105% 105%;
-    background-position: 60% 50%, 70% 25%, 35% 75%;
-  }
-  100% {
-    background-image: 
-      radial-gradient(ellipse farthest-corner at 50% 100%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), calc(var(--apple-event-deep-space-blue-l) - 5%), 1) 0%, transparent 60%),
-      radial-gradient(ellipse farthest-corner at 25% 35%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), calc(var(--apple-event-bloom-orange-l) - 10%), 0.8) 0%, transparent 45%),
-      radial-gradient(ellipse farthest-corner at 75% 65%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), calc(var(--apple-event-bloom-pink-l) - 5%), 0.7) 0%, transparent 55%);
-    background-color: hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 3%);
-    background-size: 170% 170%, 90% 90%, 100% 100%;
-    background-position: 50% 40%, 25% 35%, 75% 65%;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% 115%, hsla(var(--apple-event-nebula-purple-h), var(--apple-event-nebula-purple-s), calc(var(--apple-event-nebula-purple-l) + 5%), 0.75) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 30% 40%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), var(--apple-event-bloom-orange-l), 0.9) 0%, transparent 75%),
+      radial-gradient(ellipse 60% 50% at 70% 35%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), var(--apple-event-bloom-pink-l), 0.8) 0%, hsla(var(--apple-event-bloom-yellow-h), var(--apple-event-bloom-yellow-s), var(--apple-event-bloom-yellow-l), 0.55) 40%, transparent 85%),
+      radial-gradient(ellipse farthest-corner at 50% 0%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), var(--apple-event-deep-space-blue-l), 1) 0%, hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 4%) 75%),
+      linear-gradient(145deg, transparent 37%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.18) 48%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.38) 50%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.18) 52%, transparent 63%);
+    background-position: 50% 50%, 30% 40%, 70% 35%, 50% 0%, 50% 50%;
+    background-size: 180% 180%, 100% 100%, 120% 120%, 100% 210%, 370% 370%;
   }
 }
 
@@ -731,22 +726,23 @@ body {
   inset: 0;
   z-index: 200; /* Ensure it's on top */
   animation: apple-event-background-animation-light 30s ease-in-out infinite alternate;
-  background-blend-mode: screen; /* Helps with luminosity */
+  background-blend-mode: screen;
 }
 
 .dark .apple-event-splash-screen {
   animation-name: apple-event-background-animation-dark;
+  background-blend-mode: lighten; /* Lighten might work better for dark mode blooms */
 }
 
 
 /* Subtle Heart Pulse Animation for Tagline */
 @keyframes heartPulseSubtle {
-  0%, 100% { transform: scale(1); opacity: 0.9; } /* Slightly more visible opacity */
-  50% { transform: scale(1.05); opacity: 1; } /* Slightly more scale */
+  0%, 100% { transform: scale(1); opacity: 0.9; } 
+  50% { transform: scale(1.05); opacity: 1; } 
 }
 
 .animate-heart-pulse-subtle {
-  animation: heartPulseSubtle 2.0s infinite ease-in-out; /* Slightly faster */
+  animation: heartPulseSubtle 2.0s infinite ease-in-out; 
 }
 
 
@@ -854,25 +850,25 @@ body {
   content: "";
   position: absolute;
   inset: -2px; 
-  border-radius: inherit; 
-  padding: 2px; 
+  border-radius: inherit; /* Inherit border-radius from the panel */
+  padding: 2px; /* This is the "thickness" of the border */
   background: linear-gradient(
     135deg,
     var(--welcome-color-1),
     var(--welcome-color-2),
     var(--welcome-color-3),
     var(--welcome-color-4),
-    var(--welcome-color-1) 
+    var(--welcome-color-1) /* Loop back for smooth animation */
   );
-  background-size: 300% 300%; 
+  background-size: 300% 300%; /* Larger size for smoother gradient animation */
   animation: animated-gradient-background 4s ease infinite; 
   -webkit-mask:
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0); 
+    linear-gradient(#fff 0 0) content-box, /* Transparent inner area */
+    linear-gradient(#fff 0 0); /* Opaque border area */
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; 
-  mask-composite: exclude; 
-  z-index: -1; 
+  -webkit-mask-composite: xor; /* Use 'destination-out' or 'xor' depending on desired effect and browser */
+  mask-composite: exclude; /* Standard property */
+  z-index: -1; /* Ensure it's behind the content */
 }
