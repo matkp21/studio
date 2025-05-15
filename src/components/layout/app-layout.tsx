@@ -129,8 +129,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     setClientLoaded(true);
     if (typeof window !== 'undefined') {
-      const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
-      const welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
+      // --- TEMPORARY CHANGE TO FORCE ONBOARDING/WELCOME ---
+      const onboardingComplete = false; // localStorage.getItem('onboardingComplete') === 'true';
+      const welcomeDisplayShownThisSession = false; // sessionStorage.getItem('welcomeDisplayShown') === 'true';
+      // --- END TEMPORARY CHANGE ---
       const storedUserRole = localStorage.getItem('userRole') as UserRole;
 
       if (!onboardingComplete) {
@@ -152,13 +154,15 @@ export function AppLayout({ children }: { children: ReactNode }) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [userRole, selectUserRole]);
+  }, [userRole, selectUserRole]); // Removed clientLoaded from here to avoid re-triggering too often
 
   const handleOnboardingClose = () => {
     setShowOnboardingModal(false);
     if (typeof window !== 'undefined') {
       localStorage.setItem('onboardingComplete', 'true');
-      const welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
+      // --- TEMPORARY CHANGE TO FORCE WELCOME AFTER ONBOARDING ---
+      const welcomeDisplayShownThisSession = false; //sessionStorage.getItem('welcomeDisplayShown') === 'true';
+      // --- END TEMPORARY CHANGE ---
       if (!welcomeDisplayShownThisSession) {
         setShowWelcomeDisplay(true);
       }
@@ -173,7 +177,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
   };
 
   if (!clientLoaded) {
-    return null;
+    // You might want a minimal loader here, or just null to avoid flash of unstyled content
+    return null; 
   }
 
   if (showOnboardingModal) {
@@ -339,7 +344,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
               onMarkAsRead={handleMarkAsRead}
               onMarkAllAsRead={handleMarkAllAsRead}
               onViewAllNotifications={handleViewAllNotifications}
-              className="notification-panel-animated-border" // Apply class for animated border
+              className="notification-panel-animated-border" 
             />
           )}
         </main>
