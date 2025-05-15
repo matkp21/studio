@@ -21,7 +21,11 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 220 25% 25%;
 
-    --primary: 210 100% 50%; /* Vibrant Blue (Apple's Blue #007AFF) */
+    /* Primary color HSL components */
+    --primary-h: 210;
+    --primary-s: 100%;
+    --primary-l: 50%;
+    --primary: var(--primary-h) var(--primary-s) var(--primary-l); /* Vibrant Blue (Apple's Blue #007AFF) */
     --primary-foreground: 0 0% 100%; /* White */
 
     --secondary: 210 25% 96%; /* Light Gray (Sterling Silver/Platinum hint) */
@@ -30,7 +34,11 @@ body {
     --muted: 210 20% 90%; /* Lighter Cool Gray */
     --muted-foreground: 220 20% 50%; /* Medium Cool Gray */
 
-    --accent: 170 98% 52%; /* Vibrant Teal/Cyan (Neon Pulse) */
+    /* Accent color HSL components */
+    --accent-h: 170;
+    --accent-s: 98%;
+    --accent-l: 52%;
+    --accent: var(--accent-h) var(--accent-s) var(--accent-l); /* Vibrant Teal/Cyan (Neon Pulse) */
     --accent-foreground: 210 100% 10%; /* Dark Blue for contrast on accent */
     
     --destructive: 0 70% 60%; /* Standard Red */
@@ -61,23 +69,23 @@ body {
     --chart-4: 30 80% 55%;   /* Orange */
     --chart-5: 130 50% 50%;  /* Green */
 
-    /* Welcome Screen & Firebase Inspired Gradient Colors (Light Mode) */
-    --welcome-bg-light: 210 33% 98%; /* Same as main background for seamless feel */
+    /* Firebase Inspired Gradient Colors (Light Mode) - Used for accents */
     --firebase-color-1-light: 45 100% 58%; /* Bright Yellow (e.g., #FFCA28) */
     --firebase-color-2-light: 36 100% 50%; /* Bright Orange (e.g., #FFA000) */
     --firebase-color-3-light: 25 100% 55%; /* Orange-Red (e.g., #FF8A65) */
     --firebase-color-4-light: 15 100% 60%; /* Reddish-Orange (e.g., #FF7043) */
 
-    /* Ensure these variables are used by animations that need them */
-    --welcome-color-1: var(--firebase-color-1-light);
-    --welcome-color-2: var(--firebase-color-2-light);
-    --welcome-color-3: var(--firebase-color-3-light);
-    --welcome-color-4: var(--firebase-color-4-light);
+    --welcome-color-1: hsl(var(--firebase-color-1-light));
+    --welcome-color-2: hsl(var(--firebase-color-2-light));
+    --welcome-color-3: hsl(var(--firebase-color-3-light));
+    --welcome-color-4: hsl(var(--firebase-color-4-light));
 
-    /* New Welcome Screen Gradient (Apple/Gemini Inspired - Light Mode) */
-    --welcome-gradient-start-light: 210 60% 95%; /* Soft Light Blue */
-    --welcome-gradient-mid-light: 240 50% 97%;   /* Soft Light Lavender */
-    --welcome-gradient-end-light: 200 40% 98%;   /* Very Light Cool Gray */
+    /* Apple "Hello" Inspired Welcome Screen Gradient HSL components (Light Mode) */
+    --welcome-gradient-apple-hello-l1-h: 225; --welcome-gradient-apple-hello-l1-s: 100%; --welcome-gradient-apple-hello-l1-l: 97%; /* Very Pale Blue */
+    --welcome-gradient-apple-hello-l2-h: 270; --welcome-gradient-apple-hello-l2-s: 100%; --welcome-gradient-apple-hello-l2-l: 97%; /* Very Pale Lavender */
+    --welcome-gradient-apple-hello-l3-h: 180; --welcome-gradient-apple-hello-l3-s: 100%; --welcome-gradient-apple-hello-l3-l: 97%; /* Very Pale Cyan */
+    --welcome-gradient-apple-hello-l4-h: var(--primary-h); --welcome-gradient-apple-hello-l4-s: var(--primary-s); --welcome-gradient-apple-hello-l4-l: var(--primary-l); /* Faint primary influence */
+
 
     /* Notification Panel Compact Colors - Light Mode (Solid, not frosted) */
     --notification-panel-compact-bg: 0 0% 100%; /* White */
@@ -98,7 +106,11 @@ body {
     --popover: 216 65% 9%; /* Slightly darker than background */
     --popover-foreground: 215 100% 95%;
 
-    --primary: 210 100% 60%; /* Lighter, vibrant Blue */
+    /* Primary color HSL components - Dark */
+    --primary-h: 210;
+    --primary-s: 100%;
+    --primary-l: 60%;
+    --primary: var(--primary-h) var(--primary-s) var(--primary-l); /* Lighter, vibrant Blue */
     --primary-foreground: 216 65% 10%; /* Dark Blue-Gray for text on primary */
 
     --secondary: 216 50% 25%; /* Dark Muted Blue/Gray */
@@ -107,7 +119,11 @@ body {
     --muted: 216 45% 18%; /* Very Dark Muted Blue */
     --muted-foreground: 215 15% 70%; /* Mid-Light Gray */
 
-    --accent: 170 98% 52%; /* Vibrant Teal/Cyan (Neon Pulse) */
+    /* Accent color HSL components - Dark */
+    --accent-h: 170;
+    --accent-s: 98%;
+    --accent-l: 52%;
+    --accent: var(--accent-h) var(--accent-s) var(--accent-l); /* Vibrant Teal/Cyan (Neon Pulse) */
     --accent-foreground: 170 90% 10%; /* Very Dark Cyan/Teal for text on accent */
 
     --destructive: 0 60% 55%; /* Vibrant but slightly desaturated Red */
@@ -136,22 +152,22 @@ body {
     --chart-4: 40 90% 65%;   /* Bright Yellow-Orange */
     --chart-5: 140 60% 60%;  /* Bright Green */
 
-    /* Welcome Screen & Firebase Inspired Gradient Colors (Dark Mode) */
-    --welcome-bg-dark: 216 65% 11%; /* Same as main background */
+    /* Firebase Inspired Gradient Colors (Dark Mode) - Used for accents */
     --firebase-color-1-dark: 45 100% 65%; /* Brighter Yellow */
     --firebase-color-2-dark: 36 100% 60%; /* Brighter Orange */
     --firebase-color-3-dark: 25 100% 65%; /* Brighter Orange-Red */
     --firebase-color-4-dark: 15 100% 70%; /* Brighter Reddish-Orange */
     
-    --welcome-color-1: var(--firebase-color-1-dark);
-    --welcome-color-2: var(--firebase-color-2-dark);
-    --welcome-color-3: var(--firebase-color-3-dark);
-    --welcome-color-4: var(--firebase-color-4-dark);
+    --welcome-color-1: hsl(var(--firebase-color-1-dark));
+    --welcome-color-2: hsl(var(--firebase-color-2-dark));
+    --welcome-color-3: hsl(var(--firebase-color-3-dark));
+    --welcome-color-4: hsl(var(--firebase-color-4-dark));
 
-     /* New Welcome Screen Gradient (Apple/Gemini Inspired - Dark Mode) */
-    --welcome-gradient-start-dark: 220 40% 10%;  /* Deep Dark Blue */
-    --welcome-gradient-mid-dark: 260 30% 12%;    /* Dark Purple */
-    --welcome-gradient-end-dark: 210 35% 15%;    /* Dark Cool Gray-Blue */
+    /* Apple "Hello" Inspired Welcome Screen Gradient HSL components (Dark Mode) */
+    --welcome-gradient-apple-hello-d1-h: 220; --welcome-gradient-apple-hello-d1-s: 70%; --welcome-gradient-apple-hello-d1-l: 12%; /* Deep Dark Blue */
+    --welcome-gradient-apple-hello-d2-h: 280; --welcome-gradient-apple-hello-d2-s: 60%; --welcome-gradient-apple-hello-d2-l: 15%; /* Darker Purple */
+    --welcome-gradient-apple-hello-d3-h: 200; --welcome-gradient-apple-hello-d3-s: 50%; --welcome-gradient-apple-hello-d3-l: 18%; /* Dark Cool Cyan-Blue */
+    --welcome-gradient-apple-hello-d4-h: var(--primary-h); --welcome-gradient-apple-hello-d4-s: var(--primary-s); --welcome-gradient-apple-hello-d4-l: var(--primary-l); /* Faint primary from theme */
 
     /* Notification Panel Compact Colors - Dark Mode (Solid, not frosted) */
     --notification-panel-compact-bg: 216 54% 18%; /* Darker card-like color */
@@ -277,15 +293,15 @@ body {
 
 /* Welcome Screen / Hero Text Animations (Firebase Color Cycle) */
 @keyframes welcome-text-color-cycle {
-  0% { color: hsl(var(--welcome-color-1)); }
-  25% { color: hsl(var(--welcome-color-2)); }
-  50% { color: hsl(var(--welcome-color-3)); }
-  75% { color: hsl(var(--welcome-color-4)); }
-  100% { color: hsl(var(--welcome-color-1)); }
+  0% { color: var(--welcome-color-1); }
+  25% { color: var(--welcome-color-2); }
+  50% { color: var(--welcome-color-3); }
+  75% { color: var(--welcome-color-4); }
+  100% { color: var(--welcome-color-1); }
 }
 
 .welcome-text-fg-animated {
-  color: hsl(var(--welcome-color-1));
+  color: var(--welcome-color-1);
   animation: welcome-text-color-cycle 10s linear infinite; /* Adjusted duration */
 }
 
@@ -306,11 +322,11 @@ body {
 .firebase-ribbon-background {
   background: linear-gradient(
     135deg,
-    hsl(var(--welcome-color-1)/0.95),
-    hsl(var(--welcome-color-2)/0.95),
-    hsl(var(--welcome-color-3)/0.95),
-    hsl(var(--welcome-color-4)/0.95),
-    hsl(var(--welcome-color-1)/0.95)
+    hsla(var(--welcome-color-1)/0.95),
+    hsla(var(--welcome-color-2)/0.95),
+    hsla(var(--welcome-color-3)/0.95),
+    hsla(var(--welcome-color-4)/0.95),
+    hsla(var(--welcome-color-1)/0.95)
   );
   background-size: 250% 250%;
   animation: animated-firebase-ribbon-background 10s ease infinite;
@@ -332,10 +348,10 @@ body {
 
 /* Firebase Gradient Glowing Ring for AvatarFallback */
 @keyframes firebase-glow-ring {
-  0%, 100% { box-shadow: 0 0 3px hsl(var(--welcome-color-1)), 0 0 6px hsl(var(--welcome-color-1)), 0 0 10px hsl(var(--welcome-color-1)/0.6); }
-  25% { box-shadow: 0 0 3px hsl(var(--welcome-color-2)), 0 0 6px hsl(var(--welcome-color-2)), 0 0 10px hsl(var(--welcome-color-2)/0.6); }
-  50% { box-shadow: 0 0 3px hsl(var(--welcome-color-3)), 0 0 6px hsl(var(--welcome-color-3)), 0 0 10px hsl(var(--welcome-color-3)/0.6); }
-  75% { box-shadow: 0 0 3px hsl(var(--welcome-color-4)), 0 0 6px hsl(var(--welcome-color-4)), 0 0 10px hsl(var(--welcome-color-4)/0.6); }
+  0%, 100% { box-shadow: 0 0 3px var(--welcome-color-1), 0 0 6px var(--welcome-color-1), 0 0 10px hsla(var(--welcome-color-1)/0.6); }
+  25% { box-shadow: 0 0 3px var(--welcome-color-2), 0 0 6px var(--welcome-color-2), 0 0 10px hsla(var(--welcome-color-2)/0.6); }
+  50% { box-shadow: 0 0 3px var(--welcome-color-3), 0 0 6px var(--welcome-color-3), 0 0 10px hsla(var(--welcome-color-3)/0.6); }
+  75% { box-shadow: 0 0 3px var(--welcome-color-4), 0 0 6px var(--welcome-color-4), 0 0 10px hsla(var(--welcome-color-4)/0.6); }
 }
 
 .glowing-ring-firebase {
@@ -346,28 +362,28 @@ body {
 .firebase-gradient-text {
   background-size: 200% auto;
   background-image: linear-gradient(to right,
-    hsl(var(--welcome-color-1)) 0%,
-    hsl(var(--welcome-color-2)) 25%,
-    hsl(var(--welcome-color-3)) 50%,
-    hsl(var(--welcome-color-4)) 75%,
-    hsl(var(--welcome-color-1)) 100%);
+    var(--welcome-color-1) 0%,
+    var(--welcome-color-2) 25%,
+    var(--welcome-color-3) 50%,
+    var(--welcome-color-4) 75%,
+    var(--welcome-color-1) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   text-shadow:
-    0 0 4px hsl(var(--welcome-color-2)/0.5),
-    0 0 8px hsl(var(--welcome-color-3)/0.3);
+    0 0 4px hsla(var(--welcome-color-2)/0.5),
+    0 0 8px hsla(var(--welcome-color-3)/0.3);
   animation: firebase-gradient-flow 4s linear infinite;
 }
 
 /* Firebase Gradient Text for Active Role - Static gradient with glow */
 .firebase-gradient-text-active-role {
   background-image: linear-gradient(to right,
-    hsl(var(--welcome-color-1)) 0%,
-    hsl(var(--welcome-color-2)) 25%,
-    hsl(var(--welcome-color-3)) 50%,
-    hsl(var(--welcome-color-4)) 75%,
-    hsl(var(--welcome-color-1)) 100%);
+    var(--welcome-color-1) 0%,
+    var(--welcome-color-2) 25%,
+    var(--welcome-color-3) 50%,
+    var(--welcome-color-4) 75%,
+    var(--welcome-color-1) 100%);
   background-size: 100% auto; /* Static gradient, not animated by default */
   -webkit-background-clip: text;
   background-clip: text;
@@ -412,11 +428,11 @@ body {
   border-radius: calc(var(--radius) + 2px);
   padding: 2px;
   background: linear-gradient(135deg,
-    hsl(var(--welcome-color-1)),
-    hsl(var(--welcome-color-2)),
-    hsl(var(--welcome-color-3)),
-    hsl(var(--welcome-color-4)),
-    hsl(var(--welcome-color-1))
+    var(--welcome-color-1),
+    var(--welcome-color-2),
+    var(--welcome-color-3),
+    var(--welcome-color-4),
+    var(--welcome-color-1)
   );
   background-size: 400% 400%;
   -webkit-mask:
@@ -433,8 +449,8 @@ body {
 
 /* Subtle pulse/glow for tool cards (can be applied conditionally) */
 @keyframes subtle-pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsl(var(--welcome-color-1)/0.3); }
-  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsl(var(--welcome-color-2)/0.5); }
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px var(--welcome-color-1)/0.3); }
+  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px var(--welcome-color-2)/0.5); }
 }
 
 .animate-subtle-pulse-glow {
@@ -467,7 +483,7 @@ body {
   box-shadow: 0 4px 12px hsla(var(--welcome-color-2)/0.3);
 }
 .firebase-button-interactive:focus-visible {
-  outline: 2px solid hsl(var(--welcome-color-1));
+  outline: 2px solid var(--welcome-color-1);
   outline-offset: 2px;
   box-shadow: 0 0 0 4px hsla(var(--welcome-color-1)/0.2);
 }
@@ -475,10 +491,10 @@ body {
 /* Gemini Inspired CTA Button Glow - Now Firebase Inspired */
 @keyframes gemini-cta-glow {
   0%, 100% {
-    box-shadow: 0 0 5px hsl(var(--welcome-color-1)/0.3), 0 0 10px hsl(var(--welcome-color-2)/0.2), 0 0 15px hsl(var(--welcome-color-3)/0.2);
+    box-shadow: 0 0 5px hsla(var(--welcome-color-1)/0.3), 0 0 10px hsla(var(--welcome-color-2)/0.2), 0 0 15px hsla(var(--welcome-color-3)/0.2);
   }
   50% {
-    box-shadow: 0 0 10px hsl(var(--welcome-color-2)/0.5), 0 0 20px hsl(var(--welcome-color-3)/0.3), 0 0 30px hsl(var(--welcome-color-4)/0.3);
+    box-shadow: 0 0 10px hsla(var(--welcome-color-2)/0.5), 0 0 20px hsla(var(--welcome-color-3)/0.3), 0 0 30px hsla(var(--welcome-color-4)/0.3);
   }
 }
 
@@ -561,36 +577,83 @@ body {
   transform: translateX(50%) translateY(-25%) rotate(25deg);
 }
 
-/* Welcome Screen Gradient Background Animation */
+/* Welcome Screen Gradient Background Animation - Multi-stage */
 @keyframes welcome-gradient-animation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% { /* Initial simple/ECG wave hint */
+    background-image: linear-gradient(
+      -45deg,
+      hsl(var(--primary-h) var(--primary-s) 95% / 0.8), /* Lighter primary */
+      hsl(var(--accent-h) var(--accent-s) 90% / 0.7),   /* Lighter accent */
+      hsl(var(--primary-h) var(--primary-s) 97% / 0.9),
+      hsl(var(--accent-h) var(--accent-s) 92% / 0.6)
+    );
+    background-position: 0% 50%;
+  }
+  30% { /* Transitioning, more vibrant */
+    background-image: linear-gradient(
+      -45deg,
+      hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.7),
+      hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.6),
+      hsl(var(--welcome-gradient-apple-hello-l1-h) var(--welcome-gradient-apple-hello-l1-s) var(--welcome-gradient-apple-hello-l1-l) / 0.5),
+      hsl(var(--welcome-gradient-apple-hello-l2-h) var(--welcome-gradient-apple-hello-l2-s) var(--welcome-gradient-apple-hello-l2-l) / 0.4)
+    );
+    background-position: 50% 50%;
+  }
+  70%, 100% { /* Settled Apple Hello style, with subtle movement */
+    background-image: linear-gradient(
+      -45deg,
+      hsl(var(--welcome-gradient-apple-hello-l1-h) var(--welcome-gradient-apple-hello-l1-s) var(--welcome-gradient-apple-hello-l1-l) / 0.9),
+      hsl(var(--welcome-gradient-apple-hello-l2-h) var(--welcome-gradient-apple-hello-l2-s) var(--welcome-gradient-apple-hello-l2-l) / 0.95),
+      hsl(var(--welcome-gradient-apple-hello-l3-h) var(--welcome-gradient-apple-hello-l3-s) var(--welcome-gradient-apple-hello-l3-l) / 0.85),
+      hsl(var(--welcome-gradient-apple-hello-l4-h) var(--welcome-gradient-apple-hello-l4-s) var(--welcome-gradient-apple-hello-l4-l) / 0.2)
+    );
+    background-position: 100% 50%;
+  }
 }
 
 .welcome-screen-gradient {
-  background: linear-gradient(
-    -45deg,
-    hsl(var(--welcome-gradient-start-light)),
-    hsl(var(--welcome-gradient-mid-light)),
-    hsl(var(--welcome-gradient-end-light)),
-    hsl(var(--primary)/0.8) /* Adding primary color influence */
-  );
-  background-size: 300% 300%;
-  animation: welcome-gradient-animation 15s ease infinite;
+  background-size: 400% 400%; /* Larger size for smoother gradient transitions */
+  animation: welcome-gradient-animation 12s ease-in-out infinite alternate; /* Slower, smoother, and alternating */
 }
 
 .dark .welcome-screen-gradient {
-  background: linear-gradient(
-    -45deg,
-    hsl(var(--welcome-gradient-start-dark)),
-    hsl(var(--welcome-gradient-mid-dark)),
-    hsl(var(--welcome-gradient-end-dark)),
-    hsl(var(--primary)/0.8) /* Adding primary color influence */
-  );
-  background-size: 300% 300%;
-  animation: welcome-gradient-animation 15s ease infinite;
+   /* Similar keyframe logic for dark mode, adjusting opacities and target colors */
+  animation: welcome-gradient-animation-dark 12s ease-in-out infinite alternate;
 }
+
+@keyframes welcome-gradient-animation-dark {
+  0% {
+    background-image: linear-gradient(
+      -45deg,
+      hsl(var(--primary-h) var(--primary-s) 20% / 0.7), /* Darker primary */
+      hsl(var(--accent-h) var(--accent-s) 25% / 0.6),   /* Darker accent */
+      hsl(var(--primary-h) var(--primary-s) 15% / 0.8),
+      hsl(var(--accent-h) var(--accent-s) 20% / 0.5)
+    );
+    background-position: 0% 50%;
+  }
+  30% {
+    background-image: linear-gradient(
+      -45deg,
+      hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.5), /* Original dark primary */
+      hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.4),   /* Original dark accent */
+      hsl(var(--welcome-gradient-apple-hello-d1-h) var(--welcome-gradient-apple-hello-d1-s) var(--welcome-gradient-apple-hello-d1-l) / 0.6),
+      hsl(var(--welcome-gradient-apple-hello-d2-h) var(--welcome-gradient-apple-hello-d2-s) var(--welcome-gradient-apple-hello-d2-l) / 0.5)
+    );
+    background-position: 50% 50%;
+  }
+  70%, 100% {
+    background-image: linear-gradient(
+      -45deg,
+      hsl(var(--welcome-gradient-apple-hello-d1-h) var(--welcome-gradient-apple-hello-d1-s) var(--welcome-gradient-apple-hello-d1-l) / 0.9),
+      hsl(var(--welcome-gradient-apple-hello-d2-h) var(--welcome-gradient-apple-hello-d2-s) var(--welcome-gradient-apple-hello-d2-l) / 0.95),
+      hsl(var(--welcome-gradient-apple-hello-d3-h) var(--welcome-gradient-apple-hello-d3-s) var(--welcome-gradient-apple-hello-d3-l) / 0.85),
+      hsl(var(--welcome-gradient-apple-hello-d4-h) var(--welcome-gradient-apple-hello-d4-s) var(--welcome-gradient-apple-hello-d4-l) / 0.2)
+    );
+    background-position: 100% 50%;
+  }
+}
+
 
 /* Subtle Heart Pulse Animation for Tagline */
 @keyframes heartPulseSubtle {
@@ -715,11 +778,11 @@ body {
   padding: 2px; /* This is the "thickness" of the gradient border */
   background: linear-gradient(
     135deg,
-    hsl(var(--welcome-color-1)),
-    hsl(var(--welcome-color-2)),
-    hsl(var(--welcome-color-3)),
-    hsl(var(--welcome-color-4)),
-    hsl(var(--welcome-color-1)) /* Loop back for smooth animation */
+    var(--welcome-color-1),
+    var(--welcome-color-2),
+    var(--welcome-color-3),
+    var(--welcome-color-4),
+    var(--welcome-color-1) /* Loop back for smooth animation */
   );
   background-size: 300% 300%; /* Make it large enough for animation */
   animation: animated-gradient-background 4s ease infinite; /* Re-use or create new animation */
@@ -736,4 +799,5 @@ body {
 
 /* Ensure the notification panel itself has its defined background so the ::before doesn't show through center */
 /* This is already handled by .notification-panel-compact having a background-color */
+
 
