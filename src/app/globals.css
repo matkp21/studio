@@ -84,7 +84,7 @@ body {
     --welcome-gradient-apple-hello-l1-h: 225; --welcome-gradient-apple-hello-l1-s: 100%; --welcome-gradient-apple-hello-l1-l: 97%; /* Very Pale Blue */
     --welcome-gradient-apple-hello-l2-h: 270; --welcome-gradient-apple-hello-l2-s: 100%; --welcome-gradient-apple-hello-l2-l: 97%; /* Very Pale Lavender */
     --welcome-gradient-apple-hello-l3-h: 180; --welcome-gradient-apple-hello-l3-s: 100%; --welcome-gradient-apple-hello-l3-l: 97%; /* Very Pale Cyan */
-    --welcome-gradient-apple-hello-l4-h: var(--primary-h); --welcome-gradient-apple-hello-l4-s: var(--primary-s); --welcome-gradient-apple-hello-l4-l: var(--primary-l); /* Faint primary influence */
+    --welcome-gradient-apple-hello-l4-h: var(--primary-h); --welcome-gradient-apple-hello-l4-s: var(--primary-s); --welcome-gradient-apple-hello-l4-l: calc(var(--primary-l) + 40%) ; /* Faint primary influence, lightened significantly */
 
 
     /* Notification Panel Compact Colors - Light Mode (Solid, not frosted) */
@@ -167,7 +167,7 @@ body {
     --welcome-gradient-apple-hello-d1-h: 220; --welcome-gradient-apple-hello-d1-s: 70%; --welcome-gradient-apple-hello-d1-l: 12%; /* Deep Dark Blue */
     --welcome-gradient-apple-hello-d2-h: 280; --welcome-gradient-apple-hello-d2-s: 60%; --welcome-gradient-apple-hello-d2-l: 15%; /* Darker Purple */
     --welcome-gradient-apple-hello-d3-h: 200; --welcome-gradient-apple-hello-d3-s: 50%; --welcome-gradient-apple-hello-d3-l: 18%; /* Dark Cool Cyan-Blue */
-    --welcome-gradient-apple-hello-d4-h: var(--primary-h); --welcome-gradient-apple-hello-d4-s: var(--primary-s); --welcome-gradient-apple-hello-d4-l: var(--primary-l); /* Faint primary from theme */
+    --welcome-gradient-apple-hello-d4-h: var(--primary-h); --welcome-gradient-apple-hello-d4-s: var(--primary-s); --welcome-gradient-apple-hello-d4-l: var(--primary-l) ; /* Faint primary from theme */
 
     /* Notification Panel Compact Colors - Dark Mode (Solid, not frosted) */
     --notification-panel-compact-bg: 216 54% 18%; /* Darker card-like color */
@@ -449,8 +449,8 @@ body {
 
 /* Subtle pulse/glow for tool cards (can be applied conditionally) */
 @keyframes subtle-pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px var(--welcome-color-1)/0.3); }
-  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px var(--welcome-color-2)/0.5); }
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsl(var(--welcome-color-1)/0.3)); }
+  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsl(var(--welcome-color-2)/0.5)); }
 }
 
 .animate-subtle-pulse-glow {
@@ -577,81 +577,67 @@ body {
   transform: translateX(50%) translateY(-25%) rotate(25deg);
 }
 
-/* Welcome Screen Gradient Background Animation - Multi-stage */
-@keyframes welcome-gradient-animation {
-  0% { /* Initial simple/ECG wave hint */
-    background-image: linear-gradient(
-      -45deg,
-      hsl(var(--primary-h) var(--primary-s) 95% / 0.8), /* Lighter primary */
-      hsl(var(--accent-h) var(--accent-s) 90% / 0.7),   /* Lighter accent */
-      hsl(var(--primary-h) var(--primary-s) 97% / 0.9),
-      hsl(var(--accent-h) var(--accent-s) 92% / 0.6)
-    );
-    background-position: 0% 50%;
+
+/* Welcome Screen Gradient Animation - Radiating */
+@keyframes welcome-gradient-radiate-animation-light {
+  0% {
+    background-color: hsl(var(--background));
+    background-image: none; /* Start plain */
   }
-  30% { /* Transitioning, more vibrant */
-    background-image: linear-gradient(
-      -45deg,
-      hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.7),
-      hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.6),
-      hsl(var(--welcome-gradient-apple-hello-l1-h) var(--welcome-gradient-apple-hello-l1-s) var(--welcome-gradient-apple-hello-l1-l) / 0.5),
-      hsl(var(--welcome-gradient-apple-hello-l2-h) var(--welcome-gradient-apple-hello-l2-s) var(--welcome-gradient-apple-hello-l2-l) / 0.4)
-    );
-    background-position: 50% 50%;
+  10% { /* Start introducing the primary color radiate */
+    background-color: hsl(var(--background));
+    background-image: radial-gradient(circle at center, hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.2) 0%, hsl(var(--background)) 30%);
   }
-  70%, 100% { /* Settled Apple Hello style, with subtle movement */
-    background-image: linear-gradient(
-      -45deg,
-      hsl(var(--welcome-gradient-apple-hello-l1-h) var(--welcome-gradient-apple-hello-l1-s) var(--welcome-gradient-apple-hello-l1-l) / 0.9),
-      hsl(var(--welcome-gradient-apple-hello-l2-h) var(--welcome-gradient-apple-hello-l2-s) var(--welcome-gradient-apple-hello-l2-l) / 0.95),
-      hsl(var(--welcome-gradient-apple-hello-l3-h) var(--welcome-gradient-apple-hello-l3-s) var(--welcome-gradient-apple-hello-l3-l) / 0.85),
-      hsl(var(--welcome-gradient-apple-hello-l4-h) var(--welcome-gradient-apple-hello-l4-s) var(--welcome-gradient-apple-hello-l4-l) / 0.2)
-    );
-    background-position: 100% 50%;
+  40% { /* Expand with accent, start transition to Apple Hello */
+    background-image: radial-gradient(circle at center, 
+      hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.4) 10%, 
+      hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.2) 40%, 
+      hsl(var(--welcome-gradient-apple-hello-l1-h) var(--welcome-gradient-apple-hello-l1-s) var(--welcome-gradient-apple-hello-l1-l) / 0.1) 70%,
+      hsl(var(--background)) 100%);
+  }
+  70%, 100% { /* Settle into Apple Hello style */
+    background-image: radial-gradient(ellipse farthest-corner at center, 
+      hsl(var(--welcome-gradient-apple-hello-l1-h) var(--welcome-gradient-apple-hello-l1-s) var(--welcome-gradient-apple-hello-l1-l) / 0.9) 0%,
+      hsl(var(--welcome-gradient-apple-hello-l2-h) var(--welcome-gradient-apple-hello-l2-s) var(--welcome-gradient-apple-hello-l2-l) / 0.95) 35%,
+      hsl(var(--welcome-gradient-apple-hello-l3-h) var(--welcome-gradient-apple-hello-l3-s) var(--welcome-gradient-apple-hello-l3-l) / 0.85) 70%,
+      hsl(var(--welcome-gradient-apple-hello-l4-h) var(--welcome-gradient-apple-hello-l4-s) calc(var(--primary-l) + 40%) / 0.2) 100%);
+    background-color: hsl(var(--welcome-gradient-apple-hello-l1-h) var(--welcome-gradient-apple-hello-l1-s) var(--welcome-gradient-apple-hello-l1-l)); /* Base for the softest color */
+  }
+}
+
+@keyframes welcome-gradient-radiate-animation-dark {
+  0% {
+    background-color: hsl(var(--background)); /* Start plain dark */
+    background-image: none;
+  }
+  10% {
+    background-color: hsl(var(--background));
+    background-image: radial-gradient(circle at center, hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) + 10%) / 0.2) 0%, hsl(var(--background)) 30%);
+  }
+  40% {
+    background-image: radial-gradient(circle at center, 
+      hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) + 5%) / 0.4) 10%, 
+      hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 5%) / 0.2) 40%, 
+      hsl(var(--welcome-gradient-apple-hello-d1-h) var(--welcome-gradient-apple-hello-d1-s) var(--welcome-gradient-apple-hello-d1-l) / 0.1) 70%,
+      hsl(var(--background)) 100%);
+  }
+  70%, 100% {
+    background-image: radial-gradient(ellipse farthest-corner at center, 
+      hsl(var(--welcome-gradient-apple-hello-d1-h) var(--welcome-gradient-apple-hello-d1-s) var(--welcome-gradient-apple-hello-d1-l) / 0.9) 0%,
+      hsl(var(--welcome-gradient-apple-hello-d2-h) var(--welcome-gradient-apple-hello-d2-s) var(--welcome-gradient-apple-hello-d2-l) / 0.95) 35%,
+      hsl(var(--welcome-gradient-apple-hello-d3-h) var(--welcome-gradient-apple-hello-d3-s) var(--welcome-gradient-apple-hello-d3-l) / 0.85) 70%,
+      hsl(var(--welcome-gradient-apple-hello-d4-h) var(--welcome-gradient-apple-hello-d4-s) var(--primary-l) / 0.2) 100%);
+    background-color: hsl(var(--welcome-gradient-apple-hello-d1-h) var(--welcome-gradient-apple-hello-d1-s) var(--welcome-gradient-apple-hello-d1-l)); /* Base for the darkest color */
   }
 }
 
 .welcome-screen-gradient {
-  background-size: 400% 400%; /* Larger size for smoother gradient transitions */
-  animation: welcome-gradient-animation 12s ease-in-out infinite alternate; /* Slower, smoother, and alternating */
+  background-size: 100% 100%; 
+  animation: welcome-gradient-radiate-animation-light 2.8s ease-out forwards; /* Fill animation */
 }
 
 .dark .welcome-screen-gradient {
-   /* Similar keyframe logic for dark mode, adjusting opacities and target colors */
-  animation: welcome-gradient-animation-dark 12s ease-in-out infinite alternate;
-}
-
-@keyframes welcome-gradient-animation-dark {
-  0% {
-    background-image: linear-gradient(
-      -45deg,
-      hsl(var(--primary-h) var(--primary-s) 20% / 0.7), /* Darker primary */
-      hsl(var(--accent-h) var(--accent-s) 25% / 0.6),   /* Darker accent */
-      hsl(var(--primary-h) var(--primary-s) 15% / 0.8),
-      hsl(var(--accent-h) var(--accent-s) 20% / 0.5)
-    );
-    background-position: 0% 50%;
-  }
-  30% {
-    background-image: linear-gradient(
-      -45deg,
-      hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.5), /* Original dark primary */
-      hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.4),   /* Original dark accent */
-      hsl(var(--welcome-gradient-apple-hello-d1-h) var(--welcome-gradient-apple-hello-d1-s) var(--welcome-gradient-apple-hello-d1-l) / 0.6),
-      hsl(var(--welcome-gradient-apple-hello-d2-h) var(--welcome-gradient-apple-hello-d2-s) var(--welcome-gradient-apple-hello-d2-l) / 0.5)
-    );
-    background-position: 50% 50%;
-  }
-  70%, 100% {
-    background-image: linear-gradient(
-      -45deg,
-      hsl(var(--welcome-gradient-apple-hello-d1-h) var(--welcome-gradient-apple-hello-d1-s) var(--welcome-gradient-apple-hello-d1-l) / 0.9),
-      hsl(var(--welcome-gradient-apple-hello-d2-h) var(--welcome-gradient-apple-hello-d2-s) var(--welcome-gradient-apple-hello-d2-l) / 0.95),
-      hsl(var(--welcome-gradient-apple-hello-d3-h) var(--welcome-gradient-apple-hello-d3-s) var(--welcome-gradient-apple-hello-d3-l) / 0.85),
-      hsl(var(--welcome-gradient-apple-hello-d4-h) var(--welcome-gradient-apple-hello-d4-s) var(--welcome-gradient-apple-hello-d4-l) / 0.2)
-    );
-    background-position: 100% 50%;
-  }
+  animation-name: welcome-gradient-radiate-animation-dark;
 }
 
 
@@ -667,11 +653,9 @@ body {
 
 
 /* --- Styles for Compact Notification Panel --- */
-/* These styles apply to the panel itself and general item appearance */
 .notification-panel-compact {
   background-color: hsl(var(--notification-panel-compact-bg));
   border: 1px solid hsl(var(--notification-panel-compact-border));
-  /* Other panel styles like width, max-height, positioning are in its component or via Tailwind */
 }
 
 .dark .notification-panel-compact {
@@ -693,7 +677,6 @@ body {
   background-color: hsl(var(--notification-item-compact-hover-bg));
 }
 
-/* This is the small dot indicating an unread notification */
 .notification-unread-dot {
   @apply h-2 w-2 rounded-full;
   background-color: var(--notification-unread-dot-color);
@@ -744,7 +727,6 @@ body {
   background-color: transparent;
 }
 
-/* If not comet, apply base color for simple pulse */
 .profile-notification-ring:not(.profile-notification-ring-comet) {
    background-color: hsl(var(--primary));
 }
@@ -766,38 +748,33 @@ body {
 /* Animated Gradient Border for Notification Panel (Firebase Inspired) */
 .notification-panel-animated-border {
   position: relative;
-  border: 2px solid transparent; /* Base border for structure, will be covered */
-  overflow: hidden; /* Important to clip the pseudo-element */
+  border: 2px solid transparent; 
+  overflow: hidden; 
 }
 
 .notification-panel-animated-border::before {
   content: "";
   position: absolute;
-  inset: -2px; /* Creates the border effect; adjust for thickness */
-  border-radius: inherit; /* Match panel's border-radius */
-  padding: 2px; /* This is the "thickness" of the gradient border */
+  inset: -2px; 
+  border-radius: inherit; 
+  padding: 2px; 
   background: linear-gradient(
     135deg,
     var(--welcome-color-1),
     var(--welcome-color-2),
     var(--welcome-color-3),
     var(--welcome-color-4),
-    var(--welcome-color-1) /* Loop back for smooth animation */
+    var(--welcome-color-1) 
   );
-  background-size: 300% 300%; /* Make it large enough for animation */
-  animation: animated-gradient-background 4s ease infinite; /* Re-use or create new animation */
+  background-size: 300% 300%; 
+  animation: animated-gradient-background 4s ease infinite; 
   -webkit-mask:
-    linear-gradient(#fff 0 0) content-box, /* Transparent center */
-    linear-gradient(#fff 0 0); /* Solid border area */
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0); 
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; /* For older browsers, 'destination-out' or 'source-out' might be alternatives */
-  mask-composite: exclude; /* This is key to make it a border by excluding the content-box area */
-  z-index: -1; /* Place it behind the panel's content but above its background if the panel itself isn't transparent */
+  -webkit-mask-composite: xor; 
+  mask-composite: exclude; 
+  z-index: -1; 
 }
-
-/* Ensure the notification panel itself has its defined background so the ::before doesn't show through center */
-/* This is already handled by .notification-panel-compact having a background-color */
-
-
