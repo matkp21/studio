@@ -35,9 +35,9 @@ body {
     --muted-foreground: 220 20% 50%; /* Medium Cool Gray */
 
     /* Accent color HSL components */
-    --accent-h: 170; /* Teal - was 260 (Purple) */
+    --accent-h: 170; /* Teal */
     --accent-s: 98%;
-    --accent-l: 52%; /* Adjusted for better visibility if used as bg */
+    --accent-l: 52%; 
     --accent: var(--accent-h) var(--accent-s) var(--accent-l); /* Vibrant Teal/Cyan */
     --accent-foreground: 210 100% 10%; /* Dark Blue for contrast on accent */
     
@@ -53,11 +53,11 @@ body {
     /* Sidebar specific colors - Light Mode (Gemini Inspired) */
     --sidebar-background: 220 20% 97%; /* Lighter, cleaner grey */
     --sidebar-foreground: 220 25% 28%; /* Slightly softer dark grey for text */
-    --sidebar-primary: hsl(var(--primary)); 
+    --sidebar-primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l)); 
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
     --sidebar-accent: 220 80% 92%; /* Light, subtle blue accent for hover */
     --sidebar-accent-foreground: 220 80% 40%; /* Darker blue for text on accent */
-    --sidebar-active-background: hsl(var(--primary)); 
+    --sidebar-active-background: hsl(var(--primary-h) var(--primary-s) var(--primary-l)); 
     --sidebar-active-foreground: hsl(var(--primary-foreground));
     --sidebar-border: 220 15% 88%; 
     --sidebar-ring: hsl(var(--ring));
@@ -70,23 +70,17 @@ body {
     --chart-5: 130 50% 50%;  /* Green */
 
     /* Firebase Inspired Gradient Colors (Light Mode) - Used for accents */
-    --firebase-color-1-light: 45 100% 58%; /* Bright Yellow (e.g., #FFCA28) */
-    --firebase-color-2-light: 36 100% 50%; /* Bright Orange (e.g., #FFA000) */
-    --firebase-color-3-light: 25 100% 55%; /* Orange-Red (e.g., #FF8A65) */
-    --firebase-color-4-light: 15 100% 60%; /* Reddish-Orange (e.g., #FF7043) */
+    --firebase-color-1-light: 45 100% 58%; /* Bright Yellow (#FFCA28) */
+    --firebase-color-2-light: 36 100% 50%; /* Bright Orange (#FFA000) */
+    --firebase-color-3-light: 25 100% 55%; /* Orange-Red (#FF8A65) */
+    --firebase-color-4-light: 15 100% 60%; /* Reddish-Orange (#FF7043) */
 
     --welcome-color-1: hsl(var(--firebase-color-1-light));
     --welcome-color-2: hsl(var(--firebase-color-2-light));
     --welcome-color-3: hsl(var(--firebase-color-3-light));
     --welcome-color-4: hsl(var(--firebase-color-4-light));
-
-    /* Apple "Hello" Inspired Welcome Screen Gradient HSL components (Light Mode) */
-    --welcome-gradient-apple-hello-l1-h: 225; --welcome-gradient-apple-hello-l1-s: 100%; --welcome-gradient-apple-hello-l1-l: 97%; /* Very Pale Blue */
-    --welcome-gradient-apple-hello-l2-h: 270; --welcome-gradient-apple-hello-l2-s: 100%; --welcome-gradient-apple-hello-l2-l: 97%; /* Very Pale Lavender */
-    --welcome-gradient-apple-hello-l3-h: 180; --welcome-gradient-apple-hello-l3-s: 100%; --welcome-gradient-apple-hello-l3-l: 97%; /* Very Pale Cyan */
-    --welcome-gradient-apple-hello-l4-h: var(--primary-h); --welcome-gradient-apple-hello-l4-s: var(--primary-s); --welcome-gradient-apple-hello-l4-l: calc(var(--primary-l) + 40%) ; /* Faint primary influence, lightened significantly */
-
-    /* Apple Event Poster Inspired Splash Screen HSL components (Light Mode) */
+    
+    /* Apple Event Poster Inspired Static Splash Screen HSL components (Light Mode) */
     --apple-event-deep-purple-h: 260;
     --apple-event-deep-purple-s: 60%;
     --apple-event-deep-purple-l-start: 15%;
@@ -113,79 +107,82 @@ body {
     --apple-event-light-beam-mid-a: 0.6;
 
     /* Heart/ECG Icon Colors for Splash (Used by Web Component & External CSS) */
-    --heart-stroke-initial-h: 210;
-    --heart-stroke-initial-s: 100%;
-    --heart-stroke-initial-l: 70%;
-    --heart-stroke-animated-h: 330; 
+    --heart-icon-stroke-h: var(--primary-h); /* Using app primary blue */
+    --heart-icon-stroke-s: var(--primary-s);
+    --heart-icon-stroke-l: calc(var(--primary-l) + 20%); /* Lighter shade of primary */
+
+    --heart-stroke-initial-h: var(--heart-icon-stroke-h);
+    --heart-stroke-initial-s: var(--heart-icon-stroke-s);
+    --heart-stroke-initial-l: var(--heart-icon-stroke-l);
+
+    --heart-stroke-animated-h: 330; /* Hot-pink for animation */
     --heart-stroke-animated-s: 100%;
     --heart-stroke-animated-l: 70%;
-    --ecg-stroke-color-h: 200;
-    --ecg-stroke-color-s: 100%;
-    --ecg-stroke-color-l: 75%;
-    --heart-icon-splash-size: clamp(100px, 20vw, 180px); /* Default size for the web component */
+
+    --ecg-stroke-color-h: var(--heart-icon-stroke-h);
+    --ecg-stroke-color-s: var(--heart-icon-stroke-s);
+    --ecg-stroke-color-l: var(--heart-icon-stroke-l);
+
+    --heart-icon-splash-size: clamp(100px, 20vw, 180px);
     --heart-stroke-width: 2.5px;
     --ecg-stroke-width: 2.5px;
 
+    /* Text Colors for Static Splash */
+    --splash-text-main-color: white;
+    --splash-text-tagline-color: rgba(255, 255, 255, 0.9);
 
-    /* Text Colors for Splash */
-    --splash-text-color: white;
-    --splash-tagline-color: rgba(255, 255, 255, 0.85);
-
-
-    /* Notification Panel Compact Colors - Light Mode (Solid, not frosted) */
+    /* Notification Panel Colors - Light Mode */
     --notification-panel-compact-bg: 0 0% 100%; /* White */
-    --notification-panel-compact-border: 210 20% 88%; /* Light Cool Gray Border */
-    --notification-item-compact-bg: 0 0% 100%; /* White for item cards */
-    --notification-item-compact-hover-bg: 210 25% 96%; /* Light Gray for hover */
-    --notification-unread-dot-color: hsl(var(--primary)); /* Primary blue for unread dot */
+    --notification-panel-compact-border: 210 20% 88%; 
+    --notification-item-compact-bg: 0 0% 100%; 
+    --notification-item-compact-hover-bg: 210 25% 96%; 
+    --notification-unread-dot-color: hsl(var(--primary)); 
   }
 
   .dark {
     /* Dark Theme - Apple Inspired (Deep Navy/Cool Metallic) */
-    --background: 216 65% 11%; /* Deep Navy Blue */
-    --foreground: 215 100% 95%; /* Off-white with a slight cool tint */
+    --background: 216 65% 11%; 
+    --foreground: 215 100% 95%; 
 
-    --card: 216 54% 20%; /* Darker shade of navy/gray */
+    --card: 216 54% 20%; 
     --card-foreground: 215 100% 95%;
 
-    --popover: 216 65% 9%; /* Slightly darker than background */
+    --popover: 216 65% 9%; 
     --popover-foreground: 215 100% 95%;
 
-    /* Primary color HSL components - Dark */
     --primary-h: 210;
     --primary-s: 100%;
     --primary-l: 60%;
-    --primary: var(--primary-h) var(--primary-s) var(--primary-l); /* Lighter, vibrant Blue */
-    --primary-foreground: 216 65% 10%; /* Dark Blue-Gray for text on primary */
+    --primary: var(--primary-h) var(--primary-s) var(--primary-l); 
+    --primary-foreground: 216 65% 10%; 
 
-    --secondary: 216 50% 25%; /* Dark Muted Blue/Gray */
-    --secondary-foreground: 215 20% 85%; /* Light Gray */
+    --secondary: 216 50% 25%; 
+    --secondary-foreground: 215 20% 85%; 
 
-    --muted: 216 45% 18%; /* Very Dark Muted Blue */
-    --muted-foreground: 215 15% 70%; /* Mid-Light Gray */
+    --muted: 216 45% 18%; 
+    --muted-foreground: 215 15% 70%; 
 
-    /* Accent color HSL components - Dark */
-    --accent-h: 170; /* Teal - was 260 (Purple) */
+    --accent-h: 170; /* Teal */
     --accent-s: 98%;
     --accent-l: 52%;
-    --accent: var(--accent-h) var(--accent-s) var(--accent-l); /* Vibrant Teal/Cyan */
-    --accent-foreground: 170 90% 10%; /* Very Dark Cyan/Teal for text on accent */
+    --accent: var(--accent-h) var(--accent-s) var(--accent-l); 
+    --accent-foreground: 170 90% 10%; 
 
-    --destructive: 0 60% 55%; /* Vibrant but slightly desaturated Red */
-    --destructive-foreground: 0 0% 100%; /* White */
+    --destructive: 0 60% 55%; 
+    --destructive-foreground: 0 0% 100%; 
 
-    --border: 216 40% 30%; /* Subtle Border Color */
-    --input: 216 50% 28%; /* Input Background / Border */
-    --ring: 210 100% 65%; /* Brighter Primary for focus rings */
+    --border: 216 40% 30%; 
+    --input: 216 50% 28%; 
+    --ring: 210 100% 65%; 
 
     /* Sidebar specific colors - Dark Mode (Gemini Inspired) */
-    --sidebar-background: 220 30% 12%; /* Darker, sophisticated blue/grey */
-    --sidebar-foreground: 220 15% 88%; /* Brighter off-white for text */
-    --sidebar-primary: hsl(var(--primary));
+    --sidebar-background: 220 30% 12%; 
+    --sidebar-foreground: 220 15% 88%; 
+    --sidebar-primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 220 40% 22%; /* Subtle darker blue for hover */
-    --sidebar-accent-foreground: 220 80% 80%; /* Lighter blue for text on accent */
-    --sidebar-active-background: hsl(var(--primary)); 
+    --sidebar-accent: 220 40% 22%; 
+    --sidebar-accent-foreground: 220 80% 80%; 
+    --sidebar-active-background: hsl(var(--primary-h) var(--primary-s) var(--primary-l)); 
     --sidebar-active-foreground: hsl(var(--primary-foreground)); 
     --sidebar-border: 220 25% 20%; 
     --sidebar-ring: hsl(var(--ring));
@@ -193,31 +190,25 @@ body {
     /* Chart Colors - Dark Mode */
     --chart-1: hsl(var(--primary));  
     --chart-2: hsl(var(--accent));  
-    --chart-3: 270 70% 70%;  /* Bright Purple */
-    --chart-4: 40 90% 65%;   /* Bright Yellow-Orange */
-    --chart-5: 140 60% 60%;  /* Bright Green */
+    --chart-3: 270 70% 70%;  
+    --chart-4: 40 90% 65%;   
+    --chart-5: 140 60% 60%;  
 
-    /* Firebase Inspired Gradient Colors (Dark Mode) - Used for accents */
-    --firebase-color-1-dark: 45 100% 65%; /* Brighter Yellow */
-    --firebase-color-2-dark: 36 100% 60%; /* Brighter Orange */
-    --firebase-color-3-dark: 25 100% 65%; /* Brighter Orange-Red */
-    --firebase-color-4-dark: 15 100% 70%; /* Brighter Reddish-Orange */
+    /* Firebase Inspired Gradient Colors (Dark Mode) */
+    --firebase-color-1-dark: 45 100% 65%; 
+    --firebase-color-2-dark: 36 100% 60%; 
+    --firebase-color-3-dark: 25 100% 65%; 
+    --firebase-color-4-dark: 15 100% 70%; 
     
     --welcome-color-1: hsl(var(--firebase-color-1-dark));
     --welcome-color-2: hsl(var(--firebase-color-2-dark));
     --welcome-color-3: hsl(var(--firebase-color-3-dark));
     --welcome-color-4: hsl(var(--firebase-color-4-dark));
 
-    /* Apple "Hello" Inspired Welcome Screen Gradient HSL components (Dark Mode) */
-    --welcome-gradient-apple-hello-d1-h: 220; --welcome-gradient-apple-hello-d1-s: 70%; --welcome-gradient-apple-hello-d1-l: 12%; /* Deep Dark Blue */
-    --welcome-gradient-apple-hello-d2-h: 280; --welcome-gradient-apple-hello-d2-s: 60%; --welcome-gradient-apple-hello-d2-l: 15%; /* Darker Purple */
-    --welcome-gradient-apple-hello-d3-h: 200; --welcome-gradient-apple-hello-d3-s: 50%; --welcome-gradient-apple-hello-d3-l: 18%; /* Dark Cool Cyan-Blue */
-    --welcome-gradient-apple-hello-d4-h: var(--primary-h); --welcome-gradient-apple-hello-d4-s: var(--primary-s); --welcome-gradient-apple-hello-d4-l: var(--primary-l) ; /* Faint primary from theme */
-
-    /* Apple Event Poster Inspired Splash Screen HSL components (Dark Mode) - Ensure high contrast & vibrancy */
+    /* Apple Event Poster Inspired Static Splash Screen HSL components (Dark Mode) */
     --apple-event-deep-purple-h: 260;
     --apple-event-deep-purple-s: 65%;
-    --apple-event-deep-purple-l-start: 10%; /* Even darker for base */
+    --apple-event-deep-purple-l-start: 10%; 
     --apple-event-deep-purple-l-mid: 18%;
     --apple-event-mid-blue-h: 230;
     --apple-event-mid-blue-s: 60%;
@@ -241,22 +232,28 @@ body {
     --apple-event-light-beam-mid-a: 0.65;
 
     /* Heart/ECG Icon Colors for Splash - Dark Mode */
-    --heart-stroke-initial-h: 210;
-    --heart-stroke-initial-s: 100%;
-    --heart-stroke-initial-l: 75%;
+    --heart-icon-stroke-h: var(--primary-h); /* Using app primary blue */
+    --heart-icon-stroke-s: var(--primary-s);
+    --heart-icon-stroke-l: calc(var(--primary-l) + 15%); /* Slightly brighter primary for dark mode */
+
+    --heart-stroke-initial-h: var(--heart-icon-stroke-h);
+    --heart-stroke-initial-s: var(--heart-icon-stroke-s);
+    --heart-stroke-initial-l: var(--heart-icon-stroke-l);
+    
     --heart-stroke-animated-h: 330;
     --heart-stroke-animated-s: 100%;
-    --heart-stroke-animated-l: 75%;
-    --ecg-stroke-color-h: 200;
-    --ecg-stroke-color-s: 100%;
-    --ecg-stroke-color-l: 80%;
+    --heart-stroke-animated-l: 75%; /* Brighter pink for dark */
+    
+    --ecg-stroke-color-h: var(--heart-icon-stroke-h);
+    --ecg-stroke-color-s: var(--heart-icon-stroke-s);
+    --ecg-stroke-color-l: var(--heart-icon-stroke-l);
 
-    /* Notification Panel Compact Colors - Dark Mode (Solid, not frosted) */
-    --notification-panel-compact-bg: 216 54% 18%; /* Darker card-like color */
-    --notification-panel-compact-border: 216 40% 25%; /* Darker border */
-    --notification-item-compact-bg: 216 54% 18%; /* Darker card for items */
-    --notification-item-compact-hover-bg: 216 50% 22%; /* Slightly lighter hover */
-    --notification-unread-dot-color: hsl(var(--primary)); /* Primary blue for unread dot */
+    /* Notification Panel Colors - Dark Mode */
+    --notification-panel-compact-bg: 216 54% 18%; 
+    --notification-panel-compact-border: 216 40% 25%; 
+    --notification-item-compact-bg: 216 54% 18%; 
+    --notification-item-compact-hover-bg: 216 50% 22%; 
+    --notification-unread-dot-color: hsl(var(--primary)); 
   }
 }
 
@@ -264,7 +261,7 @@ body {
   * {
     @apply border-border;
   }
-  body {
+  body, html { /* Ensure html also takes full height for splash */
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     margin: 0;
@@ -276,7 +273,7 @@ body {
 }
 
 /* Ensure body for main app allows scrolling if splash is not active */
-body:not(:has(.event-splash-screen)) {
+body:not(:has(.event-poster-splash-screen)) {
   overflow: auto;
 }
 
@@ -287,22 +284,23 @@ body:not(:has(.event-splash-screen)) {
   transform: translateY(10px);
   animation: fadeInAnimation 0.5s ease-out forwards;
 }
-
-.fade-in-delay-1 { animation-delay: 0.1s; }
-.fade-in-delay-2 { animation-delay: 0.2s; }
-.fade-in-delay-3 { animation-delay: 0.3s; }
-.fade-in-delay-4 { animation-delay: 0.4s; }
-.fade-in-delay-5 { animation-delay: 0.5s; }
-.fade-in-delay-7 { animation-delay: 0.7s; }
-.fade-in-delay-10 { animation-delay: 1s; }
-
-
 @keyframes fadeInAnimation {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+/* Entrance animation for splash screen foreground elements */
+.splash-element-fade-in {
+  opacity: 0;
+  animation: fadeInElements 1s ease-out 0.5s forwards; /* 0.5s delay */
+}
+@keyframes fadeInElements {
+  to {
+    opacity: 1;
+  }
+}
+
 
 .slide-in-bottom {
   opacity: 0;
@@ -374,7 +372,7 @@ body:not(:has(.event-splash-screen)) {
   }
   50% {
     opacity: var(--medical-pulse-opacity-peak, 0.5);
-    transform: scale(var(--medical-pulse-scale-peak, 1.2)); /* Use CSS variable for scale */
+    transform: scale(var(--medical-pulse-scale-peak, 1.2)); 
   }
 }
 
@@ -665,72 +663,8 @@ body:not(:has(.event-splash-screen)) {
   transform: translateX(50%) translateY(-25%) rotate(25deg);
 }
 
-
-/* Welcome Screen Gradient Animation - Radiating (Apple Hello Inspired) */
-@keyframes welcome-gradient-radiate-animation-light {
-  0% {
-    background-color: hsl(var(--background));
-    background-image: none;
-  }
-  20% { 
-    background-color: hsl(var(--background));
-    background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.05) 0%, hsl(var(--background)) 20%);
-  }
-  50% { 
-    background-image: radial-gradient(circle at center,
-      hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.15) 10%,
-      hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.1) 35%,
-      hsla(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), var(--welcome-gradient-apple-hello-l1-l), 0.05) 60%,
-      hsl(var(--background)) 85%);
-  }
-  100% { 
-    background-image: radial-gradient(ellipse farthest-corner at center,
-      hsla(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), var(--welcome-gradient-apple-hello-l1-l), 0.9) 0%,
-      hsla(var(--welcome-gradient-apple-hello-l2-h), var(--welcome-gradient-apple-hello-l2-s), var(--welcome-gradient-apple-hello-l2-l), 0.95) 35%,
-      hsla(var(--welcome-gradient-apple-hello-l3-h), var(--welcome-gradient-apple-hello-l3-s), var(--welcome-gradient-apple-hello-l3-l), 0.85) 70%,
-      hsla(var(--welcome-gradient-apple-hello-l4-h), var(--welcome-gradient-apple-hello-l4-s), calc(var(--primary-l) + 40%), 0.2) 100%);
-    background-color: hsl(var(--welcome-gradient-apple-hello-l1-h) var(--welcome-gradient-apple-hello-l1-s) var(--welcome-gradient-apple-hello-l1-l));
-  }
-}
-@keyframes welcome-gradient-radiate-animation-dark {
-  0% {
-    background-color: hsl(var(--apple-event-deep-purple-h) var(--apple-event-deep-purple-s) 5%);
-    background-image: none;
-  }
-  20% {
-    background-color: hsl(var(--apple-event-deep-purple-h) var(--apple-event-deep-purple-s) 5%);
-    background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 10%), 0.1) 0%, hsl(var(--apple-event-deep-purple-h) var(--apple-event-deep-purple-s) 5%) 20%);
-  }
-  50% {
-    background-image: radial-gradient(circle at center,
-      hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%), 0.2) 10%,
-      hsla(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 5%), 0.15) 35%,
-      hsla(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), var(--welcome-gradient-apple-hello-d1-l), 0.1) 60%,
-      hsl(var(--apple-event-deep-purple-h) var(--apple-event-deep-purple-s) 5%) 85%);
-  }
-  100% {
-    background-image: radial-gradient(ellipse farthest-corner at center,
-      hsla(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), var(--welcome-gradient-apple-hello-d1-l), 0.9) 0%,
-      hsla(var(--welcome-gradient-apple-hello-d2-h), var(--welcome-gradient-apple-hello-d2-s), var(--welcome-gradient-apple-hello-d2-l), 0.95) 35%,
-      hsla(var(--welcome-gradient-apple-hello-d3-h), var(--welcome-gradient-apple-hello-d3-s), var(--welcome-gradient-apple-hello-d3-l), 0.85) 70%,
-      hsla(var(--welcome-gradient-apple-hello-d4-h), var(--welcome-gradient-apple-hello-d4-s), var(--primary-l), 0.2) 100%);
-    background-color: hsl(var(--welcome-gradient-apple-hello-d1-h) var(--welcome-gradient-apple-hello-d1-s) var(--welcome-gradient-apple-hello-d1-l));
-  }
-}
-
-.welcome-screen-gradient {
-  /* Animation for the initial "fill" then settles and subtly moves */
-  animation: 
-    welcome-gradient-radiate-animation-light 2.8s ease-out forwards, /* Fill animation */
-    apple-event-background-animation-light 30s ease-in-out 2.8s infinite alternate; /* Subtle movement after fill */
-  background-size: 150% 150%; /* Start with a size that allows for some movement in the second animation */
-}
-.dark .welcome-screen-gradient {
-  animation-name: welcome-gradient-radiate-animation-dark, apple-event-background-animation-dark;
-}
-
-/* Apple Event Poster Inspired Splash Screen - Static Replication as Base */
-.event-splash-screen {
+/* --- Apple Event Poster Static Splash Screen Styles --- */
+.event-poster-splash-screen {
   width: 100vw;
   height: 100vh;
   position: relative;
@@ -739,107 +673,89 @@ body:not(:has(.event-splash-screen)) {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  /* Multi-Layered Background Gradients for Static Apple Poster Effect */
-  background-image:
-    /* Layer 5: Strongest Light Beam */
-    linear-gradient( 125deg, transparent 42%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), var(--apple-event-light-beam-edge-a)) 48%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), var(--apple-event-light-beam-mid-a)) 49.5%, hsl(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l)) 50%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), var(--apple-event-light-beam-mid-a)) 50.5%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), var(--apple-event-light-beam-edge-a)) 52%, transparent 58% ),
-    /* Layer 4: Secondary Light Beam */
-    linear-gradient( -30deg, transparent 45%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), calc(var(--apple-event-light-beam-edge-a) - 0.1)) 49%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), calc(var(--apple-event-light-beam-mid-a) - 0.2)) 50%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), calc(var(--apple-event-light-beam-edge-a) - 0.1)) 51%, transparent 55% ),
-    /* Layer 3: Orange/Yellow Bloom */
-    radial-gradient( ellipse 80% 70% at 75% 25%, hsla(var(--apple-event-bloom-yellow-h), var(--apple-event-bloom-yellow-s), var(--apple-event-bloom-yellow-l), var(--apple-event-bloom-yellow-a)) 0%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), var(--apple-event-bloom-orange-l), var(--apple-event-bloom-orange-a)) 30%, transparent 65% ),
-    /* Layer 2: Magenta/Purple Bloom */
-    radial-gradient( ellipse 90% 80% at 25% 60%, hsla(var(--apple-event-bloom-magenta-h), var(--apple-event-bloom-magenta-s), var(--apple-event-bloom-magenta-l), var(--apple-event-bloom-magenta-a)) 0%, hsla(var(--apple-event-deep-purple-h), var(--apple-event-deep-purple-s), var(--apple-event-deep-purple-l-mid), calc(var(--apple-event-bloom-magenta-a) + 0.1)) 40%, transparent 70% ),
-    /* Layer 1: Base Deep Space Gradient */
-    linear-gradient( 170deg, hsl(var(--apple-event-mid-blue-h), var(--apple-event-mid-blue-s), var(--apple-event-mid-blue-l)) 0%, hsl(var(--apple-event-deep-purple-h), var(--apple-event-deep-purple-s), var(--apple-event-deep-purple-l-mid)) 55%, hsl(var(--apple-event-deep-purple-h), var(--apple-event-deep-purple-s), var(--apple-event-deep-purple-l-start)) 100% );
-  background-color: hsl(var(--apple-event-deep-purple-h), var(--apple-event-deep-purple-s), 10%); 
-  background-size: 100% 100%, 100% 100%, 150% 150%, 160% 160%, 100% 100%;
-  background-position: center, center, 75% 25%, 25% 60%, center;
+  /* IMPORTANT: Ensure you have your image at this path in the public folder */
+  background-image: url('/images/mediassistant-splash-background.png');
+  background-size: cover;
+  background-position: center center;
   background-repeat: no-repeat;
-  background-blend-mode: screen; 
+  /* Fallback color if image fails to load, matches the deep purple */
+  background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 60%), var(--apple-event-deep-purple-l-start, 15%));
 }
 
-.dark .event-splash-screen {
-  background-image:
-    linear-gradient( 125deg, transparent 42%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), var(--apple-event-light-beam-edge-a)) 48%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), var(--apple-event-light-beam-mid-a)) 49.5%, hsl(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l)) 50%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), var(--apple-event-light-beam-mid-a)) 50.5%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), var(--apple-event-light-beam-edge-a)) 52%, transparent 58% ),
-    linear-gradient( -30deg, transparent 45%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), calc(var(--apple-event-light-beam-edge-a) - 0.1)) 49%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), calc(var(--apple-event-light-beam-mid-a) - 0.2)) 50%, hsla(var(--apple-event-light-beam-h), var(--apple-event-light-beam-s), var(--apple-event-light-beam-core-l), calc(var(--apple-event-light-beam-edge-a) - 0.1)) 51%, transparent 55% ),
-    radial-gradient( ellipse 80% 70% at 75% 25%, hsla(var(--apple-event-bloom-yellow-h), var(--apple-event-bloom-yellow-s), var(--apple-event-bloom-yellow-l), var(--apple-event-bloom-yellow-a)) 0%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), var(--apple-event-bloom-orange-l), var(--apple-event-bloom-orange-a)) 30%, transparent 65% ),
-    radial-gradient( ellipse 90% 80% at 25% 60%, hsla(var(--apple-event-bloom-magenta-h), var(--apple-event-bloom-magenta-s), var(--apple-event-bloom-magenta-l), var(--apple-event-bloom-magenta-a)) 0%, hsla(var(--apple-event-deep-purple-h), var(--apple-event-deep-purple-s), var(--apple-event-deep-purple-l-mid), calc(var(--apple-event-bloom-magenta-a) + 0.1)) 40%, transparent 70% ),
-    linear-gradient( 170deg, hsl(var(--apple-event-mid-blue-h), var(--apple-event-mid-blue-s), var(--apple-event-mid-blue-l)) 0%, hsl(var(--apple-event-deep-purple-h), var(--apple-event-deep-purple-s), var(--apple-event-deep-purple-l-mid)) 55%, hsl(var(--apple-event-deep-purple-h), var(--apple-event-deep-purple-s), var(--apple-event-deep-purple-l-start)) 100% );
-  background-color: hsl(var(--apple-event-deep-purple-h), var(--apple-event-deep-purple-s), 5%);
-  background-blend-mode: lighten;
+.dark .event-poster-splash-screen {
+   background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), var(--apple-event-deep-purple-l-start, 10%));
 }
 
-/* Splash Logo Container */
-.splash-logo-container {
-  position: relative;
-  z-index: 10;
-  margin-bottom: 15vh; /* Adjust as needed */
+.central-icon-container {
+  position: relative; /* Centered by parent flexbox */
+  z-index: 2;
+  margin-bottom: 18vh; /* Adjust to push logo up from text block */
 }
 
-.heart-ecg-icon-splash {
-  /* Sizing now controlled by --heart-icon-splash-size var inside :root or this class */
-  --heart-icon-splash-size: clamp(100px, 20vw, 180px); /* Example */
-  width: var(--heart-icon-splash-size);
-  height: var(--heart-icon-splash-size);
-  /* The pulse-glow-from-pack animation will be applied to this class */
-  animation: pulse-glow-from-pack 2s ease-in-out infinite alternate;
-  /* The filter for drop-shadows will be part of the keyframes for animation */
+.heart-ecg-icon-splash-static {
+  width: var(--heart-icon-splash-size); /* Uses variable from :root */
+  height: auto; /* Maintain aspect ratio */
+  display: block;
+  filter: drop-shadow(0px 0px 15px hsla(var(--heart-icon-stroke-h), var(--heart-icon-stroke-s), var(--heart-icon-stroke-l), 0.5))
+          drop-shadow(0px 0px 30px hsla(var(--heart-icon-stroke-h), var(--heart-icon-stroke-s), var(--heart-icon-stroke-l), 0.3));
+  /* The internal SMIL animations will handle its specific movements */
+  animation: pulse-glow-from-pack 2.2s ease-in-out infinite alternate; /* Apply overall glow pulse */
 }
 
-@keyframes pulse-glow-from-pack {
+@keyframes pulse-glow-from-pack { /* Ensure HSL variables are used */
   0% {
     transform: scale(1);
-    filter: drop-shadow(0 0 8px hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6))
-            drop-shadow(0 0 15px hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.3));
+    filter: drop-shadow(0 0 8px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6))
+            drop-shadow(0 0 15px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.3));
   }
   50% {
     transform: scale(1.03);
-    filter: drop-shadow(0 0 15px hsl(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.7))
-            drop-shadow(0 0 30px hsl(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.4));
+    filter: drop-shadow(0 0 15px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.7))
+            drop-shadow(0 0 30px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.4));
   }
   100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 8px hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6))
-            drop-shadow(0 0 15px hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.3));
+    filter: drop-shadow(0 0 8px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6))
+            drop-shadow(0 0 15px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.3));
   }
 }
 
-/* Splash Text Block */
-.splash-text-block {
+
+.bottom-text-container-splash {
   position: absolute;
-  bottom: 8vh;
+  bottom: 7vh; /* Distance from bottom */
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  z-index: 10;
-  padding: 0 15px;
+  z-index: 2;
   width: 90%;
   max-width: 550px;
 }
 
-.app-name-splash {
-  font-size: clamp(1.8rem, 5vw, 3rem);
+.app-name-splash-static {
+  font-size: clamp(2rem, 5.5vw, 3.2rem);
   font-weight: 600;
-  color: var(--splash-text-color);
-  margin: 0 0 0.3em 0;
-  text-shadow: 0 2px 12px hsla(0, 0%, 0%, 0.35);
+  color: var(--splash-text-main-color);
+  margin: 0 0 0.25em 0;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-.tagline-splash {
-  font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+.tagline-splash-static {
+  font-size: clamp(1rem, 2.8vw, 1.4rem);
   font-weight: 300;
-  color: var(--splash-tagline-color);
+  color: var(--splash-text-tagline-color);
   margin: 0;
   line-height: 1.45;
-  text-shadow: 0 1px 8px hsla(0, 0%, 0%, 0.25);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.25);
 }
-.tagline-splash .emoji {
+
+.tagline-splash-static .emoji {
   display: inline-block;
   vertical-align: middle;
-  font-size: 1.1em;
-  animation: heartPulseSubtle 2.0s infinite ease-in-out; /* Added subtle pulse for emojis too */
+  font-size: inherit;
+  animation: heartPulseSubtle 2.0s infinite ease-in-out;
 }
-/* End of Apple Event Poster Splash Screen Styles */
+/* End of Apple Event Poster Static Splash Screen Styles */
 
 
 /* Subtle Heart Pulse Animation for Tagline Emojis */
@@ -981,4 +897,126 @@ body:not(:has(.event-splash-screen)) {
   -webkit-mask-composite: xor; 
   mask-composite: exclude; 
   z-index: -1; 
+}
+
+```]></content>
+  </change>
+  <change>
+    <file>/src/components/welcome/welcome-display.tsx</file>
+    <content><![CDATA[
+// src/components/welcome/welcome-display.tsx
+"use client";
+
+import React, { useEffect } from 'react'; // Added React import
+import { cn } from '@/lib/utils';
+
+interface WelcomeDisplayProps {
+  onDisplayComplete: () => void;
+}
+
+export function WelcomeDisplay({ onDisplayComplete }: WelcomeDisplayProps) {
+  useEffect(() => {
+    // Define the HeartECGIcon Web Component
+    if (typeof window !== 'undefined' && !customElements.get('heart-ecg-icon')) {
+      // Calculate actual length for stroke-dasharray for the ECG polyline
+      // You MUST calculate this accurately for your specific polyline points.
+      // Example: For points="16,32 24,32 28,40 36,24 40,32 48,32"
+      // You can do this by:
+      // 1. Creating an SVG with just the polyline.
+      // 2. In the browser console: document.getElementById('yourPolylineId').getTotalLength();
+      const ecgPathLength = 68; // <<<< IMPORTANT: REPLACE 68 with your calculated length
+
+      class HeartECGIcon extends HTMLElement {
+        constructor() {
+          super();
+          const shadow = this.attachShadow({ mode: 'open' });
+          shadow.innerHTML = `
+            <style>
+              :host {
+                display: inline-block;
+                width: var(--heart-icon-splash-size, 150px);
+                height: var(--heart-icon-splash-size, 150px);
+              }
+              svg {
+                width: 100%;
+                height: 100%;
+                display: block;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                overflow: visible;
+              }
+              .heart-path {
+                fill: none;
+                stroke-width: var(--heart-stroke-width, 2.5px);
+              }
+              .ecg-polyline {
+                fill: none;
+                stroke-width: var(--ecg-stroke-width, 2.5px);
+                stroke-dasharray: ${ecgPathLength};
+                stroke-dashoffset: ${ecgPathLength};
+              }
+            </style>
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+              <path class="heart-path"
+                    d="M32 60s24-13.3 24-34C56 17.9 49.1 12 40.5 12 35.2 12 32 16.5 32 16.5S28.8 12 23.5 12C14.9 12 8 17.9 8 26c0 20.7 24 34 24 34z"
+                    stroke="hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l))">
+                <animate attributeName="stroke"
+                         values="hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l));
+                                 hsl(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l));
+                                 hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l))"
+                         dur="3s"
+                         repeatCount="indefinite"/>
+                <animateTransform attributeName="transform"
+                                  type="scale"
+                                  additive="sum"
+                                  values="0; 0.03; 0; -0.03; 0"
+                                  dur="1.5s"
+                                  begin="0s"
+                                  repeatCount="indefinite"
+                                  calcMode="spline"
+                                  keyTimes="0; 0.25; 0.5; 0.75; 1"
+                                  keySplines="0.5 0 0.5 1; 0.5 0 0.5 1; 0.5 0 0.5 1; 0.5 0 0.5 1"
+                                  transform-origin="center"/>
+              </path>
+              <polyline class="ecg-polyline"
+                        points="16,32 24,32 28,40 36,24 40,32 48,32"
+                        stroke="hsl(var(--ecg-stroke-color-h), var(--ecg-stroke-color-s), var(--ecg-stroke-color-l))">
+                <animate attributeName="stroke-dashoffset"
+                         values="${ecgPathLength};0;${ecgPathLength}"
+                         dur="2s"
+                         begin="0.2s"
+                         repeatCount="indefinite" />
+              </polyline>
+            </svg>
+          `;
+        }
+      }
+      customElements.define('heart-ecg-icon', HeartECGIcon);
+    }
+
+    const timer = setTimeout(() => {
+      onDisplayComplete();
+    }, 7000); // Increased duration
+
+    return () => clearTimeout(timer);
+  }, [onDisplayComplete]);
+
+  return (
+    <div
+      className="event-poster-splash-screen" // This class will use the static background image
+      onClick={onDisplayComplete} // Click anywhere to continue
+    >
+      <div className="central-icon-container splash-element-fade-in">
+        {/* Use the Web Component. External CSS will style it further (e.g., overall pulse/glow) */}
+        <heart-ecg-icon class="heart-ecg-icon-splash-static"></heart-ecg-icon>
+      </div>
+
+      <div className="bottom-text-container-splash splash-element-fade-in">
+        <h1 className="app-name-splash-static">MediAssistant</h1>
+        <p className="tagline-splash-static">
+          Simply #Smart. Always <span className="emoji" role="img" aria-label="sparks">✨</span><span className="emoji animate-heart-pulse-subtle" role="img" aria-label="brain">🧠</span>
+        </p>
+      </div>
+    </div>
+  );
 }
