@@ -16,22 +16,22 @@ import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Home,
-  MessageCircleHeart, // Updated icon
-  ClipboardList, // Keep or change based on context
-  ScanEye,       // Changed from View
-  Settings2,     // Changed from Settings
+  MessageCircleHeart, 
+  ClipboardList, 
+  ScanEye,       
+  Settings2,     
   LogOut,
   GraduationCap,
   BriefcaseMedical,
   Info,
-  HeartPulse,    // Fallback for avatar
-  PillIcon, // For Medication Management
+  HeartPulse,    
+  PillIcon, 
 } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-  TooltipProvider, // Ensure TooltipProvider is imported for external tooltips
+  TooltipProvider, 
 } from "@/components/ui/tooltip";
 import { cn } from '@/lib/utils';
 import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
@@ -40,14 +40,14 @@ import { useToast } from '@/hooks/use-toast';
 const baseNavItems = [
   { href: '/', label: 'Home', icon: Home, ariaLabel: 'Go to Home page' },
   { href: '/chat', label: 'Chat', icon: MessageCircleHeart, ariaLabel: 'Open Chat interface' },
-  { href: '/medications', label: 'Medications', icon: PillIcon, ariaLabel: 'Manage Medications' }, // Added Medications
+  { href: '/medications', label: 'Medications', icon: PillIcon, ariaLabel: 'Manage Medications' }, 
   { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye, ariaLabel: 'Open AR Viewer' },
 ];
 
 const patientManagementNavItem = {
   href: '/patient-management',
   label: 'Patient Management',
-  icon: ClipboardList, // Consider ClipboardCheck, Users2, etc.
+  icon: ClipboardList, 
   ariaLabel: 'Open Patient Management'
 };
 
@@ -76,18 +76,17 @@ export function SidebarNav() {
 
   if (userRole === 'medico') {
     navItems.push(medicoDashboardNavItem);
-    if (!navItems.find(item => item.href === '/patient-management')) {
-      // Medico might not need full patient management, adjust if necessary
-      // For now, let's assume they might access it for learning or simulated cases
-      navItems.push(patientManagementNavItem);
-    }
+    // Medico might not need full patient management by default, this can be adjusted
+    // if (!navItems.find(item => item.href === '/patient-management')) {
+    //   navItems.push(patientManagementNavItem);
+    // }
   } else if (userRole === 'pro') {
     navItems.push(proToolsNavItem);
     if (!navItems.find(item => item.href === '/patient-management')) {
       navItems.push(patientManagementNavItem);
     }
   }
-  // For 'diagnosis' role, baseNavItems might be sufficient unless specific patient tools are added outside 'Medications'
+  // For 'diagnosis' role, baseNavItems are used.
 
   const handleLogout = () => {
     toast({
@@ -115,7 +114,7 @@ export function SidebarNav() {
                   <TooltipTrigger asChild>
                     <Link href={item.href} passHref legacyBehavior>
                       <SidebarMenuButton
-                        asChild
+                        as="a" // Important for Link with legacyBehavior
                         isActive={isActive}
                         aria-label={item.ariaLabel}
                         className={cn(
@@ -127,15 +126,15 @@ export function SidebarNav() {
                           "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
                         )}
                       >
-                        <a>
+                        
                           <item.icon className={cn(
                               "h-5 w-5 transition-transform duration-200 ease-in-out",
                               "group-hover:scale-110",
-                              isActive && "text-sidebar-active-foreground" // Ensure active icon color matches text
+                              isActive && "text-sidebar-active-foreground" 
                              )}
                            />
                           <span>{item.label}</span>
-                        </a>
+                        
                       </SidebarMenuButton>
                     </Link>
                   </TooltipTrigger>
@@ -161,7 +160,7 @@ export function SidebarNav() {
               <TooltipTrigger asChild>
                 <Link href="/feedback" passHref legacyBehavior>
                   <SidebarMenuButton
-                    asChild
+                    as="a"
                     isActive={pathname === '/feedback'}
                     aria-label="Submit Feedback"
                     className={cn(
@@ -173,14 +172,14 @@ export function SidebarNav() {
                       "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
                     )}
                    >
-                     <a>
+                     
                       <Info className={cn(
                           "h-5 w-5 transition-transform duration-200 ease-in-out",
                           "group-hover:scale-110",
                           pathname === '/feedback' && "text-sidebar-active-foreground"
                           )} />
                       <span>Feedback</span>
-                    </a>
+                    
                   </SidebarMenuButton>
                 </Link>
               </TooltipTrigger>
@@ -200,7 +199,7 @@ export function SidebarNav() {
               <TooltipTrigger asChild>
                 <Link href="/settings" passHref legacyBehavior>
                   <SidebarMenuButton
-                      asChild
+                      as="a"
                       isActive={pathname.startsWith('/settings')}
                       aria-label="Open Settings"
                       className={cn(
@@ -212,14 +211,14 @@ export function SidebarNav() {
                           "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
                       )}
                   >
-                      <a>
+                      
                           <Settings2 className={cn(
                               "h-5 w-5 transition-transform duration-200 ease-in-out",
                               "group-hover:scale-110",
                               pathname.startsWith('/settings') && "text-sidebar-active-foreground"
                           )} />
                           <span>Settings</span>
-                      </a>
+                      
                   </SidebarMenuButton>
                 </Link>
               </TooltipTrigger>
@@ -272,7 +271,7 @@ export function SidebarNav() {
           </Avatar>
           {(sidebarState === "expanded" && !isMobile) && (
             <div className="flex flex-col overflow-hidden">
-                <span className="text-sm font-medium text-sidebar-foreground truncate">Dr. Robot</span>
+                <span className="text-sm font-medium text-sidebar-foreground truncate">Dr. Medi User</span>
                 <span className="text-xs text-sidebar-foreground/70 truncate">
                 {userRole === 'pro' ? 'Professional' : userRole === 'medico' ? 'Medical Student' : userRole === 'diagnosis' ? 'Patient/User' : 'Clinician'}
                 </span>
