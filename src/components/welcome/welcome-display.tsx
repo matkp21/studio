@@ -1,3 +1,4 @@
+
 // src/components/welcome/welcome-display.tsx
 "use client";
 
@@ -16,7 +17,7 @@ export function WelcomeDisplay({ onDisplayComplete }: WelcomeDisplayProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onDisplayComplete();
-    }, 4500); // Total display time
+    }, 7000); // Increased duration to 7 seconds
 
     return () => clearTimeout(timer);
   }, [onDisplayComplete]);
@@ -29,22 +30,20 @@ export function WelcomeDisplay({ onDisplayComplete }: WelcomeDisplayProps) {
     },
     exit: { 
       opacity: 0, 
-      transition: { duration: 0.5, delay: 4.0, ease: "easeInOut" } 
+      transition: { duration: 0.5, delay: 6.5, ease: "easeInOut" } 
     }
   };
 
-  // Adjusted delays: Logo starts animating after ~0.5s of background "reveal"
-  // Tagline starts after logo is mostly visible and background is settling
   const logoVariants = {
-    hidden: { opacity: 0, scale: 0.90, y: 10 },
+    hidden: { opacity: 0, scale: 0.85, y: 20 }, // Start slightly smaller and lower
     visible: {
       opacity: 1,
       scale: 1,
       y: 0,
       transition: { 
-        delay: 0.75, // Delayed to appear on the evolving background
-        duration: 1.2, 
-        ease: [0.33, 1, 0.68, 1] 
+        delay: 1.0, // Delay to allow background to establish
+        duration: 1.5, 
+        ease: [0.22, 1, 0.36, 1] // Smooth, slightly anticipatory easing
       } 
     },
   };
@@ -55,8 +54,8 @@ export function WelcomeDisplay({ onDisplayComplete }: WelcomeDisplayProps) {
       opacity: 1,
       y: 0,
       transition: { 
-        delay: 1.8, // Further delayed to appear after logo and background settles
-        duration: 0.8, 
+        delay: 2.5, // Appear after logo is well-established
+        duration: 1.0, 
         ease: "easeOut" 
       }
     },
@@ -65,28 +64,31 @@ export function WelcomeDisplay({ onDisplayComplete }: WelcomeDisplayProps) {
   return (
     <motion.div
       className={cn(
-        "fixed inset-0 z-[200] flex flex-col items-center justify-center overflow-hidden",
-        "welcome-screen-gradient" // This class now handles the multi-stage gradient animation
+        "apple-event-splash-screen" // Applies the complex background animation
       )}
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
+      onClick={onDisplayComplete} // Click anywhere to skip/complete
     >
       <motion.div
         variants={logoVariants}
         className="mb-6 md:mb-8 transform-gpu" 
       >
-        <div className="scale-[1.4] sm:scale-[1.6] md:scale-[1.8]"> 
-          <Logo simple={false} /> 
+        {/* Apply specific styling for the logo on this screen if needed, e.g., forcing white color */}
+        <div className="scale-[1.5] sm:scale-[1.8] md:scale-[2.0] text-white"> 
+          {/* Text color forced to white, might need adjustment if logo SVG has internal colors */}
+          <Logo simple={false} className="[&_span]:text-white [&_svg]:text-white" /> 
         </div>
       </motion.div>
 
       <motion.div
         variants={taglineVariants}
-        className="text-center"
+        className="text-center absolute bottom-10 left-1/2 transform -translate-x-1/2 w-full px-4" // Positioning at bottom
       >
-        <AnimatedTagline className="text-xl sm:text-2xl md:text-3xl text-foreground/90 dark:text-foreground/80" />
+        {/* Tagline color also forced to white for contrast */}
+        <AnimatedTagline className="text-lg sm:text-xl md:text-2xl text-white/90 drop-shadow-md" />
       </motion.div>
     </motion.div>
   );
