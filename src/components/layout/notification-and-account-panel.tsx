@@ -12,11 +12,11 @@ import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   BellRing, UserCircle, Settings, LogOut, HelpCircle, Edit, ChevronRight,
-  BriefcaseMedical, School, Stethoscope, UserCog, AlertCircle, Info
+  BriefcaseMedical, School, Stethoscope, UserCog, AlertCircle, Info, Sparkles, Brain, CheckSquare, MessageSquareHeart, Pill, CalendarDays, BookOpen, FileText, PhoneForwarded, Library, FilePlus, Users, Mic, BarChart3, CalculatorIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion'; // Added AnimatePresence
 
 const getIconForNotificationType = (type: NotificationItem['type']): React.ElementType => {
   switch (type) {
