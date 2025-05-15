@@ -8,7 +8,7 @@ import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
 import {
   PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info,
-  MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, Bell, ChevronDown, Edit, HeartPulse
+  MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, Bell, ChevronDown, Edit2 as Edit, HeartPulse // Renamed Edit3 to Edit
 } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
@@ -61,12 +61,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [showNotificationPanel, setShowNotificationPanel] = useState(false);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
-  const [hasNewNotification, setHasNewNotification] = useState(false); // For comet animation
+  const [hasNewNotification, setHasNewNotification] = useState(false);
+
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
   const fetchNotifications = useCallback(() => {
     const mockNotifications: NotificationItem[] = [
       { id: '1', type: 'medication_reminder', title: 'Medication Reminder', body: 'Time for Amoxicillin (500mg). Check instructions.', timestamp: new Date(Date.now() - 1000 * 60 * 5), isRead: false, deepLink: '/medications' },
-      { id: '2', type: 'appointment_reminder', title: 'Appointment Soon', body: 'Cardiology check-up in 1 hour. Remember pre-appointment notes.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), isRead: true, deepLink: '/schedule' },
+      { id: '2', type: 'appointment_reminder', title: 'Appointment Soon', body: 'Cardiology check-up in 1 hour. Remember pre-appointment notes.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), isRead: true, deepLink: '/' },
       { id: '3', type: 'study_material_update', title: 'New Notes Available', body: 'Endocrine System notes updated with latest diagrams.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), isRead: false, deepLink: '/medico' },
       { id: '4', type: 'general', title: 'MediAssistant v1.2 Update!', body: 'Explore new features and performance improvements across all modes.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48), isRead: true, deepLink: '/' },
     ];
@@ -83,7 +85,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   }, [notifications]);
 
   useEffect(() => {
-    if (clientLoaded && notifications.length > 0 && !sessionStorage.getItem('initialNewNotificationShown')) {
+    if (clientLoaded && notifications.length > 0 && typeof window !== 'undefined' && !sessionStorage.getItem('initialNewNotificationShown')) {
       const timer = setTimeout(() => {
         const newNotif: NotificationItem = {
           id: `new-${Date.now()}`, type: 'system_update', title: 'System Maintenance Scheduled',
@@ -96,7 +98,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       }, 15000);
       return () => clearTimeout(timer);
     }
-  }, [clientLoaded, notifications.length]);
+  }, [clientLoaded, notifications]);
 
 
   const handleMarkAsRead = useCallback((id: string) => {
@@ -117,6 +119,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
     toast({ title: "Logged Out", description: "You have been successfully logged out. (Demo)" });
     selectUserRole(null);
     setShowNotificationPanel(false);
+    setIsAccountMenuOpen(false);
   };
 
   const getRoleDisplayString = (role: UserRole | null): string => {
@@ -128,11 +131,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setClientLoaded(true);
+    let onboardingComplete = false;
+    let welcomeDisplayShownThisSession = false;
+
     if (typeof window !== 'undefined') {
-      // --- TEMPORARY CHANGE TO FORCE ONBOARDING/WELCOME ---
-      const onboardingComplete = false; // localStorage.getItem('onboardingComplete') === 'true';
-      const welcomeDisplayShownThisSession = false; // sessionStorage.getItem('welcomeDisplayShown') === 'true';
-      // --- END TEMPORARY CHANGE ---
+      // onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+      // welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
       const storedUserRole = localStorage.getItem('userRole') as UserRole;
 
       if (!onboardingComplete) {
@@ -154,18 +158,17 @@ export function AppLayout({ children }: { children: ReactNode }) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [userRole, selectUserRole]); // Removed clientLoaded from here to avoid re-triggering too often
+  }, [userRole, selectUserRole]);
 
   const handleOnboardingClose = () => {
     setShowOnboardingModal(false);
+    let welcomeDisplayShownThisSession = false;
     if (typeof window !== 'undefined') {
       localStorage.setItem('onboardingComplete', 'true');
-      // --- TEMPORARY CHANGE TO FORCE WELCOME AFTER ONBOARDING ---
-      const welcomeDisplayShownThisSession = false; //sessionStorage.getItem('welcomeDisplayShown') === 'true';
-      // --- END TEMPORARY CHANGE ---
-      if (!welcomeDisplayShownThisSession) {
-        setShowWelcomeDisplay(true);
-      }
+      // welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
+    }
+    if (!welcomeDisplayShownThisSession) {
+      setShowWelcomeDisplay(true);
     }
   };
 
@@ -176,9 +179,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
     }
   };
 
-  if (!clientLoaded) {
-    // You might want a minimal loader here, or just null to avoid flash of unstyled content
-    return null; 
+  if (!clientLoaded && !showOnboardingModal && !showWelcomeDisplay) {
+    return null;
   }
 
   if (showOnboardingModal) {
@@ -197,6 +199,15 @@ export function AppLayout({ children }: { children: ReactNode }) {
   }
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  const handleToggleNotificationPanel = () => {
+    setShowNotificationPanel(prev => !prev);
+    // If opening notification panel from menu item, ensure menu closes
+    if (!showNotificationPanel) { // This condition means we are about to open it
+        setIsAccountMenuOpen(false);
+    }
+  };
+
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -231,7 +242,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
 
           <div className="hidden md:flex flex-1 items-center justify-center px-4">
-            {clientLoaded && !showOnboardingModal && !showWelcomeDisplay && <AnimatedTagline />}
+             {clientLoaded && !showOnboardingModal && !showWelcomeDisplay && <AnimatedTagline />}
           </div>
 
           <nav className="flex items-center gap-2 sm:gap-4">
@@ -241,7 +252,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 Pro Features
               </Badge>
             )}
-             <DropdownMenu onOpenChange={(open) => { if(!open) setShowNotificationPanel(false); }}>
+            <DropdownMenu open={isAccountMenuOpen} onOpenChange={setIsAccountMenuOpen}>
               <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
@@ -289,7 +300,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     <Settings className="h-4 w-4 text-muted-foreground" /> Settings
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowNotificationPanel(prev => !prev)} className="flex items-center justify-between cursor-pointer">
+                <DropdownMenuItem
+                  onClick={handleToggleNotificationPanel}
+                  className="flex items-center justify-between cursor-pointer"
+                >
                   <div className="flex items-center gap-2">
                       <Bell className="h-4 w-4 text-muted-foreground" /> Notifications
                   </div>
@@ -306,7 +320,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                       <DropdownMenuSubContent>
-                      <DropdownMenuRadioGroup value={userRole || ''} onValueChange={(role) => selectUserRole(role as UserRole)}>
+                      <DropdownMenuRadioGroup value={userRole || ''} onValueChange={(role) => { selectUserRole(role as UserRole); setIsAccountMenuOpen(false); }}>
                           <DropdownMenuRadioItem value="pro" className="flex items-center gap-2 cursor-pointer">
                               <BriefcaseMedical className="h-4 w-4 text-purple-500" />
                               <span className={cn(userRole === 'pro' && "firebase-gradient-text-active-role font-semibold")}>Professional</span>
