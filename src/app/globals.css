@@ -84,7 +84,7 @@ body {
     --notification-panel-compact-border: 210 20% 88%; /* Light Cool Gray Border */
     --notification-item-compact-bg: 0 0% 100%; /* White for item cards */
     --notification-item-compact-hover-bg: 210 25% 96%; /* Light Gray for hover */
-    --notification-unread-dot-color: hsl(var(--primary));
+    --notification-unread-dot-color: hsl(var(--primary)); /* Primary blue for unread dot */
   }
 
   .dark {
@@ -158,7 +158,7 @@ body {
     --notification-panel-compact-border: 216 40% 25%; /* Darker border */
     --notification-item-compact-bg: 216 54% 18%; /* Darker card for items */
     --notification-item-compact-hover-bg: 216 50% 22%; /* Slightly lighter hover */
-    --notification-unread-dot-color: hsl(var(--primary));
+    --notification-unread-dot-color: hsl(var(--primary)); /* Primary blue for unread dot */
   }
 }
 
@@ -258,19 +258,19 @@ body {
 
 /* Pulse animation for medical icon */
 @keyframes pulseMedical {
-  0%, 100% { 
-    opacity: var(--medical-pulse-opacity-base, 0.8); 
-    transform: scale(1); 
+  0%, 100% {
+    opacity: var(--medical-pulse-opacity-base, 0.8);
+    transform: scale(1);
   }
-  50% { 
-    opacity: var(--medical-pulse-opacity-peak, 0.5); 
+  50% {
+    opacity: var(--medical-pulse-opacity-peak, 0.5);
     transform: scale(var(--medical-pulse-scale-peak, 1.2)); /* Use CSS variable for scale */
-  } 
+  }
 }
 
 .animate-pulse-medical {
   animation: pulseMedical 1.8s infinite ease-in-out;
-  display: inline-flex; 
+  display: inline-flex;
   align-items: center;
 }
 
@@ -285,7 +285,7 @@ body {
 }
 
 .welcome-text-fg-animated {
-  color: hsl(var(--welcome-color-1)); 
+  color: hsl(var(--welcome-color-1));
   animation: welcome-text-color-cycle 10s linear infinite; /* Adjusted duration */
 }
 
@@ -305,16 +305,16 @@ body {
 
 .firebase-ribbon-background {
   background: linear-gradient(
-    135deg, 
-    hsl(var(--welcome-color-1)/0.95), 
-    hsl(var(--welcome-color-2)/0.95), 
-    hsl(var(--welcome-color-3)/0.95), 
+    135deg,
+    hsl(var(--welcome-color-1)/0.95),
+    hsl(var(--welcome-color-2)/0.95),
+    hsl(var(--welcome-color-3)/0.95),
     hsl(var(--welcome-color-4)/0.95),
     hsl(var(--welcome-color-1)/0.95)
   );
-  background-size: 250% 250%; 
-  animation: animated-firebase-ribbon-background 10s ease infinite; 
-  color: hsl(var(--primary-foreground)); 
+  background-size: 250% 250%;
+  animation: animated-firebase-ribbon-background 10s ease infinite;
+  color: hsl(var(--primary-foreground));
 }
 
 
@@ -322,7 +322,7 @@ body {
 @keyframes ecg-beat {
   0%, 100% { transform: scale(1); opacity: 0.8; }
   10%, 30% { transform: scale(0.9); opacity: 0.7; }
-  20% { transform: scale(1.2); opacity: 1; } 
+  20% { transform: scale(1.2); opacity: 1; }
   40% { transform: scale(1); opacity: 0.8; }
 }
 
@@ -345,19 +345,19 @@ body {
 /* Firebase Gradient Text with Glow and Flow */
 .firebase-gradient-text {
   background-size: 200% auto;
-  background-image: linear-gradient(to right, 
-    hsl(var(--welcome-color-1)) 0%, 
-    hsl(var(--welcome-color-2)) 25%, 
-    hsl(var(--welcome-color-3)) 50%, 
-    hsl(var(--welcome-color-4)) 75%, 
+  background-image: linear-gradient(to right,
+    hsl(var(--welcome-color-1)) 0%,
+    hsl(var(--welcome-color-2)) 25%,
+    hsl(var(--welcome-color-3)) 50%,
+    hsl(var(--welcome-color-4)) 75%,
     hsl(var(--welcome-color-1)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 
-    0 0 4px hsl(var(--welcome-color-2)/0.5), 
-    0 0 8px hsl(var(--welcome-color-3)/0.3); 
-  animation: firebase-gradient-flow 4s linear infinite; 
+  text-shadow:
+    0 0 4px hsl(var(--welcome-color-2)/0.5),
+    0 0 8px hsl(var(--welcome-color-3)/0.3);
+  animation: firebase-gradient-flow 4s linear infinite;
 }
 
 /* Firebase Gradient Text for Active Role - Static gradient with glow */
@@ -387,11 +387,11 @@ body {
 @keyframes error-highlight-animation {
   0%, 100% {
     box-shadow: 0 0 4px hsl(var(--destructive) / 0.3);
-    border-color: hsl(var(--destructive) / 0.4); 
+    border-color: hsl(var(--destructive) / 0.4);
   }
   50% {
     box-shadow: 0 0 8px hsl(var(--destructive) / 0.6), 0 0 12px hsl(var(--destructive) / 0.4);
-    border-color: hsl(var(--destructive) / 0.7); 
+    border-color: hsl(var(--destructive) / 0.7);
   }
 }
 
@@ -401,34 +401,34 @@ body {
 
 /* Pro Mode Dashboard Tool Card Animations */
 .tool-card-frequent.firebase-gradient-border-hover:hover {
-  position: relative; 
-  border-color: transparent !important; 
+  position: relative;
+  border-color: transparent !important;
 }
 
 .tool-card-frequent.firebase-gradient-border-hover:hover::before {
   content: "";
   position: absolute;
-  inset: -2px; 
-  border-radius: calc(var(--radius) + 2px); 
-  padding: 2px; 
-  background: linear-gradient(135deg, 
-    hsl(var(--welcome-color-1)), 
-    hsl(var(--welcome-color-2)), 
-    hsl(var(--welcome-color-3)), 
+  inset: -2px;
+  border-radius: calc(var(--radius) + 2px);
+  padding: 2px;
+  background: linear-gradient(135deg,
+    hsl(var(--welcome-color-1)),
+    hsl(var(--welcome-color-2)),
+    hsl(var(--welcome-color-3)),
     hsl(var(--welcome-color-4)),
     hsl(var(--welcome-color-1))
   );
   background-size: 400% 400%;
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  mask: 
-    linear-gradient(#fff 0 0) content-box, 
+  mask:
+    linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  animation: animated-gradient-background 5s ease infinite; 
-  z-index: 0; 
+  animation: animated-gradient-background 5s ease infinite;
+  z-index: 0;
 }
 
 /* Subtle pulse/glow for tool cards (can be applied conditionally) */
@@ -474,15 +474,15 @@ body {
 
 /* Gemini Inspired CTA Button Glow - Now Firebase Inspired */
 @keyframes gemini-cta-glow {
-  0%, 100% { 
+  0%, 100% {
     box-shadow: 0 0 5px hsl(var(--welcome-color-1)/0.3), 0 0 10px hsl(var(--welcome-color-2)/0.2), 0 0 15px hsl(var(--welcome-color-3)/0.2);
   }
-  50% { 
+  50% {
     box-shadow: 0 0 10px hsl(var(--welcome-color-2)/0.5), 0 0 20px hsl(var(--welcome-color-3)/0.3), 0 0 30px hsl(var(--welcome-color-4)/0.3);
   }
 }
 
-.gemini-cta-button { 
+.gemini-cta-button {
   animation: gemini-cta-glow 3s infinite ease-in-out;
 }
 
@@ -498,7 +498,7 @@ body {
 }
 
 .sidebar-active-item-glow {
-  position: relative; 
+  position: relative;
 }
 
 /* New Sidebar Active Item Indicator Bar (Gemini-Inspired) */
@@ -506,9 +506,9 @@ body {
   content: '';
   position: absolute;
   left: 0;
-  top: 20%; 
+  top: 20%;
   bottom: 20%;
-  width: 4px; 
+  width: 4px;
   background-image: linear-gradient(to bottom, hsl(var(--sidebar-primary)/0.8), hsl(var(--sidebar-accent)/0.8));
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
@@ -546,15 +546,15 @@ body {
   background-image: linear-gradient(
     to right,
     transparent 0%,
-    hsla(var(--sidebar-accent-foreground)/0.05) 30%, 
+    hsla(var(--sidebar-accent-foreground)/0.05) 30%,
     hsla(var(--sidebar-accent-foreground)/0.15) 50%,
     hsla(var(--sidebar-accent-foreground)/0.05) 70%,
     transparent 100%
   );
   transform: translateX(-150%) translateY(-25%) rotate(25deg);
   transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
-  pointer-events: none; 
-  z-index: 1; 
+  pointer-events: none;
+  z-index: 1;
 }
 
 .sidebar-item-shine:hover::after {
@@ -605,7 +605,6 @@ body {
 
 /* --- Styles for Compact Notification Panel --- */
 /* These styles apply to the panel itself and general item appearance */
-/* Specific item cards like notification-item-card-compact will apply their own backgrounds */
 .notification-panel-compact {
   background-color: hsl(var(--notification-panel-compact-bg));
   border: 1px solid hsl(var(--notification-panel-compact-border));
@@ -613,20 +612,19 @@ body {
 }
 
 .dark .notification-panel-compact {
-  background-color: hsl(var(--notification-panel-compact-bg)); /* Ensure dark mode var is used */
-  border-color: hsl(var(--notification-panel-compact-border)); /* Ensure dark mode var is used */
+  background-color: hsl(var(--notification-panel-compact-bg));
+  border-color: hsl(var(--notification-panel-compact-border));
 }
 
 .notification-item-card-compact {
-  background-color: hsl(var(--notification-item-compact-bg)); /* Light mode item bg */
-  /* Add hover, active, etc. states if needed */
+  background-color: hsl(var(--notification-item-compact-bg));
 }
 .notification-item-card-compact:hover {
   background-color: hsl(var(--notification-item-compact-hover-bg));
 }
 
 .dark .notification-item-card-compact {
-  background-color: hsl(var(--notification-item-compact-bg)); /* Dark mode item bg */
+  background-color: hsl(var(--notification-item-compact-bg));
 }
 .dark .notification-item-card-compact:hover {
   background-color: hsl(var(--notification-item-compact-hover-bg));
@@ -635,7 +633,7 @@ body {
 /* This is the small dot indicating an unread notification */
 .notification-unread-dot {
   @apply h-2 w-2 rounded-full;
-  background-color: var(--notification-unread-dot-color); /* Use defined CSS variable */
+  background-color: var(--notification-unread-dot-color);
 }
 
 /* Profile Icon Notification Ring Animations */
@@ -650,44 +648,42 @@ body {
 
 @keyframes ring-comet-gradient {
   0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; } 
+  100% { background-position: 200% 50%; }
 }
 
 .profile-notification-ring {
   @apply absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background;
-  content: ''; 
+  content: '';
   pointer-events: none;
 }
 
 .profile-notification-ring-pulse {
   animation: ring-pulse 2s infinite ease-in-out;
-  /* background-color: hsl(var(--primary)); /* Removed as it's now handled by :not selector */
 }
 
 .profile-notification-ring-comet {
-  /* Uses border to create the comet effect on a transparent background circle */
-  border-radius: 50%; 
-  padding: 0; 
-  position: relative; 
+  border-radius: 50%;
+  padding: 0;
+  position: relative;
   border-style: solid;
   border-width: 2px; /* Match existing border */
-  border-color: transparent; 
-  
-  background-image: conic-gradient( /* This will be the rotating gradient for the border */
-    from 0deg, 
-    hsl(var(--accent)/0.8) 0% 15%, 
-    hsl(var(--primary)) 25% 35%,     
-    hsl(var(--accent)/0.8) 45% 60%, 
-    transparent 60% 100% 
+  border-color: transparent;
+
+  background-image: conic-gradient(
+    from 0deg,
+    hsl(var(--accent)/0.8) 0% 15%,
+    hsl(var(--primary)) 25% 35%,
+    hsl(var(--accent)/0.8) 45% 60%,
+    transparent 60% 100%
   );
-  animation: ring-comet-gradient 2.5s linear infinite, ring-pulse 2.2s infinite ease-in-out 0.3s; 
-  background-size: 200% 100%; 
-  background-color: transparent; 
+  animation: ring-comet-gradient 2.5s linear infinite, ring-pulse 2.2s infinite ease-in-out 0.3s;
+  background-size: 200% 100%;
+  background-color: transparent;
 }
 
 /* If not comet, apply base color for simple pulse */
 .profile-notification-ring:not(.profile-notification-ring-comet) {
-   background-color: hsl(var(--primary)); 
+   background-color: hsl(var(--primary));
 }
 
 
@@ -702,3 +698,42 @@ body {
 .delay-0 { animation-delay: 0s; }
 .delay-150 { animation-delay: 0.15s; }
 .delay-300 { animation-delay: 0.3s; }
+
+
+/* Animated Gradient Border for Notification Panel (Firebase Inspired) */
+.notification-panel-animated-border {
+  position: relative;
+  border: 2px solid transparent; /* Base border for structure, will be covered */
+  overflow: hidden; /* Important to clip the pseudo-element */
+}
+
+.notification-panel-animated-border::before {
+  content: "";
+  position: absolute;
+  inset: -2px; /* Creates the border effect; adjust for thickness */
+  border-radius: inherit; /* Match panel's border-radius */
+  padding: 2px; /* This is the "thickness" of the gradient border */
+  background: linear-gradient(
+    135deg,
+    hsl(var(--welcome-color-1)),
+    hsl(var(--welcome-color-2)),
+    hsl(var(--welcome-color-3)),
+    hsl(var(--welcome-color-4)),
+    hsl(var(--welcome-color-1)) /* Loop back for smooth animation */
+  );
+  background-size: 300% 300%; /* Make it large enough for animation */
+  animation: animated-gradient-background 4s ease infinite; /* Re-use or create new animation */
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box, /* Transparent center */
+    linear-gradient(#fff 0 0); /* Solid border area */
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; /* For older browsers, 'destination-out' or 'source-out' might be alternatives */
+  mask-composite: exclude; /* This is key to make it a border by excluding the content-box area */
+  z-index: -1; /* Place it behind the panel's content but above its background if the panel itself isn't transparent */
+}
+
+/* Ensure the notification panel itself has its defined background so the ::before doesn't show through center */
+/* This is already handled by .notification-panel-compact having a background-color */
+

@@ -42,10 +42,9 @@ export function NotificationItemCardCompact({ item, onMarkAsRead, onClosePanel }
     if (!item.isRead) {
       onMarkAsRead(item.id);
     }
-    // Delay closing the panel slightly to allow Link navigation to initiate.
-    setTimeout(() => {
+    setTimeout(() => { // Delay slightly to allow navigation
       onClosePanel();
-    }, 150); // 150ms delay, adjust if necessary
+    }, 150);
   };
 
   const cardVariants = {
@@ -54,12 +53,11 @@ export function NotificationItemCardCompact({ item, onMarkAsRead, onClosePanel }
     exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" } }
   };
 
-  // This is the visual content of the card, without motion props here.
   const cardContent = (
-    <div // Changed from motion.div to simple div, motion will be applied to the Link/wrapper
+    <div
       className={cn(
-        "notification-item-card-compact flex items-start gap-2 p-2 rounded-md cursor-pointer transition-colors duration-150",
-        item.isRead ? 'bg-background hover:bg-muted/50' : 'bg-primary/10 hover:bg-primary/20 border border-primary/30',
+        "notification-item-card-compact flex items-start gap-2 p-1.5 rounded-md cursor-pointer transition-colors duration-150", // Reduced padding
+        item.isRead ? 'bg-card hover:bg-muted/30' : 'bg-primary/10 hover:bg-primary/20 border border-primary/20', // Solid background for cards
       )}
     >
       {!item.isRead && (
@@ -72,11 +70,13 @@ export function NotificationItemCardCompact({ item, onMarkAsRead, onClosePanel }
       <div className="flex-grow overflow-hidden">
         <div className="flex justify-between items-center">
             <h3 className={cn("text-xs font-medium text-foreground truncate", !item.isRead && "font-semibold")}>{item.title}</h3>
-            <p className="text-[10px] text-muted-foreground/90 flex-shrink-0 ml-1.5 whitespace-nowrap">
+            <p className="text-[10px] text-muted-foreground/90 flex-shrink-0 ml-1 whitespace-nowrap">
                 {formatDistanceToNowStrict(item.timestamp, { addSuffix: true })}
             </p>
         </div>
-        <p className="text-[11px] text-muted-foreground line-clamp-1 leading-snug mt-0.5">{item.body}</p>
+        <p className="text-[11px] text-muted-foreground line-clamp-1 leading-snug mt-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
+            {item.body}
+        </p>
       </div>
     </div>
   );
@@ -84,7 +84,7 @@ export function NotificationItemCardCompact({ item, onMarkAsRead, onClosePanel }
   if (item.deepLink) {
     return (
       <Link href={item.deepLink} passHref legacyBehavior>
-        <motion.a // Apply motion to the <a> tag
+        <motion.a
           onClick={handleItemClick}
           className="block w-full no-underline"
           role="button"
@@ -101,7 +101,7 @@ export function NotificationItemCardCompact({ item, onMarkAsRead, onClosePanel }
   }
 
   return (
-    <motion.div // Apply motion to the div if no deepLink
+    <motion.div
       onClick={handleItemClick}
       className="block w-full cursor-pointer"
       role="button"

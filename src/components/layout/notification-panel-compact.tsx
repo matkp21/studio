@@ -5,8 +5,9 @@ import type { NotificationItem } from '@/types/notifications';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { NotificationItemCardCompact } from './notification-item-card-compact';
-import { X, CheckCheck, Bell } from 'lucide-react'; // Added Bell
-import { motion, AnimatePresence } from 'framer-motion'; // Added AnimatePresence
+import { X, CheckCheck, Bell } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface NotificationPanelCompactProps {
   notifications: NotificationItem[];
@@ -14,6 +15,7 @@ interface NotificationPanelCompactProps {
   onMarkAsRead: (id: string) => void;
   onMarkAllAsRead: () => void;
   onViewAllNotifications: () => void;
+  className?: string; // Added className prop for conditional styling
 }
 
 export function NotificationPanelCompact({
@@ -22,6 +24,7 @@ export function NotificationPanelCompact({
   onMarkAsRead,
   onMarkAllAsRead,
   onViewAllNotifications,
+  className,
 }: NotificationPanelCompactProps) {
 
   const panelVariants = {
@@ -29,7 +32,7 @@ export function NotificationPanelCompact({
     visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.2, ease: "easeOut" } },
     exit: { opacity: 0, y: -20, scale: 0.95, transition: { duration: 0.15, ease: "easeIn" } }
   };
-  
+
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
@@ -38,7 +41,14 @@ export function NotificationPanelCompact({
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="notification-panel-compact fixed top-16 right-4 z-50 w-[320px] max-h-[400px] flex flex-col rounded-xl shadow-2xl overflow-hidden border border-border/30 bg-background"
+      className={cn(
+        "notification-panel-compact fixed top-16 right-4 z-50 w-[320px] max-w-[calc(100vw-2rem)] max-h-[400px] flex flex-col rounded-xl shadow-2xl overflow-hidden bg-background", // Solid background
+        className // Apply conditional class for animated border
+      )}
+      style={{
+        // Removed inline backdrop-filter and gradient for solid background approach
+        // These will be handled by globals.css if className for animated border is passed
+      }}
       aria-modal="true"
       role="dialog"
     >
@@ -58,9 +68,9 @@ export function NotificationPanelCompact({
       </div>
 
       <ScrollArea className="flex-grow p-2 space-y-1.5">
-        <AnimatePresence initial={false}> {/* Added AnimatePresence */}
+        <AnimatePresence initial={false}>
           {notifications.length === 0 ? (
-            <motion.div  // Added motion.div for empty state animation
+            <motion.div
                 key="empty-notifications"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
