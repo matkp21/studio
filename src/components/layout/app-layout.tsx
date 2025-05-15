@@ -6,7 +6,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
-import { PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, AlertCircle as DefaultNotifIcon, Bell } from 'lucide-react';
+import { 
+  PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, 
+  MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, Bell 
+} from 'lucide-react'; // Keep Bell if used as fallback
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
@@ -18,7 +21,7 @@ import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { Badge } from '@/components/ui/badge';
 import { AnimatedTagline } from '@/components/layout/animated-tagline';
 import { WelcomeDisplay } from '@/components/welcome/welcome-display';
-import { NotificationAndAccountPanel } from './notification-and-account-panel'; // New component
+import { NotificationAndAccountPanel } from './notification-and-account-panel';
 import type { NotificationItem } from '@/types/notifications';
 import { useToast } from '@/hooks/use-toast';
 
@@ -38,22 +41,21 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [showWelcomeDisplay, setShowWelcomeDisplay] = useState(false);
   const [clientLoaded, setClientLoaded] = useState(false);
-  const { userRole, selectUserRole } = useProMode(); // Removed isProMode as it's derived
+  const { userRole, selectUserRole } = useProMode();
 
   const { toast } = useToast();
 
-  // Notification State & Panel State
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [showUserPanel, setShowUserPanel] = useState(false);
   const [activeTabInPanel, setActiveTabInPanel] = useState<'notifications' | 'account'>('account');
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
-  const [hasNewNotification, setHasNewNotification] = useState(false); // For comet animation
+  const [hasNewNotification, setHasNewNotification] = useState(false);
 
   const fetchNotifications = useCallback(() => {
     const mockNotifications: NotificationItem[] = [
       { id: '1', type: 'medication_reminder', title: 'Medication Reminder', body: 'Time for your Amoxicillin (500mg). Take with food.', timestamp: new Date(Date.now() - 1000 * 60 * 5), isRead: false, deepLink: '/medications' },
       { id: '2', type: 'appointment_reminder', title: 'Appointment Soon', body: 'Cardiology check-up with Dr. Smith in 1 hour.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), isRead: true, deepLink: '/schedule' },
-      { id: '3', type: 'study_material_update', title: 'New Notes Available', body: 'Study notes for "Endocrine System" have been updated.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), isRead: false, deepLink: '/medico/notes/endocrine' },
+      { id: '3', type: 'study_material_update', title: 'New Notes Available', body: 'Study notes for "Endocrine System" have been updated.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), isRead: false, deepLink: '/medico' },
     ];
     setNotifications(mockNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
   }, []);
@@ -77,16 +79,15 @@ export function AppLayout({ children }: { children: ReactNode }) {
           body: 'MediAssistant will undergo brief maintenance tonight at 2 AM.',
           timestamp: new Date(),
           isRead: false,
-          deepLink: '/announcements'
+          deepLink: '/' // Or an announcements page
         };
         setNotifications(prev => [newNotif, ...prev].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
-        setHasNewNotification(true);
-        setTimeout(() => setHasNewNotification(false), 5000);
-      }, 10000);
+        setHasNewNotification(true); // Trigger comet animation
+        setTimeout(() => setHasNewNotification(false), 5000); // Comet duration
+      }, 10000); // Simulate new notification after 10s
       return () => clearTimeout(timer);
     }
-  }, [clientLoaded, notifications]);
-
+  }, [clientLoaded, notifications.length]); // Depend on notifications.length to re-trigger if notifications are fetched
 
   const handleMarkAsRead = useCallback((id: string) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
@@ -94,24 +95,29 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   const handleMarkAllAsRead = useCallback(() => {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-  }, []);
+    toast({ title: "Notifications", description: "All notifications marked as read." });
+  }, [toast]);
   
   const handleViewAllNotifications = () => {
     setShowUserPanel(false);
     toast({title: "Navigation", description: "Navigating to all notifications page (Conceptual)."});
+    // Implement navigation to a dedicated notifications page if needed
   };
 
   const handleOpenNotificationSettings = () => {
     setShowUserPanel(false);
     toast({title: "Navigation", description: "Navigating to notification settings page (Conceptual)."});
+    // Implement navigation to notification settings page
   };
 
   const handleToggleUserPanel = () => {
     setShowUserPanel(prev => {
-      if (!prev && hasUnreadNotifications) {
-        setActiveTabInPanel('notifications');
-      } else if (!prev) {
-        setActiveTabInPanel('account');
+      if (!prev) { // Panel is about to open
+        if (hasUnreadNotifications) {
+          setActiveTabInPanel('notifications');
+        } else {
+          setActiveTabInPanel('account');
+        }
       }
       return !prev;
     });
@@ -120,14 +126,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const handleLogout = () => {
     toast({ title: "Logged Out", description: "You have been successfully logged out. (Demo)" });
     selectUserRole(null); 
-    setShowUserPanel(false);
+    setShowUserPanel(false); // Close panel on logout
   };
 
   const getRoleDisplayString = (role: UserRole): string => {
     if (role === 'pro') return 'Professional';
     if (role === 'medico') return 'Medical Student';
     if (role === 'diagnosis') return 'Patient/User';
-    return 'User';
+    return 'User'; // Fallback for null or unexpected role
   };
 
   useEffect(() => {
@@ -158,7 +164,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [userRole, selectUserRole]);
   
-
   const handleOnboardingClose = () => {
     setShowOnboardingModal(false);
     if (typeof window !== 'undefined') { 
@@ -212,6 +217,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             "sticky top-0 z-40 flex items-center justify-between gap-4 border-b bg-background/70 backdrop-blur-md px-4 md:px-6 transition-all duration-300 ease-in-out fade-in",
             scrolled ? "h-14 shadow-md" : "h-16 border-transparent"
           )}
+          id="main-header"
         >
           <div className="flex items-center gap-2">
             <div className="md:hidden">
@@ -238,7 +244,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 Pro Features
               </Badge>
             )}
-            <div className="relative">
+             <div className="relative">
                 <Button 
                     variant="ghost" 
                     className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full text-foreground/80 hover:text-foreground" 
@@ -248,19 +254,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                     <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
                     <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-primary/70 text-primary-foreground">
-                       <Bell className="h-4 w-4"/> {/* Changed to Bell for clarity */}
+                       <Bell className="h-4 w-4"/>
                     </AvatarFallback>
                   </Avatar>
                    {(hasUnreadNotifications || hasNewNotification) && (
                       <div className={cn(
                           "profile-notification-ring",
-                          hasUnreadNotifications && !hasNewNotification && "profile-notification-ring-pulse", // Only pulse if no new notif
-                          hasNewNotification && "profile-notification-ring-comet" // Comet takes precedence
+                          hasUnreadNotifications && !hasNewNotification && "profile-notification-ring-pulse",
+                          hasNewNotification && "profile-notification-ring-comet" 
                       )} />
                    )}
                 </Button>
             </div>
-            {/* Removed old DropdownMenu for account settings */}
           </nav>
         </header>
         <main className="flex-1 flex flex-col overflow-auto relative">
@@ -277,7 +282,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
               onViewAllNotifications={handleViewAllNotifications}
               onOpenNotificationSettings={handleOpenNotificationSettings}
               userRole={userRole}
-              userName="Dr. Medi User" // Placeholder
+              userName="Dr. Medi User" // Placeholder, fetch from auth
               userEmail="medi.user@example.com" // Placeholder
               avatarUrl="https://picsum.photos/id/237/200/200" // Placeholder
               onLogout={handleLogout}

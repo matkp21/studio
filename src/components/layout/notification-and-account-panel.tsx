@@ -16,21 +16,21 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
-import { motion, AnimatePresence } from 'framer-motion'; // Added AnimatePresence
+import { motion, AnimatePresence } from 'framer-motion';
 
 const getIconForNotificationType = (type: NotificationItem['type']): React.ElementType => {
   switch (type) {
-    case 'medication_reminder': return Stethoscope; // Pill might be too specific
-    case 'appointment_reminder': return UserCircle; // CalendarDays
+    case 'medication_reminder': return Pill;
+    case 'appointment_reminder': return CalendarDays;
     case 'wellness_nudge': return Sparkles;
-    case 'new_content': return Edit; // BookOpen
-    case 'study_material_update': return School; // GraduationCap
-    case 'study_session_reminder': return UserCircle; // CalendarDays
-    case 'quiz_review_due': return Edit; // FileText
+    case 'new_content': return Edit;
+    case 'study_material_update': return BookOpen;
+    case 'study_session_reminder': return School;
+    case 'quiz_review_due': return FileText;
     case 'learning_path_update': return Brain;
     case 'task_reminder': return CheckSquare;
     case 'urgent_patient_alert': return AlertCircle;
-    case 'summary_ready': return Edit; // FileText
+    case 'summary_ready': return FileText;
     case 'guideline_update': return Info;
     case 'system_update': return Settings;
     case 'security_alert': return AlertCircle;
@@ -55,6 +55,7 @@ const NotificationItemCard: React.FC<NotificationItemCardProps> = ({ item, onMar
     if (item.deepLink) {
       // In a real app, use Next.js router.push(item.deepLink)
       console.log("Navigating to:", item.deepLink);
+      // router.push(item.deepLink); // Uncomment if router is available
     }
     onClosePanel();
   };
@@ -67,23 +68,23 @@ const NotificationItemCard: React.FC<NotificationItemCardProps> = ({ item, onMar
       exit={{ opacity: 0, x: 20, transition: { duration: 0.15, ease: "easeIn" } }}
       onClick={handleItemClick}
       className={cn(
-        "notification-item-card-in-panel flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors duration-150",
-        item.isRead ? 'bg-white/70 dark:bg-zinc-800/70 hover:bg-white/90 dark:hover:bg-zinc-700/90' : 'bg-blue-500/10 dark:bg-blue-400/10 hover:bg-blue-500/20 dark:hover:bg-blue-400/20 border border-blue-500/30 dark:border-blue-400/30',
+        "notification-item-card-in-panel flex items-start gap-3 p-2.5 rounded-lg cursor-pointer transition-colors duration-150", // Adjusted padding
+        item.isRead ? 'bg-white/70 dark:bg-zinc-800/70 hover:bg-white/80 dark:hover:bg-zinc-700/80' : 'bg-blue-500/15 dark:bg-blue-400/15 hover:bg-blue-500/25 dark:hover:bg-blue-400/25 border border-blue-500/40 dark:border-blue-400/40',
       )}
     >
       {!item.isRead && (
-        <span className="notification-unread-dot mt-1.5 flex-shrink-0 h-2 w-2 bg-primary rounded-full" />
+        <span className="notification-unread-dot mt-1 flex-shrink-0 h-2 w-2 bg-primary rounded-full" />
       )}
       {item.isRead && (
-          <span className="mt-1.5 flex-shrink-0 h-2 w-2" /> // Placeholder for alignment
+          <span className="mt-1 flex-shrink-0 h-2 w-2" /> 
       )}
       <IconComponent className={cn("h-5 w-5 mt-0.5 flex-shrink-0", item.isRead ? "text-muted-foreground" : "text-primary")} />
       <div className="flex-grow overflow-hidden">
-        <h3 className={cn("text-sm font-semibold text-foreground truncate", !item.isRead && "text-primary")}>{item.title}</h3>
+        <div className="flex justify-between items-start">
+            <h3 className={cn("text-sm font-semibold text-foreground truncate", !item.isRead && "text-primary")}>{item.title}</h3>
+            <p className="text-xs text-muted-foreground/80 flex-shrink-0 ml-2">{formatDistanceToNow(item.timestamp, { addSuffix: true, includeSeconds: false })}</p>
+        </div>
         <p className="text-xs text-muted-foreground line-clamp-2">{item.body}</p>
-        <p className="text-xs text-muted-foreground/70 mt-1">
-          {formatDistanceToNow(item.timestamp, { addSuffix: true })}
-        </p>
       </div>
     </motion.div>
   );
@@ -137,7 +138,7 @@ export function NotificationAndAccountPanel({
   const accountMenuItems = [
     { label: 'Profile', href: '/profile', icon: UserCircle },
     { label: 'Settings', href: '/settings', icon: Settings },
-    { label: 'Help & Support', href: '/feedback', icon: HelpCircle }, // Changed to /feedback
+    { label: 'Help & Support', href: '/feedback', icon: HelpCircle },
   ];
   
   const RoleIcon = userRole === 'pro' ? BriefcaseMedical : userRole === 'medico' ? School : userRole === 'diagnosis' ? Stethoscope : UserCog;
@@ -149,7 +150,7 @@ export function NotificationAndAccountPanel({
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="tabbed-user-panel fixed top-16 right-4 z-50 w-[380px] max-h-[calc(100vh-100px)] flex flex-col rounded-xl shadow-2xl overflow-hidden"
+      className="tabbed-user-panel fixed top-16 right-4 z-50 w-[360px] max-h-[450px] flex flex-col rounded-xl shadow-2xl overflow-hidden"
       aria-modal="true"
       role="dialog"
     >
@@ -165,9 +166,9 @@ export function NotificationAndAccountPanel({
         </TabsList>
 
         <TabsContent value="notifications" className="tabbed-user-panel-content flex-grow overflow-hidden flex flex-col">
-          <div className="p-3 border-b border-border/10 flex justify-between items-center">
+          <div className="p-3 border-b border-border/10 flex justify-between items-center shrink-0">
             <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
-            <Button variant="link" size="xs" onClick={onMarkAllAsRead} className="text-muted-foreground hover:text-primary">
+            <Button variant="link" size="xs" onClick={onMarkAllAsRead} className="text-muted-foreground hover:text-primary p-0 h-auto">
               Mark all as read
             </Button>
           </div>
@@ -189,8 +190,8 @@ export function NotificationAndAccountPanel({
               )}
             </AnimatePresence>
           </ScrollArea>
-          <div className="p-2 border-t border-border/10 flex justify-between items-center">
-            <Button variant="link" size="xs" onClick={onViewAllNotifications} className="text-primary">
+          <div className="p-2 border-t border-border/10 flex justify-between items-center shrink-0">
+            <Button variant="link" size="xs" onClick={onViewAllNotifications} className="text-primary p-0 h-auto">
               View All Notifications
             </Button>
             <Button variant="ghost" size="iconSm" onClick={onOpenNotificationSettings} className="text-muted-foreground hover:text-primary h-7 w-7">
@@ -201,7 +202,7 @@ export function NotificationAndAccountPanel({
         </TabsContent>
 
         <TabsContent value="account" className="tabbed-user-panel-content flex-grow overflow-hidden flex flex-col">
-            <div className="p-4 border-b border-border/10 flex items-center gap-3">
+            <div className="p-4 border-b border-border/10 flex items-center gap-3 shrink-0">
                  <Avatar className="h-12 w-12">
                     <AvatarImage src={avatarUrl || "https://picsum.photos/id/237/200/200"} alt={userName || "User"} />
                     <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground">
@@ -233,7 +234,7 @@ export function NotificationAndAccountPanel({
                 <div className="flex items-center gap-3 p-2.5 rounded-md bg-muted/30 dark:bg-zinc-800/30 text-sm text-foreground">
                     <RoleIcon className={cn("h-5 w-5", userRole === 'pro' ? 'text-purple-500' : userRole === 'medico' ? 'text-sky-500' : userRole === 'diagnosis' ? 'text-green-500' : 'text-muted-foreground')} />
                     <span>{getRoleDisplayString(userRole)}</span>
-                    <Button variant="link" size="xs" className="ml-auto p-0 h-auto text-primary text-xs" onClick={() => {onClose(); /* TODO: Trigger role change modal or page */}}>Change</Button>
+                     <Button variant="link" size="xs" className="ml-auto p-0 h-auto text-primary text-xs" onClick={() => {onClose(); /* Logic to open OnboardingModal or dedicated role switcher */}}>Change</Button>
                 </div>
                </div>
 

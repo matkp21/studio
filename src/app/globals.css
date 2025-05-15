@@ -80,9 +80,10 @@ body {
     --welcome-gradient-end-light: 200 40% 98%;   /* Very Light Cool Gray */
 
     /* Notification Panel Colors - Light Mode */
-    --notification-panel-bg-start-rgb: 180, 200, 255; /* Light blue, for rgba */
-    --notification-panel-bg-end-rgb: 150, 180, 240;   /* Lighter cool gray, for rgba */
-    --notification-item-bg-rgb: 255, 255, 255; /* White for cards */
+    /* Adjusted for the new integrated panel - values for the panel itself */
+    --notification-panel-bg-start-rgb: 190, 210, 255; /* Lighter blue, for rgba */
+    --notification-panel-bg-end-rgb: 160, 190, 245;   /* Slightly deeper light blue, for rgba */
+    --notification-item-bg-rgb: 255, 255, 255; /* White for item cards */
     --notification-unread-dot-color: hsl(var(--primary));
   }
 
@@ -153,9 +154,10 @@ body {
     --welcome-gradient-end-dark: 210 35% 15%;    /* Dark Cool Gray-Blue */
 
     /* Notification Panel Colors - Dark Mode */
-    --notification-panel-bg-start-rgb: 30, 41, 59; /* Dark blueish gray, for rgba */
-    --notification-panel-bg-end-rgb: 38, 49, 70;   /* Slightly different dark blueish gray */
-    --notification-item-bg-rgb: 51, 65, 85;  /* Dark card */
+    /* Adjusted for the new integrated panel */
+    --notification-panel-bg-start-rgb: 30, 41, 59;   /* Darker blueish gray, for rgba */
+    --notification-panel-bg-end-rgb: 38, 49, 70;     /* Slightly different dark blueish gray */
+    --notification-item-bg-rgb: 51, 65, 85;    /* Darker card for items */
     --notification-unread-dot-color: hsl(var(--primary));
   }
 }
@@ -481,7 +483,6 @@ body {
 
 .sidebar-active-item-glow {
   position: relative; 
-  /* animation: sidebar-active-glow 2.5s infinite ease-in-out; */ 
 }
 
 /* New Sidebar Active Item Indicator Bar (Gemini-Inspired) */
@@ -586,116 +587,128 @@ body {
 }
 
 
-/* New Notification Panel Styles */
+/* New Integrated User Panel Styles (Notifications & Account) */
 .tabbed-user-panel {
-  background-color: rgba(var(--notification-panel-bg-start-rgb), 0.75); /* Use RGB for alpha */
+  /* Frosted glass effect */
+  background-color: rgba(var(--notification-panel-bg-start-rgb), 0.65); /* Light mode subtle blue tint */
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
-  border: 1px solid hsla(var(--border), 0.2); /* Subtle border */
+  border: 1px solid hsla(var(--border), 0.2);
+  border-radius: 0.75rem; /* --radius */
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); /* Subtle shadow */
+  display: flex;
+  flex-direction: column;
 }
 
 .dark .tabbed-user-panel {
-  background-color: rgba(var(--notification-panel-bg-start-rgb), 0.8); /* Darker alpha */
+  background-color: rgba(var(--notification-panel-bg-start-rgb), 0.75); /* Dark mode darker blue tint */
+  border-color: hsla(var(--border), 0.25);
 }
 
 .tabbed-user-panel-tabs-list {
-  @apply bg-transparent p-1 rounded-t-xl;
+  @apply bg-transparent p-1 rounded-t-lg border-b border-white/10 dark:border-black/20; /* Subtle border for tabs */
+  flex-shrink: 0;
 }
 
 .tabbed-user-panel-trigger {
-  @apply text-sm font-medium text-foreground/70 hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring;
-  @apply data-[state=active]:text-primary data-[state=active]:bg-primary/10 data-[state=active]:shadow-sm;
-  @apply dark:text-foreground/60 dark:hover:text-foreground dark:data-[state=active]:text-primary dark:data-[state=active]:bg-primary/15;
-  border-radius: 0.5rem; /* slightly more rounded */
-  padding-top: 0.6rem;
-  padding-bottom: 0.6rem;
+  @apply text-xs font-medium text-foreground/70 hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring;
+  @apply data-[state=active]:text-primary data-[state=active]:bg-primary/5 data-[state=active]:shadow-sm; /* Softer active state */
+  @apply dark:text-foreground/60 dark:hover:text-foreground dark:data-[state=active]:text-primary dark:data-[state=active]:bg-primary/10;
+  border-radius: 0.5rem; 
+  padding-top: 0.5rem;    /* Optimized padding */
+  padding-bottom: 0.5rem; /* Optimized padding */
 }
 
 .tabbed-user-panel-content {
-  @apply flex-grow overflow-hidden flex flex-col; /* Ensure content can grow and scroll */
+  @apply flex-grow overflow-hidden flex flex-col; 
 }
 
 .notification-item-card-in-panel {
-  background-color: rgba(var(--notification-item-bg-rgb), 0.85); /* More opaque cards */
+  background-color: rgba(var(--notification-item-bg-rgb), 0.75); /* Light cards on frosted glass */
+  padding: 0.65rem 0.75rem; /* Optimized padding for item cards */
+  margin-bottom: 0.25rem; /* Reduced margin between cards */
+  border-radius: 0.5rem; /* Consistent rounding */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 .dark .notification-item-card-in-panel {
-   background-color: rgba(var(--notification-item-bg-rgb), 0.75);
+   background-color: rgba(var(--notification-item-bg-rgb), 0.65);
+   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .account-menu-item-in-panel {
-  @apply hover:bg-muted/40 dark:hover:bg-zinc-700/40; /* Subtle hover for account items */
+  @apply hover:bg-muted/40 dark:hover:bg-zinc-700/40 p-2.5; /* Optimized padding */
 }
 
 .notification-unread-dot {
   @apply h-2 w-2 rounded-full;
+  /* Direct application of CSS variable */
   background-color: var(--notification-unread-dot-color);
 }
 
 
-/* Profile Icon Notification Ring */
-.profile-notification-ring {
-  @apply absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background;
-  /* background-color: hsl(var(--primary)); */ /* Base color removed for comet */
-  box-shadow: 0 0 6px hsl(var(--primary) / 0.7);
-  content: ''; 
-  pointer-events: none;
+/* Profile Icon Notification Ring Animations */
+@keyframes ring-pulse {
+  0%, 100% {
+    box-shadow: 0 0 4px 1px hsl(var(--primary) / 0.5), 0 0 0 0px hsl(var(--primary) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 6px 2px hsl(var(--primary) / 0.7), 0 0 0 3px hsl(var(--primary) / 0);
+  }
 }
 
-.profile-notification-ring-pulse {
-  animation: ring-pulse 2.5s infinite ease-in-out;
-}
-
-/* Comet animation: Rotating gradient on the ring border */
 @keyframes ring-comet-gradient {
   0% { background-position: 0% 50%; }
   100% { background-position: 200% 50%; } 
 }
 
+.profile-notification-ring {
+  @apply absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background;
+  content: ''; 
+  pointer-events: none;
+}
+
+.profile-notification-ring-pulse {
+  animation: ring-pulse 2s infinite ease-in-out;
+  /* background-color: hsl(var(--primary)); Visible dot for pulse - now handled by :not selector below */
+}
+
 .profile-notification-ring-comet {
+  /* Uses border to create the comet effect on a transparent background circle */
   border-radius: 50%; 
-  padding: 1.5px; 
-  position: relative;
-  background-clip: padding-box; 
-  border: solid 2px transparent; 
+  padding: 0; /* No padding needed for border effect */
+  position: relative; /* Keep for absolute positioning */
+  border-style: solid;
+  border-width: 2px; /* Match existing border */
+  border-color: transparent; /* Base border transparent */
   
-  background-image: conic-gradient(
+  background-image: conic-gradient( /* This will be the rotating gradient for the border */
     from 0deg, 
-    hsl(var(--primary)/0.3) 0% 20%, 
-    hsl(var(--accent)) 25% 35%,     
-    hsl(var(--primary)/0.3) 40% 100% 
+    hsl(var(--accent)/0.8) 0% 15%, /* Comet tail start */
+    hsl(var(--primary)) 25% 35%,     /* Comet head */
+    hsl(var(--accent)/0.8) 45% 60%, /* Comet tail end */
+    transparent 60% 100% /* Transparent part of the rotation */
   );
-  animation: ring-comet-gradient 3s linear infinite, ring-pulse 2.5s infinite ease-in-out 0.5s; 
+  animation: ring-comet-gradient 2.5s linear infinite, ring-pulse 2.2s infinite ease-in-out 0.3s; 
   background-size: 200% 100%; 
   background-color: transparent; /* Ensure no base bg color interferes with gradient */
 }
 
+/* If not comet, apply base color for simple pulse */
 .profile-notification-ring:not(.profile-notification-ring-comet) {
-   background-color: hsl(var(--primary)); /* Apply base color only if not comet */
+   background-color: hsl(var(--primary)); 
 }
 
 
-/* For the title gradient animation if needed, but Framer Motion handles textVariants */
-        /* If you were to use the CSS gradient animation directly: */
-        /*
-        @keyframes chatTitleGradientFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .animated-chat-title {
-            background-size: 200% 200%;
-            animation: chatTitleGradientFlow 8s ease infinite;
-        }
-        */
-        @keyframes pulseDotLight { /* Renamed for clarity */
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 1; }
-        }
-        .animate-pulse-dot-light {
-          animation: pulseDotLight 1.2s infinite ease-in-out;
-        }
-        .delay-0 { animation-delay: 0s; }
-        .delay-150 { animation-delay: 0.15s; }
-        .delay-300 { animation-delay: 0.3s; }
+/* Chat Interface Animation Support Styles */
+@keyframes pulseDotLight {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+.animate-pulse-dot-light {
+  animation: pulseDotLight 1.2s infinite ease-in-out;
+}
+.delay-0 { animation-delay: 0s; }
+.delay-150 { animation-delay: 0.15s; }
+.delay-300 { animation-delay: 0.3s; }
 
     
