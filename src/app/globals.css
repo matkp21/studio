@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -612,7 +613,7 @@ body {
 
 .notification-unread-dot {
   @apply h-2 w-2 rounded-full;
-  background-color: var(--notification-unread-dot-color);
+  background-color: var(--notification-unread-dot-color); /* Corrected line */
 }
 
 
@@ -703,3 +704,29 @@ body {
 .profile-notification-ring.profile-notification-ring-comet {
    background-color: transparent; /* Let gradient border be the color */
 }
+
+/* For the title gradient animation if needed, but Framer Motion handles textVariants */
+        /* If you were to use the CSS gradient animation directly: */
+        /*
+        @keyframes chatTitleGradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animated-chat-title {
+            background-size: 200% 200%;
+            animation: chatTitleGradientFlow 8s ease infinite;
+        }
+        */
+        @keyframes pulseDotLight { /* Renamed for clarity */
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 1; }
+        }
+        .animate-pulse-dot-light {
+          animation: pulseDotLight 1.2s infinite ease-in-out;
+        }
+        .delay-0 { animation-delay: 0s; }
+        .delay-150 { animation-delay: 0.15s; }
+        .delay-300 { animation-delay: 0.3s; }
+
+    
