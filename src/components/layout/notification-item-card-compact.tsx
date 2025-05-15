@@ -4,9 +4,9 @@
 import type { NotificationItem } from '@/types/notifications';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNowStrict } from 'date-fns';
-import { Pill, CalendarDays, Sparkles, Edit, BookOpen, School, FileText, Brain, CheckSquare, AlertCircle, Info, BellRing, Settings as SettingsIconLucide } from 'lucide-react'; // Added SettingsIconLucide
+import { Pill, CalendarDays, Sparkles, Edit, BookOpen, School, FileText, Brain, CheckSquare, AlertCircle, Info, BellRing, Settings as SettingsIconLucide } from 'lucide-react';
 import Link from 'next/link';
-import { motion } from 'framer-motion'; // Added motion
+import { motion } from 'framer-motion';
 
 const getIconForNotificationType = (type: NotificationItem['type']): React.ElementType => {
   switch (type) {
@@ -22,17 +22,17 @@ const getIconForNotificationType = (type: NotificationItem['type']): React.Eleme
     case 'urgent_patient_alert': return AlertCircle;
     case 'summary_ready': return FileText;
     case 'guideline_update': return Info;
-    case 'system_update': return SettingsIconLucide; 
+    case 'system_update': return SettingsIconLucide;
     case 'security_alert': return AlertCircle;
     case 'general': return BellRing;
-    default: return BellRing; 
+    default: return BellRing;
   }
 };
 
 interface NotificationItemCardCompactProps {
   item: NotificationItem;
   onMarkAsRead: (id: string) => void;
-  onClosePanel: () => void; 
+  onClosePanel: () => void;
 }
 
 export function NotificationItemCardCompact({ item, onMarkAsRead, onClosePanel }: NotificationItemCardCompactProps) {
@@ -42,7 +42,10 @@ export function NotificationItemCardCompact({ item, onMarkAsRead, onClosePanel }
     if (!item.isRead) {
       onMarkAsRead(item.id);
     }
-    onClosePanel(); 
+    // Delay closing the panel slightly to allow Link navigation to initiate.
+    setTimeout(() => {
+      onClosePanel();
+    }, 150); // 150ms delay, adjust if necessary
   };
 
   const cardVariants = {
@@ -51,9 +54,9 @@ export function NotificationItemCardCompact({ item, onMarkAsRead, onClosePanel }
     exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" } }
   };
 
-  const content = (
-    <motion.div // Wrapped with motion.div
-      variants={cardVariants}
+  // This is the visual content of the card, without motion props here.
+  const cardContent = (
+    <div // Changed from motion.div to simple div, motion will be applied to the Link/wrapper
       className={cn(
         "notification-item-card-compact flex items-start gap-2 p-2 rounded-md cursor-pointer transition-colors duration-150",
         item.isRead ? 'bg-background hover:bg-muted/50' : 'bg-primary/10 hover:bg-primary/20 border border-primary/30',
@@ -63,7 +66,7 @@ export function NotificationItemCardCompact({ item, onMarkAsRead, onClosePanel }
         <span className="notification-unread-dot mt-1 flex-shrink-0 h-1.5 w-1.5 bg-primary rounded-full self-center" />
       )}
       {item.isRead && (
-          <span className="mt-1 flex-shrink-0 h-1.5 w-1.5" /> 
+          <span className="mt-1 flex-shrink-0 h-1.5 w-1.5" />
       )}
       <IconComponent className={cn("h-4 w-4 mt-px flex-shrink-0", item.isRead ? "text-muted-foreground" : "text-primary")} />
       <div className="flex-grow overflow-hidden">
@@ -75,11 +78,40 @@ export function NotificationItemCardCompact({ item, onMarkAsRead, onClosePanel }
         </div>
         <p className="text-[11px] text-muted-foreground line-clamp-1 leading-snug mt-0.5">{item.body}</p>
       </div>
-    </motion.div>
+    </div>
   );
 
   if (item.deepLink) {
-    return <Link href={item.deepLink} passHref legacyBehavior><a onClick={handleItemClick}>{content}</a></Link>;
+    return (
+      <Link href={item.deepLink} passHref legacyBehavior>
+        <motion.a // Apply motion to the <a> tag
+          onClick={handleItemClick}
+          className="block w-full no-underline"
+          role="button"
+          tabIndex={0}
+          variants={cardVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          {cardContent}
+        </motion.a>
+      </Link>
+    );
   }
-  return <div onClick={handleItemClick}>{content}</div>;
+
+  return (
+    <motion.div // Apply motion to the div if no deepLink
+      onClick={handleItemClick}
+      className="block w-full cursor-pointer"
+      role="button"
+      tabIndex={0}
+      variants={cardVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
+      {cardContent}
+    </motion.div>
+  );
 }
