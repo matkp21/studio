@@ -298,22 +298,28 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer">
                         <UserCog className="h-4 w-4 text-muted-foreground" /> 
-                        <span>Mode: {getRoleDisplayString(userRole)}</span>
+                        <span>
+                          Mode: <span className={cn(userRole !== null && "firebase-gradient-text-active-role font-semibold")}>{getRoleDisplayString(userRole)}</span>
+                        </span>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
                         <DropdownMenuSubContent>
                         <DropdownMenuRadioGroup value={userRole || ''} onValueChange={(role) => selectUserRole(role as UserRole)}>
                             <DropdownMenuRadioItem value="pro" className="flex items-center gap-2 cursor-pointer">
-                                <BriefcaseMedical className="h-4 w-4 text-purple-500" /> Professional
+                                <BriefcaseMedical className="h-4 w-4 text-purple-500" /> 
+                                <span className={cn(userRole === 'pro' && "firebase-gradient-text-active-role font-semibold")}>Professional</span>
                             </DropdownMenuRadioItem>
                             <DropdownMenuRadioItem value="medico" className="flex items-center gap-2 cursor-pointer">
-                                <School className="h-4 w-4 text-sky-500" /> Medical Student
+                                <School className="h-4 w-4 text-sky-500" /> 
+                                <span className={cn(userRole === 'medico' && "firebase-gradient-text-active-role font-semibold")}>Medical Student</span>
                             </DropdownMenuRadioItem>
                             <DropdownMenuRadioItem value="diagnosis" className="flex items-center gap-2 cursor-pointer">
-                                <Stethoscope className="h-4 w-4 text-green-500" /> Patient/User
+                                <Stethoscope className="h-4 w-4 text-green-500" /> 
+                                <span className={cn(userRole === 'diagnosis' && "firebase-gradient-text-active-role font-semibold")}>Patient/User</span>
                             </DropdownMenuRadioItem>
                              <DropdownMenuRadioItem value="" className="flex items-center gap-2 cursor-pointer">
-                                <UserCircle className="h-4 w-4 text-muted-foreground" /> Guest
+                                <UserCircle className="h-4 w-4 text-muted-foreground" /> 
+                                <span className={cn(userRole === null && "firebase-gradient-text-active-role font-semibold")}>Guest</span>
                             </DropdownMenuRadioItem>
                         </DropdownMenuRadioGroup>
                         </DropdownMenuSubContent>
