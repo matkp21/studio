@@ -16,7 +16,7 @@ import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Home,
-  MessageCircleHeart, 
+  MessageSquareHeart, 
   ClipboardList, 
   ScanEye,       
   Settings2,     
@@ -25,7 +25,8 @@ import {
   BriefcaseMedical,
   Info,
   HeartPulse,    
-  PillIcon, 
+  PillIcon,
+  BellRing, // Added BellRing for Notifications
 } from 'lucide-react';
 import {
   Tooltip,
@@ -39,9 +40,10 @@ import { useToast } from '@/hooks/use-toast';
 
 const baseNavItems = [
   { href: '/', label: 'Home', icon: Home, ariaLabel: 'Go to Home page' },
-  { href: '/chat', label: 'Chat', icon: MessageCircleHeart, ariaLabel: 'Open Chat interface' },
+  { href: '/chat', label: 'Chat', icon: MessageSquareHeart, ariaLabel: 'Open Chat interface' },
   { href: '/medications', label: 'Medications', icon: PillIcon, ariaLabel: 'Manage Medications' }, 
   { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye, ariaLabel: 'Open AR Viewer' },
+  { href: '/notifications', label: 'Notifications', icon: BellRing, ariaLabel: 'View Notifications' }, // New Notifications link
 ];
 
 const patientManagementNavItem = {
@@ -75,18 +77,18 @@ export function SidebarNav() {
   let navItems = [...baseNavItems];
 
   if (userRole === 'medico') {
-    navItems.push(medicoDashboardNavItem);
-    // Medico might not need full patient management by default, this can be adjusted
-    // if (!navItems.find(item => item.href === '/patient-management')) {
-    //   navItems.push(patientManagementNavItem);
-    // }
+    if (!navItems.find(item => item.href === '/medico')) { // Ensure not to duplicate
+      navItems.splice(4, 0, medicoDashboardNavItem); // Insert before Notifications if it's there
+    }
   } else if (userRole === 'pro') {
-    navItems.push(proToolsNavItem);
+     if (!navItems.find(item => item.href === '/pro')) {
+      navItems.splice(4, 0, proToolsNavItem);
+    }
     if (!navItems.find(item => item.href === '/patient-management')) {
-      navItems.push(patientManagementNavItem);
+      navItems.push(patientManagementNavItem); // Add Patient Management for Pro
     }
   }
-  // For 'diagnosis' role, baseNavItems are used.
+
 
   const handleLogout = () => {
     toast({
@@ -112,31 +114,29 @@ export function SidebarNav() {
               <SidebarMenuItem key={item.href}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Link href={item.href} passHref legacyBehavior>
-                      <SidebarMenuButton
-                        as="a" // Important for Link with legacyBehavior
-                        isActive={isActive}
-                        aria-label={item.ariaLabel}
-                        className={cn(
-                          "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
-                          "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
-                          isActive
-                            ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
-                            : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
-                          "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
-                        )}
-                      >
-                        
-                          <item.icon className={cn(
-                              "h-5 w-5 transition-transform duration-200 ease-in-out",
-                              "group-hover:scale-110",
-                              isActive && "text-sidebar-active-foreground" 
-                             )}
-                           />
-                          <span>{item.label}</span>
-                        
-                      </SidebarMenuButton>
-                    </Link>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      aria-label={item.ariaLabel}
+                      className={cn(
+                        "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
+                        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
+                        isActive
+                          ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
+                          : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
+                        "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
+                      )}
+                    >
+                      <Link href={item.href}>
+                        <item.icon className={cn(
+                            "h-5 w-5 transition-transform duration-200 ease-in-out",
+                            "group-hover:scale-110",
+                            isActive && "text-sidebar-active-foreground" 
+                           )}
+                         />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
                   </TooltipTrigger>
                   {(sidebarState === "collapsed" || isMobile) && (
                     <TooltipContent
@@ -158,30 +158,28 @@ export function SidebarNav() {
           <SidebarMenuItem>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href="/feedback" passHref legacyBehavior>
-                  <SidebarMenuButton
-                    as="a"
-                    isActive={pathname === '/feedback'}
-                    aria-label="Submit Feedback"
-                    className={cn(
-                      "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
-                      "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
-                       pathname === '/feedback'
-                        ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
-                        : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
-                      "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
-                    )}
-                   >
-                     
-                      <Info className={cn(
-                          "h-5 w-5 transition-transform duration-200 ease-in-out",
-                          "group-hover:scale-110",
-                          pathname === '/feedback' && "text-sidebar-active-foreground"
-                          )} />
-                      <span>Feedback</span>
-                    
-                  </SidebarMenuButton>
-                </Link>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/feedback'}
+                  aria-label="Submit Feedback"
+                  className={cn(
+                    "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
+                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
+                     pathname === '/feedback'
+                      ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
+                      : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
+                    "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
+                  )}
+                 >
+                   <Link href="/feedback">
+                    <Info className={cn(
+                        "h-5 w-5 transition-transform duration-200 ease-in-out",
+                        "group-hover:scale-110",
+                        pathname === '/feedback' && "text-sidebar-active-foreground"
+                        )} />
+                    <span>Feedback</span>
+                  </Link>
+                </SidebarMenuButton>
               </TooltipTrigger>
               {(sidebarState === "collapsed" || isMobile) && (
                   <TooltipContent
@@ -197,30 +195,28 @@ export function SidebarNav() {
           <SidebarMenuItem>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href="/settings" passHref legacyBehavior>
-                  <SidebarMenuButton
-                      as="a"
-                      isActive={pathname.startsWith('/settings')}
-                      aria-label="Open Settings"
-                      className={cn(
-                          "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
-                          "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
-                          pathname.startsWith('/settings')
-                          ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
-                          : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
-                          "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
-                      )}
-                  >
-                      
-                          <Settings2 className={cn(
-                              "h-5 w-5 transition-transform duration-200 ease-in-out",
-                              "group-hover:scale-110",
-                              pathname.startsWith('/settings') && "text-sidebar-active-foreground"
-                          )} />
-                          <span>Settings</span>
-                      
-                  </SidebarMenuButton>
-                </Link>
+                <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/settings')}
+                    aria-label="Open Settings"
+                    className={cn(
+                        "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
+                        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
+                        pathname.startsWith('/settings')
+                        ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
+                        : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
+                        "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
+                    )}
+                >
+                    <Link href="/settings">
+                        <Settings2 className={cn(
+                            "h-5 w-5 transition-transform duration-200 ease-in-out",
+                            "group-hover:scale-110",
+                            pathname.startsWith('/settings') && "text-sidebar-active-foreground"
+                        )} />
+                        <span>Settings</span>
+                    </Link>
+                </SidebarMenuButton>
               </TooltipTrigger>
               {(sidebarState === "collapsed" || isMobile) && (
                   <TooltipContent
