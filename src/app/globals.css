@@ -79,11 +79,11 @@ body {
     --welcome-gradient-mid-light: 240 50% 97%;   /* Soft Light Lavender */
     --welcome-gradient-end-light: 200 40% 98%;   /* Very Light Cool Gray */
 
-    /* Notification Panel Colors - Light Mode */
-    /* Adjusted for the new integrated panel - values for the panel itself */
-    --notification-panel-bg-start-rgb: 190, 210, 255; /* Lighter blue, for rgba */
-    --notification-panel-bg-end-rgb: 160, 190, 245;   /* Slightly deeper light blue, for rgba */
-    --notification-item-bg-rgb: 255, 255, 255; /* White for item cards */
+    /* Notification Panel Compact Colors - Light Mode (Solid, not frosted) */
+    --notification-panel-compact-bg: 0 0% 100%; /* White */
+    --notification-panel-compact-border: 210 20% 88%; /* Light Cool Gray Border */
+    --notification-item-compact-bg: 0 0% 100%; /* White for item cards */
+    --notification-item-compact-hover-bg: 210 25% 96%; /* Light Gray for hover */
     --notification-unread-dot-color: hsl(var(--primary));
   }
 
@@ -153,11 +153,11 @@ body {
     --welcome-gradient-mid-dark: 260 30% 12%;    /* Dark Purple */
     --welcome-gradient-end-dark: 210 35% 15%;    /* Dark Cool Gray-Blue */
 
-    /* Notification Panel Colors - Dark Mode */
-    /* Adjusted for the new integrated panel */
-    --notification-panel-bg-start-rgb: 30, 41, 59;   /* Darker blueish gray, for rgba */
-    --notification-panel-bg-end-rgb: 38, 49, 70;     /* Slightly different dark blueish gray */
-    --notification-item-bg-rgb: 51, 65, 85;    /* Darker card for items */
+    /* Notification Panel Compact Colors - Dark Mode (Solid, not frosted) */
+    --notification-panel-compact-bg: 216 54% 18%; /* Darker card-like color */
+    --notification-panel-compact-border: 216 40% 25%; /* Darker border */
+    --notification-item-compact-bg: 216 54% 18%; /* Darker card for items */
+    --notification-item-compact-hover-bg: 216 50% 22%; /* Slightly lighter hover */
     --notification-unread-dot-color: hsl(var(--primary));
   }
 }
@@ -587,64 +587,40 @@ body {
 }
 
 
-/* New Integrated User Panel Styles (Notifications & Account) */
-.tabbed-user-panel {
-  /* Frosted glass effect */
-  background-color: rgba(var(--notification-panel-bg-start-rgb), 0.65); /* Light mode subtle blue tint */
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
-  border: 1px solid hsla(var(--border), 0.2);
-  border-radius: 0.75rem; /* --radius */
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); /* Subtle shadow */
-  display: flex;
-  flex-direction: column;
+/* --- Styles for Compact Notification Panel --- */
+/* These styles apply to the panel itself and general item appearance */
+/* Specific item cards like notification-item-card-compact will apply their own backgrounds */
+.notification-panel-compact {
+  background-color: hsl(var(--notification-panel-compact-bg));
+  border: 1px solid hsl(var(--notification-panel-compact-border));
+  /* Other panel styles like width, max-height, positioning are in its component or via Tailwind */
 }
 
-.dark .tabbed-user-panel {
-  background-color: rgba(var(--notification-panel-bg-start-rgb), 0.75); /* Dark mode darker blue tint */
-  border-color: hsla(var(--border), 0.25);
+.dark .notification-panel-compact {
+  background-color: hsl(var(--notification-panel-compact-bg)); /* Ensure dark mode var is used */
+  border-color: hsl(var(--notification-panel-compact-border)); /* Ensure dark mode var is used */
 }
 
-.tabbed-user-panel-tabs-list {
-  @apply bg-transparent p-1 rounded-t-lg border-b border-white/10 dark:border-black/20; /* Subtle border for tabs */
-  flex-shrink: 0;
+.notification-item-card-compact {
+  background-color: hsl(var(--notification-item-compact-bg)); /* Light mode item bg */
+  /* Add hover, active, etc. states if needed */
+}
+.notification-item-card-compact:hover {
+  background-color: hsl(var(--notification-item-compact-hover-bg));
 }
 
-.tabbed-user-panel-trigger {
-  @apply text-xs font-medium text-foreground/70 hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring;
-  @apply data-[state=active]:text-primary data-[state=active]:bg-primary/5 data-[state=active]:shadow-sm; /* Softer active state */
-  @apply dark:text-foreground/60 dark:hover:text-foreground dark:data-[state=active]:text-primary dark:data-[state=active]:bg-primary/10;
-  border-radius: 0.5rem; 
-  padding-top: 0.5rem;    /* Optimized padding */
-  padding-bottom: 0.5rem; /* Optimized padding */
+.dark .notification-item-card-compact {
+  background-color: hsl(var(--notification-item-compact-bg)); /* Dark mode item bg */
+}
+.dark .notification-item-card-compact:hover {
+  background-color: hsl(var(--notification-item-compact-hover-bg));
 }
 
-.tabbed-user-panel-content {
-  @apply flex-grow overflow-hidden flex flex-col; 
-}
-
-.notification-item-card-in-panel {
-  background-color: rgba(var(--notification-item-bg-rgb), 0.75); /* Light cards on frosted glass */
-  padding: 0.65rem 0.75rem; /* Optimized padding for item cards */
-  margin-bottom: 0.25rem; /* Reduced margin between cards */
-  border-radius: 0.5rem; /* Consistent rounding */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-.dark .notification-item-card-in-panel {
-   background-color: rgba(var(--notification-item-bg-rgb), 0.65);
-   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.account-menu-item-in-panel {
-  @apply hover:bg-muted/40 dark:hover:bg-zinc-700/40 p-2.5; /* Optimized padding */
-}
-
+/* This is the small dot indicating an unread notification */
 .notification-unread-dot {
   @apply h-2 w-2 rounded-full;
-  /* Direct application of CSS variable */
-  background-color: var(--notification-unread-dot-color);
+  background-color: var(--notification-unread-dot-color); /* Use defined CSS variable */
 }
-
 
 /* Profile Icon Notification Ring Animations */
 @keyframes ring-pulse {
@@ -669,28 +645,28 @@ body {
 
 .profile-notification-ring-pulse {
   animation: ring-pulse 2s infinite ease-in-out;
-  /* background-color: hsl(var(--primary)); Visible dot for pulse - now handled by :not selector below */
+  /* background-color: hsl(var(--primary)); /* Removed as it's now handled by :not selector */
 }
 
 .profile-notification-ring-comet {
   /* Uses border to create the comet effect on a transparent background circle */
   border-radius: 50%; 
-  padding: 0; /* No padding needed for border effect */
-  position: relative; /* Keep for absolute positioning */
+  padding: 0; 
+  position: relative; 
   border-style: solid;
   border-width: 2px; /* Match existing border */
-  border-color: transparent; /* Base border transparent */
+  border-color: transparent; 
   
   background-image: conic-gradient( /* This will be the rotating gradient for the border */
     from 0deg, 
-    hsl(var(--accent)/0.8) 0% 15%, /* Comet tail start */
-    hsl(var(--primary)) 25% 35%,     /* Comet head */
-    hsl(var(--accent)/0.8) 45% 60%, /* Comet tail end */
-    transparent 60% 100% /* Transparent part of the rotation */
+    hsl(var(--accent)/0.8) 0% 15%, 
+    hsl(var(--primary)) 25% 35%,     
+    hsl(var(--accent)/0.8) 45% 60%, 
+    transparent 60% 100% 
   );
   animation: ring-comet-gradient 2.5s linear infinite, ring-pulse 2.2s infinite ease-in-out 0.3s; 
   background-size: 200% 100%; 
-  background-color: transparent; /* Ensure no base bg color interferes with gradient */
+  background-color: transparent; 
 }
 
 /* If not comet, apply base color for simple pulse */
@@ -710,5 +686,3 @@ body {
 .delay-0 { animation-delay: 0s; }
 .delay-150 { animation-delay: 0.15s; }
 .delay-300 { animation-delay: 0.3s; }
-
-    

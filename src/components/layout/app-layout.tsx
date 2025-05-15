@@ -8,8 +8,8 @@ import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
 import { 
   PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info, 
-  MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, Bell 
-} from 'lucide-react'; // Keep Bell if used as fallback
+  MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, Bell, ChevronDown, Edit, HeartPulse
+} from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
@@ -21,9 +21,23 @@ import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { Badge } from '@/components/ui/badge';
 import { AnimatedTagline } from '@/components/layout/animated-tagline';
 import { WelcomeDisplay } from '@/components/welcome/welcome-display';
-import { NotificationAndAccountPanel } from './notification-and-account-panel';
+import { NotificationPanelCompact } from './notification-panel-compact';
 import type { NotificationItem } from '@/types/notifications';
 import { useToast } from '@/hooks/use-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@/components/ui/dropdown-menu";
 
 const ToggleSidebarButton = () => {
   const { state, toggleSidebar, isMobile } = useSidebar();
@@ -42,20 +56,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [showWelcomeDisplay, setShowWelcomeDisplay] = useState(false);
   const [clientLoaded, setClientLoaded] = useState(false);
   const { userRole, selectUserRole } = useProMode();
-
   const { toast } = useToast();
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [showUserPanel, setShowUserPanel] = useState(false);
-  const [activeTabInPanel, setActiveTabInPanel] = useState<'notifications' | 'account'>('account');
+  const [showNotificationPanel, setShowNotificationPanel] = useState(false);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
-  const [hasNewNotification, setHasNewNotification] = useState(false);
+  const [hasNewNotification, setHasNewNotification] = useState(false); // For comet animation
 
   const fetchNotifications = useCallback(() => {
     const mockNotifications: NotificationItem[] = [
-      { id: '1', type: 'medication_reminder', title: 'Medication Reminder', body: 'Time for your Amoxicillin (500mg). Take with food.', timestamp: new Date(Date.now() - 1000 * 60 * 5), isRead: false, deepLink: '/medications' },
-      { id: '2', type: 'appointment_reminder', title: 'Appointment Soon', body: 'Cardiology check-up with Dr. Smith in 1 hour.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), isRead: true, deepLink: '/schedule' },
-      { id: '3', type: 'study_material_update', title: 'New Notes Available', body: 'Study notes for "Endocrine System" have been updated.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), isRead: false, deepLink: '/medico' },
+      { id: '1', type: 'medication_reminder', title: 'Medication Reminder', body: 'Time for Amoxicillin (500mg).', timestamp: new Date(Date.now() - 1000 * 60 * 5), isRead: false, deepLink: '/medications' },
+      { id: '2', type: 'appointment_reminder', title: 'Appointment Soon', body: 'Cardiology check-up in 1 hour.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), isRead: true, deepLink: '/schedule' },
+      { id: '3', type: 'study_material_update', title: 'New Notes Available', body: 'Endocrine System notes updated.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), isRead: false, deepLink: '/medico' },
+      { id: '4', type: 'general', title: 'Welcome to MediAssistant v1.1!', body: 'Explore new features and improvements.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48), isRead: true, deepLink: '/' },
     ];
     setNotifications(mockNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
   }, []);
@@ -70,24 +83,21 @@ export function AppLayout({ children }: { children: ReactNode }) {
   }, [notifications]);
 
   useEffect(() => {
-    if (clientLoaded && notifications.length > 0) {
+    if (clientLoaded && notifications.length > 0 && !sessionStorage.getItem('initialNewNotificationShown')) {
       const timer = setTimeout(() => {
         const newNotif: NotificationItem = {
-          id: `new-${Date.now()}`,
-          type: 'general',
-          title: 'System Maintenance Scheduled',
-          body: 'MediAssistant will undergo brief maintenance tonight at 2 AM.',
-          timestamp: new Date(),
-          isRead: false,
-          deepLink: '/' // Or an announcements page
+          id: `new-${Date.now()}`, type: 'system_update', title: 'System Maintenance Scheduled',
+          body: 'Brief maintenance tonight at 2 AM.', timestamp: new Date(), isRead: false, deepLink: '/'
         };
         setNotifications(prev => [newNotif, ...prev].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
-        setHasNewNotification(true); // Trigger comet animation
-        setTimeout(() => setHasNewNotification(false), 5000); // Comet duration
-      }, 10000); // Simulate new notification after 10s
+        setHasNewNotification(true);
+        sessionStorage.setItem('initialNewNotificationShown', 'true');
+        setTimeout(() => setHasNewNotification(false), 7000); 
+      }, 15000); 
       return () => clearTimeout(timer);
     }
-  }, [clientLoaded, notifications.length]); // Depend on notifications.length to re-trigger if notifications are fetched
+  }, [clientLoaded, notifications.length]);
+
 
   const handleMarkAsRead = useCallback((id: string) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
@@ -99,41 +109,22 @@ export function AppLayout({ children }: { children: ReactNode }) {
   }, [toast]);
   
   const handleViewAllNotifications = () => {
-    setShowUserPanel(false);
+    setShowNotificationPanel(false); // Close compact panel first
+    // Here you would navigate to a full notifications page, e.g., router.push('/notifications/all')
     toast({title: "Navigation", description: "Navigating to all notifications page (Conceptual)."});
-    // Implement navigation to a dedicated notifications page if needed
   };
 
-  const handleOpenNotificationSettings = () => {
-    setShowUserPanel(false);
-    toast({title: "Navigation", description: "Navigating to notification settings page (Conceptual)."});
-    // Implement navigation to notification settings page
-  };
-
-  const handleToggleUserPanel = () => {
-    setShowUserPanel(prev => {
-      if (!prev) { // Panel is about to open
-        if (hasUnreadNotifications) {
-          setActiveTabInPanel('notifications');
-        } else {
-          setActiveTabInPanel('account');
-        }
-      }
-      return !prev;
-    });
-  };
-  
   const handleLogout = () => {
     toast({ title: "Logged Out", description: "You have been successfully logged out. (Demo)" });
     selectUserRole(null); 
-    setShowUserPanel(false); // Close panel on logout
+    setShowNotificationPanel(false); // Close panel on logout
   };
 
-  const getRoleDisplayString = (role: UserRole): string => {
+  const getRoleDisplayString = (role: UserRole | null): string => {
     if (role === 'pro') return 'Professional';
     if (role === 'medico') return 'Medical Student';
     if (role === 'diagnosis') return 'Patient/User';
-    return 'User'; // Fallback for null or unexpected role
+    return 'Guest';
   };
 
   useEffect(() => {
@@ -183,6 +174,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
   };
   
   if (!clientLoaded) {
+    // Render nothing or a very minimal loader on the server / before client hydration
+    // This helps avoid hydration mismatches with localStorage/sessionStorage logic
     return null; 
   }
 
@@ -200,6 +193,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <WelcomeDisplay onDisplayComplete={handleWelcomeDisplayComplete} />
     );
   }
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -244,50 +239,104 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 Pro Features
               </Badge>
             )}
-             <div className="relative">
-                <Button 
-                    variant="ghost" 
-                    className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full text-foreground/80 hover:text-foreground" 
-                    aria-label="Open user menu and notifications"
-                    onClick={handleToggleUserPanel}
-                >
-                   <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
-                    <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
-                    <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-primary/70 text-primary-foreground">
-                       <Bell className="h-4 w-4"/>
-                    </AvatarFallback>
-                  </Avatar>
-                   {(hasUnreadNotifications || hasNewNotification) && (
-                      <div className={cn(
-                          "profile-notification-ring",
-                          hasUnreadNotifications && !hasNewNotification && "profile-notification-ring-pulse",
-                          hasNewNotification && "profile-notification-ring-comet" 
-                      )} />
-                   )}
-                </Button>
-            </div>
+             <DropdownMenu onOpenChange={(open) => { if(!open) setShowNotificationPanel(false); }}>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                      variant="ghost" 
+                      className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full text-foreground/80 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" 
+                      aria-label="Open user menu"
+                  >
+                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
+                        <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user doctor" />
+                         <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-primary/70 text-primary-foreground">
+                            <HeartPulse className="h-5 w-5"/>
+                        </AvatarFallback>
+                    </Avatar>
+                    {(hasUnreadNotifications || hasNewNotification) && (
+                        <div className={cn(
+                            "profile-notification-ring",
+                            hasUnreadNotifications && !hasNewNotification && "profile-notification-ring-pulse", // Pulse for existing unread
+                            hasNewNotification && "profile-notification-ring-comet" // Comet for new arrival
+                        )} />
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64 rounded-xl shadow-lg border-border/50 bg-card">
+                  <DropdownMenuLabel className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                        <Avatar className="h-9 w-9">
+                            <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user avatar" />
+                            <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground">
+                                DR
+                            </AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <p className="text-sm font-medium text-foreground">Dr. Medi User</p>
+                            <p className="text-xs text-muted-foreground">medi.user@example.com</p>
+                        </div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
+                      <UserCircle className="h-4 w-4 text-muted-foreground" /> Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings" className="flex items-center gap-2 cursor-pointer">
+                      <Settings className="h-4 w-4 text-muted-foreground" /> Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowNotificationPanel(prev => !prev)} className="flex items-center justify-between cursor-pointer">
+                    <div className="flex items-center gap-2">
+                        <Bell className="h-4 w-4 text-muted-foreground" /> Notifications
+                    </div>
+                    {unreadCount > 0 && (
+                        <Badge variant="destructive" className="h-5 px-1.5 text-xs">{unreadCount}</Badge>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer">
+                        <UserCog className="h-4 w-4 text-muted-foreground" /> 
+                        <span>Mode: {getRoleDisplayString(userRole)}</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                        <DropdownMenuRadioGroup value={userRole || ''} onValueChange={(role) => selectUserRole(role as UserRole)}>
+                            <DropdownMenuRadioItem value="pro" className="flex items-center gap-2 cursor-pointer">
+                                <BriefcaseMedical className="h-4 w-4 text-purple-500" /> Professional
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="medico" className="flex items-center gap-2 cursor-pointer">
+                                <School className="h-4 w-4 text-sky-500" /> Medical Student
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="diagnosis" className="flex items-center gap-2 cursor-pointer">
+                                <Stethoscope className="h-4 w-4 text-green-500" /> Patient/User
+                            </DropdownMenuRadioItem>
+                             <DropdownMenuRadioItem value="" className="flex items-center gap-2 cursor-pointer">
+                                <UserCircle className="h-4 w-4 text-muted-foreground" /> Guest
+                            </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                        </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
+                    <LogOut className="h-4 w-4" /> Log Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
           </nav>
         </header>
         <main className="flex-1 flex flex-col overflow-auto relative">
           {children}
-           {showUserPanel && (
-            <NotificationAndAccountPanel
+          {/* NotificationPanelCompact is now triggered by the DropdownMenuItem */}
+          {showNotificationPanel && (
+            <NotificationPanelCompact
               notifications={notifications}
-              hasUnreadNotifications={hasUnreadNotifications}
-              activeTab={activeTabInPanel}
-              setActiveTab={setActiveTabInPanel}
-              onClose={() => setShowUserPanel(false)}
-              onMarkAllAsRead={handleMarkAllAsRead}
+              onClose={() => setShowNotificationPanel(false)}
               onMarkAsRead={handleMarkAsRead}
+              onMarkAllAsRead={handleMarkAllAsRead}
               onViewAllNotifications={handleViewAllNotifications}
-              onOpenNotificationSettings={handleOpenNotificationSettings}
-              userRole={userRole}
-              userName="Dr. Medi User" // Placeholder, fetch from auth
-              userEmail="medi.user@example.com" // Placeholder
-              avatarUrl="https://picsum.photos/id/237/200/200" // Placeholder
-              onLogout={handleLogout}
-              onSelectUserRole={selectUserRole}
-              getRoleDisplayString={getRoleDisplayString}
             />
           )}
         </main>
