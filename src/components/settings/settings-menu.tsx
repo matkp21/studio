@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import {
-  UserCircle, ShieldCheck, Palette, BellRing, Database, Lock, Users, HelpCircle, Info, LogOut, Trash2, BriefcaseMedical, School, Stethoscope, Workflow, Edit, SlidersHorizontal, Languages, EyeOff, BellOff, Volume2, MailWarning, CloudLightning, Download, Pin, FileText, BookOpen, Mic, CalculatorIcon, Phone, MessageSquareHeart, UserCog, Settings2 as SettingsIcon, AlertTriangle // Added AlertTriangle
+  UserCircle, ShieldCheck, Palette, BellRing, Database, Lock, Users, HelpCircle, Info, LogOut, Trash2, BriefcaseMedical, School, Stethoscope, Workflow, Edit, SlidersHorizontal, Languages, EyeOff, BellOff, Volume2, MailWarning, CloudLightning, Download, Pin, FileText, BookOpen, Mic, CalculatorIcon, Phone, MessageSquareHeart, UserCog, Settings2 as SettingsIcon, AlertTriangle, Pill // Added Pill here
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -46,11 +46,11 @@ export function SettingsMenu() {
     selectUserRole(null); // Example: reset role
   };
   
-  const getRoleDisplayString = (role: UserRole): string => {
+  const getRoleDisplayString = (role: UserRole | null): string => { // Added null check for role
     if (role === 'pro') return 'Professional';
     if (role === 'medico') return 'Medical Student';
     if (role === 'diagnosis') return 'Patient/User';
-    return 'User';
+    return 'Guest'; // Changed from 'User' to 'Guest' for consistency
   }
 
   const isGuest = userRole === null;
@@ -117,7 +117,7 @@ export function SettingsMenu() {
       {/* Security & Privacy */}
       <SettingsSection title="Security & Privacy" icon={Lock}>
         {!isGuest && <SettingsItem label="App Lock (PIN/Biometric)" description="Secure app access." icon={Pin} actionElement={<Switch id="app-lock" disabled />} />}
-        <SettingsItem label="View Privacy Policy" icon={FileText} actionElement={<Link href="/privacy"><Button variant="link" size="sm">View Policy</Button></Link>} />
+        <SettingsItem label="View Privacy Policy" icon={FileText} actionElement={<Link href="#"><Button variant="link" size="sm">View Policy</Button></Link>} />
         <SettingsItem label="Clear Cache" description="Clear locally cached data." icon={Trash2} actionElement={<Button variant="outline" size="sm" disabled>Clear Cache</Button>} />
       </SettingsSection>
       <Separator />
@@ -161,7 +161,7 @@ export function SettingsMenu() {
       <SettingsSection title="About MediAssistant" icon={Info}>
         <SettingsItem label="App Version" description="1.0.0 (Alpha)" />
         <SettingsItem label="What's New" actionElement={<Button variant="link" size="sm" disabled>Release Notes</Button>} />
-        <SettingsItem label="Terms of Service" actionElement={<Link href="/terms"><Button variant="link" size="sm">View Terms</Button></Link>} />
+        <SettingsItem label="Terms of Service" actionElement={<Link href="#"><Button variant="link" size="sm">View Terms</Button></Link>} />
         <SettingsItem label="Rate MediAssistant" actionElement={<Button variant="link" size="sm" disabled>Rate App</Button>} />
       </SettingsSection>
       <Separator />
@@ -205,3 +205,4 @@ export function SettingsMenu() {
     </div>
   );
 }
+
