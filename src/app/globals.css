@@ -80,10 +80,9 @@ body {
     --welcome-gradient-end-light: 200 40% 98%;   /* Very Light Cool Gray */
 
     /* Notification Panel Colors - Light Mode */
-    --notification-panel-bg-start: hsla(210, 50%, 95%, 0.6); /* Light blue, semi-transparent */
-    --notification-panel-bg-end: hsla(220, 40%, 97%, 0.75); /* Lighter cool gray, semi-transparent */
-    --notification-item-bg: hsla(0, 0%, 100%, 0.7); /* Semi-transparent white for cards */
-    --notification-item-hover-bg: hsla(210, 30%, 90%, 0.5);
+    --notification-panel-bg-start-rgb: 180, 200, 255; /* Light blue, for rgba */
+    --notification-panel-bg-end-rgb: 150, 180, 240;   /* Lighter cool gray, for rgba */
+    --notification-item-bg-rgb: 255, 255, 255; /* White for cards */
     --notification-unread-dot-color: hsl(var(--primary));
   }
 
@@ -154,10 +153,9 @@ body {
     --welcome-gradient-end-dark: 210 35% 15%;    /* Dark Cool Gray-Blue */
 
     /* Notification Panel Colors - Dark Mode */
-    --notification-panel-bg-start: hsla(216, 50%, 15%, 0.7); /* Dark blue, semi-transparent */
-    --notification-panel-bg-end: hsla(220, 40%, 18%, 0.85); /* Darker cool gray, semi-transparent */
-    --notification-item-bg: hsla(216, 30%, 25%, 0.7); /* Semi-transparent dark card */
-    --notification-item-hover-bg: hsla(216, 30%, 30%, 0.5);
+    --notification-panel-bg-start-rgb: 30, 41, 59; /* Dark blueish gray, for rgba */
+    --notification-panel-bg-end-rgb: 38, 49, 70;   /* Slightly different dark blueish gray */
+    --notification-item-bg-rgb: 51, 65, 85;  /* Dark card */
     --notification-unread-dot-color: hsl(var(--primary));
   }
 }
@@ -470,6 +468,7 @@ body {
   animation: gemini-cta-glow 3s infinite ease-in-out;
 }
 
+
 /* Sidebar Active Item Glow */
 @keyframes sidebar-active-glow {
   0%, 100% {
@@ -579,50 +578,66 @@ body {
 /* Subtle Heart Pulse Animation for Tagline */
 @keyframes heartPulseSubtle {
   0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; } /* Made even subtler */
+  50% { transform: scale(1.03); opacity: 1; } /* Made even subtler */
 }
 
 .animate-heart-pulse-subtle {
-  animation: heartPulseSubtle 2.5s infinite ease-in-out; /* Slowed down */
+  animation: heartPulseSubtle 2.2s infinite ease-in-out; /* Slowed down */
 }
 
-/* Notification Panel Styling */
-.notification-panel {
-  @apply shadow-2xl border border-border/20;
-  /* Frosted glass effect */
-  background-color: var(--notification-panel-bg-start); /* Fallback */
-  background-image: linear-gradient(to bottom right, var(--notification-panel-bg-start), var(--notification-panel-bg-end));
+
+/* New Notification Panel Styles */
+.tabbed-user-panel {
+  background-color: rgba(var(--notification-panel-bg-start-rgb), 0.75); /* Use RGB for alpha */
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid hsla(var(--border), 0.2); /* Subtle border */
 }
 
-.notification-panel-frosted {
-   /* Slightly more opaque version for headers/footers if needed, or use same as panel */
-  background-color: hsla(var(--background), 0.5); /* Adjust alpha for desired frostiness */
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
+.dark .tabbed-user-panel {
+  background-color: rgba(var(--notification-panel-bg-start-rgb), 0.8); /* Darker alpha */
 }
 
-.notification-item-card {
-  @apply bg-card/80 hover:bg-muted/70; /* Default for read items */
+.tabbed-user-panel-tabs-list {
+  @apply bg-transparent p-1 rounded-t-xl;
 }
 
-.notification-item-card.unread { /* Custom class or conditional styling in component */
-  @apply bg-primary/5 hover:bg-primary/10 border border-primary/20;
+.tabbed-user-panel-trigger {
+  @apply text-sm font-medium text-foreground/70 hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring;
+  @apply data-[state=active]:text-primary data-[state=active]:bg-primary/10 data-[state=active]:shadow-sm;
+  @apply dark:text-foreground/60 dark:hover:text-foreground dark:data-[state=active]:text-primary dark:data-[state=active]:bg-primary/15;
+  border-radius: 0.5rem; /* slightly more rounded */
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+
+.tabbed-user-panel-content {
+  @apply flex-grow overflow-hidden flex flex-col; /* Ensure content can grow and scroll */
+}
+
+.notification-item-card-in-panel {
+  background-color: rgba(var(--notification-item-bg-rgb), 0.85); /* More opaque cards */
+}
+.dark .notification-item-card-in-panel {
+   background-color: rgba(var(--notification-item-bg-rgb), 0.75);
+}
+
+.account-menu-item-in-panel {
+  @apply hover:bg-muted/40 dark:hover:bg-zinc-700/40; /* Subtle hover for account items */
 }
 
 .notification-unread-dot {
   @apply h-2 w-2 rounded-full;
-  background-color: var(--notification-unread-dot-color); /* Corrected line */
+  background-color: var(--notification-unread-dot-color);
 }
 
 
 /* Profile Icon Notification Ring */
 .profile-notification-ring {
   @apply absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background;
-  background-color: hsl(var(--primary)); /* Or a specific notification color */
+  /* background-color: hsl(var(--primary)); */ /* Base color removed for comet */
   box-shadow: 0 0 6px hsl(var(--primary) / 0.7);
-  content: ''; /* Required for pseudo-elements if used, but direct div is fine */
+  content: ''; 
   pointer-events: none;
 }
 
@@ -630,80 +645,34 @@ body {
   animation: ring-pulse 2.5s infinite ease-in-out;
 }
 
-.profile-notification-ring-comet {
-  position: absolute; /* Ensure it's treated as a separate layer for transform */
-  /* top: -1px; right: -1px; h-3.5 w-3.5 -- Adjust if a larger dot is needed */
-  animation: ring-comet 3s linear infinite;
-}
-
-.profile-notification-ring-comet::before { /* The comet dot */
-  content: '';
-  position: absolute;
-  top: 50%; /* Center on the ring path */
-  left: 50%;
-  width: 5px; /* Size of the comet dot */
-  height: 5px;
-  background-color: hsl(var(--accent)); /* Brighter accent color for comet */
-  border-radius: 50%;
-  box-shadow: 0 0 5px hsl(var(--accent));
-  transform-origin: -3.5px -3.5px; /* Adjust based on half of avatar size + ring offset for orbit */
-  /* Example for 32px avatar (16px radius) + ~2px offset for ring pos = 18px radius for orbit
-     If ring is h-3 w-3, its own radius is 1.5px. 
-     Comet center should orbit around avatar center.
-     Let's assume avatar is 32x32 (h-8 w-8). Ring is on its edge.
-     If avatar is h-8 (32px), radius is 16px.
-     Ring is -top-0.5 -right-0.5 of Avatar, meaning it's just outside.
-     The comet should orbit AROUND the avatar.
-     If avatar h-10 w-10 (40px), radius is 20px.
-     Let the comet itself orbit around the center of the avatar.
-     A simple way for a small dot is to just make it appear and pulse on the ring.
-     The request "orbits the circumference" suggests more.
-     For simplicity with Tailwind + keyframes, often a rotating pseudo-element on the ring div itself is easier
-     or animating a border segment. A true orbit is complex without JS positioning.
-     Let's simplify to a pulse on the ring for "comet" if true orbit is too much for pure CSS here.
-     OR, make the ring itself have a gradient that rotates.
-     The original description says "brighter segment of the ring OR a distinct dot".
-     Let's use a rotating gradient on the ring itself for the comet effect.
-  */
-}
-
-
-@keyframes ring-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 6px hsl(var(--primary) / 0.7); }
-  50% { transform: scale(1.25); opacity: 1; box-shadow: 0 0 10px hsl(var(--primary) / 1); }
-}
-
 /* Comet animation: Rotating gradient on the ring border */
 @keyframes ring-comet-gradient {
   0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; } /* Adjust for speed, 200% makes it move faster */
+  100% { background-position: 200% 50%; } 
 }
 
 .profile-notification-ring-comet {
-  /* Apply to the ring div itself, use a conic or linear gradient for border */
-  border-radius: 50%; /* Ensure it's circular */
-  padding: 1.5px; /* Create space for the gradient border */
+  border-radius: 50%; 
+  padding: 1.5px; 
   position: relative;
-  background-clip: padding-box; /* Ensures the gradient is only for the border */
-  border: solid 2px transparent; /* Transparent border to be filled by gradient */
+  background-clip: padding-box; 
+  border: solid 2px transparent; 
   
   background-image: conic-gradient(
     from 0deg, 
-    hsl(var(--primary)/0.3) 0% 20%, /* Dim part */
-    hsl(var(--accent)) 25% 35%,     /* Bright comet part */
-    hsl(var(--primary)/0.3) 40% 100% /* Rest of the dim part */
+    hsl(var(--primary)/0.3) 0% 20%, 
+    hsl(var(--accent)) 25% 35%,     
+    hsl(var(--primary)/0.3) 40% 100% 
   );
-  animation: ring-comet-gradient 3s linear infinite, ring-pulse 2.5s infinite ease-in-out 0.5s; /* Combine pulse too */
-  background-size: 200% 100%; /* For gradient movement */
+  animation: ring-comet-gradient 3s linear infinite, ring-pulse 2.5s infinite ease-in-out 0.5s; 
+  background-size: 200% 100%; 
+  background-color: transparent; /* Ensure no base bg color interferes with gradient */
 }
 
-/* Ensure the base .profile-notification-ring has no background if comet uses gradient border */
 .profile-notification-ring:not(.profile-notification-ring-comet) {
-   background-color: hsl(var(--primary));
+   background-color: hsl(var(--primary)); /* Apply base color only if not comet */
 }
-.profile-notification-ring.profile-notification-ring-comet {
-   background-color: transparent; /* Let gradient border be the color */
-}
+
 
 /* For the title gradient animation if needed, but Framer Motion handles textVariants */
         /* If you were to use the CSS gradient animation directly: */
