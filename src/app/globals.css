@@ -35,10 +35,10 @@ body {
     --muted-foreground: 220 20% 50%; /* Medium Cool Gray */
 
     /* Accent color HSL components */
-    --accent-h: 170;
+    --accent-h: 170; /* Teal - was 260 (Purple) */
     --accent-s: 98%;
-    --accent-l: 52%;
-    --accent: var(--accent-h) var(--accent-s) var(--accent-l); /* Vibrant Teal/Cyan (Neon Pulse) */
+    --accent-l: 52%; /* Adjusted for better visibility if used as bg */
+    --accent: var(--accent-h) var(--accent-s) var(--accent-l); /* Vibrant Teal/Cyan */
     --accent-foreground: 210 100% 10%; /* Dark Blue for contrast on accent */
     
     --destructive: 0 70% 60%; /* Standard Red */
@@ -86,13 +86,46 @@ body {
     --welcome-gradient-apple-hello-l3-h: 180; --welcome-gradient-apple-hello-l3-s: 100%; --welcome-gradient-apple-hello-l3-l: 97%; /* Very Pale Cyan */
     --welcome-gradient-apple-hello-l4-h: var(--primary-h); --welcome-gradient-apple-hello-l4-s: var(--primary-s); --welcome-gradient-apple-hello-l4-l: calc(var(--primary-l) + 40%) ; /* Faint primary influence, lightened significantly */
 
-    /* Apple Event Poster Inspired Gradient Colors (Light Mode) */
-    --apple-event-deep-space-blue-h: 220; --apple-event-deep-space-blue-s: 70%; --apple-event-deep-space-blue-l: 15%;
-    --apple-event-nebula-purple-h: 270; --apple-event-nebula-purple-s: 60%; --apple-event-nebula-purple-l: 25%;
-    --apple-event-bloom-orange-h: 30; --apple-event-bloom-orange-s: 100%; --apple-event-bloom-orange-l: 60%;
-    --apple-event-bloom-yellow-h: 50; --apple-event-bloom-yellow-s: 100%; --apple-event-bloom-yellow-l: 70%;
-    --apple-event-bloom-pink-h: 320; --apple-event-bloom-pink-s: 100%; --apple-event-bloom-pink-l: 75%;
-    --apple-event-light-streak-h: 200; --apple-event-light-streak-s: 100%; --apple-event-light-streak-l: 90%;
+    /* Apple Event Poster Inspired Splash Screen HSL components (Light Mode) */
+    --event-deep-purple-h: 260;
+    --event-deep-purple-s: 60%;
+    --event-deep-purple-l-start: 15%;
+    --event-deep-purple-l-mid: 22%;
+    --event-mid-blue-h: 235;
+    --event-mid-blue-s: 55%;
+    --event-mid-blue-l: 30%;
+    --event-bloom-magenta-h: 310;
+    --event-bloom-magenta-s: 75%;
+    --event-bloom-magenta-l: 45%;
+    --event-bloom-magenta-a: 0.7;
+    --event-bloom-orange-h: 30;
+    --event-bloom-orange-s: 95%;
+    --event-bloom-orange-l: 55%;
+    --event-bloom-orange-a: 0.65;
+    --event-bloom-yellow-h: 45;
+    --event-bloom-yellow-s: 100%;
+    --event-bloom-yellow-l: 60%;
+    --event-bloom-yellow-a: 0.5;
+    --event-light-beam-core-l: 97%;
+    --event-light-beam-h: 200;
+    --event-light-beam-s: 90%;
+    --event-light-beam-edge-a: 0.3;
+    --event-light-beam-mid-a: 0.6;
+
+    /* Heart/ECG Icon Colors for Splash */
+    --heart-stroke-initial-h: 210;
+    --heart-stroke-initial-s: 100%;
+    --heart-stroke-initial-l: 70%; /* Brighter for better contrast on dark splash */
+    --heart-stroke-animated-h: 330;
+    --heart-stroke-animated-s: 100%;
+    --heart-stroke-animated-l: 70%;
+    --ecg-stroke-color-h: 200;
+    --ecg-stroke-color-s: 100%;
+    --ecg-stroke-color-l: 75%;
+
+    /* Text Colors for Splash */
+    --splash-text-color: white;
+    --splash-tagline-color: rgba(255, 255, 255, 0.85);
 
 
     /* Notification Panel Compact Colors - Light Mode (Solid, not frosted) */
@@ -128,10 +161,10 @@ body {
     --muted-foreground: 215 15% 70%; /* Mid-Light Gray */
 
     /* Accent color HSL components - Dark */
-    --accent-h: 170;
+    --accent-h: 170; /* Teal - was 260 (Purple) */
     --accent-s: 98%;
     --accent-l: 52%;
-    --accent: var(--accent-h) var(--accent-s) var(--accent-l); /* Vibrant Teal/Cyan (Neon Pulse) */
+    --accent: var(--accent-h) var(--accent-s) var(--accent-l); /* Vibrant Teal/Cyan */
     --accent-foreground: 170 90% 10%; /* Very Dark Cyan/Teal for text on accent */
 
     --destructive: 0 60% 55%; /* Vibrant but slightly desaturated Red */
@@ -177,13 +210,47 @@ body {
     --welcome-gradient-apple-hello-d3-h: 200; --welcome-gradient-apple-hello-d3-s: 50%; --welcome-gradient-apple-hello-d3-l: 18%; /* Dark Cool Cyan-Blue */
     --welcome-gradient-apple-hello-d4-h: var(--primary-h); --welcome-gradient-apple-hello-d4-s: var(--primary-s); --welcome-gradient-apple-hello-d4-l: var(--primary-l) ; /* Faint primary from theme */
 
-    /* Apple Event Poster Inspired Gradient Colors (Dark Mode) - adjusted for vibrancy on dark */
-    --apple-event-deep-space-blue-h: 220; --apple-event-deep-space-blue-s: 60%; --apple-event-deep-space-blue-l: 10%;
-    --apple-event-nebula-purple-h: 270; --apple-event-nebula-purple-s: 50%; --apple-event-nebula-purple-l: 20%;
-    --apple-event-bloom-orange-h: 30; --apple-event-bloom-orange-s: 100%; --apple-event-bloom-orange-l: 55%;
-    --apple-event-bloom-yellow-h: 50; --apple-event-bloom-yellow-s: 100%; --apple-event-bloom-yellow-l: 65%;
-    --apple-event-bloom-pink-h: 320; --apple-event-bloom-pink-s: 90%; --apple-event-bloom-pink-l: 70%;
-    --apple-event-light-streak-h: 200; --apple-event-light-streak-s: 80%; --apple-event-light-streak-l: 85%;
+    /* Apple Event Poster Inspired Splash Screen HSL components (Dark Mode) - Ensure high contrast & vibrancy */
+    --event-deep-purple-h: 260;
+    --event-deep-purple-s: 65%;
+    --event-deep-purple-l-start: 10%; /* Even darker for base */
+    --event-deep-purple-l-mid: 18%;
+    --event-mid-blue-h: 230;
+    --event-mid-blue-s: 60%;
+    --event-mid-blue-l: 25%;
+    --event-bloom-magenta-h: 315;
+    --event-bloom-magenta-s: 80%;
+    --event-bloom-magenta-l: 50%;
+    --event-bloom-magenta-a: 0.75;
+    --event-bloom-orange-h: 35;
+    --event-bloom-orange-s: 100%;
+    --event-bloom-orange-l: 60%;
+    --event-bloom-orange-a: 0.7;
+    --event-bloom-yellow-h: 50;
+    --event-bloom-yellow-s: 100%;
+    --event-bloom-yellow-l: 65%;
+    --event-bloom-yellow-a: 0.6;
+    --event-light-beam-core-l: 98%;
+    --event-light-beam-h: 205;
+    --event-light-beam-s: 95%;
+    --event-light-beam-edge-a: 0.35;
+    --event-light-beam-mid-a: 0.65;
+
+    /* Heart/ECG Icon Colors for Splash - Dark Mode */
+    /* Keep them bright for contrast */
+    --heart-stroke-initial-h: 210;
+    --heart-stroke-initial-s: 100%;
+    --heart-stroke-initial-l: 75%;
+    --heart-stroke-animated-h: 330;
+    --heart-stroke-animated-s: 100%;
+    --heart-stroke-animated-l: 75%;
+    --ecg-stroke-color-h: 200;
+    --ecg-stroke-color-s: 100%;
+    --ecg-stroke-color-l: 80%;
+
+    /* Text Colors for Splash - Dark Mode (already defined as white) */
+    /* --splash-text-color: white; */
+    /* --splash-tagline-color: rgba(255, 255, 255, 0.85); */
 
 
     /* Notification Panel Compact Colors - Dark Mode (Solid, not frosted) */
@@ -595,25 +662,25 @@ body {
 }
 
 
-/* Welcome Screen Gradient Animation - Radiating (Apple Hello Inspired) */
+/* Welcome Screen Gradient Animation - Radiating (Apple Hello Inspired) - Light Mode */
 @keyframes welcome-gradient-radiate-animation-light {
   0% {
     background-color: hsl(var(--background));
-    background-image: none; 
+    background-image: none;
   }
-  10% { 
+  20% {
     background-color: hsl(var(--background));
-    background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.2) 0%, hsl(var(--background)) 30%);
+    background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.05) 0%, hsl(var(--background)) 20%);
   }
-  30% { 
-    background-image: radial-gradient(circle at center, 
-      hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.4) 10%, 
-      hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.2) 40%, 
-      hsla(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), var(--welcome-gradient-apple-hello-l1-l), 0.1) 70%,
-      hsl(var(--background)) 100%);
+  50% {
+    background-image: radial-gradient(circle at center,
+      hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.15) 10%,
+      hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.1) 35%,
+      hsla(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), var(--welcome-gradient-apple-hello-l1-l), 0.05) 60%,
+      hsl(var(--background)) 85%);
   }
-  60%, 100% { 
-    background-image: radial-gradient(ellipse farthest-corner at center, 
+  100% {
+    background-image: radial-gradient(ellipse farthest-corner at center,
       hsla(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), var(--welcome-gradient-apple-hello-l1-l), 0.9) 0%,
       hsla(var(--welcome-gradient-apple-hello-l2-h), var(--welcome-gradient-apple-hello-l2-s), var(--welcome-gradient-apple-hello-l2-l), 0.95) 35%,
       hsla(var(--welcome-gradient-apple-hello-l3-h), var(--welcome-gradient-apple-hello-l3-s), var(--welcome-gradient-apple-hello-l3-l), 0.85) 70%,
@@ -621,99 +688,43 @@ body {
     background-color: hsl(var(--welcome-gradient-apple-hello-l1-h) var(--welcome-gradient-apple-hello-l1-s) var(--welcome-gradient-apple-hello-l1-l));
   }
 }
-
+/* Welcome Screen Gradient Animation - Radiating (Apple Hello Inspired) - Dark Mode */
 @keyframes welcome-gradient-radiate-animation-dark {
   0% {
-    background-color: hsl(var(--background)); 
+    background-color: hsl(var(--event-deep-purple-h) var(--event-deep-purple-s) 5%); /* Start very dark */
     background-image: none;
   }
-  10% {
-    background-color: hsl(var(--background));
-    background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 10%), 0.2) 0%, hsl(var(--background)) 30%);
+  20% {
+    background-color: hsl(var(--event-deep-purple-h) var(--event-deep-purple-s) 5%);
+    background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 10%), 0.1) 0%, hsl(var(--event-deep-purple-h) var(--event-deep-purple-s) 5%) 20%);
   }
-  30% {
-    background-image: radial-gradient(circle at center, 
-      hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%), 0.4) 10%, 
-      hsla(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 5%), 0.2) 40%, 
-      hsla(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), var(--welcome-gradient-apple-hello-d1-l), 0.1) 70%,
-      hsl(var(--background)) 100%);
+  50% {
+    background-image: radial-gradient(circle at center,
+      hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%), 0.2) 10%,
+      hsla(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 5%), 0.15) 35%,
+      hsla(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), var(--welcome-gradient-apple-hello-d1-l), 0.1) 60%,
+      hsl(var(--event-deep-purple-h) var(--event-deep-purple-s) 5%) 85%);
   }
-  60%, 100% {
-    background-image: radial-gradient(ellipse farthest-corner at center, 
+  100% {
+    background-image: radial-gradient(ellipse farthest-corner at center,
       hsla(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), var(--welcome-gradient-apple-hello-d1-l), 0.9) 0%,
       hsla(var(--welcome-gradient-apple-hello-d2-h), var(--welcome-gradient-apple-hello-d2-s), var(--welcome-gradient-apple-hello-d2-l), 0.95) 35%,
       hsla(var(--welcome-gradient-apple-hello-d3-h), var(--welcome-gradient-apple-hello-d3-s), var(--welcome-gradient-apple-hello-d3-l), 0.85) 70%,
       hsla(var(--welcome-gradient-apple-hello-d4-h), var(--welcome-gradient-apple-hello-d4-s), var(--primary-l), 0.2) 100%);
-    background-color: hsl(var(--welcome-gradient-apple-hello-d1-h) var(--welcome-gradient-apple-hello-d1-s) var(--welcome-gradient-apple-hello-d1-l)); 
+    background-color: hsl(var(--welcome-gradient-apple-hello-d1-h) var(--welcome-gradient-apple-hello-d1-s) var(--welcome-gradient-apple-hello-d1-l));
   }
 }
 
-
 .welcome-screen-gradient {
-  background-size: 100% 100%;
-  animation: welcome-gradient-radiate-animation-light 2.8s ease-out forwards;
+  background-size: 100% 100%; /* Ensure gradient covers fully for the fill effect */
+  animation: welcome-gradient-radiate-animation-light 2.8s ease-out forwards; /* 'forwards' keeps the end state */
 }
-
 .dark .welcome-screen-gradient {
   animation-name: welcome-gradient-radiate-animation-dark;
 }
 
 /* Apple Event Poster Inspired Splash Screen */
-@keyframes apple-event-background-animation-light {
-  0%, 100% { /* Start and end state - can be slightly different for a slow loop */
-    background-color: hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 8%);
-    background-image:
-      /* Bottom Purple Nebula */
-      radial-gradient(ellipse 80% 60% at 50% 110%, hsla(var(--apple-event-nebula-purple-h), var(--apple-event-nebula-purple-s), calc(var(--apple-event-nebula-purple-l) + 10%), 0.5) 0%, transparent 60%),
-      /* Orange Bloom - Top Left */
-      radial-gradient(ellipse 50% 40% at 20% 30%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), var(--apple-event-bloom-orange-l), 0.7) 0%, transparent 70%),
-      /* Pink/Yellow Bloom - Top Right */
-      radial-gradient(ellipse 60% 50% at 80% 25%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), var(--apple-event-bloom-pink-l), 0.6) 0%, hsla(var(--apple-event-bloom-yellow-h), var(--apple-event-bloom-yellow-s), calc(var(--apple-event-bloom-yellow-l) - 5%), 0.4) 40%, transparent 80%),
-      /* Main Deep Background */
-      radial-gradient(ellipse farthest-corner at 50% 0%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), var(--apple-event-deep-space-blue-l), 0.95) 0%, hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 5%) 70%),
-      /* Subtle Light Streak - Angled */
-      linear-gradient(135deg, transparent 40%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.1) 48%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.3) 50%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.1) 52%, transparent 60%);
-    background-position: 50% 50%, 20% 30%, 80% 25%, 50% 0%, 50% 50%;
-    background-size: 150% 150%, 100% 100%, 120% 120%, 100% 200%, 300% 300%;
-  }
-  50% { /* Mid-animation state for subtle shifting */
-    background-color: hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 10%);
-    background-image:
-      radial-gradient(ellipse 80% 60% at 50% 115%, hsla(var(--apple-event-nebula-purple-h), var(--apple-event-nebula-purple-s), calc(var(--apple-event-nebula-purple-l) + 15%), 0.55) 0%, transparent 65%),
-      radial-gradient(ellipse 50% 40% at 25% 35%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), calc(var(--apple-event-bloom-orange-l) + 5%), 0.75) 0%, transparent 75%),
-      radial-gradient(ellipse 60% 50% at 75% 30%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), calc(var(--apple-event-bloom-pink-l) + 5%), 0.65) 0%, hsla(var(--apple-event-bloom-yellow-h), var(--apple-event-bloom-yellow-s), var(--apple-event-bloom-yellow-l), 0.45) 40%, transparent 85%),
-      radial-gradient(ellipse farthest-corner at 50% 0%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), calc(var(--apple-event-deep-space-blue-l) + 2%), 0.98) 0%, hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 7%) 75%),
-      linear-gradient(140deg, transparent 35%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) + 2%), 0.15) 48%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) + 2%), 0.35) 50%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) + 2%), 0.15) 52%, transparent 65%);
-    background-position: 50% 50%, 25% 35%, 75% 30%, 50% 0%, 50% 50%;
-    background-size: 160% 160%, 110% 110%, 130% 130%, 100% 210%, 320% 320%;
-  }
-}
-
-@keyframes apple-event-background-animation-dark {
-   0%, 100% {
-    background-color: hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 3%);
-    background-image:
-      radial-gradient(ellipse 80% 60% at 50% 110%, hsla(var(--apple-event-nebula-purple-h), var(--apple-event-nebula-purple-s), var(--apple-event-nebula-purple-l), 0.7) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 25% 35%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), calc(var(--apple-event-bloom-orange-l) - 5%), 0.85) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 50% at 75% 30%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), calc(var(--apple-event-bloom-pink-l) - 5%), 0.75) 0%, hsla(var(--apple-event-bloom-yellow-h), var(--apple-event-bloom-yellow-s), calc(var(--apple-event-bloom-yellow-l) - 10%), 0.5) 40%, transparent 80%),
-      radial-gradient(ellipse farthest-corner at 50% 0%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), calc(var(--apple-event-deep-space-blue-l) - 2%), 1) 0%, hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 2%) 70%),
-      linear-gradient(130deg, transparent 42%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) - 5%), 0.12) 48%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) - 5%), 0.3) 50%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), calc(var(--apple-event-light-streak-l) - 5%), 0.12) 52%, transparent 58%);
-    background-position: 50% 50%, 25% 35%, 75% 30%, 50% 0%, 50% 50%;
-    background-size: 170% 170%, 90% 90%, 110% 110%, 100% 200%, 350% 350%;
-  }
-  50% {
-    background-color: hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 5%);
-    background-image:
-      radial-gradient(ellipse 80% 60% at 50% 115%, hsla(var(--apple-event-nebula-purple-h), var(--apple-event-nebula-purple-s), calc(var(--apple-event-nebula-purple-l) + 5%), 0.75) 0%, transparent 65%),
-      radial-gradient(ellipse 50% 40% at 30% 40%, hsla(var(--apple-event-bloom-orange-h), var(--apple-event-bloom-orange-s), var(--apple-event-bloom-orange-l), 0.9) 0%, transparent 75%),
-      radial-gradient(ellipse 60% 50% at 70% 35%, hsla(var(--apple-event-bloom-pink-h), var(--apple-event-bloom-pink-s), var(--apple-event-bloom-pink-l), 0.8) 0%, hsla(var(--apple-event-bloom-yellow-h), var(--apple-event-bloom-yellow-s), var(--apple-event-bloom-yellow-l), 0.55) 40%, transparent 85%),
-      radial-gradient(ellipse farthest-corner at 50% 0%, hsla(var(--apple-event-deep-space-blue-h), var(--apple-event-deep-space-blue-s), var(--apple-event-deep-space-blue-l), 1) 0%, hsl(var(--apple-event-deep-space-blue-h) var(--apple-event-deep-space-blue-s) 4%) 75%),
-      linear-gradient(145deg, transparent 37%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.18) 48%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.38) 50%, hsla(var(--apple-event-light-streak-h), var(--apple-event-light-streak-s), var(--apple-event-light-streak-l), 0.18) 52%, transparent 63%);
-    background-position: 50% 50%, 30% 40%, 70% 35%, 50% 0%, 50% 50%;
-    background-size: 180% 180%, 100% 100%, 120% 120%, 100% 210%, 370% 370%;
-  }
-}
-
+/* Static background for .apple-event-splash-screen */
 .apple-event-splash-screen {
   width: 100vw;
   height: 100vh;
@@ -725,13 +736,106 @@ body {
   position: fixed;
   inset: 0;
   z-index: 200; /* Ensure it's on top */
-  animation: apple-event-background-animation-light 30s ease-in-out infinite alternate;
-  background-blend-mode: screen;
+  
+  /* Static Multi-Layered Background Gradients for Apple Poster Effect - Light Theme Base */
+  background-image:
+    /* Layer 5: Strongest Light Beam (example) - adjust angles/positions */
+    linear-gradient(
+      125deg, /* Angle */
+      transparent 42%,
+      hsla(var(--event-light-beam-h), var(--event-light-beam-s), var(--event-light-beam-core-l), var(--event-light-beam-edge-a)) 48%,
+      hsla(var(--event-light-beam-h), var(--event-light-beam-s), var(--event-light-beam-core-l), var(--event-light-beam-mid-a)) 49.5%,
+      hsl(var(--event-light-beam-h), var(--event-light-beam-s), var(--event-light-beam-core-l)) 50%,
+      hsla(var(--event-light-beam-h), var(--event-light-beam-s), var(--event-light-beam-core-l), var(--event-light-beam-mid-a)) 50.5%,
+      hsla(var(--event-light-beam-h), var(--event-light-beam-s), var(--event-light-beam-core-l), var(--event-light-beam-edge-a)) 52%,
+      transparent 58%
+    ),
+    /* Layer 4: Secondary Light Beam (example) - different angle/position/intensity */
+    linear-gradient(
+      -30deg, /* Angle */
+      transparent 45%,
+      hsla(var(--event-light-beam-h), var(--event-light-beam-s), var(--event-light-beam-core-l), calc(var(--event-light-beam-edge-a) - 0.1) ) 49%, /* Softer */
+      hsla(var(--event-light-beam-h), var(--event-light-beam-s), var(--event-light-beam-core-l), calc(var(--event-light-beam-mid-a) - 0.2) ) 50%,
+      hsla(var(--event-light-beam-h), var(--event-light-beam-s), var(--event-light-beam-core-l), calc(var(--event-light-beam-edge-a) - 0.1) ) 51%,
+      transparent 55%
+    ),
+    /* Layer 3: Orange/Yellow Bloom (Top Right area) */
+    radial-gradient(
+      ellipse 80% 70% at 75% 25%, /* Position & Shape */
+      hsla(var(--event-bloom-yellow-h), var(--event-bloom-yellow-s), var(--event-bloom-yellow-l), var(--event-bloom-yellow-a)) 0%,
+      hsla(var(--event-bloom-orange-h), var(--event-bloom-orange-s), var(--event-bloom-orange-l), var(--event-bloom-orange-a)) 30%,
+      transparent 65% /* Softer fade-out */
+    ),
+    /* Layer 2: Magenta/Purple Bloom (Left/Center area) */
+    radial-gradient(
+      ellipse 90% 80% at 25% 60%, /* Position & Shape */
+      hsla(var(--event-bloom-magenta-h), var(--event-bloom-magenta-s), var(--event-bloom-magenta-l), var(--event-bloom-magenta-a)) 0%,
+      hsla(var(--event-deep-purple-h), var(--event-deep-purple-s), var(--event-deep-purple-l-mid), calc(var(--event-bloom-magenta-a) + 0.1)) 40%, /* Blend into purple */
+      transparent 70%
+    ),
+    /* Layer 1: Base Deep Space Gradient (Covers everything underneath) */
+    linear-gradient(
+      170deg, /* Main sweep angle */
+      hsl(var(--event-mid-blue-h), var(--event-mid-blue-s), var(--event-mid-blue-l)) 0%,
+      hsl(var(--event-deep-purple-h), var(--event-deep-purple-s), var(--event-deep-purple-l-mid)) 55%,
+      hsl(var(--event-deep-purple-h), var(--event-deep-purple-s), var(--event-deep-purple-l-start)) 100%
+    );
+  background-color: hsl(var(--event-deep-purple-h), var(--event-deep-purple-s), 10%); /* Dark fallback for light theme */
+  background-size: 100% 100%, 100% 100%, 150% 150%, 160% 160%, 100% 100%; /* Adjust sizes per layer for effect */
+  background-position: center, center, 75% 25%, 25% 60%, center; /* Adjust positions per layer */
+  background-repeat: no-repeat;
+  background-blend-mode: screen; /* Blend layers for luminous effect */
+  /* Subtle animation can be added later if the static look is approved */
+  /* animation: apple-event-background-animation-light 30s ease-in-out infinite alternate; */
 }
 
 .dark .apple-event-splash-screen {
-  animation-name: apple-event-background-animation-dark;
+  /* Static Multi-Layered Background Gradients for Apple Poster Effect - Dark Theme Base */
+  background-image:
+    /* Layer 5: Strongest Light Beam (example) - adjust angles/positions */
+    linear-gradient(
+      125deg, /* Angle */
+      transparent 42%,
+      hsla(var(--event-light-beam-h, 205), var(--event-light-beam-s, 95%), var(--event-light-beam-core-l, 98%), var(--event-light-beam-edge-a, 0.35)) 48%, /* Dark theme values */
+      hsla(var(--event-light-beam-h, 205), var(--event-light-beam-s, 95%), var(--event-light-beam-core-l, 98%), var(--event-light-beam-mid-a, 0.65)) 49.5%,
+      hsl(var(--event-light-beam-h, 205), var(--event-light-beam-s, 95%), var(--event-light-beam-core-l, 98%)) 50%,
+      hsla(var(--event-light-beam-h, 205), var(--event-light-beam-s, 95%), var(--event-light-beam-core-l, 98%), var(--event-light-beam-mid-a, 0.65)) 50.5%,
+      hsla(var(--event-light-beam-h, 205), var(--event-light-beam-s, 95%), var(--event-light-beam-core-l, 98%), var(--event-light-beam-edge-a, 0.35)) 52%,
+      transparent 58%
+    ),
+    /* Layer 4: Secondary Light Beam */
+    linear-gradient(
+      -30deg,
+      transparent 45%,
+      hsla(var(--event-light-beam-h, 205), var(--event-light-beam-s, 95%), var(--event-light-beam-core-l, 98%), calc(var(--event-light-beam-edge-a, 0.35) - 0.1)) 49%,
+      hsla(var(--event-light-beam-h, 205), var(--event-light-beam-s, 95%), var(--event-light-beam-core-l, 98%), calc(var(--event-light-beam-mid-a, 0.65) - 0.2)) 50%,
+      hsla(var(--event-light-beam-h, 205), var(--event-light-beam-s, 95%), var(--event-light-beam-core-l, 98%), calc(var(--event-light-beam-edge-a, 0.35) - 0.1)) 51%,
+      transparent 55%
+    ),
+    /* Layer 3: Orange/Yellow Bloom */
+    radial-gradient(
+      ellipse 80% 70% at 75% 25%,
+      hsla(var(--event-bloom-yellow-h, 50), var(--event-bloom-yellow-s, 100%), var(--event-bloom-yellow-l, 65%), var(--event-bloom-yellow-a, 0.6)) 0%,
+      hsla(var(--event-bloom-orange-h, 35), var(--event-bloom-orange-s, 100%), var(--event-bloom-orange-l, 60%), var(--event-bloom-orange-a, 0.7)) 30%,
+      transparent 65%
+    ),
+    /* Layer 2: Magenta/Purple Bloom */
+    radial-gradient(
+      ellipse 90% 80% at 25% 60%,
+      hsla(var(--event-bloom-magenta-h, 315), var(--event-bloom-magenta-s, 80%), var(--event-bloom-magenta-l, 50%), var(--event-bloom-magenta-a, 0.75)) 0%,
+      hsla(var(--event-deep-purple-h, 260), var(--event-deep-purple-s, 65%), var(--event-deep-purple-l-mid, 18%), calc(var(--event-bloom-magenta-a, 0.75) + 0.1)) 40%,
+      transparent 70%
+    ),
+    /* Layer 1: Base Deep Space Gradient */
+    linear-gradient(
+      170deg,
+      hsl(var(--event-mid-blue-h, 230), var(--event-mid-blue-s, 60%), var(--event-mid-blue-l, 25%)) 0%,
+      hsl(var(--event-deep-purple-h, 260), var(--event-deep-purple-s, 65%), var(--event-deep-purple-l-mid, 18%)) 55%,
+      hsl(var(--event-deep-purple-h, 260), var(--event-deep-purple-s, 65%), var(--event-deep-purple-l-start, 10%)) 100%
+    );
+  background-color: hsl(var(--event-deep-purple-h), var(--event-deep-purple-s), 5%); /* Darker base for dark theme */
   background-blend-mode: lighten; /* Lighten might work better for dark mode blooms */
+  /* animation-name: apple-event-background-animation-dark; */
 }
 
 
@@ -748,8 +852,12 @@ body {
 
 /* --- Styles for Compact Notification Panel --- */
 .notification-panel-compact {
+  @apply bg-card border border-border/50 rounded-xl shadow-lg fixed top-16 right-4 z-50 flex flex-col; /* Base styles */
+  width: 320px; /* Fixed compact width */
+  max-height: 400px; /* Max height before scroll */
+  /* Solid background, no frosted glass */
   background-color: hsl(var(--notification-panel-compact-bg));
-  border: 1px solid hsl(var(--notification-panel-compact-border));
+  border-color: hsl(var(--notification-panel-compact-border));
 }
 
 .dark .notification-panel-compact {
@@ -772,8 +880,8 @@ body {
 }
 
 .notification-unread-dot {
-  @apply h-2 w-2 rounded-full;
-  background-color: var(--notification-unread-dot-color);
+  @apply h-1.5 w-1.5 rounded-full; /* Made slightly smaller */
+  background-color: var(--notification-unread-dot-color); /* Direct CSS variable use */
 }
 
 /* Profile Icon Notification Ring Animations */
