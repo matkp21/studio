@@ -37,10 +37,10 @@ body {
     /* Accent color HSL components */
     --accent-h: 170; /* Teal */
     --accent-s: 98%;
-    --accent-l: 52%; 
+    --accent-l: 52%;
     --accent: var(--accent-h) var(--accent-s) var(--accent-l); /* Vibrant Teal/Cyan */
     --accent-foreground: 210 100% 10%; /* Dark Blue for contrast on accent */
-    
+
     --destructive: 0 70% 60%; /* Standard Red */
     --destructive-foreground: 0 0% 100%;
 
@@ -53,33 +53,33 @@ body {
     /* Sidebar specific colors - Light Mode (Gemini Inspired) */
     --sidebar-background: 220 20% 97%; /* Lighter, cleaner grey */
     --sidebar-foreground: 220 25% 28%; /* Slightly softer dark grey for text */
-    --sidebar-primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l)); 
+    --sidebar-primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
     --sidebar-accent: 220 80% 92%; /* Light, subtle blue accent for hover */
     --sidebar-accent-foreground: 220 80% 40%; /* Darker blue for text on accent */
-    --sidebar-active-background: hsl(var(--primary-h) var(--primary-s) var(--primary-l)); 
+    --sidebar-active-background: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
     --sidebar-active-foreground: hsl(var(--primary-foreground));
-    --sidebar-border: 220 15% 88%; 
+    --sidebar-border: 220 15% 88%;
     --sidebar-ring: hsl(var(--ring));
-    
+
     /* Chart Colors - Light Mode */
-    --chart-1: hsl(var(--primary));  
-    --chart-2: hsl(var(--accent));  
+    --chart-1: hsl(var(--primary));
+    --chart-2: hsl(var(--accent));
     --chart-3: 260 65% 60%;  /* Purple */
     --chart-4: 30 80% 55%;   /* Orange */
     --chart-5: 130 50% 50%;  /* Green */
 
     /* Firebase Inspired Gradient Colors (Light Mode) - Used for accents */
-    --firebase-color-1-light: 45 100% 58%; /* Bright Yellow (#FFCA28) */
-    --firebase-color-2-light: 36 100% 50%; /* Bright Orange (#FFA000) */
-    --firebase-color-3-light: 25 100% 55%; /* Orange-Red (#FF8A65) */
-    --firebase-color-4-light: 15 100% 60%; /* Reddish-Orange (#FF7043) */
+    --firebase-color-1-light-h: 45; --firebase-color-1-light-s: 100%; --firebase-color-1-light-l: 58%; /* Bright Yellow (#FFCA28) */
+    --firebase-color-2-light-h: 36; --firebase-color-2-light-s: 100%; --firebase-color-2-light-l: 50%; /* Bright Orange (#FFA000) */
+    --firebase-color-3-light-h: 25; --firebase-color-3-light-s: 100%; --firebase-color-3-light-l: 55%; /* Orange-Red (#FF8A65) */
+    --firebase-color-4-light-h: 15; --firebase-color-4-light-s: 100%; --firebase-color-4-light-l: 60%; /* Reddish-Orange (#FF7043) */
 
-    --welcome-color-1: hsl(var(--firebase-color-1-light));
-    --welcome-color-2: hsl(var(--firebase-color-2-light));
-    --welcome-color-3: hsl(var(--firebase-color-3-light));
-    --welcome-color-4: hsl(var(--firebase-color-4-light));
-    
+    --welcome-color-1: hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l));
+    --welcome-color-2: hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l));
+    --welcome-color-3: hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l));
+    --welcome-color-4: hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l));
+
     /* Apple Event Poster Inspired Static Splash Screen HSL components (Light Mode) */
     --apple-event-deep-purple-h: 260;
     --apple-event-deep-purple-s: 60%;
@@ -107,25 +107,21 @@ body {
     --apple-event-light-beam-mid-a: 0.6;
 
     /* Heart/ECG Icon Colors for Splash (Used by Web Component & External CSS) */
-    --heart-icon-stroke-h: var(--primary-h); /* Using app primary blue */
-    --heart-icon-stroke-s: var(--primary-s);
-    --heart-icon-stroke-l: calc(var(--primary-l) + 20%); /* Lighter shade of primary */
+    --heart-stroke-initial-h: 210;
+    --heart-stroke-initial-s: 100%;
+    --heart-stroke-initial-l: 70%;
 
-    --heart-stroke-initial-h: var(--heart-icon-stroke-h);
-    --heart-stroke-initial-s: var(--heart-icon-stroke-s);
-    --heart-stroke-initial-l: var(--heart-icon-stroke-l);
-
-    --heart-stroke-animated-h: 330; /* Hot-pink for animation */
+    --heart-stroke-animated-h: 330; /* e.g., your hot-pink */
     --heart-stroke-animated-s: 100%;
     --heart-stroke-animated-l: 70%;
 
-    --ecg-stroke-color-h: var(--heart-icon-stroke-h);
-    --ecg-stroke-color-s: var(--heart-icon-stroke-s);
-    --ecg-stroke-color-l: var(--heart-icon-stroke-l);
+    --ecg-stroke-color-h: 200;
+    --ecg-stroke-color-s: 100%;
+    --ecg-stroke-color-l: 75%;
 
     --heart-icon-splash-size: clamp(100px, 20vw, 180px);
-    --heart-stroke-width: 2.5px;
-    --ecg-stroke-width: 2.5px;
+    --heart-stroke-width: 2.5px; /* Default stroke width for heart path */
+    --ecg-stroke-width: 2.5px;   /* Default stroke width for ECG line */
 
     /* Text Colors for Static Splash */
     --splash-text-main-color: white;
@@ -133,82 +129,82 @@ body {
 
     /* Notification Panel Colors - Light Mode */
     --notification-panel-compact-bg: 0 0% 100%; /* White */
-    --notification-panel-compact-border: 210 20% 88%; 
-    --notification-item-compact-bg: 0 0% 100%; 
-    --notification-item-compact-hover-bg: 210 25% 96%; 
-    --notification-unread-dot-color: hsl(var(--primary)); 
+    --notification-panel-compact-border: 210 20% 88%;
+    --notification-item-compact-bg: 0 0% 100%;
+    --notification-item-compact-hover-bg: 210 25% 96%;
+    --notification-unread-dot-color: hsl(var(--primary));
   }
 
   .dark {
     /* Dark Theme - Apple Inspired (Deep Navy/Cool Metallic) */
-    --background: 216 65% 11%; 
-    --foreground: 215 100% 95%; 
+    --background: 216 65% 11%;
+    --foreground: 215 100% 95%;
 
-    --card: 216 54% 20%; 
+    --card: 216 54% 20%;
     --card-foreground: 215 100% 95%;
 
-    --popover: 216 65% 9%; 
+    --popover: 216 65% 9%;
     --popover-foreground: 215 100% 95%;
 
     --primary-h: 210;
     --primary-s: 100%;
     --primary-l: 60%;
-    --primary: var(--primary-h) var(--primary-s) var(--primary-l); 
-    --primary-foreground: 216 65% 10%; 
+    --primary: var(--primary-h) var(--primary-s) var(--primary-l);
+    --primary-foreground: 216 65% 10%;
 
-    --secondary: 216 50% 25%; 
-    --secondary-foreground: 215 20% 85%; 
+    --secondary: 216 50% 25%;
+    --secondary-foreground: 215 20% 85%;
 
-    --muted: 216 45% 18%; 
-    --muted-foreground: 215 15% 70%; 
+    --muted: 216 45% 18%;
+    --muted-foreground: 215 15% 70%;
 
     --accent-h: 170; /* Teal */
     --accent-s: 98%;
     --accent-l: 52%;
-    --accent: var(--accent-h) var(--accent-s) var(--accent-l); 
-    --accent-foreground: 170 90% 10%; 
+    --accent: var(--accent-h) var(--accent-s) var(--accent-l);
+    --accent-foreground: 170 90% 10%;
 
-    --destructive: 0 60% 55%; 
-    --destructive-foreground: 0 0% 100%; 
+    --destructive: 0 60% 55%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 216 40% 30%; 
-    --input: 216 50% 28%; 
-    --ring: 210 100% 65%; 
+    --border: 216 40% 30%;
+    --input: 216 50% 28%;
+    --ring: 210 100% 65%;
 
     /* Sidebar specific colors - Dark Mode (Gemini Inspired) */
-    --sidebar-background: 220 30% 12%; 
-    --sidebar-foreground: 220 15% 88%; 
+    --sidebar-background: 220 30% 12%;
+    --sidebar-foreground: 220 15% 88%;
     --sidebar-primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 220 40% 22%; 
-    --sidebar-accent-foreground: 220 80% 80%; 
-    --sidebar-active-background: hsl(var(--primary-h) var(--primary-s) var(--primary-l)); 
-    --sidebar-active-foreground: hsl(var(--primary-foreground)); 
-    --sidebar-border: 220 25% 20%; 
+    --sidebar-accent: 220 40% 22%;
+    --sidebar-accent-foreground: 220 80% 80%;
+    --sidebar-active-background: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
+    --sidebar-active-foreground: hsl(var(--primary-foreground));
+    --sidebar-border: 220 25% 20%;
     --sidebar-ring: hsl(var(--ring));
 
     /* Chart Colors - Dark Mode */
-    --chart-1: hsl(var(--primary));  
-    --chart-2: hsl(var(--accent));  
-    --chart-3: 270 70% 70%;  
-    --chart-4: 40 90% 65%;   
-    --chart-5: 140 60% 60%;  
+    --chart-1: hsl(var(--primary));
+    --chart-2: hsl(var(--accent));
+    --chart-3: 270 70% 70%;
+    --chart-4: 40 90% 65%;
+    --chart-5: 140 60% 60%;
 
     /* Firebase Inspired Gradient Colors (Dark Mode) */
-    --firebase-color-1-dark: 45 100% 65%; 
-    --firebase-color-2-dark: 36 100% 60%; 
-    --firebase-color-3-dark: 25 100% 65%; 
-    --firebase-color-4-dark: 15 100% 70%; 
-    
-    --welcome-color-1: hsl(var(--firebase-color-1-dark));
-    --welcome-color-2: hsl(var(--firebase-color-2-dark));
-    --welcome-color-3: hsl(var(--firebase-color-3-dark));
-    --welcome-color-4: hsl(var(--firebase-color-4-dark));
+    --firebase-color-1-dark-h: 45; --firebase-color-1-dark-s: 100%; --firebase-color-1-dark-l: 65%;
+    --firebase-color-2-dark-h: 36; --firebase-color-2-dark-s: 100%; --firebase-color-2-dark-l: 60%;
+    --firebase-color-3-dark-h: 25; --firebase-color-3-dark-s: 100%; --firebase-color-3-dark-l: 65%;
+    --firebase-color-4-dark-h: 15; --firebase-color-4-dark-s: 100%; --firebase-color-4-dark-l: 70%;
+
+    --welcome-color-1: hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l));
+    --welcome-color-2: hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l));
+    --welcome-color-3: hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l));
+    --welcome-color-4: hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l));
 
     /* Apple Event Poster Inspired Static Splash Screen HSL components (Dark Mode) */
     --apple-event-deep-purple-h: 260;
     --apple-event-deep-purple-s: 65%;
-    --apple-event-deep-purple-l-start: 10%; 
+    --apple-event-deep-purple-l-start: 10%;
     --apple-event-deep-purple-l-mid: 18%;
     --apple-event-mid-blue-h: 230;
     --apple-event-mid-blue-s: 60%;
@@ -232,28 +228,25 @@ body {
     --apple-event-light-beam-mid-a: 0.65;
 
     /* Heart/ECG Icon Colors for Splash - Dark Mode */
-    --heart-icon-stroke-h: var(--primary-h); /* Using app primary blue */
-    --heart-icon-stroke-s: var(--primary-s);
-    --heart-icon-stroke-l: calc(var(--primary-l) + 15%); /* Slightly brighter primary for dark mode */
+    --heart-stroke-initial-h: var(--primary-h); /* Using app primary blue */
+    --heart-stroke-initial-s: var(--primary-s);
+    --heart-stroke-initial-l: calc(var(--primary-l) + 15%); /* Slightly brighter primary for dark mode */
 
-    --heart-stroke-initial-h: var(--heart-icon-stroke-h);
-    --heart-stroke-initial-s: var(--heart-icon-stroke-s);
-    --heart-stroke-initial-l: var(--heart-icon-stroke-l);
-    
     --heart-stroke-animated-h: 330;
     --heart-stroke-animated-s: 100%;
     --heart-stroke-animated-l: 75%; /* Brighter pink for dark */
-    
-    --ecg-stroke-color-h: var(--heart-icon-stroke-h);
-    --ecg-stroke-color-s: var(--heart-icon-stroke-s);
-    --ecg-stroke-color-l: var(--heart-icon-stroke-l);
+
+    --ecg-stroke-color-h: var(--primary-h);
+    --ecg-stroke-color-s: var(--primary-s);
+    --ecg-stroke-color-l: calc(var(--primary-l) + 10%);
+
 
     /* Notification Panel Colors - Dark Mode */
-    --notification-panel-compact-bg: 216 54% 18%; 
-    --notification-panel-compact-border: 216 40% 25%; 
-    --notification-item-compact-bg: 216 54% 18%; 
-    --notification-item-compact-hover-bg: 216 50% 22%; 
-    --notification-unread-dot-color: hsl(var(--primary)); 
+    --notification-panel-compact-bg: 216 54% 18%;
+    --notification-panel-compact-border: 216 40% 25%;
+    --notification-item-compact-bg: 216 54% 18%;
+    --notification-item-compact-hover-bg: 216 50% 22%;
+    --notification-unread-dot-color: hsl(var(--primary));
   }
 }
 
@@ -372,7 +365,7 @@ body:not(:has(.event-poster-splash-screen)) {
   }
   50% {
     opacity: var(--medical-pulse-opacity-peak, 0.5);
-    transform: scale(var(--medical-pulse-scale-peak, 1.2)); 
+    transform: scale(var(--medical-pulse-scale-peak, 1.2));
   }
 }
 
@@ -385,15 +378,15 @@ body:not(:has(.event-poster-splash-screen)) {
 
 /* Welcome Screen / Hero Text Animations (Firebase Color Cycle) */
 @keyframes welcome-text-color-cycle {
-  0% { color: var(--welcome-color-1); }
-  25% { color: var(--welcome-color-2); }
-  50% { color: var(--welcome-color-3); }
-  75% { color: var(--welcome-color-4); }
-  100% { color: var(--welcome-color-1); }
+  0% { color: hsl(var(--welcome-color-1)); } /* Direct HSL usage */
+  25% { color: hsl(var(--welcome-color-2)); }
+  50% { color: hsl(var(--welcome-color-3)); }
+  75% { color: hsl(var(--welcome-color-4)); }
+  100% { color: hsl(var(--welcome-color-1)); }
 }
 
 .welcome-text-fg-animated {
-  color: var(--welcome-color-1);
+  color: hsl(var(--welcome-color-1));
   animation: welcome-text-color-cycle 10s linear infinite;
 }
 
@@ -414,11 +407,24 @@ body:not(:has(.event-poster-splash-screen)) {
 .firebase-ribbon-background {
   background: linear-gradient(
     135deg,
-    hsla(var(--welcome-color-1)/0.95),
-    hsla(var(--welcome-color-2)/0.95),
-    hsla(var(--welcome-color-3)/0.95),
-    hsla(var(--welcome-color-4)/0.95),
-    hsla(var(--welcome-color-1)/0.95)
+    hsla(var(--welcome-color-1-light-h), var(--welcome-color-1-light-s), var(--welcome-color-1-light-l), 0.95),
+    hsla(var(--welcome-color-2-light-h), var(--welcome-color-2-light-s), var(--welcome-color-2-light-l), 0.95),
+    hsla(var(--welcome-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l), 0.95),
+    hsla(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l), 0.95),
+    hsla(var(--welcome-color-1-light-h), var(--welcome-color-1-light-s), var(--welcome-color-1-light-l), 0.95)
+  );
+  background-size: 250% 250%;
+  animation: animated-firebase-ribbon-background 10s ease infinite;
+  color: hsl(var(--primary-foreground));
+}
+.dark .firebase-ribbon-background {
+   background: linear-gradient(
+    135deg,
+    hsla(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l), 0.95),
+    hsla(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l), 0.95),
+    hsla(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l), 0.95),
+    hsla(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l), 0.95),
+    hsla(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l), 0.95)
   );
   background-size: 250% 250%;
   animation: animated-firebase-ribbon-background 10s ease infinite;
@@ -440,11 +446,15 @@ body:not(:has(.event-poster-splash-screen)) {
 
 /* Firebase Gradient Glowing Ring for AvatarFallback */
 @keyframes firebase-glow-ring {
-  0%, 100% { box-shadow: 0 0 3px var(--welcome-color-1), 0 0 6px var(--welcome-color-1), 0 0 10px hsla(var(--welcome-color-1)/0.6); }
-  25% { box-shadow: 0 0 3px var(--welcome-color-2), 0 0 6px var(--welcome-color-2), 0 0 10px hsla(var(--welcome-color-2)/0.6); }
-  50% { box-shadow: 0 0 3px var(--welcome-color-3), 0 0 6px var(--welcome-color-3), 0 0 10px hsla(var(--welcome-color-3)/0.6); }
-  75% { box-shadow: 0 0 3px var(--welcome-color-4), 0 0 6px var(--welcome-color-4), 0 0 10px hsla(var(--welcome-color-4)/0.6); }
+  0%, 100% { box-shadow: 0 0 3px hsl(var(--welcome-color-1)), 0 0 6px hsl(var(--welcome-color-1)), 0 0 10px hsla(var(--welcome-color-1-light-h), var(--welcome-color-1-light-s), var(--welcome-color-1-light-l), 0.6); }
+  25% { box-shadow: 0 0 3px hsl(var(--welcome-color-2)), 0 0 6px hsl(var(--welcome-color-2)), 0 0 10px hsla(var(--welcome-color-2-light-h), var(--welcome-color-2-light-s), var(--welcome-color-2-light-l), 0.6); }
+  50% { box-shadow: 0 0 3px hsl(var(--welcome-color-3)), 0 0 6px hsl(var(--welcome-color-3)), 0 0 10px hsla(var(--welcome-color-3-light-h), var(--welcome-color-3-light-s), var(--welcome-color-3-light-l), 0.6); }
+  75% { box-shadow: 0 0 3px hsl(var(--welcome-color-4)), 0 0 6px hsl(var(--welcome-color-4)), 0 0 10px hsla(var(--welcome-color-4-light-h), var(--welcome-color-4-light-s), var(--welcome-color-4-light-l), 0.6); }
 }
+.dark .glowing-ring-firebase {
+  animation: firebase-glow-ring 5s linear infinite; /* Animation remains same, color vars change */
+}
+
 
 .glowing-ring-firebase {
   animation: firebase-glow-ring 5s linear infinite;
@@ -454,33 +464,33 @@ body:not(:has(.event-poster-splash-screen)) {
 .firebase-gradient-text {
   background-size: 200% auto;
   background-image: linear-gradient(to right,
-    var(--welcome-color-1) 0%,
-    var(--welcome-color-2) 25%,
-    var(--welcome-color-3) 50%,
-    var(--welcome-color-4) 75%,
-    var(--welcome-color-1) 100%);
+    hsl(var(--welcome-color-1)) 0%,
+    hsl(var(--welcome-color-2)) 25%,
+    hsl(var(--welcome-color-3)) 50%,
+    hsl(var(--welcome-color-4)) 75%,
+    hsl(var(--welcome-color-1)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   text-shadow:
-    0 0 4px hsla(var(--welcome-color-2)/0.5),
-    0 0 8px hsla(var(--welcome-color-3)/0.3);
+    0 0 4px hsla(var(--welcome-color-2-light-h), var(--welcome-color-2-light-s), var(--welcome-color-2-light-l),0.5),
+    0 0 8px hsla(var(--welcome-color-3-light-h), var(--welcome-color-3-light-s), var(--welcome-color-3-light-l),0.3);
   animation: firebase-gradient-flow 4s linear infinite;
 }
 
 /* Firebase Gradient Text for Active Role - Static gradient with glow */
 .firebase-gradient-text-active-role {
   background-image: linear-gradient(to right,
-    var(--welcome-color-1) 0%,
-    var(--welcome-color-2) 25%,
-    var(--welcome-color-3) 50%,
-    var(--welcome-color-4) 75%,
-    var(--welcome-color-1) 100%);
+    hsl(var(--welcome-color-1)) 0%,
+    hsl(var(--welcome-color-2)) 25%,
+    hsl(var(--welcome-color-3)) 50%,
+    hsl(var(--welcome-color-4)) 75%,
+    hsl(var(--welcome-color-1)) 100%);
   background-size: 100% auto; /* Static gradient, not animated by default */
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 2px hsla(var(--welcome-color-2)/0.4); /* Subtle glow */
+  text-shadow: 0 0 2px hsla(var(--welcome-color-2-light-h), var(--welcome-color-2-light-s), var(--welcome-color-2-light-l),0.4); /* Subtle glow */
 }
 
 
@@ -520,11 +530,11 @@ body:not(:has(.event-poster-splash-screen)) {
   border-radius: calc(var(--radius) + 2px);
   padding: 2px;
   background: linear-gradient(135deg,
-    var(--welcome-color-1),
-    var(--welcome-color-2),
-    var(--welcome-color-3),
-    var(--welcome-color-4),
-    var(--welcome-color-1)
+    hsl(var(--welcome-color-1)),
+    hsl(var(--welcome-color-2)),
+    hsl(var(--welcome-color-3)),
+    hsl(var(--welcome-color-4)),
+    hsl(var(--welcome-color-1))
   );
   background-size: 400% 400%;
   -webkit-mask:
@@ -541,8 +551,8 @@ body:not(:has(.event-poster-splash-screen)) {
 
 /* Subtle pulse/glow for tool cards (can be applied conditionally) */
 @keyframes subtle-pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsl(var(--welcome-color-1)/0.3)); }
-  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsl(var(--welcome-color-2)/0.5)); }
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsl(var(--welcome-color-1))/0.3); }
+  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsl(var(--welcome-color-2))/0.5); }
 }
 
 .animate-subtle-pulse-glow {
@@ -572,22 +582,31 @@ body:not(:has(.event-poster-splash-screen)) {
 }
 .firebase-button-interactive:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px hsla(var(--welcome-color-2)/0.3);
+  box-shadow: 0 4px 12px hsla(var(--welcome-color-2-light-h), var(--welcome-color-2-light-s), var(--welcome-color-2-light-l), 0.3);
+}
+.dark .firebase-button-interactive:hover {
+  box-shadow: 0 4px 12px hsla(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l), 0.3);
 }
 .firebase-button-interactive:focus-visible {
-  outline: 2px solid var(--welcome-color-1);
+  outline: 2px solid hsl(var(--welcome-color-1));
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px hsla(var(--welcome-color-1)/0.2);
+  box-shadow: 0 0 0 4px hsla(var(--welcome-color-1-light-h), var(--welcome-color-1-light-s), var(--welcome-color-1-light-l), 0.2);
+}
+.dark .firebase-button-interactive:focus-visible {
+  box-shadow: 0 0 0 4px hsla(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l), 0.2);
 }
 
 /* Gemini Inspired CTA Button Glow - Now Firebase Inspired */
 @keyframes gemini-cta-glow {
   0%, 100% {
-    box-shadow: 0 0 5px hsla(var(--welcome-color-1)/0.3), 0 0 10px hsla(var(--welcome-color-2)/0.2), 0 0 15px hsla(var(--welcome-color-3)/0.2);
+    box-shadow: 0 0 5px hsla(var(--welcome-color-1-light-h),var(--welcome-color-1-light-s),var(--welcome-color-1-light-l),0.3), 0 0 10px hsla(var(--welcome-color-2-light-h),var(--welcome-color-2-light-s),var(--welcome-color-2-light-l),0.2), 0 0 15px hsla(var(--welcome-color-3-light-h),var(--welcome-color-3-light-s),var(--welcome-color-3-light-l),0.2);
   }
   50% {
-    box-shadow: 0 0 10px hsla(var(--welcome-color-2)/0.5), 0 0 20px hsla(var(--welcome-color-3)/0.3), 0 0 30px hsla(var(--welcome-color-4)/0.3);
+    box-shadow: 0 0 10px hsla(var(--welcome-color-2-light-h),var(--welcome-color-2-light-s),var(--welcome-color-2-light-l),0.5), 0 0 20px hsla(var(--welcome-color-3-light-h),var(--welcome-color-3-light-s),var(--welcome-color-3-light-l),0.3), 0 0 30px hsla(var(--welcome-color-4-light-h),var(--welcome-color-4-light-s),var(--welcome-color-4-light-l),0.3);
   }
+}
+.dark .gemini-cta-button {
+    animation: gemini-cta-glow 3s infinite ease-in-out; /* Dark mode uses the same animation definition but different HSL vars from the dark theme */
 }
 
 .gemini-cta-button {
@@ -606,19 +625,19 @@ body:not(:has(.event-poster-splash-screen)) {
 }
 
 .sidebar-active-item-glow {
-  position: relative; 
+  position: relative;
 }
 .sidebar-active-item-glow::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 20%; 
+  top: 20%;
   bottom: 20%;
-  width: 4px; 
+  width: 4px;
   background-image: linear-gradient(to bottom, hsl(var(--sidebar-primary)/0.8), hsl(var(--sidebar-accent)/0.8));
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 0 8px hsl(var(--sidebar-primary)/0.5); 
+  box-shadow: 0 0 8px hsl(var(--sidebar-primary)/0.5);
   animation: sidebar-indicator-pulse 2s infinite ease-in-out;
 }
 /* Collapsed sidebar active item indicator */
@@ -673,12 +692,10 @@ body:not(:has(.event-poster-splash-screen)) {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  /* IMPORTANT: Ensure you have your image at this path in the public folder */
   background-image: url('/images/mediassistant-splash-background.png');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  /* Fallback color if image fails to load, matches the deep purple */
   background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 60%), var(--apple-event-deep-purple-l-start, 15%));
 }
 
@@ -696,13 +713,12 @@ body:not(:has(.event-poster-splash-screen)) {
   width: var(--heart-icon-splash-size); /* Uses variable from :root */
   height: auto; /* Maintain aspect ratio */
   display: block;
-  filter: drop-shadow(0px 0px 15px hsla(var(--heart-icon-stroke-h), var(--heart-icon-stroke-s), var(--heart-icon-stroke-l), 0.5))
-          drop-shadow(0px 0px 30px hsla(var(--heart-icon-stroke-h), var(--heart-icon-stroke-s), var(--heart-icon-stroke-l), 0.3));
-  /* The internal SMIL animations will handle its specific movements */
-  animation: pulse-glow-from-pack 2.2s ease-in-out infinite alternate; /* Apply overall glow pulse */
+  filter: drop-shadow(0px 0px 15px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.5))
+          drop-shadow(0px 0px 30px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.3));
+  animation: pulse-glow-from-pack 2.2s ease-in-out infinite alternate;
 }
 
-@keyframes pulse-glow-from-pack { /* Ensure HSL variables are used */
+@keyframes pulse-glow-from-pack {
   0% {
     transform: scale(1);
     filter: drop-shadow(0 0 8px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6))
@@ -760,20 +776,20 @@ body:not(:has(.event-poster-splash-screen)) {
 
 /* Subtle Heart Pulse Animation for Tagline Emojis */
 @keyframes heartPulseSubtle {
-  0%, 100% { transform: scale(1); opacity: 0.9; } 
-  50% { transform: scale(1.05); opacity: 1; } 
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.05); opacity: 1; }
 }
 
 .animate-heart-pulse-subtle {
-  animation: heartPulseSubtle 2.0s infinite ease-in-out; 
+  animation: heartPulseSubtle 2.0s infinite ease-in-out;
 }
 
 
 /* --- Styles for Compact Notification Panel --- */
 .notification-panel-compact {
   @apply bg-card border border-border/50 rounded-xl shadow-lg fixed top-16 right-4 z-50 flex flex-col;
-  width: 320px; 
-  max-height: 400px; 
+  width: 320px;
+  max-height: 400px;
   background-color: hsl(var(--notification-panel-compact-bg));
   border-color: hsl(var(--notification-panel-compact-border));
 }
@@ -832,14 +848,14 @@ body:not(:has(.event-poster-splash-screen)) {
   padding: 0;
   position: relative;
   border-style: solid;
-  border-width: 2px; 
+  border-width: 2px;
   border-color: transparent;
 
   background-image: conic-gradient(
     from 0deg,
-    hsla(var(--accent)/0.8) 0% 15%,
-    hsl(var(--primary)) 25% 35%,
-    hsla(var(--accent)/0.8) 45% 60%,
+    hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.8) 0% 15%,
+    hsl(var(--primary-h), var(--primary-s), var(--primary-l)) 25% 35%,
+    hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.8) 45% 60%,
     transparent 60% 100%
   );
   animation: ring-comet-gradient 2.5s linear infinite, ring-pulse 2.2s infinite ease-in-out 0.3s;
@@ -868,155 +884,81 @@ body:not(:has(.event-poster-splash-screen)) {
 /* Animated Gradient Border for Notification Panel (Firebase Inspired) */
 .notification-panel-animated-border {
   position: relative;
-  border: 2px solid transparent; 
-  overflow: hidden; 
+  border: 2px solid transparent;
+  overflow: hidden;
 }
 
 .notification-panel-animated-border::before {
   content: "";
   position: absolute;
-  inset: -2px; 
-  border-radius: inherit; 
-  padding: 2px; 
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
   background: linear-gradient(
     135deg,
-    var(--welcome-color-1),
-    var(--welcome-color-2),
-    var(--welcome-color-3),
-    var(--welcome-color-4),
-    var(--welcome-color-1) 
+    hsl(var(--welcome-color-1)), /* Direct HSL usage */
+    hsl(var(--welcome-color-2)),
+    hsl(var(--welcome-color-3)),
+    hsl(var(--welcome-color-4)),
+    hsl(var(--welcome-color-1))
   );
-  background-size: 300% 300%; 
-  animation: animated-gradient-background 4s ease infinite; 
+  background-size: 300% 300%;
+  animation: animated-gradient-background 4s ease infinite;
   -webkit-mask:
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0); 
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; 
-  mask-composite: exclude; 
-  z-index: -1; 
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
 }
-
-```]></content>
-  </change>
-  <change>
-    <file>/src/components/welcome/welcome-display.tsx</file>
-    <content><![CDATA[
-// src/components/welcome/welcome-display.tsx
-"use client";
-
-import React, { useEffect } from 'react'; // Added React import
-import { cn } from '@/lib/utils';
-
-interface WelcomeDisplayProps {
-  onDisplayComplete: () => void;
-}
-
-export function WelcomeDisplay({ onDisplayComplete }: WelcomeDisplayProps) {
-  useEffect(() => {
-    // Define the HeartECGIcon Web Component
-    if (typeof window !== 'undefined' && !customElements.get('heart-ecg-icon')) {
-      // Calculate actual length for stroke-dasharray for the ECG polyline
-      // You MUST calculate this accurately for your specific polyline points.
-      // Example: For points="16,32 24,32 28,40 36,24 40,32 48,32"
-      // You can do this by:
-      // 1. Creating an SVG with just the polyline.
-      // 2. In the browser console: document.getElementById('yourPolylineId').getTotalLength();
-      const ecgPathLength = 68; // <<<< IMPORTANT: REPLACE 68 with your calculated length
-
-      class HeartECGIcon extends HTMLElement {
-        constructor() {
-          super();
-          const shadow = this.attachShadow({ mode: 'open' });
-          shadow.innerHTML = `
-            <style>
-              :host {
-                display: inline-block;
-                width: var(--heart-icon-splash-size, 150px);
-                height: var(--heart-icon-splash-size, 150px);
-              }
-              svg {
-                width: 100%;
-                height: 100%;
-                display: block;
-                stroke-linecap: round;
-                stroke-linejoin: round;
-                overflow: visible;
-              }
-              .heart-path {
-                fill: none;
-                stroke-width: var(--heart-stroke-width, 2.5px);
-              }
-              .ecg-polyline {
-                fill: none;
-                stroke-width: var(--ecg-stroke-width, 2.5px);
-                stroke-dasharray: ${ecgPathLength};
-                stroke-dashoffset: ${ecgPathLength};
-              }
-            </style>
-            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-              <path class="heart-path"
-                    d="M32 60s24-13.3 24-34C56 17.9 49.1 12 40.5 12 35.2 12 32 16.5 32 16.5S28.8 12 23.5 12C14.9 12 8 17.9 8 26c0 20.7 24 34 24 34z"
-                    stroke="hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l))">
-                <animate attributeName="stroke"
-                         values="hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l));
-                                 hsl(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l));
-                                 hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l))"
-                         dur="3s"
-                         repeatCount="indefinite"/>
-                <animateTransform attributeName="transform"
-                                  type="scale"
-                                  additive="sum"
-                                  values="0; 0.03; 0; -0.03; 0"
-                                  dur="1.5s"
-                                  begin="0s"
-                                  repeatCount="indefinite"
-                                  calcMode="spline"
-                                  keyTimes="0; 0.25; 0.5; 0.75; 1"
-                                  keySplines="0.5 0 0.5 1; 0.5 0 0.5 1; 0.5 0 0.5 1; 0.5 0 0.5 1"
-                                  transform-origin="center"/>
-              </path>
-              <polyline class="ecg-polyline"
-                        points="16,32 24,32 28,40 36,24 40,32 48,32"
-                        stroke="hsl(var(--ecg-stroke-color-h), var(--ecg-stroke-color-s), var(--ecg-stroke-color-l))">
-                <animate attributeName="stroke-dashoffset"
-                         values="${ecgPathLength};0;${ecgPathLength}"
-                         dur="2s"
-                         begin="0.2s"
-                         repeatCount="indefinite" />
-              </polyline>
-            </svg>
-          `;
-        }
-      }
-      customElements.define('heart-ecg-icon', HeartECGIcon);
-    }
-
-    const timer = setTimeout(() => {
-      onDisplayComplete();
-    }, 7000); // Increased duration
-
-    return () => clearTimeout(timer);
-  }, [onDisplayComplete]);
-
-  return (
-    <div
-      className="event-poster-splash-screen" // This class will use the static background image
-      onClick={onDisplayComplete} // Click anywhere to continue
-    >
-      <div className="central-icon-container splash-element-fade-in">
-        {/* Use the Web Component. External CSS will style it further (e.g., overall pulse/glow) */}
-        <heart-ecg-icon class="heart-ecg-icon-splash-static"></heart-ecg-icon>
-      </div>
-
-      <div className="bottom-text-container-splash splash-element-fade-in">
-        <h1 className="app-name-splash-static">MediAssistant</h1>
-        <p className="tagline-splash-static">
-          Simply #Smart. Always <span className="emoji" role="img" aria-label="sparks">✨</span><span className="emoji animate-heart-pulse-subtle" role="img" aria-label="brain">🧠</span>
-        </p>
-      </div>
-    </div>
+/* Ensure dark mode for .notification-panel-animated-border::before uses dark Firebase colors */
+.dark .notification-panel-animated-border::before {
+   background: linear-gradient(
+    135deg,
+    hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)),
+    hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)),
+    hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)),
+    hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)),
+    hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l))
   );
+}
+/* For the Apple Event Poster style static background */
+/* No keyframes needed if it's a static image, but if you wanted a subtle movement for a CSS gradient based on this:
+@keyframes apple-event-background-animation-light {
+  0% {
+    background-position: 0% 0%, 10% 10%, 90% 90%, 50% 50%, 0% 0%;
+    background-size: 150% 150%, 120% 120%, 130% 130%, 200% 200%, 100% 100%;
+  }
+  50% {
+    background-position: -10% -5%, 0% 0%, 100% 100%, 40% 40%, 5% 5%;
+    background-size: 160% 160%, 130% 130%, 120% 120%, 220% 220%, 105% 105%;
+  }
+  100% {
+    background-position: 0% 0%, 10% 10%, 90% 90%, 50% 50%, 0% 0%;
+    background-size: 150% 150%, 120% 120%, 130% 130%, 200% 200%, 100% 100%;
+  }
+}
+
+@keyframes apple-event-background-animation-dark {
+   0% {
+    background-position: 0% 0%, 10% 10%, 90% 90%, 50% 50%, 0% 0%;
+    background-size: 150% 150%, 120% 120%, 130% 130%, 200% 200%, 100% 100%;
+  }
+  50% {
+    background-position: -10% -5%, 0% 0%, 100% 100%, 40% 40%, 5% 5%;
+    background-size: 160% 160%, 130% 130%, 120% 120%, 220% 220%, 105% 105%;
+  }
+  100% {
+    background-position: 0% 0%, 10% 10%, 90% 90%, 50% 50%, 0% 0%;
+    background-size: 150% 150%, 120% 120%, 130% 130%, 200% 200%, 100% 100%;
+  }
+}
+*/
+
+/* Fallback for background if image loading fails */
+.dark .event-poster-splash-screen {
+    background-color: hsl(var(--apple-event-deep-purple-h), var(--apple-event-deep-purple-s), calc(var(--apple-event-deep-purple-l-start) - 5%)); /* Even darker for dark mode fallback */
 }
