@@ -72,64 +72,12 @@
     --firebase-color-3-light-h: 25; --firebase-color-3-light-s: 100%; --firebase-color-3-light-l: 55%; /* Orange-Red (#FF8A65) */
     --firebase-color-4-light-h: 15; --firebase-color-4-light-s: 100%; --firebase-color-4-light-l: 60%; /* Reddish-Orange (#FF7043) */
 
-    /* Welcome Screen - Apple "Hello" Style Gradient Colors (Light Mode) - Used by welcome-display */
+    /* Welcome Screen - Apple "Hello" Style Gradient Colors (Light Mode) */
     --welcome-gradient-apple-hello-l1-h: 220; --welcome-gradient-apple-hello-l1-s: 100%; --welcome-gradient-apple-hello-l1-l: 90%; /* Light Sky Blue */
     --welcome-gradient-apple-hello-l2-h: 260; --welcome-gradient-apple-hello-l2-s: 100%; --welcome-gradient-apple-hello-l2-l: 92%; /* Light Lavender */
     --welcome-gradient-apple-hello-l3-h: 300; --welcome-gradient-apple-hello-l3-s: 100%; --welcome-gradient-apple-hello-l3-l: 93%; /* Light Pinkish */
     --welcome-gradient-apple-hello-l4-h: 180; --welcome-gradient-apple-hello-l4-s: 100%; --welcome-gradient-apple-hello-l4-l: 88%; /* Light Aqua */
     --welcome-gradient-apple-hello-l5-h: 40;  --welcome-gradient-apple-hello-l5-s: 100%; --welcome-gradient-apple-hello-l5-l: 90%; /* Pale Yellow/Orange */
-
-
-    /* --- Apple Event Poster Static Splash Screen :root HSL Variables --- */
-    /* Deep Space Background Colors */
-    --apple-event-deep-purple-h: 260;
-    --apple-event-deep-purple-s: 60%;
-    --apple-event-deep-purple-l-start: 15%;
-    --apple-event-deep-purple-l-mid: 22%;
-    --apple-event-mid-blue-h: 235;
-    --apple-event-mid-blue-s: 55%;
-    --apple-event-mid-blue-l: 30%;
-
-    /* Color Blooms / Nebula */
-    --apple-event-bloom-magenta-h: 310;
-    --apple-event-bloom-magenta-s: 75%;
-    --apple-event-bloom-magenta-l: 45%;
-    --apple-event-bloom-magenta-a: 0.7;
-    --apple-event-bloom-orange-h: 30;
-    --apple-event-bloom-orange-s: 95%;
-    --apple-event-bloom-orange-l: 55%;
-    --apple-event-bloom-orange-a: 0.65;
-    --apple-event-bloom-yellow-h: 45;
-    --apple-event-bloom-yellow-s: 100%;
-    --apple-event-bloom-yellow-l: 60%;
-    --apple-event-bloom-yellow-a: 0.5;
-
-    /* Light Beams */
-    --apple-event-light-beam-core-l: 97%;
-    --apple-event-light-beam-h: 200;
-    --apple-event-light-beam-s: 90%;
-    --apple-event-light-beam-edge-a: 0.3;
-    --apple-event-light-beam-mid-a: 0.6;
-
-    /* Heart/ECG Icon Colors for Splash (from design pack) */
-    --heart-stroke-initial-h: 210;
-    --heart-stroke-initial-s: 100%;
-    --heart-stroke-initial-l: 70%;
-    --heart-stroke-animated-h: 330;
-    --heart-stroke-animated-s: 100%;
-    --heart-stroke-animated-l: 70%;
-    --ecg-stroke-color-h: 200;
-    --ecg-stroke-color-s: 100%;
-    --ecg-stroke-color-l: 75%;
-    --heart-stroke-width: 2.5px;
-    --ecg-stroke-width: 2.5px;
-    --heart-icon-splash-size: clamp(100px, 20vw, 180px);
-
-    /* Text Colors for Splash */
-    --splash-text-main-color: white;
-    --splash-text-tagline-color: rgba(255, 255, 255, 0.9);
-    /* --- End of Apple Event Poster :root HSL Variables --- */
-
 
     /* Notification Panel (Compact, solid) - Light Mode */
     --notification-panel-compact-bg: 0 0% 100%; /* White */
@@ -202,42 +150,12 @@
     --firebase-color-3-dark-h: 25; --firebase-color-3-dark-s: 100%; --firebase-color-3-dark-l: 65%;
     --firebase-color-4-dark-h: 15; --firebase-color-4-dark-s: 100%; --firebase-color-4-dark-l: 70%;
 
-    /* Welcome Screen - Apple "Hello" Style Gradient Colors (Dark Mode) - Used by welcome-display */
+    /* Welcome Screen - Apple "Hello" Style Gradient Colors (Dark Mode) */
     --welcome-gradient-apple-hello-d1-h: 230; --welcome-gradient-apple-hello-d1-s: 50%; --welcome-gradient-apple-hello-d1-l: 20%; /* Deep Blue */
     --welcome-gradient-apple-hello-d2-h: 270; --welcome-gradient-apple-hello-d2-s: 60%; --welcome-gradient-apple-hello-d2-l: 25%; /* Deep Purple */
     --welcome-gradient-apple-hello-d3-h: 320; --welcome-gradient-apple-hello-d3-s: 60%; --welcome-gradient-apple-hello-d3-l: 30%; /* Deep Magenta/Pink */
     --welcome-gradient-apple-hello-d4-h: 200; --welcome-gradient-apple-hello-d4-s: 50%; --welcome-gradient-apple-hello-d4-l: 18%; /* Dark Teal */
     --welcome-gradient-apple-hello-d5-h: 30;  --welcome-gradient-apple-hello-d5-s: 70%; --welcome-gradient-apple-hello-d5-l: 22%; /* Dark Orange */
-
-    /* --- Apple Event Poster Static Splash Screen :root HSL Variables (Dark Mode) --- */
-    --apple-event-deep-purple-h: 260;
-    --apple-event-deep-purple-s: 60%;
-    --apple-event-deep-purple-l-start: 10%;
-    --apple-event-deep-purple-l-mid: 18%;
-    --apple-event-mid-blue-h: 235;
-    --apple-event-mid-blue-s: 55%;
-    --apple-event-mid-blue-l: 25%;
-
-    --apple-event-bloom-magenta-h: 310;
-    --apple-event-bloom-magenta-s: 75%;
-    --apple-event-bloom-magenta-l: 40%; /* Adjusted for dark */
-    --apple-event-bloom-magenta-a: 0.6;
-    --apple-event-bloom-orange-h: 30;
-    --apple-event-bloom-orange-s: 95%;
-    --apple-event-bloom-orange-l: 50%;  /* Adjusted for dark */
-    --apple-event-bloom-orange-a: 0.6;
-    --apple-event-bloom-yellow-h: 45;
-    --apple-event-bloom-yellow-s: 100%;
-    --apple-event-bloom-yellow-l: 55%; /* Adjusted for dark */
-    --apple-event-bloom-yellow-a: 0.45;
-
-    --apple-event-light-beam-core-l: 95%;
-    --apple-event-light-beam-h: 200;
-    --apple-event-light-beam-s: 90%;
-    --apple-event-light-beam-edge-a: 0.25;
-    --apple-event-light-beam-mid-a: 0.5;
-    /* --- End of Apple Event Poster :root HSL Variables (Dark Mode) --- */
-
 
     /* Notification Panel (Compact, solid) - Dark Mode */
     --notification-panel-compact-bg: 216 54% 18%;
@@ -259,12 +177,12 @@
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* Prevents scrollbars on splash/welcome */
+    overflow: hidden; /* Default to hidden for splash/welcome states */
   }
 }
 
 /* Only allow scrolling if not showing these full-screen elements */
-body:not(:has(.event-poster-splash-screen)):not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)) {
+body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)) {
   overflow: auto;
 }
 
@@ -738,6 +656,7 @@ body:not(:has(.event-poster-splash-screen)):not(:has(.welcome-screen-gradient)):
 }
 
 /* --- Apple Event Poster Static Splash Screen Styles --- */
+/* :root variables for this are defined at the top of the file */
 .event-poster-splash-screen {
   width: 100vw;
   height: 100vh;
@@ -747,8 +666,7 @@ body:not(:has(.event-poster-splash-screen)):not(:has(.welcome-screen-gradient)):
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  /* The background is set here */
-  background-image: url('/images/mediassistant-splash-background.png');
+  background-image: url('/images/mediassistant-splash-background.png'); /* Path to your static image */
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -763,7 +681,7 @@ body:not(:has(.event-poster-splash-screen)):not(:has(.welcome-screen-gradient)):
 .central-icon-container {
   position: relative;
   z-index: 2;
-  margin-bottom: 18vh;
+  margin-bottom: 18vh; /* Pushes logo up from text */
 }
 
 .heart-ecg-icon-splash-static {
@@ -771,8 +689,6 @@ body:not(:has(.event-poster-splash-screen)):not(:has(.welcome-screen-gradient)):
   height: var(--heart-icon-splash-size);
   display: block;
   animation: pulse-glow-from-pack 2.0s ease-in-out infinite alternate;
-  /* filter: drop-shadow(0 0 10px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.5))
-          drop-shadow(0 0 25px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.3)); */
 }
 
 @keyframes pulse-glow-from-pack {
@@ -820,7 +736,7 @@ body:not(:has(.event-poster-splash-screen)):not(:has(.welcome-screen-gradient)):
   display: inline-block;
   vertical-align: middle;
   font-size: inherit;
-  animation: sparkle-subtle 2.2s infinite ease-in-out alternate; /* Added alternate */
+  animation: sparkle-subtle 2.2s infinite ease-in-out alternate;
 }
 
 @keyframes sparkle-subtle {
@@ -954,10 +870,10 @@ body:not(:has(.event-poster-splash-screen)):not(:has(.welcome-screen-gradient)):
 }
 
 
-/* Entrance animation for splash screen foreground elements */
+/* Entrance animation for splash screen foreground elements (STATIC VERSION) */
 .splash-element-fade-in {
   opacity: 0;
-  animation: fadeInElements 1s ease-out 0.5s forwards; /* 0.5s delay */
+  animation: fadeInElements 1.2s ease-out 0.75s forwards; /* Slightly longer fade, later start */
 }
 @keyframes fadeInElements {
   to {
@@ -1102,6 +1018,76 @@ body:not(:has(.event-poster-splash-screen)):not(:has(.welcome-screen-gradient)):
   background-image: linear-gradient(to bottom right, hsl(var(--background)), hsla(204.7, 90.1%, 53.5%, 0.07));
 }
 
-/* Ensure this is the last character in the file, or followed by a newline */
+/* --- HSL Variables for Apple Event Poster Theme --- */
+:root {
+  /* Heart/ECG Icon Colors (from your design pack) */
+  --heart-stroke-initial-h: 210;
+  --heart-stroke-initial-s: 100%;
+  --heart-stroke-initial-l: 70%;
+  --heart-stroke-animated-h: 330;
+  --heart-stroke-animated-s: 100%;
+  --heart-stroke-animated-l: 70%;
+  --ecg-stroke-color-h: 200;
+  --ecg-stroke-color-s: 100%;
+  --ecg-stroke-color-l: 75%;
+  --heart-stroke-width: 2.5px;
+  --ecg-stroke-width: 2.5px;
+  --heart-icon-splash-size: clamp(100px, 20vw, 180px);
 
+  /* Text Colors for Splash */
+  --splash-text-main-color: white;
+  --splash-text-tagline-color: rgba(255, 255, 255, 0.9);
+
+  /* Deep Space Background Colors for Poster Splash */
+  --apple-event-deep-purple-h: 260;
+  --apple-event-deep-purple-s: 60%;
+  --apple-event-deep-purple-l-start: 15%;
+  --apple-event-deep-purple-l-mid: 22%;
+  --apple-event-mid-blue-h: 235;
+  --apple-event-mid-blue-s: 55%;
+  --apple-event-mid-blue-l: 30%;
+
+  /* Color Blooms / Nebula for Poster Splash */
+  --apple-event-bloom-magenta-h: 310;
+  --apple-event-bloom-magenta-s: 75%;
+  --apple-event-bloom-magenta-l: 45%;
+  --apple-event-bloom-magenta-a: 0.7;
+  --apple-event-bloom-orange-h: 30;
+  --apple-event-bloom-orange-s: 95%;
+  --apple-event-bloom-orange-l: 55%;
+  --apple-event-bloom-orange-a: 0.65;
+  --apple-event-bloom-yellow-h: 45;
+  --apple-event-bloom-yellow-s: 100%;
+  --apple-event-bloom-yellow-l: 60%;
+  --apple-event-bloom-yellow-a: 0.5;
+
+  /* Light Beams for Poster Splash */
+  --apple-event-light-beam-core-l: 97%;
+  --apple-event-light-beam-h: 200;
+  --apple-event-light-beam-s: 90%;
+  --apple-event-light-beam-edge-a: 0.3;
+  --apple-event-light-beam-mid-a: 0.6;
+}
+
+.dark {
+  /* Deep Space Background Colors for Poster Splash - Dark Mode Adjustments if needed */
+  --apple-event-deep-purple-l-start: 10%;
+  --apple-event-deep-purple-l-mid: 18%;
+  --apple-event-mid-blue-l: 25%;
+
+  /* Color Blooms / Nebula for Poster Splash - Dark Mode Adjustments */
+  --apple-event-bloom-magenta-l: 40%;
+  --apple-event-bloom-magenta-a: 0.6;
+  --apple-event-bloom-orange-l: 50%;
+  --apple-event-bloom-orange-a: 0.6;
+  --apple-event-bloom-yellow-l: 55%;
+  --apple-event-bloom-yellow-a: 0.45;
+
+  /* Light Beams for Poster Splash - Dark Mode Adjustments */
+  --apple-event-light-beam-core-l: 95%;
+  --apple-event-light-beam-edge-a: 0.25;
+  --apple-event-light-beam-mid-a: 0.5;
+}
+
+/* Ensure this is the last character in the file, or followed by a newline */
     
