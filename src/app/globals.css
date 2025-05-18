@@ -103,9 +103,9 @@
     --notification-unread-dot-color: hsl(var(--primary)); /* Primary blue for unread dot */
 
     /* "MediAssistant Spark" Welcome Screen Colors - Light Mode */
-    --spark-bg-start-light: 210 60% 95%; /* Very light blue */
-    --spark-bg-mid-light: 270 70% 97%;   /* Very light purple */
-    --spark-bg-end-light: 180 60% 96%;   /* Very light teal/cyan */
+    --spark-bg-start-light: 210 60% 92%; /* Very light blue - Adjusted */
+    --spark-bg-mid-light: 270 70% 94%;   /* Very light purple - Adjusted */
+    --spark-bg-end-light: 180 60% 93%;   /* Very light teal/cyan - Adjusted */
 
     --spark-particle-color-1: 45 100% 85%; /* Pastel Yellow */
     --spark-particle-color-2: 25 100% 88%; /* Pastel Orange-Red */
@@ -797,9 +797,9 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 }
 
 .spark-welcome-screen {
-  background-image: linear-gradient(135deg, 
-    hsl(var(--spark-bg-start-light)), 
-    hsl(var(--spark-bg-mid-light)), 
+  background-image: linear-gradient(135deg,
+    hsl(var(--spark-bg-start-light)),
+    hsl(var(--spark-bg-mid-light)),
     hsl(var(--spark-bg-end-light))
   );
   background-size: 300% 300%; /* Larger size for smooth animation */
@@ -807,9 +807,9 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 }
 
 .dark .spark-welcome-screen {
-  background-image: linear-gradient(135deg, 
-    hsl(var(--spark-bg-start-dark)), 
-    hsl(var(--spark-bg-mid-dark)), 
+  background-image: linear-gradient(135deg,
+    hsl(var(--spark-bg-start-dark)),
+    hsl(var(--spark-bg-mid-dark)),
     hsl(var(--spark-bg-end-dark))
   );
   animation-name: spark-background-animation-dark;
@@ -979,4 +979,6 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 }
 
 /* Ensure this is the last character in the file, or followed by a newline */
+    
+
     
