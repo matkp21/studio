@@ -80,59 +80,30 @@ body {
     --welcome-color-3: hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l));
     --welcome-color-4: hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l));
 
-    /* Apple Event Poster Inspired Static Splash Screen HSL components (Light Mode) */
-    --apple-event-deep-purple-h: 260;
-    --apple-event-deep-purple-s: 60%;
-    --apple-event-deep-purple-l-start: 15%;
-    --apple-event-deep-purple-l-mid: 22%;
-    --apple-event-mid-blue-h: 235;
-    --apple-event-mid-blue-s: 55%;
-    --apple-event-mid-blue-l: 30%;
-    --apple-event-bloom-magenta-h: 310;
-    --apple-event-bloom-magenta-s: 75%;
-    --apple-event-bloom-magenta-l: 45%;
-    --apple-event-bloom-magenta-a: 0.7;
-    --apple-event-bloom-orange-h: 30;
-    --apple-event-bloom-orange-s: 95%;
-    --apple-event-bloom-orange-l: 55%;
-    --apple-event-bloom-orange-a: 0.65;
-    --apple-event-bloom-yellow-h: 45;
-    --apple-event-bloom-yellow-s: 100%;
-    --apple-event-bloom-yellow-l: 60%;
-    --apple-event-bloom-yellow-a: 0.5;
-    --apple-event-light-beam-core-l: 97%;
-    --apple-event-light-beam-h: 200;
-    --apple-event-light-beam-s: 90%;
-    --apple-event-light-beam-edge-a: 0.3;
-    --apple-event-light-beam-mid-a: 0.6;
-
-    /* Heart/ECG Icon Colors for Splash (Used by Web Component & External CSS) */
-    --heart-stroke-initial-h: 210;
-    --heart-stroke-initial-s: 100%;
-    --heart-stroke-initial-l: 70%;
-
-    --heart-stroke-animated-h: 330; /* e.g., your hot-pink */
-    --heart-stroke-animated-s: 100%;
-    --heart-stroke-animated-l: 70%;
-
-    --ecg-stroke-color-h: 200;
-    --ecg-stroke-color-s: 100%;
-    --ecg-stroke-color-l: 75%;
-
-    --heart-icon-splash-size: clamp(100px, 20vw, 180px);
-    --heart-stroke-width: 2.5px; /* Default stroke width for heart path */
-    --ecg-stroke-width: 2.5px;   /* Default stroke width for ECG line */
+    /* Apple Event Poster Splash HSL - Light Mode */
+    --apple-event-deep-purple-h: 260; --apple-event-deep-purple-s: 60%; --apple-event-deep-purple-l-start: 15%; --apple-event-deep-purple-l-mid: 22%;
+    --apple-event-mid-blue-h: 235; --apple-event-mid-blue-s: 55%; --apple-event-mid-blue-l: 30%;
+    --apple-event-bloom-magenta-h: 310; --apple-event-bloom-magenta-s: 75%; --apple-event-bloom-magenta-l: 45%; --apple-event-bloom-magenta-a: 0.7;
+    --apple-event-bloom-orange-h: 30; --apple-event-bloom-orange-s: 95%; --apple-event-bloom-orange-l: 55%; --apple-event-bloom-orange-a: 0.65;
+    --apple-event-bloom-yellow-h: 45; --apple-event-bloom-yellow-s: 100%; --apple-event-bloom-yellow-l: 60%; --apple-event-bloom-yellow-a: 0.5;
+    --apple-event-light-beam-core-l: 97%; --apple-event-light-beam-h: 200; --apple-event-light-beam-s: 90%; --apple-event-light-beam-edge-a: 0.3; --apple-event-light-beam-mid-a: 0.6;
+    
+    /* Heart/ECG Icon Colors for Static Splash */
+    --heart-stroke-initial-h: 210; --heart-stroke-initial-s: 100%; --heart-stroke-initial-l: 70%;
+    --heart-stroke-animated-h: 330; --heart-stroke-animated-s: 100%; --heart-stroke-animated-l: 70%;
+    --ecg-stroke-color-h: 200; --ecg-stroke-color-s: 100%; --ecg-stroke-color-l: 75%;
+    --heart-icon-splash-size: clamp(100px, 20vw, 180px); --heart-stroke-width: 2.5px; --ecg-stroke-width: 2.5px;
 
     /* Text Colors for Static Splash */
     --splash-text-main-color: white;
     --splash-text-tagline-color: rgba(255, 255, 255, 0.9);
 
-    /* Notification Panel Colors - Light Mode */
+    /* Notification Panel (Compact, solid) - Light Mode */
     --notification-panel-compact-bg: 0 0% 100%; /* White */
     --notification-panel-compact-border: 210 20% 88%;
     --notification-item-compact-bg: 0 0% 100%;
     --notification-item-compact-hover-bg: 210 25% 96%;
-    --notification-unread-dot-color: hsl(var(--primary));
+    --notification-unread-dot-color: hsl(var(--primary)); /* Primary blue for unread dot */
   }
 
   .dark {
@@ -200,53 +171,26 @@ body {
     --welcome-color-2: hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l));
     --welcome-color-3: hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l));
     --welcome-color-4: hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l));
+    
+    /* Apple Event Poster Splash HSL - Dark Mode */
+    --apple-event-deep-purple-h: 260; --apple-event-deep-purple-s: 65%; --apple-event-deep-purple-l-start: 10%; --apple-event-deep-purple-l-mid: 18%;
+    --apple-event-mid-blue-h: 230; --apple-event-mid-blue-s: 60%; --apple-event-mid-blue-l: 25%;
+    --apple-event-bloom-magenta-h: 315; --apple-event-bloom-magenta-s: 80%; --apple-event-bloom-magenta-l: 50%; --apple-event-bloom-magenta-a: 0.75;
+    --apple-event-bloom-orange-h: 35; --apple-event-bloom-orange-s: 100%; --apple-event-bloom-orange-l: 60%; --apple-event-bloom-orange-a: 0.7;
+    --apple-event-bloom-yellow-h: 50; --apple-event-bloom-yellow-s: 100%; --apple-event-bloom-yellow-l: 65%; --apple-event-bloom-yellow-a: 0.6;
+    --apple-event-light-beam-core-l: 98%; --apple-event-light-beam-h: 205; --apple-event-light-beam-s: 95%; --apple-event-light-beam-edge-a: 0.35; --apple-event-light-beam-mid-a: 0.65;
 
-    /* Apple Event Poster Inspired Static Splash Screen HSL components (Dark Mode) */
-    --apple-event-deep-purple-h: 260;
-    --apple-event-deep-purple-s: 65%;
-    --apple-event-deep-purple-l-start: 10%;
-    --apple-event-deep-purple-l-mid: 18%;
-    --apple-event-mid-blue-h: 230;
-    --apple-event-mid-blue-s: 60%;
-    --apple-event-mid-blue-l: 25%;
-    --apple-event-bloom-magenta-h: 315;
-    --apple-event-bloom-magenta-s: 80%;
-    --apple-event-bloom-magenta-l: 50%;
-    --apple-event-bloom-magenta-a: 0.75;
-    --apple-event-bloom-orange-h: 35;
-    --apple-event-bloom-orange-s: 100%;
-    --apple-event-bloom-orange-l: 60%;
-    --apple-event-bloom-orange-a: 0.7;
-    --apple-event-bloom-yellow-h: 50;
-    --apple-event-bloom-yellow-s: 100%;
-    --apple-event-bloom-yellow-l: 65%;
-    --apple-event-bloom-yellow-a: 0.6;
-    --apple-event-light-beam-core-l: 98%;
-    --apple-event-light-beam-h: 205;
-    --apple-event-light-beam-s: 95%;
-    --apple-event-light-beam-edge-a: 0.35;
-    --apple-event-light-beam-mid-a: 0.65;
+    /* Heart/ECG Icon Colors for Static Splash - Dark Mode */
+    --heart-stroke-initial-h: var(--primary-h); --heart-stroke-initial-s: var(--primary-s); --heart-stroke-initial-l: calc(var(--primary-l) + 15%);
+    --heart-stroke-animated-h: 330; --heart-stroke-animated-s: 100%; --heart-stroke-animated-l: 75%;
+    --ecg-stroke-color-h: var(--primary-h); --ecg-stroke-color-s: var(--primary-s); --ecg-stroke-color-l: calc(var(--primary-l) + 10%);
 
-    /* Heart/ECG Icon Colors for Splash - Dark Mode */
-    --heart-stroke-initial-h: var(--primary-h); /* Using app primary blue */
-    --heart-stroke-initial-s: var(--primary-s);
-    --heart-stroke-initial-l: calc(var(--primary-l) + 15%); /* Slightly brighter primary for dark mode */
-
-    --heart-stroke-animated-h: 330;
-    --heart-stroke-animated-s: 100%;
-    --heart-stroke-animated-l: 75%; /* Brighter pink for dark */
-
-    --ecg-stroke-color-h: var(--primary-h);
-    --ecg-stroke-color-s: var(--primary-s);
-    --ecg-stroke-color-l: calc(var(--primary-l) + 10%);
-
-
-    /* Notification Panel Colors - Dark Mode */
+    /* Notification Panel (Compact, solid) - Dark Mode */
     --notification-panel-compact-bg: 216 54% 18%;
     --notification-panel-compact-border: 216 40% 25%;
     --notification-item-compact-bg: 216 54% 18%;
     --notification-item-compact-hover-bg: 216 50% 22%;
-    --notification-unread-dot-color: hsl(var(--primary));
+    /* --notification-unread-dot-color is same as light mode (primary) */
   }
 }
 
@@ -692,54 +636,53 @@ body:not(:has(.event-poster-splash-screen)) {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  /* Using the static image as background */
   background-image: url('/images/mediassistant-splash-background.png');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 60%), var(--apple-event-deep-purple-l-start, 15%));
+  background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 60%), var(--apple-event-deep-purple-l-start, 15%)); /* Fallback color */
 }
 
 .dark .event-poster-splash-screen {
-   background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), var(--apple-event-deep-purple-l-start, 10%));
+   background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), var(--apple-event-deep-purple-l-start, 10%)); /* Darker fallback */
 }
 
 .central-icon-container {
-  position: relative; /* Centered by parent flexbox */
+  position: relative; 
   z-index: 2;
-  margin-bottom: 18vh; /* Adjust to push logo up from text block */
+  margin-bottom: 18vh; 
 }
 
+/* This class is applied to the <heart-ecg-icon> custom element */
 .heart-ecg-icon-splash-static {
-  width: var(--heart-icon-splash-size); /* Uses variable from :root */
-  height: auto; /* Maintain aspect ratio */
+  --heart-icon-splash-size: clamp(100px, 20vw, 180px); /* Sets the var for the component */
+  width: var(--heart-icon-splash-size);
+  height: var(--heart-icon-splash-size);
   display: block;
-  filter: drop-shadow(0px 0px 15px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.5))
-          drop-shadow(0px 0px 30px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.3));
   animation: pulse-glow-from-pack 2.2s ease-in-out infinite alternate;
 }
 
 @keyframes pulse-glow-from-pack {
   0% {
     transform: scale(1);
-    filter: drop-shadow(0 0 8px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6))
-            drop-shadow(0 0 15px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.3));
+    filter: drop-shadow(0 0 12px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6));
   }
   50% {
-    transform: scale(1.03);
-    filter: drop-shadow(0 0 15px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.7))
-            drop-shadow(0 0 30px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.4));
+    transform: scale(1.07); /* More noticeable pulse */
+    filter: drop-shadow(0 0 20px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.8))
+            drop-shadow(0 0 8px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.5));
   }
   100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 8px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6))
-            drop-shadow(0 0 15px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.3));
+    filter: drop-shadow(0 0 12px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6));
   }
 }
 
 
 .bottom-text-container-splash {
   position: absolute;
-  bottom: 7vh; /* Distance from bottom */
+  bottom: 7vh; 
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -815,57 +758,12 @@ body:not(:has(.event-poster-splash-screen)) {
 
 .notification-unread-dot {
   @apply h-1.5 w-1.5 rounded-full;
+  /* Directly use the CSS variable for background color */
   background-color: var(--notification-unread-dot-color);
 }
 
-/* Profile Icon Notification Ring Animations */
-@keyframes ring-pulse {
-  0%, 100% {
-    box-shadow: 0 0 4px 1px hsl(var(--primary) / 0.5), 0 0 0 0px hsl(var(--primary) / 0.3);
-  }
-  50% {
-    box-shadow: 0 0 6px 2px hsl(var(--primary) / 0.7), 0 0 0 3px hsl(var(--primary) / 0);
-  }
-}
-
-@keyframes ring-comet-gradient {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
-
-.profile-notification-ring {
-  @apply absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background;
-  content: '';
-  pointer-events: none;
-}
-
-.profile-notification-ring-pulse {
-  animation: ring-pulse 2s infinite ease-in-out;
-}
-
-.profile-notification-ring-comet {
-  border-radius: 50%;
-  padding: 0;
-  position: relative;
-  border-style: solid;
-  border-width: 2px;
-  border-color: transparent;
-
-  background-image: conic-gradient(
-    from 0deg,
-    hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.8) 0% 15%,
-    hsl(var(--primary-h), var(--primary-s), var(--primary-l)) 25% 35%,
-    hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.8) 45% 60%,
-    transparent 60% 100%
-  );
-  animation: ring-comet-gradient 2.5s linear infinite, ring-pulse 2.2s infinite ease-in-out 0.3s;
-  background-size: 200% 100%;
-  background-color: transparent;
-}
-
-.profile-notification-ring:not(.profile-notification-ring-comet) {
-   background-color: hsl(var(--primary));
-}
+/* Profile Icon Notification Ring Animations (Removed as per new design) */
+/* .profile-notification-ring, .profile-notification-ring-pulse, .profile-notification-ring-comet styles removed */
 
 
 /* Chat Interface Animation Support Styles */
@@ -925,40 +823,18 @@ body:not(:has(.event-poster-splash-screen)) {
     hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l))
   );
 }
-/* For the Apple Event Poster style static background */
-/* No keyframes needed if it's a static image, but if you wanted a subtle movement for a CSS gradient based on this:
-@keyframes apple-event-background-animation-light {
-  0% {
-    background-position: 0% 0%, 10% 10%, 90% 90%, 50% 50%, 0% 0%;
-    background-size: 150% 150%, 120% 120%, 130% 130%, 200% 200%, 100% 100%;
-  }
-  50% {
-    background-position: -10% -5%, 0% 0%, 100% 100%, 40% 40%, 5% 5%;
-    background-size: 160% 160%, 130% 130%, 120% 120%, 220% 220%, 105% 105%;
-  }
-  100% {
-    background-position: 0% 0%, 10% 10%, 90% 90%, 50% 50%, 0% 0%;
-    background-size: 150% 150%, 120% 120%, 130% 130%, 200% 200%, 100% 100%;
-  }
-}
-
-@keyframes apple-event-background-animation-dark {
-   0% {
-    background-position: 0% 0%, 10% 10%, 90% 90%, 50% 50%, 0% 0%;
-    background-size: 150% 150%, 120% 120%, 130% 130%, 200% 200%, 100% 100%;
-  }
-  50% {
-    background-position: -10% -5%, 0% 0%, 100% 100%, 40% 40%, 5% 5%;
-    background-size: 160% 160%, 130% 130%, 120% 120%, 220% 220%, 105% 105%;
-  }
-  100% {
-    background-position: 0% 0%, 10% 10%, 90% 90%, 50% 50%, 0% 0%;
-    background-size: 150% 150%, 120% 120%, 130% 130%, 200% 200%, 100% 100%;
-  }
-}
-*/
 
 /* Fallback for background if image loading fails */
 .dark .event-poster-splash-screen {
     background-color: hsl(var(--apple-event-deep-purple-h), var(--apple-event-deep-purple-s), calc(var(--apple-event-deep-purple-l-start) - 5%)); /* Even darker for dark mode fallback */
+}
+
+/* Sidebar Notification Badge Styles */
+.sidebar-notification-badge {
+  @apply bg-primary text-primary-foreground; /* Using primary colors for badge */
+  /* Add other styles like padding, min-width, etc., as needed */
+  /* For example, if you want a small circle for just a dot indicator:
+     width: 0.75rem; height: 0.75rem; padding: 0; font-size: 0; 
+     display: inline-flex; align-items: center; justify-content: center;
+  */
 }

@@ -3,13 +3,13 @@
 
 import type { ReactNode } from 'react';
 import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
 import {
   PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info,
-  MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, Bell, ChevronDown, Edit2 as Edit, HeartPulse 
+  MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, Bell, ChevronDown, Edit, HeartPulse
 } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
@@ -22,7 +22,6 @@ import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { Badge } from '@/components/ui/badge';
 import { AnimatedTagline } from '@/components/layout/animated-tagline';
 import { WelcomeDisplay } from '@/components/welcome/welcome-display';
-// NotificationPanelCompact is no longer needed as we move to a dedicated page
 import type { NotificationItem } from '@/types/notifications';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -58,17 +57,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [clientLoaded, setClientLoaded] = useState(false);
   const { userRole, selectUserRole } = useProMode();
   const { toast } = useToast();
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  // showNotificationPanel is removed
-  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
-  const [hasNewNotification, setHasNewNotification] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
-
   const fetchNotifications = useCallback(() => {
-    // In a real app, fetch from a service. For now, using extended mock data.
     const mockNotifications: NotificationItem[] = [
       { id: '1', type: 'medication_reminder', title: 'Medication Reminder', body: 'Time for Amoxicillin (500mg). Check instructions.', timestamp: new Date(Date.now() - 1000 * 60 * 5), isRead: false, deepLink: '/medications' },
       { id: 'sys-maint', type: 'system_update', title: 'System Maintenance Scheduled', body: 'Brief maintenance tonight at 2 AM. No impact expected.', timestamp: new Date(Date.now() - 1000 * 60 * 30), isRead: false, deepLink: '/' },
@@ -76,38 +71,35 @@ export function AppLayout({ children }: { children: ReactNode }) {
       { id: '3', type: 'study_material_update', title: 'New Notes Available', body: 'Endocrine System notes updated with latest diagrams.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), isRead: false, deepLink: '/medico' },
       { id: '4', type: 'general', title: 'MediAssistant v1.2 Update!', body: 'Explore new features and performance improvements across all modes.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48), isRead: true, deepLink: '/' },
     ];
-    setNotifications(mockNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
+    const sortedNotifications = mockNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    setNotifications(sortedNotifications);
+    setUnreadCount(sortedNotifications.filter(n => !n.isRead).length);
   }, []);
 
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  useEffect(() => {
-    const unread = notifications.some(n => !n.isRead);
-    setHasUnreadNotifications(unread);
-  }, [notifications]);
+  const handleMarkAsRead = useCallback((id: string) => {
+    setNotifications(prev => {
+      const newNotifications = prev.map(n => n.id === id ? { ...n, isRead: true } : n);
+      setUnreadCount(newNotifications.filter(n => !n.isRead).length);
+      return newNotifications;
+    });
+  }, []);
 
-  // Logic for temporary new notification visual cue
-   useEffect(() => {
-    if (clientLoaded && notifications.length > 0 && typeof window !== 'undefined') {
-      const initialNewShown = sessionStorage.getItem('initialNewNotificationShown');
-      if (!initialNewShown) {
-        const timer = setTimeout(() => {
-          setHasNewNotification(true); // Trigger "comet" animation
-          sessionStorage.setItem('initialNewNotificationShown', 'true');
-          setTimeout(() => setHasNewNotification(false), 7000); // Comet duration
-        }, 10000); // Show after 10 seconds on first load of session
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [clientLoaded, notifications]);
+  const handleMarkAllAsRead = useCallback(() => {
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    setUnreadCount(0);
+    toast({ title: "Notifications Updated", description: "All notifications marked as read." });
+  }, [toast]);
 
 
   const handleLogout = () => {
     toast({ title: "Logged Out", description: "You have been successfully logged out. (Demo)" });
     selectUserRole(null);
     setIsAccountMenuOpen(false);
+    router.push('/login');
   };
 
   const getRoleDisplayString = (role: UserRole | null): string => {
@@ -123,10 +115,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
     let welcomeDisplayShownThisSession = false;
 
     if (typeof window !== 'undefined') {
-      // Force onboarding and welcome for testing - REMOVE FOR PRODUCTION
-      onboardingComplete = false; // localStorage.getItem('onboardingComplete') === 'true';
-      welcomeDisplayShownThisSession = false; // sessionStorage.getItem('welcomeDisplayShown') === 'true';
+      onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+      welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
       
+      // onboardingComplete = false; // For testing onboarding
+      // welcomeDisplayShownThisSession = false; // For testing welcome display
+
       const storedUserRole = localStorage.getItem('userRole') as UserRole;
 
       if (!onboardingComplete) {
@@ -155,8 +149,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
     let welcomeDisplayShownThisSession = false;
     if (typeof window !== 'undefined') {
       localStorage.setItem('onboardingComplete', 'true');
-      // Force welcome display for testing - REMOVE FOR PRODUCTION
-      welcomeDisplayShownThisSession = false; // sessionStorage.getItem('welcomeDisplayShown') === 'true';
+      welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
+      // welcomeDisplayShownThisSession = false; // For testing
     }
     if (!welcomeDisplayShownThisSession) {
       setShowWelcomeDisplay(true);
@@ -170,18 +164,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
     }
   };
   
-  const handleProfileIconClick = () => {
-    if (hasUnreadNotifications || hasNewNotification) {
-      router.push('/notifications'); // Navigate to notifications page
-    } else {
-      setIsAccountMenuOpen(prev => !prev); // Toggle account menu
-    }
-  };
-
 
   if (!clientLoaded && !showOnboardingModal && !showWelcomeDisplay) {
-    // To prevent flash of unstyled content or layout shifts before client-side checks complete
-    return null; 
+    return (
+      <div className="event-poster-splash-screen">
+        <div className="central-icon-container splash-element-fade-in">
+          <heart-ecg-icon class="heart-ecg-icon-splash-static"></heart-ecg-icon>
+        </div>
+        <div className="bottom-text-container-splash splash-element-fade-in">
+          <h1 className="app-name-splash-static">MediAssistant</h1>
+          <p className="tagline-splash-static">Simply #Smart. Always <span className="emoji" role="img" aria-label="sparks and brain">✨🧠</span></p>
+        </div>
+      </div>
+    );
   }
 
   if (showOnboardingModal) {
@@ -198,9 +193,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <WelcomeDisplay onDisplayComplete={handleWelcomeDisplayComplete} />
     );
   }
-  
-  const unreadCount = notifications.filter(n => !n.isRead).length;
-
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -210,7 +202,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         side="left"
         className="border-r border-sidebar-border/50"
       >
-        <SidebarNav />
+        <SidebarNav unreadNotificationCount={unreadCount} />
       </Sidebar>
       <SidebarInset className="flex flex-col bg-background">
         <header
@@ -245,40 +237,22 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 Pro Features
               </Badge>
             )}
-            {/* Profile Icon acts as trigger for notifications page OR account menu */}
-            <Button
-                variant="ghost"
-                className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full text-foreground/80 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-0"
-                onClick={handleProfileIconClick}
-                aria-label={hasUnreadNotifications || hasNewNotification ? "View notifications" : "Open user menu"}
-            >
-              <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
-                  <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user doctor" />
-                   <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-primary/70 text-primary-foreground">
-                      <HeartPulse className="h-5 w-5"/>
-                  </AvatarFallback>
-              </Avatar>
-              {(hasUnreadNotifications || hasNewNotification) && (
-                  <div className={cn(
-                      "profile-notification-ring",
-                      hasUnreadNotifications && !hasNewNotification && "profile-notification-ring-pulse",
-                      hasNewNotification && "profile-notification-ring-comet"
-                  )} />
-              )}
-            </Button>
             
-            {/* Account Dropdown Menu (Separate from notification trigger logic if notifications exist) */}
              <DropdownMenu open={isAccountMenuOpen} onOpenChange={setIsAccountMenuOpen}>
                 <DropdownMenuTrigger asChild>
-                    {/* This trigger is now mainly for when there are NO notifications. 
-                        If there are notifications, the main button click navigates.
-                        We might need to refine this so the menu can always be opened.
-                        One way is to always show the dropdown, and the notification link is inside.
-                    */}
-                   <Button variant="ghost" className={cn("h-9 w-9 sm:h-10 sm:w-10 rounded-full p-0", (hasUnreadNotifications || hasNewNotification) && "hidden" /* Hide if notification action takes precedence */ )}>
-                       <span className="sr-only">Open user menu (fallback)</span>
-                        {/* Minimal visual if the main avatar is already handling display */}
-                   </Button>
+                   <Button
+                    variant="ghost"
+                    className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full text-foreground/80 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-0"
+                    aria-label="Open user menu"
+                  >
+                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
+                        <AvatarImage src="https://picsum.photos/id/237/200/200" alt="User Avatar" data-ai-hint="user doctor" />
+                         <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-primary/70 text-primary-foreground">
+                            <HeartPulse className="h-5 w-5"/>
+                        </AvatarFallback>
+                    </Avatar>
+                    {/* Notification ring removed */}
+                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64 rounded-xl shadow-lg border-border/50 bg-card">
                     <DropdownMenuLabel className="px-3 py-2">
@@ -297,31 +271,25 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
+                    <Link href="/profile" className="flex items-center gap-2 cursor-pointer" onClick={() => setIsAccountMenuOpen(false)}>
                         <UserCircle className="h-4 w-4 text-muted-foreground" /> Profile
                     </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                    <Link href="/settings" className="flex items-center gap-2 cursor-pointer">
+                    <Link href="/settings" className="flex items-center gap-2 cursor-pointer" onClick={() => setIsAccountMenuOpen(false)}>
                         <Settings className="h-4 w-4 text-muted-foreground" /> Settings
                     </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/notifications" className="flex items-center justify-between cursor-pointer" onClick={() => setIsAccountMenuOpen(false)}>
-                        <div className="flex items-center gap-2">
-                            <Bell className="h-4 w-4 text-muted-foreground" /> Notifications
-                        </div>
-                        {unreadCount > 0 && (
-                            <Badge variant="destructive" className="h-5 px-1.5 text-xs">{unreadCount}</Badge>
-                        )}
-                      </Link>
-                    </DropdownMenuItem>
+                    {/* Notifications link REMOVED from here as per new design */}
                     <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer">
-                        <UserCog className="h-4 w-4 text-muted-foreground" />
-                        <span>
-                            Current Role: <span className={cn(userRole !== null && "firebase-gradient-text-active-role font-semibold")}>{getRoleDisplayString(userRole)}</span>
-                        </span>
+                    <DropdownMenuSubTrigger className="flex items-center justify-between gap-2 cursor-pointer">
+                        <div className="flex items-center gap-2">
+                            <UserCog className="h-4 w-4 text-muted-foreground" />
+                            <span>
+                                Role: <span className={cn(userRole !== null && "firebase-gradient-text-active-role font-semibold")}>{getRoleDisplayString(userRole)}</span>
+                            </span>
+                        </div>
+                        <ChevronDown className="h-4 w-4 text-muted-foreground opacity-70" />
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
                         <DropdownMenuSubContent>
@@ -355,8 +323,21 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </nav>
         </header>
         <main className="flex-1 flex flex-col overflow-auto relative">
-          {children}
-          {/* NotificationPanelCompact is removed from here, as it's now a page */}
+          {/* Pass notification handlers to children if /notifications page needs them */}
+          {React.Children.map(children, child => {
+            if (React.isValidElement(child)) {
+              // @ts-ignore
+              return React.cloneElement(child, { 
+                // @ts-ignore
+                notifications, 
+                // @ts-ignore
+                markNotificationAsRead: handleMarkAsRead, 
+                // @ts-ignore
+                markAllNotificationsAsRead: handleMarkAllAsRead 
+              });
+            }
+            return child;
+          })}
         </main>
         <Footer />
       </SidebarInset>

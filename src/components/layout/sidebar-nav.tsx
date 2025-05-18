@@ -16,15 +16,15 @@ import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Home,
-  MessageSquareHeart, 
-  ClipboardList, 
-  ScanEye,       
-  Settings2,     
+  MessageSquareHeart,
+  ClipboardList,
+  ScanEye,
+  Settings2,
   LogOut,
   GraduationCap,
   BriefcaseMedical,
   Info,
-  HeartPulse,    
+  HeartPulse,
   PillIcon,
   BellRing, // Added BellRing for Notifications
 } from 'lucide-react';
@@ -32,24 +32,25 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-  TooltipProvider, 
+  TooltipProvider,
 } from "@/components/ui/tooltip";
 import { cn } from '@/lib/utils';
 import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge'; // Import Badge
 
 const baseNavItems = [
   { href: '/', label: 'Home', icon: Home, ariaLabel: 'Go to Home page' },
   { href: '/chat', label: 'Chat', icon: MessageSquareHeart, ariaLabel: 'Open Chat interface' },
-  { href: '/medications', label: 'Medications', icon: PillIcon, ariaLabel: 'Manage Medications' }, 
+  { href: '/medications', label: 'Medications', icon: PillIcon, ariaLabel: 'Manage Medications' },
   { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye, ariaLabel: 'Open AR Viewer' },
-  { href: '/notifications', label: 'Notifications', icon: BellRing, ariaLabel: 'View Notifications' }, // New Notifications link
+  // Notifications will be added dynamically below
 ];
 
 const patientManagementNavItem = {
   href: '/patient-management',
   label: 'Patient Management',
-  icon: ClipboardList, 
+  icon: ClipboardList,
   ariaLabel: 'Open Patient Management'
 };
 
@@ -67,8 +68,11 @@ const proToolsNavItem = {
   ariaLabel: 'Open Professional Clinical Suite'
 };
 
+interface SidebarNavProps {
+  unreadNotificationCount: number;
+}
 
-export function SidebarNav() {
+export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
   const pathname = usePathname();
   const { userRole } = useProMode();
   const { toast } = useToast();
@@ -76,18 +80,29 @@ export function SidebarNav() {
 
   let navItems = [...baseNavItems];
 
+  // Add role-specific items
   if (userRole === 'medico') {
-    if (!navItems.find(item => item.href === '/medico')) { // Ensure not to duplicate
-      navItems.splice(4, 0, medicoDashboardNavItem); // Insert before Notifications if it's there
+    if (!navItems.find(item => item.href === '/medico')) {
+      navItems.push(medicoDashboardNavItem);
     }
   } else if (userRole === 'pro') {
      if (!navItems.find(item => item.href === '/pro')) {
-      navItems.splice(4, 0, proToolsNavItem);
+      navItems.push(proToolsNavItem);
     }
     if (!navItems.find(item => item.href === '/patient-management')) {
-      navItems.push(patientManagementNavItem); // Add Patient Management for Pro
+      navItems.push(patientManagementNavItem);
     }
   }
+  
+  // Add Notifications link (it's common for all logged-in states)
+  const notificationsNavItem = {
+    href: '/notifications',
+    label: 'Notifications',
+    icon: BellRing,
+    ariaLabel: 'View Notifications',
+    badgeCount: unreadNotificationCount
+  };
+  navItems.splice(4, 0, notificationsNavItem); // Insert after AR Viewer
 
 
   const handleLogout = () => {
@@ -127,14 +142,21 @@ export function SidebarNav() {
                         "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
                       )}
                     >
-                      <Link href={item.href}>
-                        <item.icon className={cn(
-                            "h-5 w-5 transition-transform duration-200 ease-in-out",
-                            "group-hover:scale-110",
-                            isActive && "text-sidebar-active-foreground" 
-                           )}
-                         />
-                        <span>{item.label}</span>
+                      <Link href={item.href} className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <item.icon className={cn(
+                              "h-5 w-5 transition-transform duration-200 ease-in-out",
+                              "group-hover:scale-110",
+                              isActive && "text-sidebar-active-foreground"
+                             )}
+                           />
+                          <span>{item.label}</span>
+                        </div>
+                        {item.href === '/notifications' && item.badgeCount > 0 && (
+                           <Badge className="sidebar-notification-badge h-5 px-1.5 text-xs ml-auto group-data-[collapsible=icon]:hidden">
+                             {item.badgeCount}
+                           </Badge>
+                        )}
                       </Link>
                     </SidebarMenuButton>
                   </TooltipTrigger>
@@ -145,6 +167,7 @@ export function SidebarNav() {
                       className="bg-sidebar text-sidebar-foreground border-sidebar-border shadow-md"
                     >
                       {item.label}
+                      {item.href === '/notifications' && item.badgeCount > 0 && ` (${item.badgeCount})`}
                     </TooltipContent>
                   )}
                 </Tooltip>
@@ -158,28 +181,28 @@ export function SidebarNav() {
           <SidebarMenuItem>
             <Tooltip>
               <TooltipTrigger asChild>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === '/feedback'}
-                  aria-label="Submit Feedback"
-                  className={cn(
-                    "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
-                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
-                     pathname === '/feedback'
-                      ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
-                      : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
-                    "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
-                  )}
-                 >
-                   <Link href="/feedback">
-                    <Info className={cn(
-                        "h-5 w-5 transition-transform duration-200 ease-in-out",
-                        "group-hover:scale-110",
-                        pathname === '/feedback' && "text-sidebar-active-foreground"
-                        )} />
-                    <span>Feedback</span>
-                  </Link>
-                </SidebarMenuButton>
+                 <Link href="/feedback" passHref legacyBehavior>
+                    <SidebarMenuButton
+                    as="a" // Important for legacyBehavior with Link
+                    isActive={pathname === '/feedback'}
+                    aria-label="Submit Feedback"
+                    className={cn(
+                        "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
+                        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
+                        pathname === '/feedback'
+                        ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
+                        : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
+                        "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
+                    )}
+                    >
+                        <Info className={cn(
+                            "h-5 w-5 transition-transform duration-200 ease-in-out",
+                            "group-hover:scale-110",
+                            pathname === '/feedback' && "text-sidebar-active-foreground"
+                            )} />
+                        <span>Feedback</span>
+                    </SidebarMenuButton>
+                 </Link>
               </TooltipTrigger>
               {(sidebarState === "collapsed" || isMobile) && (
                   <TooltipContent
@@ -193,40 +216,40 @@ export function SidebarNav() {
             </Tooltip>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith('/settings')}
-                    aria-label="Open Settings"
-                    className={cn(
-                        "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
-                        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
-                        pathname.startsWith('/settings')
-                        ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
-                        : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
-                        "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
-                    )}
-                >
-                    <Link href="/settings">
+             <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link href="/settings" passHref legacyBehavior>
+                    <SidebarMenuButton
+                        as="a" // Important for legacyBehavior with Link
+                        isActive={pathname.startsWith('/settings')}
+                        aria-label="Open Settings"
+                        className={cn(
+                            "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
+                            "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
+                            pathname.startsWith('/settings')
+                            ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
+                            : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
+                            "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
+                        )}
+                    >
                         <Settings2 className={cn(
                             "h-5 w-5 transition-transform duration-200 ease-in-out",
                             "group-hover:scale-110",
                             pathname.startsWith('/settings') && "text-sidebar-active-foreground"
                         )} />
                         <span>Settings</span>
-                    </Link>
-                </SidebarMenuButton>
-              </TooltipTrigger>
-              {(sidebarState === "collapsed" || isMobile) && (
-                  <TooltipContent
-                    side="right"
-                    align="center"
-                    className="bg-sidebar text-sidebar-foreground border-sidebar-border shadow-md"
-                  >
-                    Settings
-                  </TooltipContent>
-              )}
+                    </SidebarMenuButton>
+                  </Link>
+                </TooltipTrigger>
+                {(sidebarState === "collapsed" || isMobile) && (
+                    <TooltipContent
+                        side="right"
+                        align="center"
+                        className="bg-sidebar text-sidebar-foreground border-sidebar-border shadow-md"
+                    >
+                        Settings
+                    </TooltipContent>
+                )}
             </Tooltip>
           </SidebarMenuItem>
           <SidebarMenuItem>
