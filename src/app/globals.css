@@ -3,15 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: var(--font-poppins), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 @layer base {
   :root {
-    /* Light Theme - Apple Inspired (Cool Metallic) */
+    /* Base Theme (Light - Apple Inspired Cool Metallic) */
     --background: 210 33% 98%; /* Very Light Cool Gray (Almost White) */
     --foreground: 220 25% 25%; /* Dark Cool Gray */
 
@@ -25,78 +19,121 @@ body {
     --primary-h: 210;
     --primary-s: 100%;
     --primary-l: 50%;
-    --primary: var(--primary-h) var(--primary-s) var(--primary-l); /* Vibrant Blue (Apple's Blue #007AFF) */
+    --primary: var(--primary-h) var(--primary-s) var(--primary-l); /* Vibrant Blue */
     --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 210 25% 96%; /* Light Gray (Sterling Silver/Platinum hint) */
-    --secondary-foreground: 220 25% 35%; /* Medium-Dark Cool Gray */
+    --secondary: 210 25% 96%; /* Light Gray */
+    --secondary-foreground: 220 25% 35%;
 
     --muted: 210 20% 90%; /* Lighter Cool Gray */
-    --muted-foreground: 220 20% 50%; /* Medium Cool Gray */
+    --muted-foreground: 220 20% 50%;
 
     /* Accent color HSL components */
     --accent-h: 170; /* Teal */
     --accent-s: 98%;
     --accent-l: 52%;
     --accent: var(--accent-h) var(--accent-s) var(--accent-l); /* Vibrant Teal/Cyan */
-    --accent-foreground: 210 100% 10%; /* Dark Blue for contrast on accent */
+    --accent-foreground: 210 100% 10%;
 
     --destructive: 0 70% 60%; /* Standard Red */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 88%; /* Light Cool Gray Border */
-    --input: 210 20% 92%; /* Slightly darker than secondary for input bg */
+    --border: 210 20% 88%;
+    --input: 210 20% 92%;
     --ring: 210 100% 55%; /* Primary Blue for focus rings */
 
     --radius: 0.75rem; /* Apple-like rounded corners */
 
     /* Sidebar specific colors - Light Mode (Gemini Inspired) */
-    --sidebar-background: 220 20% 97%; /* Lighter, cleaner grey */
-    --sidebar-foreground: 220 25% 28%; /* Slightly softer dark grey for text */
+    --sidebar-background: 220 20% 97%;
+    --sidebar-foreground: 220 25% 28%;
     --sidebar-primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 220 80% 92%; /* Light, subtle blue accent for hover */
-    --sidebar-accent-foreground: 220 80% 40%; /* Darker blue for text on accent */
-    --sidebar-active-background: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
-    --sidebar-active-foreground: hsl(var(--primary-foreground));
+    --sidebar-accent: 220 80% 92%;
+    --sidebar-accent-foreground: 220 80% 40%;
+    --sidebar-active-background: hsl(var(--primary-h) var(--primary-s) var(--primary-l)); /* Primary for active */
+    --sidebar-active-foreground: hsl(var(--primary-foreground)); /* Primary foreground for active text */
     --sidebar-border: 220 15% 88%;
     --sidebar-ring: hsl(var(--ring));
+    --sidebar-active-indicator-start: hsl(var(--sidebar-primary), 0.8); 
+    --sidebar-active-indicator-end: hsl(var(--sidebar-accent), 0.8); 
+
 
     /* Chart Colors - Light Mode */
     --chart-1: hsl(var(--primary));
     --chart-2: hsl(var(--accent));
-    --chart-3: 260 65% 60%;  /* Purple */
-    --chart-4: 30 80% 55%;   /* Orange */
-    --chart-5: 130 50% 50%;  /* Green */
+    --chart-3: 260 65% 60%;
+    --chart-4: 30 80% 55%;
+    --chart-5: 130 50% 50%;
 
-    /* Firebase Inspired Gradient Colors (Light Mode) - Used for accents */
+    /* Firebase Inspired Gradient Colors (Light Mode) */
     --firebase-color-1-light-h: 45; --firebase-color-1-light-s: 100%; --firebase-color-1-light-l: 58%; /* Bright Yellow (#FFCA28) */
     --firebase-color-2-light-h: 36; --firebase-color-2-light-s: 100%; --firebase-color-2-light-l: 50%; /* Bright Orange (#FFA000) */
     --firebase-color-3-light-h: 25; --firebase-color-3-light-s: 100%; --firebase-color-3-light-l: 55%; /* Orange-Red (#FF8A65) */
     --firebase-color-4-light-h: 15; --firebase-color-4-light-s: 100%; --firebase-color-4-light-l: 60%; /* Reddish-Orange (#FF7043) */
 
-    --welcome-color-1: hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l));
-    --welcome-color-2: hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l));
-    --welcome-color-3: hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l));
-    --welcome-color-4: hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l));
+    /* Welcome Screen - Apple "Hello" Style Gradient Colors (Light Mode) - Used by welcome-display */
+    --welcome-gradient-apple-hello-l1-h: 220; --welcome-gradient-apple-hello-l1-s: 100%; --welcome-gradient-apple-hello-l1-l: 90%; /* Light Sky Blue */
+    --welcome-gradient-apple-hello-l2-h: 260; --welcome-gradient-apple-hello-l2-s: 100%; --welcome-gradient-apple-hello-l2-l: 92%; /* Light Lavender */
+    --welcome-gradient-apple-hello-l3-h: 300; --welcome-gradient-apple-hello-l3-s: 100%; --welcome-gradient-apple-hello-l3-l: 93%; /* Light Pinkish */
+    --welcome-gradient-apple-hello-l4-h: 180; --welcome-gradient-apple-hello-l4-s: 100%; --welcome-gradient-apple-hello-l4-l: 88%; /* Light Aqua */
+    --welcome-gradient-apple-hello-l5-h: 40;  --welcome-gradient-apple-hello-l5-s: 100%; --welcome-gradient-apple-hello-l5-l: 90%; /* Pale Yellow/Orange */
 
-    /* Apple Event Poster Splash HSL - Light Mode */
-    --apple-event-deep-purple-h: 260; --apple-event-deep-purple-s: 60%; --apple-event-deep-purple-l-start: 15%; --apple-event-deep-purple-l-mid: 22%;
-    --apple-event-mid-blue-h: 235; --apple-event-mid-blue-s: 55%; --apple-event-mid-blue-l: 30%;
-    --apple-event-bloom-magenta-h: 310; --apple-event-bloom-magenta-s: 75%; --apple-event-bloom-magenta-l: 45%; --apple-event-bloom-magenta-a: 0.7;
-    --apple-event-bloom-orange-h: 30; --apple-event-bloom-orange-s: 95%; --apple-event-bloom-orange-l: 55%; --apple-event-bloom-orange-a: 0.65;
-    --apple-event-bloom-yellow-h: 45; --apple-event-bloom-yellow-s: 100%; --apple-event-bloom-yellow-l: 60%; --apple-event-bloom-yellow-a: 0.5;
-    --apple-event-light-beam-core-l: 97%; --apple-event-light-beam-h: 200; --apple-event-light-beam-s: 90%; --apple-event-light-beam-edge-a: 0.3; --apple-event-light-beam-mid-a: 0.6;
+
+    /* --- Apple Event Poster Static Splash Screen :root HSL Variables --- */
+    /* Deep Space Background Colors */
+    --apple-event-deep-purple-h: 260; 
+    --apple-event-deep-purple-s: 65%; 
+    --apple-event-deep-purple-l-start: 15%;
+    --apple-event-deep-purple-l-mid: 22%;
+    --apple-event-mid-blue-h: 235;    
+    --apple-event-mid-blue-s: 60%; 
+    --apple-event-mid-blue-l: 30%;
+
+    /* Color Blooms / Nebula */
+    --apple-event-bloom-magenta-h: 310; 
+    --apple-event-bloom-magenta-s: 80%; 
+    --apple-event-bloom-magenta-l: 50%; 
+    --apple-event-bloom-magenta-a: 0.6;
+    --apple-event-bloom-orange-h: 30; 
+    --apple-event-bloom-orange-s: 100%; 
+    --apple-event-bloom-orange-l: 58%; 
+    --apple-event-bloom-orange-a: 0.6;
+    --apple-event-bloom-yellow-h: 45; 
+    --apple-event-bloom-yellow-s: 100%; 
+    --apple-event-bloom-yellow-l: 65%; 
+    --apple-event-bloom-yellow-a: 0.5;
+    --apple-event-bloom-pink-h: 330; 
+    --apple-event-bloom-pink-s: 100%; 
+    --apple-event-bloom-pink-l: 70%; 
+    --apple-event-bloom-pink-a: 0.4;
     
-    /* Heart/ECG Icon Colors for Static Splash */
-    --heart-stroke-initial-h: 210; --heart-stroke-initial-s: 100%; --heart-stroke-initial-l: 70%;
-    --heart-stroke-animated-h: 330; --heart-stroke-animated-s: 100%; --heart-stroke-animated-l: 70%;
-    --ecg-stroke-color-h: 200; --ecg-stroke-color-s: 100%; --ecg-stroke-color-l: 75%;
-    --heart-icon-splash-size: clamp(100px, 20vw, 180px); --heart-stroke-width: 2.5px; --ecg-stroke-width: 2.5px;
+    /* Light Beams */
+    --apple-event-light-streak-core-l: 98%;
+    --apple-event-light-streak-h: 200; 
+    --apple-event-light-streak-s: 100%;
+    --apple-event-light-streak-edge-a: 0.1; 
+    --apple-event-light-streak-mid-a: 0.4;
 
-    /* Text Colors for Static Splash */
+    /* Heart/ECG Icon Colors for Splash (from design pack) */
+    --heart-stroke-initial-h: 210;    
+    --heart-stroke-initial-s: 100%;
+    --heart-stroke-initial-l: 70%;
+    --heart-stroke-animated-h: 330;   
+    --heart-stroke-animated-s: 100%;
+    --heart-stroke-animated-l: 70%;
+    --ecg-stroke-color-h: 200;        
+    --ecg-stroke-color-s: 100%;
+    --ecg-stroke-color-l: 75%;
+    --heart-stroke-width: 2.5px; 
+    --ecg-stroke-width: 2.5px;   
+    --heart-icon-splash-size: clamp(100px, 20vw, 180px); 
+
+    /* Text Colors for Splash */
     --splash-text-main-color: white;
     --splash-text-tagline-color: rgba(255, 255, 255, 0.9);
+    /* --- End of Apple Event Poster :root HSL Variables --- */
+
 
     /* Notification Panel (Compact, solid) - Light Mode */
     --notification-panel-compact-bg: 0 0% 100%; /* White */
@@ -153,6 +190,8 @@ body {
     --sidebar-active-foreground: hsl(var(--primary-foreground));
     --sidebar-border: 220 25% 20%;
     --sidebar-ring: hsl(var(--ring));
+    --sidebar-active-indicator-start: hsl(var(--sidebar-primary), 0.9);
+    --sidebar-active-indicator-end: hsl(var(--sidebar-accent), 0.9);
 
     /* Chart Colors - Dark Mode */
     --chart-1: hsl(var(--primary));
@@ -167,23 +206,49 @@ body {
     --firebase-color-3-dark-h: 25; --firebase-color-3-dark-s: 100%; --firebase-color-3-dark-l: 65%;
     --firebase-color-4-dark-h: 15; --firebase-color-4-dark-s: 100%; --firebase-color-4-dark-l: 70%;
 
-    --welcome-color-1: hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l));
-    --welcome-color-2: hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l));
-    --welcome-color-3: hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l));
-    --welcome-color-4: hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l));
+    /* Welcome Screen - Apple "Hello" Style Gradient Colors (Dark Mode) - Used by welcome-display */
+    --welcome-gradient-apple-hello-d1-h: 230; --welcome-gradient-apple-hello-d1-s: 50%; --welcome-gradient-apple-hello-d1-l: 20%; /* Deep Blue */
+    --welcome-gradient-apple-hello-d2-h: 270; --welcome-gradient-apple-hello-d2-s: 60%; --welcome-gradient-apple-hello-d2-l: 25%; /* Deep Purple */
+    --welcome-gradient-apple-hello-d3-h: 320; --welcome-gradient-apple-hello-d3-s: 60%; --welcome-gradient-apple-hello-d3-l: 30%; /* Deep Magenta/Pink */
+    --welcome-gradient-apple-hello-d4-h: 200; --welcome-gradient-apple-hello-d4-s: 50%; --welcome-gradient-apple-hello-d4-l: 18%; /* Dark Teal */
+    --welcome-gradient-apple-hello-d5-h: 30;  --welcome-gradient-apple-hello-d5-s: 70%; --welcome-gradient-apple-hello-d5-l: 22%; /* Dark Orange */
     
-    /* Apple Event Poster Splash HSL - Dark Mode */
-    --apple-event-deep-purple-h: 260; --apple-event-deep-purple-s: 65%; --apple-event-deep-purple-l-start: 10%; --apple-event-deep-purple-l-mid: 18%;
-    --apple-event-mid-blue-h: 230; --apple-event-mid-blue-s: 60%; --apple-event-mid-blue-l: 25%;
-    --apple-event-bloom-magenta-h: 315; --apple-event-bloom-magenta-s: 80%; --apple-event-bloom-magenta-l: 50%; --apple-event-bloom-magenta-a: 0.75;
-    --apple-event-bloom-orange-h: 35; --apple-event-bloom-orange-s: 100%; --apple-event-bloom-orange-l: 60%; --apple-event-bloom-orange-a: 0.7;
-    --apple-event-bloom-yellow-h: 50; --apple-event-bloom-yellow-s: 100%; --apple-event-bloom-yellow-l: 65%; --apple-event-bloom-yellow-a: 0.6;
-    --apple-event-light-beam-core-l: 98%; --apple-event-light-beam-h: 205; --apple-event-light-beam-s: 95%; --apple-event-light-beam-edge-a: 0.35; --apple-event-light-beam-mid-a: 0.65;
+    /* --- Apple Event Poster Static Splash Screen :root HSL Variables --- */
+    /* Deep Space Background Colors */
+    --apple-event-deep-purple-h: 260; 
+    --apple-event-deep-purple-s: 65%; 
+    --apple-event-deep-purple-l-start: 10%; /* Darker for dark mode */
+    --apple-event-deep-purple-l-mid: 18%;   /* Darker for dark mode */
+    --apple-event-mid-blue-h: 235;    
+    --apple-event-mid-blue-s: 60%; 
+    --apple-event-mid-blue-l: 25%;      /* Darker for dark mode */
 
-    /* Heart/ECG Icon Colors for Static Splash - Dark Mode */
-    --heart-stroke-initial-h: var(--primary-h); --heart-stroke-initial-s: var(--primary-s); --heart-stroke-initial-l: calc(var(--primary-l) + 15%);
-    --heart-stroke-animated-h: 330; --heart-stroke-animated-s: 100%; --heart-stroke-animated-l: 75%;
-    --ecg-stroke-color-h: var(--primary-h); --ecg-stroke-color-s: var(--primary-s); --ecg-stroke-color-l: calc(var(--primary-l) + 10%);
+    /* Color Blooms / Nebula */
+    --apple-event-bloom-magenta-h: 310; 
+    --apple-event-bloom-magenta-s: 80%; 
+    --apple-event-bloom-magenta-l: 45%; /* Slightly less bright */
+    --apple-event-bloom-magenta-a: 0.5;
+    --apple-event-bloom-orange-h: 30; 
+    --apple-event-bloom-orange-s: 100%; 
+    --apple-event-bloom-orange-l: 50%;  /* Slightly less bright */
+    --apple-event-bloom-orange-a: 0.5;
+    --apple-event-bloom-yellow-h: 45; 
+    --apple-event-bloom-yellow-s: 100%; 
+    --apple-event-bloom-yellow-l: 60%;  /* Slightly less bright */
+    --apple-event-bloom-yellow-a: 0.4;
+    --apple-event-bloom-pink-h: 330; 
+    --apple-event-bloom-pink-s: 100%; 
+    --apple-event-bloom-pink-l: 65%;    /* Slightly less bright */
+    --apple-event-bloom-pink-a: 0.3;
+    
+    /* Light Beams */
+    --apple-event-light-streak-core-l: 95%; /* Still bright */
+    --apple-event-light-streak-h: 200; 
+    --apple-event-light-streak-s: 100%;
+    --apple-event-light-streak-edge-a: 0.08; 
+    --apple-event-light-streak-mid-a: 0.3;
+    /* --- End of Apple Event Poster :root HSL Variables --- */
+
 
     /* Notification Panel (Compact, solid) - Dark Mode */
     --notification-panel-compact-bg: 216 54% 18%;
@@ -198,19 +263,18 @@ body {
   * {
     @apply border-border;
   }
-  body, html { /* Ensure html also takes full height for splash */
+  body, html {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* Default for splash, overridden for main app */
+    overflow: hidden; 
   }
 }
 
-/* Ensure body for main app allows scrolling if splash is not active */
-body:not(:has(.event-poster-splash-screen)) {
+body:not(:has(.event-poster-splash-screen)):not(:has(.welcome-screen-gradient)) {
   overflow: auto;
 }
 
@@ -227,17 +291,6 @@ body:not(:has(.event-poster-splash-screen)) {
     transform: translateY(0);
   }
 }
-/* Entrance animation for splash screen foreground elements */
-.splash-element-fade-in {
-  opacity: 0;
-  animation: fadeInElements 1s ease-out 0.5s forwards; /* 0.5s delay */
-}
-@keyframes fadeInElements {
-  to {
-    opacity: 1;
-  }
-}
-
 
 .slide-in-bottom {
   opacity: 0;
@@ -249,19 +302,6 @@ body:not(:has(.event-poster-splash-screen)) {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-/* Heartbeat Line Animation */
-.heartbeat-line {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: drawHeartbeat 3s linear infinite;
-}
-
-@keyframes drawHeartbeat {
-  to {
-    stroke-dashoffset: 0;
   }
 }
 
@@ -321,17 +361,31 @@ body:not(:has(.event-poster-splash-screen)) {
 
 
 /* Welcome Screen / Hero Text Animations (Firebase Color Cycle) */
-@keyframes welcome-text-color-cycle {
-  0% { color: hsl(var(--welcome-color-1)); } /* Direct HSL usage */
-  25% { color: hsl(var(--welcome-color-2)); }
-  50% { color: hsl(var(--welcome-color-3)); }
-  75% { color: hsl(var(--welcome-color-4)); }
-  100% { color: hsl(var(--welcome-color-1)); }
+@keyframes welcome-text-color-cycle-light {
+  0%   { color: hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)); }
+  25%  { color: hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)); }
+  50%  { color: hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)); }
+  75%  { color: hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)); }
+  100% { color: hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)); }
+}
+
+@keyframes welcome-text-color-cycle-dark {
+  0%   { color: hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)); }
+  25%  { color: hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)); }
+  50%  { color: hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)); }
+  75%  { color: hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)); }
+  100% { color: hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)); }
 }
 
 .welcome-text-fg-animated {
-  color: hsl(var(--welcome-color-1));
-  animation: welcome-text-color-cycle 10s linear infinite;
+  color: hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l));
+  animation-name: welcome-text-color-cycle-light;
+  animation-duration: 10s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.dark .welcome-text-fg-animated {
+  animation-name: welcome-text-color-cycle-dark;
 }
 
 
@@ -351,11 +405,11 @@ body:not(:has(.event-poster-splash-screen)) {
 .firebase-ribbon-background {
   background: linear-gradient(
     135deg,
-    hsla(var(--welcome-color-1-light-h), var(--welcome-color-1-light-s), var(--welcome-color-1-light-l), 0.95),
-    hsla(var(--welcome-color-2-light-h), var(--welcome-color-2-light-s), var(--welcome-color-2-light-l), 0.95),
-    hsla(var(--welcome-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l), 0.95),
+    hsla(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l), 0.95),
+    hsla(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l), 0.95),
+    hsla(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l), 0.95),
     hsla(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l), 0.95),
-    hsla(var(--welcome-color-1-light-h), var(--welcome-color-1-light-s), var(--welcome-color-1-light-l), 0.95)
+    hsla(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l), 0.95)
   );
   background-size: 250% 250%;
   animation: animated-firebase-ribbon-background 10s ease infinite;
@@ -389,52 +443,83 @@ body:not(:has(.event-poster-splash-screen)) {
 }
 
 /* Firebase Gradient Glowing Ring for AvatarFallback */
-@keyframes firebase-glow-ring {
-  0%, 100% { box-shadow: 0 0 3px hsl(var(--welcome-color-1)), 0 0 6px hsl(var(--welcome-color-1)), 0 0 10px hsla(var(--welcome-color-1-light-h), var(--welcome-color-1-light-s), var(--welcome-color-1-light-l), 0.6); }
-  25% { box-shadow: 0 0 3px hsl(var(--welcome-color-2)), 0 0 6px hsl(var(--welcome-color-2)), 0 0 10px hsla(var(--welcome-color-2-light-h), var(--welcome-color-2-light-s), var(--welcome-color-2-light-l), 0.6); }
-  50% { box-shadow: 0 0 3px hsl(var(--welcome-color-3)), 0 0 6px hsl(var(--welcome-color-3)), 0 0 10px hsla(var(--welcome-color-3-light-h), var(--welcome-color-3-light-s), var(--welcome-color-3-light-l), 0.6); }
-  75% { box-shadow: 0 0 3px hsl(var(--welcome-color-4)), 0 0 6px hsl(var(--welcome-color-4)), 0 0 10px hsla(var(--welcome-color-4-light-h), var(--welcome-color-4-light-s), var(--welcome-color-4-light-l), 0.6); }
+@keyframes firebase-glow-ring-light {
+  0%, 100% { box-shadow: 0 0 3px hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)), 0 0 6px hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)), 0 0 10px hsla(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l), 0.6); }
+  25% { box-shadow: 0 0 3px hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)), 0 0 6px hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)), 0 0 10px hsla(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l), 0.6); }
+  50% { box-shadow: 0 0 3px hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)), 0 0 6px hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)), 0 0 10px hsla(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l), 0.6); }
+  75% { box-shadow: 0 0 3px hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)), 0 0 6px hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)), 0 0 10px hsla(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l), 0.6); }
 }
-.dark .glowing-ring-firebase {
-  animation: firebase-glow-ring 5s linear infinite; /* Animation remains same, color vars change */
+@keyframes firebase-glow-ring-dark {
+  0%, 100% { box-shadow: 0 0 3px hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)), 0 0 6px hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)), 0 0 10px hsla(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l), 0.6); }
+  25% { box-shadow: 0 0 3px hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)), 0 0 6px hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)), 0 0 10px hsla(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l), 0.6); }
+  50% { box-shadow: 0 0 3px hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)), 0 0 6px hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)), 0 0 10px hsla(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l), 0.6); }
+  75% { box-shadow: 0 0 3px hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)), 0 0 6px hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)), 0 0 10px hsla(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l), 0.6); }
 }
-
 
 .glowing-ring-firebase {
-  animation: firebase-glow-ring 5s linear infinite;
+  animation-name: firebase-glow-ring-light;
+  animation-duration: 5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
+.dark .glowing-ring-firebase {
+  animation-name: firebase-glow-ring-dark;
+}
+
 
 /* Firebase Gradient Text with Glow and Flow */
 .firebase-gradient-text {
   background-size: 200% auto;
   background-image: linear-gradient(to right,
-    hsl(var(--welcome-color-1)) 0%,
-    hsl(var(--welcome-color-2)) 25%,
-    hsl(var(--welcome-color-3)) 50%,
-    hsl(var(--welcome-color-4)) 75%,
-    hsl(var(--welcome-color-1)) 100%);
+    hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)) 0%,
+    hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)) 25%,
+    hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)) 50%,
+    hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)) 75%,
+    hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   text-shadow:
-    0 0 4px hsla(var(--welcome-color-2-light-h), var(--welcome-color-2-light-s), var(--welcome-color-2-light-l),0.5),
-    0 0 8px hsla(var(--welcome-color-3-light-h), var(--welcome-color-3-light-s), var(--welcome-color-3-light-l),0.3);
+    0 0 4px hsla(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l),0.5),
+    0 0 8px hsla(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l),0.3);
   animation: firebase-gradient-flow 4s linear infinite;
 }
+
+.dark .firebase-gradient-text {
+   background-image: linear-gradient(to right,
+    hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)) 0%,
+    hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)) 25%,
+    hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)) 50%,
+    hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)) 75%,
+    hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)) 100%);
+   text-shadow:
+    0 0 4px hsla(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l),0.5),
+    0 0 8px hsla(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l),0.3);
+}
+
 
 /* Firebase Gradient Text for Active Role - Static gradient with glow */
 .firebase-gradient-text-active-role {
   background-image: linear-gradient(to right,
-    hsl(var(--welcome-color-1)) 0%,
-    hsl(var(--welcome-color-2)) 25%,
-    hsl(var(--welcome-color-3)) 50%,
-    hsl(var(--welcome-color-4)) 75%,
-    hsl(var(--welcome-color-1)) 100%);
+    hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)) 0%,
+    hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)) 25%,
+    hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)) 50%,
+    hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)) 75%,
+    hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)) 100%);
   background-size: 100% auto; /* Static gradient, not animated by default */
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 2px hsla(var(--welcome-color-2-light-h), var(--welcome-color-2-light-s), var(--welcome-color-2-light-l),0.4); /* Subtle glow */
+  text-shadow: 0 0 2px hsla(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l),0.4); /* Subtle glow */
+}
+.dark .firebase-gradient-text-active-role {
+   background-image: linear-gradient(to right,
+    hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)) 0%,
+    hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)) 25%,
+    hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)) 50%,
+    hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)) 75%,
+    hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)) 100%);
+   text-shadow: 0 0 2px hsla(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l),0.4);
 }
 
 
@@ -474,11 +559,11 @@ body:not(:has(.event-poster-splash-screen)) {
   border-radius: calc(var(--radius) + 2px);
   padding: 2px;
   background: linear-gradient(135deg,
-    hsl(var(--welcome-color-1)),
-    hsl(var(--welcome-color-2)),
-    hsl(var(--welcome-color-3)),
-    hsl(var(--welcome-color-4)),
-    hsl(var(--welcome-color-1))
+    hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)),
+    hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)),
+    hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)),
+    hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)),
+    hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l))
   );
   background-size: 400% 400%;
   -webkit-mask:
@@ -492,15 +577,35 @@ body:not(:has(.event-poster-splash-screen)) {
   animation: animated-gradient-background 5s ease infinite;
   z-index: 0;
 }
+.dark .tool-card-frequent.firebase-gradient-border-hover:hover::before {
+   background: linear-gradient(135deg,
+    hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)),
+    hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)),
+    hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)),
+    hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)),
+    hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l))
+  );
+}
+
 
 /* Subtle pulse/glow for tool cards (can be applied conditionally) */
-@keyframes subtle-pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsl(var(--welcome-color-1))/0.3); }
-  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsl(var(--welcome-color-2))/0.5); }
+@keyframes subtle-pulse-glow-light {
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsl(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),var(--firebase-color-1-light-l))/0.3); }
+  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsl(var(--firebase-color-2-light-h),var(--firebase-color-2-light-s),var(--firebase-color-2-light-l))/0.5); }
+}
+@keyframes subtle-pulse-glow-dark {
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsl(var(--firebase-color-1-dark-h),var(--firebase-color-1-dark-s),var(--firebase-color-1-dark-l))/0.3); }
+  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsl(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l))/0.5); }
 }
 
 .animate-subtle-pulse-glow {
-  animation: subtle-pulse-glow 2.5s infinite ease-in-out;
+  animation-name: subtle-pulse-glow-light;
+  animation-duration: 2.5s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.dark .animate-subtle-pulse-glow {
+  animation-name: subtle-pulse-glow-dark;
 }
 
 
@@ -526,35 +631,47 @@ body:not(:has(.event-poster-splash-screen)) {
 }
 .firebase-button-interactive:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px hsla(var(--welcome-color-2-light-h), var(--welcome-color-2-light-s), var(--welcome-color-2-light-l), 0.3);
+  box-shadow: 0 4px 12px hsla(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l), 0.3);
 }
 .dark .firebase-button-interactive:hover {
   box-shadow: 0 4px 12px hsla(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l), 0.3);
 }
 .firebase-button-interactive:focus-visible {
-  outline: 2px solid hsl(var(--welcome-color-1));
+  outline: 2px solid hsl(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),var(--firebase-color-1-light-l));
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px hsla(var(--welcome-color-1-light-h), var(--welcome-color-1-light-s), var(--welcome-color-1-light-l), 0.2);
+  box-shadow: 0 0 0 4px hsla(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l), 0.2);
 }
 .dark .firebase-button-interactive:focus-visible {
+  outline: 2px solid hsl(var(--firebase-color-1-dark-h),var(--firebase-color-1-dark-s),var(--firebase-color-1-dark-l));
   box-shadow: 0 0 0 4px hsla(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l), 0.2);
 }
 
 /* Gemini Inspired CTA Button Glow - Now Firebase Inspired */
-@keyframes gemini-cta-glow {
+@keyframes gemini-cta-glow-light {
   0%, 100% {
-    box-shadow: 0 0 5px hsla(var(--welcome-color-1-light-h),var(--welcome-color-1-light-s),var(--welcome-color-1-light-l),0.3), 0 0 10px hsla(var(--welcome-color-2-light-h),var(--welcome-color-2-light-s),var(--welcome-color-2-light-l),0.2), 0 0 15px hsla(var(--welcome-color-3-light-h),var(--welcome-color-3-light-s),var(--welcome-color-3-light-l),0.2);
+    box-shadow: 0 0 5px hsla(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),var(--firebase-color-1-light-l),0.3), 0 0 10px hsla(var(--firebase-color-2-light-h),var(--firebase-color-2-light-s),var(--firebase-color-2-light-l),0.2), 0 0 15px hsla(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),var(--firebase-color-3-light-l),0.2);
   }
   50% {
-    box-shadow: 0 0 10px hsla(var(--welcome-color-2-light-h),var(--welcome-color-2-light-s),var(--welcome-color-2-light-l),0.5), 0 0 20px hsla(var(--welcome-color-3-light-h),var(--welcome-color-3-light-s),var(--welcome-color-3-light-l),0.3), 0 0 30px hsla(var(--welcome-color-4-light-h),var(--welcome-color-4-light-s),var(--welcome-color-4-light-l),0.3);
+    box-shadow: 0 0 10px hsla(var(--firebase-color-2-light-h),var(--firebase-color-2-light-s),var(--firebase-color-2-light-l),0.5), 0 0 20px hsla(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),var(--firebase-color-3-light-l),0.3), 0 0 30px hsla(var(--firebase-color-4-light-h),var(--firebase-color-4-light-s),var(--firebase-color-4-light-l),0.3);
   }
 }
-.dark .gemini-cta-button {
-    animation: gemini-cta-glow 3s infinite ease-in-out; /* Dark mode uses the same animation definition but different HSL vars from the dark theme */
+@keyframes gemini-cta-glow-dark {
+    0%, 100% {
+    box-shadow: 0 0 5px hsla(var(--firebase-color-1-dark-h),var(--firebase-color-1-dark-s),var(--firebase-color-1-dark-l),0.3), 0 0 10px hsla(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l),0.2), 0 0 15px hsla(var(--firebase-color-3-dark-h),var(--firebase-color-3-dark-s),var(--firebase-color-3-dark-l),0.2);
+  }
+  50% {
+    box-shadow: 0 0 10px hsla(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l),0.5), 0 0 20px hsla(var(--firebase-color-3-dark-h),var(--firebase-color-3-dark-s),var(--firebase-color-3-dark-l),0.3), 0 0 30px hsla(var(--firebase-color-4-dark-h),var(--firebase-color-4-dark-s),var(--firebase-color-4-dark-l),0.3);
+  }
 }
 
 .gemini-cta-button {
-  animation: gemini-cta-glow 3s infinite ease-in-out;
+  animation-name: gemini-cta-glow-light;
+  animation-duration: 3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.dark .gemini-cta-button {
+  animation-name: gemini-cta-glow-dark;
 }
 
 
@@ -578,19 +695,21 @@ body:not(:has(.event-poster-splash-screen)) {
   top: 20%;
   bottom: 20%;
   width: 4px;
-  background-image: linear-gradient(to bottom, hsl(var(--sidebar-primary)/0.8), hsl(var(--sidebar-accent)/0.8));
+  background-image: linear-gradient(to bottom, hsl(var(--sidebar-active-indicator-start)), hsl(var(--sidebar-active-indicator-end)));
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
   box-shadow: 0 0 8px hsl(var(--sidebar-primary)/0.5);
   animation: sidebar-indicator-pulse 2s infinite ease-in-out;
 }
+
 /* Collapsed sidebar active item indicator */
 .group[data-collapsible="icon"] .sidebar-active-item-glow::before {
   top: 10%;
   bottom: 10%;
-  left: -2px;
+  left: -2px; 
   width: 3px;
 }
+
 
 @keyframes sidebar-indicator-pulse {
   0%, 100% { opacity: 0.7; transform: scaleY(1); }
@@ -636,53 +755,46 @@ body:not(:has(.event-poster-splash-screen)) {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  /* Using the static image as background */
   background-image: url('/images/mediassistant-splash-background.png');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 60%), var(--apple-event-deep-purple-l-start, 15%)); /* Fallback color */
+  background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), var(--apple-event-deep-purple-l-start, 15%));
 }
 
 .dark .event-poster-splash-screen {
-   background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), var(--apple-event-deep-purple-l-start, 10%)); /* Darker fallback */
+   background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), calc(var(--apple-event-deep-purple-l-start, 15%) - 5%));
 }
 
 .central-icon-container {
-  position: relative; 
+  position: relative;
   z-index: 2;
   margin-bottom: 18vh; 
 }
 
-/* This class is applied to the <heart-ecg-icon> custom element */
+/* Class applied to the <heart-ecg-icon> custom element */
 .heart-ecg-icon-splash-static {
-  --heart-icon-splash-size: clamp(100px, 20vw, 180px); /* Sets the var for the component */
   width: var(--heart-icon-splash-size);
   height: var(--heart-icon-splash-size);
   display: block;
-  animation: pulse-glow-from-pack 2.2s ease-in-out infinite alternate;
+  animation: pulse-glow-from-pack 2.0s ease-in-out infinite alternate;
 }
 
 @keyframes pulse-glow-from-pack {
-  0% {
+  0%, 100% { /* Resting State */
     transform: scale(1);
     filter: drop-shadow(0 0 12px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6));
   }
-  50% {
-    transform: scale(1.07); /* More noticeable pulse */
+  50% { /* Peak Pulse State */
+    transform: scale(1.07); 
     filter: drop-shadow(0 0 20px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.8))
             drop-shadow(0 0 8px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.5));
   }
-  100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 12px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6));
-  }
 }
-
 
 .bottom-text-container-splash {
   position: absolute;
-  bottom: 7vh; 
+  bottom: 7vh;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -711,8 +823,13 @@ body:not(:has(.event-poster-splash-screen)) {
 .tagline-splash-static .emoji {
   display: inline-block;
   vertical-align: middle;
-  font-size: inherit;
-  animation: heartPulseSubtle 2.0s infinite ease-in-out;
+  font-size: inherit; 
+  animation: sparkle-subtle 2.2s infinite ease-in-out;
+}
+
+@keyframes sparkle-subtle {
+  0%, 100% { opacity: 0.6; transform: scale(0.9) rotate(-3deg); }
+  50% { opacity: 1; transform: scale(1.1) rotate(3deg); }
 }
 /* End of Apple Event Poster Static Splash Screen Styles */
 
@@ -730,11 +847,9 @@ body:not(:has(.event-poster-splash-screen)) {
 
 /* --- Styles for Compact Notification Panel --- */
 .notification-panel-compact {
-  @apply bg-card border border-border/50 rounded-xl shadow-lg fixed top-16 right-4 z-50 flex flex-col;
-  width: 320px;
-  max-height: 400px;
   background-color: hsl(var(--notification-panel-compact-bg));
   border-color: hsl(var(--notification-panel-compact-border));
+  @apply rounded-xl shadow-2xl overflow-hidden fixed top-16 right-4 z-50 w-[320px] max-h-[400px] flex flex-col; 
 }
 
 .dark .notification-panel-compact {
@@ -744,10 +859,15 @@ body:not(:has(.event-poster-splash-screen)) {
 
 .notification-item-card-compact {
   background-color: hsl(var(--notification-item-compact-bg));
+  @apply p-1.5 rounded-md cursor-pointer transition-colors duration-150 flex items-start gap-2;
 }
 .notification-item-card-compact:hover {
   background-color: hsl(var(--notification-item-compact-hover-bg));
 }
+.notification-item-card-compact.unread {
+ @apply bg-primary/10 border border-primary/20;
+}
+
 
 .dark .notification-item-card-compact {
   background-color: hsl(var(--notification-item-compact-bg));
@@ -755,15 +875,14 @@ body:not(:has(.event-poster-splash-screen)) {
 .dark .notification-item-card-compact:hover {
   background-color: hsl(var(--notification-item-compact-hover-bg));
 }
-
-.notification-unread-dot {
-  @apply h-1.5 w-1.5 rounded-full;
-  /* Directly use the CSS variable for background color */
-  background-color: var(--notification-unread-dot-color);
+.dark .notification-item-card-compact.unread {
+ @apply bg-primary/15 border border-primary/30;
 }
 
-/* Profile Icon Notification Ring Animations (Removed as per new design) */
-/* .profile-notification-ring, .profile-notification-ring-pulse, .profile-notification-ring-comet styles removed */
+.notification-unread-dot {
+  @apply h-1.5 w-1.5 rounded-full mt-1 flex-shrink-0 self-center;
+  background-color: var(--notification-unread-dot-color);
+}
 
 
 /* Chat Interface Animation Support Styles */
@@ -782,37 +901,36 @@ body:not(:has(.event-poster-splash-screen)) {
 /* Animated Gradient Border for Notification Panel (Firebase Inspired) */
 .notification-panel-animated-border {
   position: relative;
-  border: 2px solid transparent;
-  overflow: hidden;
+  border: 2px solid transparent; 
 }
 
 .notification-panel-animated-border::before {
   content: "";
   position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  padding: 2px;
+  inset: -2px; 
+  border-radius: inherit; 
+  padding: 2px; 
   background: linear-gradient(
     135deg,
-    hsl(var(--welcome-color-1)), /* Direct HSL usage */
-    hsl(var(--welcome-color-2)),
-    hsl(var(--welcome-color-3)),
-    hsl(var(--welcome-color-4)),
-    hsl(var(--welcome-color-1))
+    hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)),
+    hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)),
+    hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)),
+    hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)),
+    hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l))
   );
   background-size: 300% 300%;
   animation: animated-gradient-background 4s ease infinite;
   -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0); 
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  z-index: -1;
+  -webkit-mask-composite: xor; 
+  mask-composite: exclude; 
+  z-index: -1; 
 }
-/* Ensure dark mode for .notification-panel-animated-border::before uses dark Firebase colors */
+
 .dark .notification-panel-animated-border::before {
    background: linear-gradient(
     135deg,
@@ -824,17 +942,155 @@ body:not(:has(.event-poster-splash-screen)) {
   );
 }
 
-/* Fallback for background if image loading fails */
-.dark .event-poster-splash-screen {
-    background-color: hsl(var(--apple-event-deep-purple-h), var(--apple-event-deep-purple-s), calc(var(--apple-event-deep-purple-l-start) - 5%)); /* Even darker for dark mode fallback */
-}
-
 /* Sidebar Notification Badge Styles */
 .sidebar-notification-badge {
-  @apply bg-primary text-primary-foreground; /* Using primary colors for badge */
-  /* Add other styles like padding, min-width, etc., as needed */
-  /* For example, if you want a small circle for just a dot indicator:
-     width: 0.75rem; height: 0.75rem; padding: 0; font-size: 0; 
-     display: inline-flex; align-items: center; justify-content: center;
-  */
+  @apply bg-primary text-primary-foreground text-xs font-medium;
+  padding: 0.1rem 0.4rem; 
+  min-width: 1.25rem; 
+  height: 1.25rem;
+  border-radius: 9999px; 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; 
+  box-shadow: 0 1px 3px hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) - 10%), 0.3); 
 }
+
+
+/* Entrance animation for splash screen foreground elements */
+.splash-element-fade-in {
+  opacity: 0;
+  animation: fadeInElements 1s ease-out 0.5s forwards; /* 0.5s delay */
+}
+@keyframes fadeInElements {
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* Custom scrollbar for onboarding modal */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--muted)/0.3);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary)/0.7);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary));
+}
+
+/* Post-Login Welcome Screen ("Apple Hello" inspired gradient) */
+@keyframes welcome-gradient-radiate-animation-light {
+  0% {
+    background-color: hsl(var(--background)); /* Start from app's normal background */
+    background-image: none;
+    background-size: 100% 100%;
+    background-position: center;
+  }
+  20% { /* Start of dynamic unfurling - incorporating primary/accent */
+    background-color: hsl(var(--background));
+    background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 10%), 0.1) 0%, hsla(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 5%), 0.05) 40%, transparent 60%);
+    background-size: 200% 200%;
+    background-position: 50% 50%;
+  }
+  50% { /* Transitioning to Apple Hello colors */
+    background-color: hsl(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), calc(var(--welcome-gradient-apple-hello-l1-l) - 5%)); /* Base for transition */
+    background-image: radial-gradient(ellipse farthest-corner at 50% 0%,
+        hsla(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), var(--welcome-gradient-apple-hello-l1-l), 0.8) 0%,
+        hsla(var(--welcome-gradient-apple-hello-l2-h), var(--welcome-gradient-apple-hello-l2-s), var(--welcome-gradient-apple-hello-l2-l), 0.7) 30%,
+        hsla(var(--welcome-gradient-apple-hello-l3-h), var(--welcome-gradient-apple-hello-l3-s), var(--welcome-gradient-apple-hello-l3-l), 0.6) 60%,
+        hsla(var(--welcome-gradient-apple-hello-l4-h), var(--welcome-gradient-apple-hello-l4-s), var(--welcome-gradient-apple-hello-l4-l), 0.0) 100% /* Fade out last color more */
+      );
+    background-size: 300% 300%; 
+    background-position: 40% 60%;
+  }
+  100% { /* Settle into the final soft, full-screen Apple Hello gradient */
+    background-color: hsl(var(--welcome-gradient-apple-hello-l5-h), var(--welcome-gradient-apple-hello-l5-s), var(--welcome-gradient-apple-hello-l5-l));
+    background-image: radial-gradient(ellipse farthest-corner at 50% 0%,
+        hsl(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), var(--welcome-gradient-apple-hello-l1-l)) 0%,
+        hsl(var(--welcome-gradient-apple-hello-l2-h), var(--welcome-gradient-apple-hello-l2-s), var(--welcome-gradient-apple-hello-l2-l)) 25%,
+        hsl(var(--welcome-gradient-apple-hello-l3-h), var(--welcome-gradient-apple-hello-l3-s), var(--welcome-gradient-apple-hello-l3-l)) 50%,
+        hsl(var(--welcome-gradient-apple-hello-l4-h), var(--welcome-gradient-apple-hello-l4-s), var(--welcome-gradient-apple-hello-l4-l)) 75%,
+        hsl(var(--welcome-gradient-apple-hello-l5-h), var(--welcome-gradient-apple-hello-l5-s), var(--welcome-gradient-apple-hello-l5-l)) 100%
+      );
+    background-size: 400% 400%; 
+    background-position: center center;
+  }
+}
+
+@keyframes welcome-gradient-radiate-animation-dark {
+  0% {
+    background-color: hsl(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), 5%); /* Start very dark */
+    background-image: none;
+    background-size: 100% 100%;
+    background-position: center;
+  }
+   20% { /* Start of dynamic unfurling */
+    background-color: hsl(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), 8%);
+    background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.1) 10%, hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.05) 40%, transparent 60%);
+    background-size: 200% 200%;
+    background-position: 30% 20%;
+  }
+  50% { /* Transitioning to Apple Hello dark colors */
+    background-color: hsl(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), calc(var(--welcome-gradient-apple-hello-d1-l) - 5%));
+    background-image: radial-gradient(ellipse farthest-corner at 50% 0%,
+        hsla(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), var(--welcome-gradient-apple-hello-d1-l), 0.7) 0%,
+        hsla(var(--welcome-gradient-apple-hello-d2-h), var(--welcome-gradient-apple-hello-d2-s), var(--welcome-gradient-apple-hello-d2-l), 0.6) 30%,
+        hsla(var(--welcome-gradient-apple-hello-d3-h), var(--welcome-gradient-apple-hello-d3-s), var(--welcome-gradient-apple-hello-d3-l), 0.5) 60%,
+        hsla(var(--welcome-gradient-apple-hello-d4-h), var(--welcome-gradient-apple-hello-d4-s), var(--welcome-gradient-apple-hello-d4-l), 0.0) 100%
+      );
+    background-size: 300% 300%;
+    background-position: 60% 40%;
+  }
+  100% { /* Settle into the final soft, full-screen Apple Hello dark gradient */
+    background-color: hsl(var(--welcome-gradient-apple-hello-d5-h), var(--welcome-gradient-apple-hello-d5-s), var(--welcome-gradient-apple-hello-d5-l));
+    background-image: radial-gradient(ellipse farthest-corner at 50% 0%,
+        hsl(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), var(--welcome-gradient-apple-hello-d1-l)) 0%,
+        hsl(var(--welcome-gradient-apple-hello-d2-h), var(--welcome-gradient-apple-hello-d2-s), var(--welcome-gradient-apple-hello-d2-l)) 25%,
+        hsl(var(--welcome-gradient-apple-hello-d3-h), var(--welcome-gradient-apple-hello-d3-s), var(--welcome-gradient-apple-hello-d3-l)) 50%,
+        hsl(var(--welcome-gradient-apple-hello-d4-h), var(--welcome-gradient-apple-hello-d4-s), var(--welcome-gradient-apple-hello-d4-l)) 75%,
+        hsl(var(--welcome-gradient-apple-hello-d5-h), var(--welcome-gradient-apple-hello-d5-s), var(--welcome-gradient-apple-hello-d5-l)) 100%
+      );
+    background-size: 400% 400%;
+    background-position: center center;
+  }
+}
+
+/* Class for the post-login welcome screen using the radiating gradient */
+.welcome-screen-gradient {
+  @apply fixed inset-0 z-[200] flex flex-col items-center justify-center text-white overflow-hidden;
+  animation-name: welcome-gradient-radiate-animation-light;
+  animation-duration: 2.8s; /* Duration for the initial radiating fill */
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards; /* Stops at the 100% keyframe */
+}
+
+.dark .welcome-screen-gradient {
+  animation-name: welcome-gradient-radiate-animation-dark;
+}
+
+/* Separate animation for subtle ongoing movement AFTER the initial fill */
+@keyframes subtle-gradient-movement {
+  0% { background-position: center center; }
+  50% { background-position: 52% 48%; } /* Adjust these for desired movement */
+  100% { background-position: center center; }
+}
+
+.welcome-screen-gradient.settled {
+  /* This animation will apply after the initial radiating fill via JS or delay */
+  /* Or, you can make the initial animation longer and incorporate this slow movement at the end */
+   animation: welcome-gradient-radiate-animation-light 2.8s ease-out forwards, 
+             subtle-gradient-movement 20s ease-in-out infinite alternate 2.8s; /* Starts after 2.8s */
+}
+.dark .welcome-screen-gradient.settled {
+   animation-name: welcome-gradient-radiate-animation-dark, subtle-gradient-movement;
+}
+
+/* End Post-Login Welcome Screen Styles */
+/* Ensure this is the last character in the file, or followed by a newline */
