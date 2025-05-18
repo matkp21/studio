@@ -1,10 +1,14 @@
+
 // src/app/layout.tsx
+// Remove "use client" - this is now a Server Component
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import './globals.css';
-import { AppLayout } from '@/components/layout/app-layout';
-import { Toaster } from "@/components/ui/toaster";
-import { ProModeProvider } from '@/contexts/pro-mode-context';
+// Toaster will be rendered by ClientLayoutWrapper
+// ProModeProvider will be rendered by ClientLayoutWrapper
+// AppLayout will be rendered by ClientLayoutWrapper
+// useEffect for SW registration will be in ClientLayoutWrapper
+import { ClientLayoutWrapper } from '@/components/layout/client-layout-wrapper';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -12,6 +16,7 @@ const poppins = Poppins({
   variable: '--font-poppins',
 });
 
+// metadata can be exported from a Server Component
 export const metadata: Metadata = {
   title: 'MediAssistant',
   description: 'AI-Powered Medical Assistant',
@@ -39,20 +44,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // TODO: Register service worker here for PWA offline capabilities and push notifications in a useEffect hook.
-  // Example:
-  // useEffect(() => {
-  //   if ('serviceWorker' in navigator) {
-  //     window.addEventListener('load', () => {
-  //       navigator.serviceWorker.register('/sw.js').then(registration => {
-  //         console.log('SW registered: ', registration);
-  //       }).catch(registrationError => {
-  //         console.log('SW registration failed: ', registrationError);
-  //       });
-  //     });
-  //   }
-  // }, []);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -69,10 +60,7 @@ export default function RootLayout({
         <meta name="msapplication-config" content="/icons/browserconfig.xml" />
       </head>
       <body className={`${poppins.variable} antialiased`}>
-        <ProModeProvider>
-          <AppLayout>{children}</AppLayout>
-        </ProModeProvider>
-        <Toaster />
+        <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
       </body>
     </html>
   );
