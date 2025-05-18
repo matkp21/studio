@@ -72,12 +72,28 @@
     --firebase-color-3-light-h: 25; --firebase-color-3-light-s: 100%; --firebase-color-3-light-l: 55%; /* Orange-Red (#FF8A65) */
     --firebase-color-4-light-h: 15; --firebase-color-4-light-s: 100%; --firebase-color-4-light-l: 60%; /* Reddish-Orange (#FF7043) */
 
-    /* Welcome Screen - Apple "Hello" Style Gradient Colors (Light Mode) */
-    --welcome-gradient-apple-hello-l1-h: 220; --welcome-gradient-apple-hello-l1-s: 100%; --welcome-gradient-apple-hello-l1-l: 90%; /* Light Sky Blue */
-    --welcome-gradient-apple-hello-l2-h: 260; --welcome-gradient-apple-hello-l2-s: 100%; --welcome-gradient-apple-hello-l2-l: 92%; /* Light Lavender */
-    --welcome-gradient-apple-hello-l3-h: 300; --welcome-gradient-apple-hello-l3-s: 100%; --welcome-gradient-apple-hello-l3-l: 93%; /* Light Pinkish */
-    --welcome-gradient-apple-hello-l4-h: 180; --welcome-gradient-apple-hello-l4-s: 100%; --welcome-gradient-apple-hello-l4-l: 88%; /* Light Aqua */
-    --welcome-gradient-apple-hello-l5-h: 40;  --welcome-gradient-apple-hello-l5-s: 100%; --welcome-gradient-apple-hello-l5-l: 90%; /* Pale Yellow/Orange */
+    /* --- HSL Variables for Apple Event Poster Theme (STATIC IMAGE VERSION) --- */
+    /* Heart/ECG Icon Colors */
+    --heart-stroke-initial-h: 210;
+    --heart-stroke-initial-s: 100%;
+    --heart-stroke-initial-l: 70%;
+    --heart-stroke-animated-h: 330;
+    --heart-stroke-animated-s: 100%;
+    --heart-stroke-animated-l: 70%;
+    --ecg-stroke-color-h: 200;
+    --ecg-stroke-color-s: 100%;
+    --ecg-stroke-color-l: 75%;
+    --heart-stroke-width: 2.5px; /* Default, can be overridden by component */
+    --ecg-stroke-width: 2.5px;   /* Default, can be overridden by component */
+    --heart-icon-splash-size: clamp(100px, 20vw, 180px); /* Default, can be overridden */
+
+    /* Text Colors for Static Image Splash */
+    --splash-text-main-color: white;
+    --splash-text-tagline-color: rgba(255, 255, 255, 0.9);
+    /* Fallback BG color if image fails */
+    --apple-event-deep-purple-h: 260;
+    --apple-event-deep-purple-s: 65%;
+    --apple-event-deep-purple-l-start: 15%;
 
     /* Notification Panel (Compact, solid) - Light Mode */
     --notification-panel-compact-bg: 0 0% 100%; /* White */
@@ -85,6 +101,16 @@
     --notification-item-compact-bg: 0 0% 100%;
     --notification-item-compact-hover-bg: 210 25% 96%;
     --notification-unread-dot-color: hsl(var(--primary)); /* Primary blue for unread dot */
+
+    /* "MediAssistant Spark" Welcome Screen Colors - Light Mode */
+    --spark-bg-start-light: 210 60% 95%; /* Very light blue */
+    --spark-bg-mid-light: 270 70% 97%;   /* Very light purple */
+    --spark-bg-end-light: 180 60% 96%;   /* Very light teal/cyan */
+
+    --spark-particle-color-1: 45 100% 85%; /* Pastel Yellow */
+    --spark-particle-color-2: 25 100% 88%; /* Pastel Orange-Red */
+    --spark-particle-color-3: 330 100% 90%;/* Pastel Pink */
+    --spark-particle-color-4: 200 100% 88%;/* Pastel Sky Blue */
   }
 
   .dark {
@@ -150,12 +176,8 @@
     --firebase-color-3-dark-h: 25; --firebase-color-3-dark-s: 100%; --firebase-color-3-dark-l: 65%;
     --firebase-color-4-dark-h: 15; --firebase-color-4-dark-s: 100%; --firebase-color-4-dark-l: 70%;
 
-    /* Welcome Screen - Apple "Hello" Style Gradient Colors (Dark Mode) */
-    --welcome-gradient-apple-hello-d1-h: 230; --welcome-gradient-apple-hello-d1-s: 50%; --welcome-gradient-apple-hello-d1-l: 20%; /* Deep Blue */
-    --welcome-gradient-apple-hello-d2-h: 270; --welcome-gradient-apple-hello-d2-s: 60%; --welcome-gradient-apple-hello-d2-l: 25%; /* Deep Purple */
-    --welcome-gradient-apple-hello-d3-h: 320; --welcome-gradient-apple-hello-d3-s: 60%; --welcome-gradient-apple-hello-d3-l: 30%; /* Deep Magenta/Pink */
-    --welcome-gradient-apple-hello-d4-h: 200; --welcome-gradient-apple-hello-d4-s: 50%; --welcome-gradient-apple-hello-d4-l: 18%; /* Dark Teal */
-    --welcome-gradient-apple-hello-d5-h: 30;  --welcome-gradient-apple-hello-d5-s: 70%; --welcome-gradient-apple-hello-d5-l: 22%; /* Dark Orange */
+    /* Apple Event Poster Static Background - Dark Mode Fallback */
+    --apple-event-deep-purple-l-start: 10%;
 
     /* Notification Panel (Compact, solid) - Dark Mode */
     --notification-panel-compact-bg: 216 54% 18%;
@@ -163,6 +185,13 @@
     --notification-item-compact-bg: 216 54% 18%;
     --notification-item-compact-hover-bg: 216 50% 22%;
     /* --notification-unread-dot-color is same as light mode (primary) */
+
+    /* "MediAssistant Spark" Welcome Screen Colors - Dark Mode */
+    --spark-bg-start-dark: 220 40% 10%; /* Deep cool blue */
+    --spark-bg-mid-dark: 260 50% 12%;   /* Deep purple */
+    --spark-bg-end-dark: 200 40% 11%;   /* Deep teal */
+
+    /* Spark particle colors remain the same as they are light against a dark bg */
   }
 }
 
@@ -182,7 +211,7 @@
 }
 
 /* Only allow scrolling if not showing these full-screen elements */
-body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)) {
+body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)) {
   overflow: auto;
 }
 
@@ -268,7 +297,7 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
 }
 
 
-/* Welcome Screen / Hero Text Animations (Firebase Color Cycle) */
+/* --- Firebase Color Cycle for Text (Light & Dark) --- */
 @keyframes welcome-text-color-cycle-light {
   0%   { color: hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)); }
   25%  { color: hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)); }
@@ -287,10 +316,10 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
 
 .welcome-text-fg-animated {
   color: hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l));
-  animation-name: welcome-text-color-cycle-light;
   animation-duration: 10s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+  animation-name: welcome-text-color-cycle-light;
 }
 .dark .welcome-text-fg-animated {
   animation-name: welcome-text-color-cycle-dark;
@@ -365,10 +394,10 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
 }
 
 .glowing-ring-firebase {
-  animation-name: firebase-glow-ring-light;
   animation-duration: 5s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+  animation-name: firebase-glow-ring-light;
 }
 .dark .glowing-ring-firebase {
   animation-name: firebase-glow-ring-dark;
@@ -507,10 +536,10 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
 }
 
 .animate-subtle-pulse-glow {
-  animation-name: subtle-pulse-glow-light;
   animation-duration: 2.5s;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
+  animation-name: subtle-pulse-glow-light;
 }
 .dark .animate-subtle-pulse-glow {
   animation-name: subtle-pulse-glow-dark;
@@ -573,10 +602,10 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
 }
 
 .gemini-cta-button {
-  animation-name: gemini-cta-glow-light;
   animation-duration: 3s;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
+  animation-name: gemini-cta-glow-light;
 }
 .dark .gemini-cta-button {
   animation-name: gemini-cta-glow-dark;
@@ -655,8 +684,8 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
   transform: translateX(50%) translateY(-25%) rotate(25deg);
 }
 
-/* --- Apple Event Poster Static Splash Screen Styles --- */
-/* :root variables for this are defined at the top of the file */
+
+/* --- Styles for "Apple Event Poster" STATIC Background Version --- */
 .event-poster-splash-screen {
   width: 100vw;
   height: 100vh;
@@ -666,14 +695,12 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-image: url('/images/mediassistant-splash-background.png'); /* Path to your static image */
+  background-image: url('/images/mediassistant-splash-background.png'); /* Ensure this path is correct */
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  /* Fallback color if image fails to load */
-  background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), 15%);
+  background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), var(--apple-event-deep-purple-l-start, 15%)); /* Fallback */
 }
-
 .dark .event-poster-splash-screen {
    background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), 10%);
 }
@@ -685,10 +712,12 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
 }
 
 .heart-ecg-icon-splash-static {
-  width: var(--heart-icon-splash-size);
+  width: var(--heart-icon-splash-size); /* Uses CSS variable for size */
   height: var(--heart-icon-splash-size);
   display: block;
+  /* The pulse-glow animation for the whole icon */
   animation: pulse-glow-from-pack 2.0s ease-in-out infinite alternate;
+  /* Base filter is handled by the animation keyframes now */
 }
 
 @keyframes pulse-glow-from-pack {
@@ -702,7 +731,6 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
             drop-shadow(0 0 8px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.5));
   }
 }
-
 
 .bottom-text-container-splash {
   position: absolute;
@@ -735,16 +763,68 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
 .tagline-splash-static .emoji {
   display: inline-block;
   vertical-align: middle;
-  font-size: inherit;
+  font-size: inherit; /* Or adjust if needed */
   animation: sparkle-subtle 2.2s infinite ease-in-out alternate;
 }
-
 @keyframes sparkle-subtle {
   0% { opacity: 0.7; transform: scale(1) rotate(-2deg); }
   50% { opacity: 1; transform: scale(1.05) rotate(2deg); }
   100% { opacity: 0.7; transform: scale(1) rotate(-2deg); }
 }
-/* End of Apple Event Poster Static Splash Screen Styles */
+
+/* Entrance animation for splash screen icon and text containers */
+.splash-element-fade-in {
+  opacity: 0;
+  animation: fadeInElements 1.2s ease-out 0.75s forwards;
+}
+@keyframes fadeInElements {
+  to {
+    opacity: 1;
+  }
+}
+/* --- End of Apple Event Poster STATIC Background Version Styles --- */
+
+/* --- Styles for "MediAssistant Spark" Welcome Screen --- */
+@keyframes spark-background-animation-light {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+@keyframes spark-background-animation-dark {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.spark-welcome-screen {
+  background-image: linear-gradient(135deg, 
+    hsl(var(--spark-bg-start-light)), 
+    hsl(var(--spark-bg-mid-light)), 
+    hsl(var(--spark-bg-end-light))
+  );
+  background-size: 300% 300%; /* Larger size for smooth animation */
+  animation: spark-background-animation-light 20s ease-in-out infinite alternate;
+}
+
+.dark .spark-welcome-screen {
+  background-image: linear-gradient(135deg, 
+    hsl(var(--spark-bg-start-dark)), 
+    hsl(var(--spark-bg-mid-dark)), 
+    hsl(var(--spark-bg-end-dark))
+  );
+  animation-name: spark-background-animation-dark;
+}
+
+.spark-particle {
+  position: absolute; /* Positioned by Framer Motion */
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px 2px currentColor, 0 0 12px 4px hsla(var(--background), 0.3); /* Glow effect */
+  /* Background color set dynamically via className in component */
+  will-change: transform, opacity; /* Optimize for animation */
+}
+/* End of "MediAssistant Spark" Styles */
 
 
 /* Subtle Heart Pulse Animation for Tagline Emojis */
@@ -771,30 +851,33 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
 }
 
 .notification-item-card-compact {
-  background-color: hsl(var(--notification-item-compact-bg));
+  /* background-color: hsl(var(--notification-item-compact-bg)); */
+  /* Tailwind classes will handle specific bg for read/unread now */
   @apply p-1.5 rounded-md cursor-pointer transition-colors duration-150 flex items-start gap-2;
 }
 .notification-item-card-compact:hover {
-  background-color: hsl(var(--notification-item-compact-hover-bg));
+  /* background-color: hsl(var(--notification-item-compact-hover-bg)); */
+  /* Handled by Tailwind hover:bg-muted/30 */
 }
 .notification-item-card-compact.unread {
- @apply bg-primary/10 border border-primary/20;
+ /* @apply bg-primary/10 border border-primary/20; */
+ /* Applied directly in component for now */
 }
 
 
 .dark .notification-item-card-compact {
-  background-color: hsl(var(--notification-item-compact-bg));
+  /* background-color: hsl(var(--notification-item-compact-bg)); */
 }
 .dark .notification-item-card-compact:hover {
-  background-color: hsl(var(--notification-item-compact-hover-bg));
+  /* background-color: hsl(var(--notification-item-compact-hover-bg)); */
 }
 .dark .notification-item-card-compact.unread {
- @apply bg-primary/15 border border-primary/30;
+ /* @apply bg-primary/15 border border-primary/30; */
 }
 
 .notification-unread-dot {
   @apply h-1.5 w-1.5 rounded-full mt-1 flex-shrink-0 self-center;
-  background-color: var(--notification-unread-dot-color);
+  background-color: var(--notification-unread-dot-color); /* Directly use variable */
 }
 
 
@@ -814,15 +897,15 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
 /* Animated Gradient Border for Notification Panel (Firebase Inspired) */
 .notification-panel-animated-border {
   position: relative;
-  border: 2px solid transparent;
+  border: 2px solid transparent; /* Base border that will be covered */
 }
 
 .notification-panel-animated-border::before {
   content: "";
   position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  padding: 2px;
+  inset: -2px; /* Covers the transparent border */
+  border-radius: inherit; /* Matches parent's border-radius */
+  padding: 2px; /* Creates the "border" thickness */
   background: linear-gradient(
     135deg,
     hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)),
@@ -833,15 +916,15 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
   );
   background-size: 300% 300%;
   animation: animated-gradient-background 4s ease infinite;
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
+  -webkit-mask: /* Mask to create the border effect */
+    linear-gradient(#fff 0 0) content-box, /* Inner transparent area */
+    linear-gradient(#fff 0 0); /* Outer shape */
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  z-index: -1;
+  -webkit-mask-composite: xor; /* Older Safari */
+  mask-composite: exclude; /* Standard */
+  z-index: -1; /* Behind the panel's actual content */
 }
 
 .dark .notification-panel-animated-border::before {
@@ -870,18 +953,6 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
 }
 
 
-/* Entrance animation for splash screen foreground elements (STATIC VERSION) */
-.splash-element-fade-in {
-  opacity: 0;
-  animation: fadeInElements 1.2s ease-out 0.75s forwards; /* Slightly longer fade, later start */
-}
-@keyframes fadeInElements {
-  to {
-    opacity: 1;
-  }
-}
-
-
 /* Custom scrollbar for onboarding modal */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
@@ -898,117 +969,6 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
   background: hsl(var(--primary));
 }
 
-/* Post-Login Welcome Screen ("Apple Hello" inspired gradient) */
-@keyframes welcome-gradient-radiate-animation-light {
-  0% { /* Plain initial state */
-    background-color: hsl(var(--background));
-    background-image: none;
-    background-size: 100% 100%;
-    background-position: center;
-  }
-  20% { /* Start of dynamic unfurling - incorporating primary/accent */
-    background-color: hsl(var(--background));
-    background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 10%), 0.1) 0%, hsla(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 5%), 0.05) 40%, transparent 60%);
-    background-size: 200% 200%;
-    background-position: 50% 50%;
-  }
-  60% { /* Transitioning to Apple Hello colors */
-    background-color: hsl(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), calc(var(--welcome-gradient-apple-hello-l1-l) - 5%)); /* Base for transition */
-    background-image: radial-gradient(ellipse farthest-corner at 50% 0%,
-        hsla(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), var(--welcome-gradient-apple-hello-l1-l), 0.8) 0%,
-        hsla(var(--welcome-gradient-apple-hello-l2-h), var(--welcome-gradient-apple-hello-l2-s), var(--welcome-gradient-apple-hello-l2-l), 0.7) 30%,
-        hsla(var(--welcome-gradient-apple-hello-l3-h), var(--welcome-gradient-apple-hello-l3-s), var(--welcome-gradient-apple-hello-l3-l), 0.6) 60%,
-        hsla(var(--welcome-gradient-apple-hello-l4-h), var(--welcome-gradient-apple-hello-l4-s), var(--welcome-gradient-apple-hello-l4-l), 0.0) 100%
-      );
-    background-size: 300% 300%;
-    background-position: 40% 60%;
-  }
-  100% { /* Settle into the final soft, full-screen Apple Hello gradient */
-    background-color: hsl(var(--welcome-gradient-apple-hello-l5-h), var(--welcome-gradient-apple-hello-l5-s), var(--welcome-gradient-apple-hello-l5-l));
-    background-image: radial-gradient(ellipse farthest-corner at 50% 0%,
-        hsl(var(--welcome-gradient-apple-hello-l1-h), var(--welcome-gradient-apple-hello-l1-s), var(--welcome-gradient-apple-hello-l1-l)) 0%,
-        hsl(var(--welcome-gradient-apple-hello-l2-h), var(--welcome-gradient-apple-hello-l2-s), var(--welcome-gradient-apple-hello-l2-l)) 25%,
-        hsl(var(--welcome-gradient-apple-hello-l3-h), var(--welcome-gradient-apple-hello-l3-s), var(--welcome-gradient-apple-hello-l3-l)) 50%,
-        hsl(var(--welcome-gradient-apple-hello-l4-h), var(--welcome-gradient-apple-hello-l4-s), var(--welcome-gradient-apple-hello-l4-l)) 75%,
-        hsl(var(--welcome-gradient-apple-hello-l5-h), var(--welcome-gradient-apple-hello-l5-s), var(--welcome-gradient-apple-hello-l5-l)) 100%
-      );
-    background-size: 400% 400%;
-    background-position: center center;
-  }
-}
-
-@keyframes welcome-gradient-radiate-animation-dark {
-  0% { /* Plain initial state for dark mode */
-    background-color: hsl(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), 5%); /* Start very dark */
-    background-image: none;
-    background-size: 100% 100%;
-    background-position: center;
-  }
-   20% { /* Start of dynamic unfurling */
-    background-color: hsl(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), 8%);
-    background-image: radial-gradient(circle at center, hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.1) 10%, hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.05) 40%, transparent 60%);
-    background-size: 200% 200%;
-    background-position: 30% 20%;
-  }
-  60% { /* Transitioning to Apple Hello dark colors */
-    background-color: hsl(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), calc(var(--welcome-gradient-apple-hello-d1-l) - 5%));
-    background-image: radial-gradient(ellipse farthest-corner at 50% 0%,
-        hsla(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), var(--welcome-gradient-apple-hello-d1-l), 0.7) 0%,
-        hsla(var(--welcome-gradient-apple-hello-d2-h), var(--welcome-gradient-apple-hello-d2-s), var(--welcome-gradient-apple-hello-d2-l), 0.6) 30%,
-        hsla(var(--welcome-gradient-apple-hello-d3-h), var(--welcome-gradient-apple-hello-d3-s), var(--welcome-gradient-apple-hello-d3-l), 0.5) 60%,
-        hsla(var(--welcome-gradient-apple-hello-d4-h), var(--welcome-gradient-apple-hello-d4-s), var(--welcome-gradient-apple-hello-d4-l), 0.0) 100%
-      );
-    background-size: 300% 300%;
-    background-position: 60% 40%;
-  }
-  100% { /* Settle into the final soft, full-screen Apple Hello dark gradient */
-    background-color: hsl(var(--welcome-gradient-apple-hello-d5-h), var(--welcome-gradient-apple-hello-d5-s), var(--welcome-gradient-apple-hello-d5-l));
-    background-image: radial-gradient(ellipse farthest-corner at 50% 0%,
-        hsl(var(--welcome-gradient-apple-hello-d1-h), var(--welcome-gradient-apple-hello-d1-s), var(--welcome-gradient-apple-hello-d1-l)) 0%,
-        hsl(var(--welcome-gradient-apple-hello-d2-h), var(--welcome-gradient-apple-hello-d2-s), var(--welcome-gradient-apple-hello-d2-l)) 25%,
-        hsl(var(--welcome-gradient-apple-hello-d3-h), var(--welcome-gradient-apple-hello-d3-s), var(--welcome-gradient-apple-hello-d3-l)) 50%,
-        hsl(var(--welcome-gradient-apple-hello-d4-h), var(--welcome-gradient-apple-hello-d4-s), var(--welcome-gradient-apple-hello-d4-l)) 75%,
-        hsl(var(--welcome-gradient-apple-hello-d5-h), var(--welcome-gradient-apple-hello-d5-s), var(--welcome-gradient-apple-hello-d5-l)) 100%
-      );
-    background-size: 400% 400%;
-    background-position: center center;
-  }
-}
-
-/* Class for the post-login welcome screen using the radiating gradient */
-.welcome-screen-gradient {
-  @apply fixed inset-0 z-[200] flex flex-col items-center justify-center text-white overflow-hidden;
-  animation-name: welcome-gradient-radiate-animation-light;
-  animation-duration: 2.8s; /* Duration for the initial radiating fill */
-  animation-timing-function: ease-out;
-  animation-fill-mode: forwards; /* Stops at the 100% keyframe */
-}
-
-.dark .welcome-screen-gradient {
-  animation-name: welcome-gradient-radiate-animation-dark;
-}
-
-/* Separate animation for subtle ongoing movement AFTER the initial fill */
-@keyframes subtle-gradient-movement {
-  0% { background-position: center center; }
-  50% { background-position: 52% 48%; } /* Adjust these for desired movement */
-  100% { background-position: center center; }
-}
-
-.welcome-screen-gradient.settled {
-  /* This animation will apply after the initial radiating fill via JS or delay */
-  animation: welcome-gradient-radiate-animation-light 2.8s ease-out forwards,
-             subtle-gradient-movement 20s ease-in-out infinite alternate 2.8s; /* Starts after 2.8s */
-}
-.dark .welcome-screen-gradient.settled {
-   animation-name: welcome-gradient-radiate-animation-dark, subtle-gradient-movement;
-   animation-duration: 2.8s, 20s;
-   animation-timing-function: ease-out, ease-in-out;
-   animation-fill-mode: forwards, forwards; /* 'forwards' for the first, 'none' or default for infinite */
-   animation-iteration-count: 1, infinite;
-   animation-direction: normal, alternate;
-   animation-delay: 0s, 2.8s;
-}
 
 /* Medico Layout Background */
 .medico-layout-background {
@@ -1016,77 +976,6 @@ body:not(:has(.welcome-screen-gradient)):not(:has(.pro-suite-animation)):not(:ha
 }
 .dark .medico-layout-background {
   background-image: linear-gradient(to bottom right, hsl(var(--background)), hsla(204.7, 90.1%, 53.5%, 0.07));
-}
-
-/* --- HSL Variables for Apple Event Poster Theme --- */
-:root {
-  /* Heart/ECG Icon Colors (from your design pack) */
-  --heart-stroke-initial-h: 210;
-  --heart-stroke-initial-s: 100%;
-  --heart-stroke-initial-l: 70%;
-  --heart-stroke-animated-h: 330;
-  --heart-stroke-animated-s: 100%;
-  --heart-stroke-animated-l: 70%;
-  --ecg-stroke-color-h: 200;
-  --ecg-stroke-color-s: 100%;
-  --ecg-stroke-color-l: 75%;
-  --heart-stroke-width: 2.5px;
-  --ecg-stroke-width: 2.5px;
-  --heart-icon-splash-size: clamp(100px, 20vw, 180px);
-
-  /* Text Colors for Splash */
-  --splash-text-main-color: white;
-  --splash-text-tagline-color: rgba(255, 255, 255, 0.9);
-
-  /* Deep Space Background Colors for Poster Splash */
-  --apple-event-deep-purple-h: 260;
-  --apple-event-deep-purple-s: 60%;
-  --apple-event-deep-purple-l-start: 15%;
-  --apple-event-deep-purple-l-mid: 22%;
-  --apple-event-mid-blue-h: 235;
-  --apple-event-mid-blue-s: 55%;
-  --apple-event-mid-blue-l: 30%;
-
-  /* Color Blooms / Nebula for Poster Splash */
-  --apple-event-bloom-magenta-h: 310;
-  --apple-event-bloom-magenta-s: 75%;
-  --apple-event-bloom-magenta-l: 45%;
-  --apple-event-bloom-magenta-a: 0.7;
-  --apple-event-bloom-orange-h: 30;
-  --apple-event-bloom-orange-s: 95%;
-  --apple-event-bloom-orange-l: 55%;
-  --apple-event-bloom-orange-a: 0.65;
-  --apple-event-bloom-yellow-h: 45;
-  --apple-event-bloom-yellow-s: 100%;
-  --apple-event-bloom-yellow-l: 60%;
-  --apple-event-bloom-yellow-a: 0.5;
-
-  /* Light Beams for Poster Splash */
-  --apple-event-light-beam-core-l: 97%;
-  --apple-event-light-beam-h: 200;
-  --apple-event-light-beam-s: 90%;
-  --apple-event-light-beam-edge-a: 0.3;
-  --apple-event-light-beam-mid-a: 0.6;
-}
-
-.dark {
-  /* Deep Space Background Colors for Poster Splash - Dark Mode Adjustments if needed */
-  --apple-event-deep-purple-l-start: 10%;
-  --apple-event-deep-purple-l-mid: 18%;
-  --apple-event-mid-blue-l: 25%;
-
-  /* Color Blooms / Nebula for Poster Splash - Dark Mode Adjustments */
-  --apple-event-bloom-magenta-l: 40%;
-  --apple-event-bloom-magenta-a: 0.6;
-  --apple-event-bloom-orange-l: 50%;
-  --apple-event-bloom-orange-a: 0.6;
-  --apple-event-bloom-yellow-l: 55%;
-  --apple-event-bloom-yellow-a: 0.45;
-
-  /* Light Beams for Poster Splash - Dark Mode Adjustments */
-  --apple-event-light-beam-core-l: 95%;
-  --apple-event-light-beam-edge-a: 0.25;
-  --apple-event-light-beam-mid-a: 0.5;
 }
 
 /* Ensure this is the last character in the file, or followed by a newline */
