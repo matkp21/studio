@@ -25,13 +25,22 @@ const userName = "User"; // Replace with actual user name fetching
 const gradientStyle: CSSProperties = {
   background: 'linear-gradient(to right, hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)), hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)), hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)), hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)))',
   WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent'
+  backgroundClip: 'text',
+  color: 'transparent'
 };
+const darkGradientStyle: CSSProperties = {
+  background: 'linear-gradient(to right, hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)), hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)), hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)), hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)))',
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  color: 'transparent'
+};
+
 
 export function HeroSection() {
   const [currentGreetingIndex, setCurrentGreetingIndex] = useState(0);
   const { userRole } = useProMode();
   const [heroTasks, setHeroTasks] = useState<HeroTask[]>([]);
+  const [currentGradientStyle, setCurrentGradientStyle] = useState(gradientStyle);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -54,8 +63,22 @@ export function HeroSection() {
     } else {
       setHeroTasks([]);
     }
+     // For theme-aware gradient text
+    const updateGradientStyleForTheme = () => {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setCurrentGradientStyle(darkGradientStyle);
+      } else {
+        setCurrentGradientStyle(gradientStyle);
+      }
+    };
+    updateGradientStyleForTheme();
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateGradientStyleForTheme);
 
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(interval);
+      window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', updateGradientStyleForTheme);
+    }
   }, [userRole]);
 
   let ctaLink = "/chat";
@@ -71,15 +94,26 @@ export function HeroSection() {
     ctaText = "Medico Study Hub";
     CtaIcon = BookHeart;
     ctaAriaLabel = "Go to Medico Study Hub";
-    ctaBaseClasses = "bg-gradient-to-r from-[hsl(var(--welcome-color-1)/0.9)] via-[hsl(var(--welcome-color-2)/0.9)] to-[hsl(var(--welcome-color-3)/0.9)] hover:from-[hsl(var(--welcome-color-1))] hover:to-[hsl(var(--welcome-color-3))] text-white hover:shadow-lg firebase-button-interactive";
-    ctaSpecificAnimation = "";
+    // Updated classes for Firebase gradient theme
+    ctaBaseClasses = `
+      bg-gradient-to-r 
+      from-[hsl(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),var(--firebase-color-1-light-l))] 
+      via-[hsl(var(--firebase-color-2-light-h),var(--firebase-color-2-light-s),var(--firebase-color-2-light-l))] 
+      to-[hsl(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),var(--firebase-color-3-light-l))] 
+      dark:from-[hsl(var(--firebase-color-1-dark-h),var(--firebase-color-1-dark-s),var(--firebase-color-1-dark-l))] 
+      dark:via-[hsl(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l))] 
+      dark:to-[hsl(var(--firebase-color-3-dark-h),var(--firebase-color-3-dark-s),var(--firebase-color-3-dark-l))] 
+      text-white 
+      firebase-button-interactive
+    `;
+    ctaSpecificAnimation = "gemini-cta-button"; // This class provides the Firebase-colored glow
   } else if (userRole === 'pro') {
     ctaLink = "/pro";
     ctaText = "Pro Clinical Suite";
     CtaIcon = BriefcaseMedical;
     ctaAriaLabel = "Go to Professional Clinical Suite";
-    ctaBaseClasses = "bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white hover:shadow-purple-500/40 gemini-cta-button firebase-button-interactive";
-    // ctaSpecificAnimation = "gemini-cta-button firebase-button-interactive"; // Already applied gemini-cta-button
+    ctaBaseClasses = "bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white hover:shadow-purple-500/40 firebase-button-interactive";
+    ctaSpecificAnimation = "gemini-cta-button"; 
   }
 
 
@@ -107,7 +141,7 @@ export function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.8, ease: "easeInOut" }}
-              style={gradientStyle}
+              style={currentGradientStyle}
               lang={greetings[currentGreetingIndex].lang}
               className="inline-block" // Ensure the span takes up space for animation
             >
@@ -117,7 +151,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="ml-2 text-foreground dark:text-foreground" // Adjust color as needed
+              className="ml-2 text-foreground dark:text-foreground" 
             >{userName}</motion.span>
            </h1>
         </AnimatePresence>
@@ -159,10 +193,10 @@ export function HeroSection() {
               {ctaText}
               <CtaIcon
                 className={cn(
-                  "ml-2 h-6 w-6 group-hover:scale-110 animate-pulse-medical", // Adjusted icon size to h-6 w-6
+                  "ml-2 h-6 w-6 group-hover:scale-110 animate-pulse-medical", 
                    userRole === 'pro' || userRole === 'medico' ? "text-white" : "text-primary-foreground"
                 )}
-                style={{"--medical-pulse-opacity-base": "0.8", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.25"} as CSSProperties}
+                style={{"--medical-pulse-opacity-base": "0.8", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.15"} as CSSProperties} // Adjusted scale peak
               />
             </Link>
           </Button>
