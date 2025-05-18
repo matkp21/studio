@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
@@ -13,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { HeartPulse, ScanSearch, Palette, Telescope, CheckCircle, BriefcaseMedical, School, Stethoscope, UserCog, User, Bot, ArrowRight } from 'lucide-react';
+import { HeartPulse, ScanSearch, Palette, Telescope, CheckCircle, BriefcaseMedical, School, Stethoscope, UserCog, User, Bot, ArrowRight, Settings2, Pill } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useProMode, type UserRole as ContextUserRole } from '@/contexts/pro-mode-context';
 import { Logo } from '@/components/logo';
@@ -45,14 +46,24 @@ const featureList: FeatureItem[] = [
     description: "Visualize complex medical information. Upload images for AI-powered insights or explore anatomy with interactive Augmented Reality."
   },
   {
-    icon: Palette,
-    title: "Personalized Dashboards",
-    description: "Tailor your workspace. Customizable dashboards for Professionals (Clinical Suite) and Medical Students (Medico Study Hub) put your most-needed tools front and center."
+    icon: School,
+    title: "Medico Study Hub",
+    description: "Ace your exams with dedicated tools: generate study notes, practice MCQs, create flashcards, simulate clinical cases, and visualize anatomy."
   },
   {
-    icon: Telescope,
-    title: "Specialized Tool Suites",
-    description: "Access comprehensive tools for Medicos (notes, MCQs, case sims) and Professionals (DDx, discharge summaries, protocol navigation)."
+    icon: BriefcaseMedical,
+    title: "Pro Clinical Suite",
+    description: "Streamline your practice with AI-assisted differential diagnosis, discharge summary generation, treatment protocol navigation, and smart dictation."
+  },
+  {
+    icon: Pill,
+    title: "Medication Management",
+    description: "Easily log medications, set smart reminders, track adherence, and get general drug information to stay on top of your health."
+  },
+  {
+    icon: Palette, // Or Settings2
+    title: "Personalized Experience",
+    description: "Tailor MediAssistant by choosing your role, customizing dashboards (Pro/Medico), and adjusting settings to fit your workflow."
   }
 ];
 
@@ -83,8 +94,8 @@ const featureItemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      delay: 0.3 + i * 0.15, // Stagger animation
-      duration: 0.5,
+      delay: 0.3 + i * 0.1, // Slightly faster stagger
+      duration: 0.4,
       ease: "easeOut"
     }
   })
@@ -100,7 +111,7 @@ const checkmarkPathVariants = {
   visible: { pathLength: 1, opacity: 1, transition: { duration: 0.5, delay: 0.5, ease: "circOut" } }
 };
 const checkmarkCircleVariants = {
-  hidden: { strokeDashoffset: 283, opacity: 0 }, // Assume circumference ~283 for a circle of r=45
+  hidden: { strokeDashoffset: 283, opacity: 0 },
   visible: { strokeDashoffset: 0, opacity: 1, transition: { duration: 0.7, delay: 0.2, ease: "circOut" } }
 };
 
@@ -128,10 +139,10 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
       description: "MediAssistant offers powerful tools designed to make your medical journey simpler and smarter.",
       content: (
         <motion.ul
-          className="space-y-3 my-4 text-sm text-muted-foreground list-none p-0 max-h-[50vh] overflow-y-auto pr-2"
+          className="space-y-3 my-4 text-sm text-muted-foreground list-none p-0 max-h-[55vh] md:max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar"
           initial="hidden"
           animate="visible"
-          variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+          variants={{ visible: { transition: { staggerChildren: 0.05 } } }} // Faster stagger for more items
         >
           {featureList.map((feature, index) => (
             <motion.li
@@ -203,8 +214,8 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
           >
             <motion.circle
               cx="12" cy="12" r="10"
-              strokeDasharray="283" // Circumference for r=10 is 2*pi*10 approx 62.8, but for animation it's common to use a larger dasharray. Let's use a visual one.
-              variants={checkmarkCircleVariants} // Assuming a pathLength animation for circle drawing
+              strokeDasharray="283" 
+              variants={checkmarkCircleVariants}
               className="text-green-500/30"
             />
             <motion.path
@@ -320,3 +331,4 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
     </Dialog>
   );
 }
+
