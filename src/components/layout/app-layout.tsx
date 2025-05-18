@@ -21,7 +21,7 @@ import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
 import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { Badge } from '@/components/ui/badge';
 import { AnimatedTagline } from '@/components/layout/animated-tagline';
-import { WelcomeDisplay } from '@/components/welcome/welcome-display';
+import WelcomeDisplay from '@/components/welcome/welcome-display'; // Changed to default import
 import type { NotificationItem } from '@/types/notifications';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -61,9 +61,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  // const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false); // Derived from unreadCount
+  // const [hasNewNotification, setHasNewNotification] = useState(false); // For temporary 'comet' animation
+
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
   const fetchNotifications = useCallback(() => {
+    // In a real app, this would fetch from Firestore or an API
     const mockNotifications: NotificationItem[] = [
       { id: '1', type: 'medication_reminder', title: 'Medication Reminder', body: 'Time for Amoxicillin (500mg). Check instructions.', timestamp: new Date(Date.now() - 1000 * 60 * 5), isRead: false, deepLink: '/medications' },
       { id: 'sys-maint', type: 'system_update', title: 'System Maintenance Scheduled', body: 'Brief maintenance tonight at 2 AM. No impact expected.', timestamp: new Date(Date.now() - 1000 * 60 * 30), isRead: false, deepLink: '/' },
@@ -74,16 +78,30 @@ export function AppLayout({ children }: { children: ReactNode }) {
     const sortedNotifications = mockNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     setNotifications(sortedNotifications);
     setUnreadCount(sortedNotifications.filter(n => !n.isRead).length);
+    // setHasUnreadNotifications(sortedNotifications.some(n => !n.isRead));
   }, []);
 
   useEffect(() => {
     fetchNotifications();
+    // TODO: Set up real-time listener for notifications (e.g., Firestore listener, FCM)
+    // This listener would call fetchNotifications or directly update state.
+    // For now, simulating new notification arrival for demo purposes:
+    // const newNotifTimer = setTimeout(() => {
+    //   setHasNewNotification(true);
+    //   setUnreadCount(prev => prev + 1); // Simulate adding one
+    //   setHasUnreadNotifications(true);
+    //   setTimeout(() => setHasNewNotification(false), 10000); // New notification animation duration
+    // }, 15000); // After 15 seconds
+    // return () => clearTimeout(newNotifTimer);
   }, [fetchNotifications]);
+
 
   const handleMarkAsRead = useCallback((id: string) => {
     setNotifications(prev => {
       const newNotifications = prev.map(n => n.id === id ? { ...n, isRead: true } : n);
-      setUnreadCount(newNotifications.filter(n => !n.isRead).length);
+      const newUnreadCount = newNotifications.filter(n => !n.isRead).length;
+      setUnreadCount(newUnreadCount);
+      // setHasUnreadNotifications(newUnreadCount > 0);
       return newNotifications;
     });
   }, []);
@@ -91,15 +109,17 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const handleMarkAllAsRead = useCallback(() => {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     setUnreadCount(0);
+    // setHasUnreadNotifications(false);
+    // setHasNewNotification(false); // Clear new notification flag too
     toast({ title: "Notifications Updated", description: "All notifications marked as read." });
   }, [toast]);
 
 
   const handleLogout = () => {
     toast({ title: "Logged Out", description: "You have been successfully logged out. (Demo)" });
-    selectUserRole(null);
-    setIsAccountMenuOpen(false);
-    router.push('/login');
+    selectUserRole(null); // Reset user role to guest
+    setIsAccountMenuOpen(false); // Close dropdown
+    router.push('/login'); // Redirect to login
   };
 
   const getRoleDisplayString = (role: UserRole | null): string => {
@@ -115,12 +135,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
     let welcomeDisplayShownThisSession = false;
 
     if (typeof window !== 'undefined') {
-      onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
-      welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
+      // For testing, force these screens to show:
+      onboardingComplete = false; // localStorage.getItem('onboardingComplete') === 'true';
+      welcomeDisplayShownThisSession = false; // sessionStorage.getItem('welcomeDisplayShown') === 'true';
       
-      // onboardingComplete = false; // For testing onboarding
-      // welcomeDisplayShownThisSession = false; // For testing welcome display
-
       const storedUserRole = localStorage.getItem('userRole') as UserRole;
 
       if (!onboardingComplete) {
@@ -142,57 +160,37 @@ export function AppLayout({ children }: { children: ReactNode }) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [userRole, selectUserRole]);
+  }, [userRole, selectUserRole]); // userRole added as dep
 
   const handleOnboardingClose = () => {
     setShowOnboardingModal(false);
-    let welcomeDisplayShownThisSession = false;
+    let welcomeDisplayShownThisSession = false; // Reset for welcome screen check
     if (typeof window !== 'undefined') {
       localStorage.setItem('onboardingComplete', 'true');
-      welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
-      // welcomeDisplayShownThisSession = false; // For testing
+       // For testing, force welcome display:
+      welcomeDisplayShownThisSession = false; // sessionStorage.getItem('welcomeDisplayShown') === 'true';
     }
     if (!welcomeDisplayShownThisSession) {
       setShowWelcomeDisplay(true);
     }
   };
-
+  
   const handleWelcomeDisplayComplete = () => {
     setShowWelcomeDisplay(false);
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('welcomeDisplayShown', 'true');
     }
   };
-  
 
-  if (!clientLoaded && !showOnboardingModal && !showWelcomeDisplay) {
-    return (
-      <div className="event-poster-splash-screen">
-        <div className="central-icon-container splash-element-fade-in">
-          <heart-ecg-icon class="heart-ecg-icon-splash-static"></heart-ecg-icon>
-        </div>
-        <div className="bottom-text-container-splash splash-element-fade-in">
-          <h1 className="app-name-splash-static">MediAssistant</h1>
-          <p className="tagline-splash-static">Simply #Smart. Always <span className="emoji" role="img" aria-label="sparks and brain">✨🧠</span></p>
-        </div>
-      </div>
-    );
+
+  if (!clientLoaded || showOnboardingModal || showWelcomeDisplay) {
+    if (showOnboardingModal) {
+      return <OnboardingModal isOpen={showOnboardingModal} onClose={handleOnboardingClose} />;
+    }
+    // This implies pre-onboarding, or welcome display is active
+    return <WelcomeDisplay onDisplayComplete={handleWelcomeDisplayComplete} />;
   }
 
-  if (showOnboardingModal) {
-    return (
-      <OnboardingModal
-        isOpen={showOnboardingModal}
-        onClose={handleOnboardingClose}
-      />
-    );
-  }
-
-  if (showWelcomeDisplay) {
-    return (
-      <WelcomeDisplay onDisplayComplete={handleWelcomeDisplayComplete} />
-    );
-  }
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -227,7 +225,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
 
           <div className="hidden md:flex flex-1 items-center justify-center px-4">
-             {clientLoaded && !showOnboardingModal && !showWelcomeDisplay && <AnimatedTagline />}
+             <AnimatedTagline />
           </div>
 
           <nav className="flex items-center gap-2 sm:gap-4">
@@ -251,7 +249,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
                             <HeartPulse className="h-5 w-5"/>
                         </AvatarFallback>
                     </Avatar>
-                    {/* Notification ring removed */}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64 rounded-xl shadow-lg border-border/50 bg-card">
@@ -271,16 +268,25 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center gap-2 cursor-pointer" onClick={() => setIsAccountMenuOpen(false)}>
+                      <Link href="/profile" className="flex items-center gap-2 cursor-pointer" onClick={() => setIsAccountMenuOpen(false)}>
                         <UserCircle className="h-4 w-4 text-muted-foreground" /> Profile
-                    </Link>
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                    <Link href="/settings" className="flex items-center gap-2 cursor-pointer" onClick={() => setIsAccountMenuOpen(false)}>
+                      <Link href="/settings" className="flex items-center gap-2 cursor-pointer" onClick={() => setIsAccountMenuOpen(false)}>
                         <Settings className="h-4 w-4 text-muted-foreground" /> Settings
-                    </Link>
+                      </Link>
                     </DropdownMenuItem>
-                    {/* Notifications link REMOVED from here as per new design */}
+                     <DropdownMenuItem asChild>
+                        <Link href="/notifications" className="flex items-center gap-2 cursor-pointer" onClick={() => setIsAccountMenuOpen(false)}>
+                           <Bell className="h-4 w-4 text-muted-foreground" /> Notifications
+                           {unreadCount > 0 && (
+                            <Badge variant="destructive" className="ml-auto h-5 px-1.5 text-xs">
+                                {unreadCount}
+                            </Badge>
+                           )}
+                        </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSub>
                     <DropdownMenuSubTrigger className="flex items-center justify-between gap-2 cursor-pointer">
                         <div className="flex items-center gap-2">
@@ -323,16 +329,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </nav>
         </header>
         <main className="flex-1 flex flex-col overflow-auto relative">
-          {/* Pass notification handlers to children if /notifications page needs them */}
           {React.Children.map(children, child => {
-            if (React.isValidElement(child)) {
-              // @ts-ignore
-              return React.cloneElement(child, { 
-                // @ts-ignore
+            if (React.isValidElement(child) && typeof child.type !== 'string') { // Check if it's a React component
+              return React.cloneElement(child as React.ReactElement<any>, { 
                 notifications, 
-                // @ts-ignore
                 markNotificationAsRead: handleMarkAsRead, 
-                // @ts-ignore
                 markAllNotificationsAsRead: handleMarkAllAsRead 
               });
             }
