@@ -3,10 +3,10 @@
 "use client";
 
 import type { CSSProperties } from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { HeartPulse, BookHeart, BriefcaseMedical } from "lucide-react";
+import { HeartPulse, BookHeart, BriefcaseMedical, CalendarDays, Clock } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProMode } from '@/contexts/pro-mode-context';
@@ -23,13 +23,13 @@ const greetings = [
 const userName = "User"; // Replace with actual user name fetching
 
 const gradientStyle: CSSProperties = {
-  background: 'linear-gradient(to right, hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)), hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)), hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)), hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)))',
+  backgroundImage: 'linear-gradient(to right, hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)), hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)), hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)), hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)))',
   WebkitBackgroundClip: 'text',
   backgroundClip: 'text',
   color: 'transparent'
 };
 const darkGradientStyle: CSSProperties = {
-  background: 'linear-gradient(to right, hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)), hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)), hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)), hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)))',
+  backgroundImage: 'linear-gradient(to right, hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)), hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)), hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)), hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)))',
   WebkitBackgroundClip: 'text',
   backgroundClip: 'text',
   color: 'transparent'
@@ -40,7 +40,7 @@ export function HeroSection() {
   const [currentGreetingIndex, setCurrentGreetingIndex] = useState(0);
   const { userRole } = useProMode();
   const [heroTasks, setHeroTasks] = useState<HeroTask[]>([]);
-  const [currentGradientStyle, setCurrentGradientStyle] = useState(gradientStyle);
+  const [currentGradientStyle, setCurrentGradientStyle] = useState(gradientStyle); // Default to light
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -71,13 +71,14 @@ export function HeroSection() {
         setCurrentGradientStyle(gradientStyle);
       }
     };
-    updateGradientStyleForTheme();
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateGradientStyleForTheme);
+    updateGradientStyleForTheme(); // Set initial style
+    const mediaQueryListener = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQueryListener.addEventListener('change', updateGradientStyleForTheme);
 
 
     return () => {
       clearInterval(interval);
-      window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', updateGradientStyleForTheme);
+      mediaQueryListener.removeEventListener('change', updateGradientStyleForTheme);
     }
   }, [userRole]);
 
@@ -94,7 +95,6 @@ export function HeroSection() {
     ctaText = "Medico Study Hub";
     CtaIcon = BookHeart;
     ctaAriaLabel = "Go to Medico Study Hub";
-    // Updated classes for Firebase gradient theme
     ctaBaseClasses = `
       bg-gradient-to-r 
       from-[hsl(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),var(--firebase-color-1-light-l))] 
@@ -106,7 +106,7 @@ export function HeroSection() {
       text-white 
       firebase-button-interactive
     `;
-    ctaSpecificAnimation = "gemini-cta-button"; // This class provides the Firebase-colored glow
+    ctaSpecificAnimation = "gemini-cta-button";
   } else if (userRole === 'pro') {
     ctaLink = "/pro";
     ctaText = "Pro Clinical Suite";
@@ -120,7 +120,6 @@ export function HeroSection() {
   return (
     <section className="relative bg-background py-16 md:py-20 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none opacity-10 dark:opacity-5">
-        {/* Subtle SVG background pattern - can be adjusted or replaced */}
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern id="softWavePattern" patternUnits="userSpaceOnUse" width="100" height="100" patternTransform="scale(1) rotate(0)">
@@ -143,7 +142,7 @@ export function HeroSection() {
               transition={{ duration: 0.8, ease: "easeInOut" }}
               style={currentGradientStyle}
               lang={greetings[currentGreetingIndex].lang}
-              className="inline-block" // Ensure the span takes up space for animation
+              className="inline-block" 
             >
               {greetings[currentGreetingIndex].text}
             </motion.span>
@@ -162,7 +161,7 @@ export function HeroSection() {
           transition={{ delay: 0.5, duration: 0.5 }}
           className="text-xl sm:text-2xl md:text-3xl font-semibold text-foreground/90 dark:text-foreground/90 mb-4"
         >
-          Welcome to <span className="animated-gradient-text bg-clip-text text-transparent">MediAssistant</span>.
+          Welcome to <span className="animated-gradient-text">MediAssistant</span>.
         </motion.p>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -196,7 +195,7 @@ export function HeroSection() {
                   "ml-2 h-6 w-6 group-hover:scale-110 animate-pulse-medical", 
                    userRole === 'pro' || userRole === 'medico' ? "text-white" : "text-primary-foreground"
                 )}
-                style={{"--medical-pulse-opacity-base": "0.8", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.15"} as CSSProperties} // Adjusted scale peak
+                style={{"--medical-pulse-opacity-base": "0.8", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.15"} as CSSProperties}
               />
             </Link>
           </Button>
@@ -218,3 +217,4 @@ export function HeroSection() {
     </section>
   );
 }
+
