@@ -522,6 +522,8 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
     hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)),
     hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l))
   );
+  background-size: 400% 400%; /* Added for dark mode consistency */
+  animation: animated-gradient-background 5s ease infinite; /* Added for dark mode consistency */
 }
 
 
@@ -936,6 +938,8 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
     hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)),
     hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l))
   );
+   background-size: 300% 300%; /* Added for dark mode consistency */
+   animation: animated-gradient-background 4s ease infinite; /* Added for dark mode consistency */
 }
 
 /* Sidebar Notification Badge Styles */
@@ -976,6 +980,17 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 }
 .dark .medico-layout-background {
   background-image: linear-gradient(to bottom right, hsl(var(--background)), hsla(204.7, 90.1%, 53.5%, 0.07));
+}
+
+/* Onboarding progress dots */
+.onboarding-progress-dot {
+    @apply h-2 w-2 rounded-full mx-1 transition-all duration-300;
+}
+.onboarding-progress-dot-active {
+    @apply bg-primary scale-125;
+}
+.onboarding-progress-dot-inactive {
+    @apply bg-muted-foreground/30;
 }
 
 /* Ensure this is the last character in the file, or followed by a newline */

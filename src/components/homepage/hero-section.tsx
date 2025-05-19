@@ -112,7 +112,6 @@ export function HeroSection() {
     ctaText = "Pro Clinical Suite";
     CtaIcon = BriefcaseMedical;
     ctaAriaLabel = "Go to Professional Clinical Suite";
-    ctaBaseClasses = "bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white hover:shadow-purple-500/40 firebase-button-interactive";
     ctaSpecificAnimation = "gemini-cta-button"; 
   }
 

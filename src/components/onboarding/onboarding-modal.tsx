@@ -2,7 +2,7 @@
 "use client";
 
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { HeartPulse, ScanSearch, Palette, Telescope, CheckCircle, BriefcaseMedical, School, Stethoscope, UserCog, User, Bot, ArrowRight, Settings2, Pill } from 'lucide-react';
+import { HeartPulse, ScanSearch, Palette, Telescope, CheckCircle, BriefcaseMedical, School, Stethoscope, UserCog, User, Bot, ArrowRight, Settings2, Pill, FileText, NotebookText, CalendarClock, Layers, CaseUpper, Lightbulb, Brain, TrendingUp, Calculator, Users as UsersIcon, Workflow, Award, ImageOff, UploadCloud, BookCopy, FileQuestion, Eye, MessageSquareText, Bug } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useProMode, type UserRole as ContextUserRole } from '@/contexts/pro-mode-context';
 import { Logo } from '@/components/logo';
@@ -43,17 +43,7 @@ const featureList: FeatureItem[] = [
   {
     icon: ScanSearch,
     title: "Enhanced Image Analysis & AR",
-    description: "Visualize complex medical information. Upload images for AI-powered insights or explore anatomy with interactive Augmented Reality."
-  },
-  {
-    icon: School,
-    title: "Medico Study Hub",
-    description: "Ace your exams with dedicated tools: generate study notes, practice MCQs, create flashcards, simulate clinical cases, and visualize anatomy."
-  },
-  {
-    icon: BriefcaseMedical,
-    title: "Pro Clinical Suite",
-    description: "Streamline your practice with AI-assisted differential diagnosis, discharge summary generation, treatment protocol navigation, and smart dictation."
+    description: "Visualize complex medical information. Upload images for AI-powered insights or explore anatomy with interactive Augmented Reality (AR Viewer coming soon)."
   },
   {
     icon: Pill,
@@ -61,11 +51,22 @@ const featureList: FeatureItem[] = [
     description: "Easily log medications, set smart reminders, track adherence, and get general drug information to stay on top of your health."
   },
   {
-    icon: Palette, // Or Settings2
+    icon: School,
+    title: "Medico Study Hub",
+    description: "Ace your exams with dedicated tools: study notes, MCQs, flashcards, case simulations, anatomy visualizer, and more for medical students."
+  },
+  {
+    icon: BriefcaseMedical,
+    title: "Pro Clinical Suite",
+    description: "Streamline your practice with AI-assisted differential diagnosis, discharge summary generation, treatment protocol navigation, and smart dictation for professionals."
+  },
+  {
+    icon: Settings2, // Changed from Palette
     title: "Personalized Experience",
     description: "Tailor MediAssistant by choosing your role, customizing dashboards (Pro/Medico), and adjusting settings to fit your workflow."
   }
 ];
+
 
 interface StepContent {
   title: ReactNode;
@@ -84,8 +85,8 @@ const modalVariants = {
 };
 
 const contentVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut", delay: 0.2 } },
+  hidden: { opacity: 0, y: 15 }, // Slightly different animation
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut", delay: 0.1 } },
 };
 
 const featureItemVariants = {
@@ -94,8 +95,8 @@ const featureItemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      delay: 0.3 + i * 0.1, // Slightly faster stagger
-      duration: 0.4,
+      delay: 0.2 + i * 0.07, // Slightly faster stagger
+      duration: 0.35,
       ease: "easeOut"
     }
   })
@@ -108,11 +109,11 @@ const iconAnimation = {
 
 const checkmarkPathVariants = {
   hidden: { pathLength: 0, opacity: 0 },
-  visible: { pathLength: 1, opacity: 1, transition: { duration: 0.5, delay: 0.5, ease: "circOut" } }
+  visible: { pathLength: 1, opacity: 1, transition: { duration: 0.4, delay: 0.4, ease: "circOut" } }
 };
 const checkmarkCircleVariants = {
-  hidden: { strokeDashoffset: 283, opacity: 0 },
-  visible: { strokeDashoffset: 0, opacity: 1, transition: { duration: 0.7, delay: 0.2, ease: "circOut" } }
+  hidden: { strokeDashoffset: 283, opacity: 0 }, // Assuming circumference is 2*PI*R = 2*3.14159*45 ~ 283
+  visible: { strokeDashoffset: 0, opacity: 1, transition: { duration: 0.6, delay: 0.1, ease: "circOut" } }
 };
 
 
@@ -121,34 +122,37 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
   const [selectedRole, setSelectedRole] = useState<SelectableUserRole | null>(null);
   const { selectUserRole } = useProMode();
 
+  const stepsOrder: OnboardingStep[] = ['welcome', 'features', 'role', 'complete'];
+
   const steps: Record<OnboardingStep, StepContent> = {
     welcome: {
       key: 'welcome',
       title: (
-        <div className="flex items-center justify-center gap-2">
-          Welcome to <Logo simple />!
+        <div className="flex flex-col items-center justify-center gap-1">
+           Welcome to <span className="firebase-gradient-text font-semibold">MediAssistant!</span>
         </div>
       ),
-      icon: <HeartPulse className="h-12 w-12 text-primary mb-4 animate-pulse-medical" style={{ animationDuration: '1.8s' }} />,
+      icon: <HeartPulse className="h-12 w-12 text-primary mb-2 animate-pulse-medical" style={{ animationDuration: '1.8s' }} />,
       description: "Your intelligent partner in healthcare. Let's quickly set up your experience.",
       nextButtonText: "Get Started",
     },
     features: {
       key: 'features',
       title: "Discover Key Features",
-      description: "MediAssistant offers powerful tools designed to make your medical journey simpler and smarter.",
+      description: "MediAssistant offers powerful tools tailored to your needs.",
       content: (
         <motion.ul
-          className="space-y-3 my-4 text-sm text-muted-foreground list-none p-0 max-h-[55vh] md:max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar"
+          className="space-y-2.5 my-3 text-sm text-muted-foreground list-none p-0 max-h-[55vh] md:max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar"
           initial="hidden"
           animate="visible"
-          variants={{ visible: { transition: { staggerChildren: 0.05 } } }} // Faster stagger for more items
+          variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
         >
           {featureList.map((feature, index) => (
             <motion.li
               key={feature.title}
               custom={index}
               variants={featureItemVariants}
+              whileHover={{ y: -2, boxShadow: "0px 4px 12px hsla(var(--foreground)/0.1, 0.08)" }}
               className="flex items-start gap-3 p-3 bg-muted/40 dark:bg-muted/20 rounded-lg shadow-sm transition-colors hover:bg-muted/60 dark:hover:bg-muted/30"
             >
               <div className="p-2 bg-primary/10 rounded-md mt-0.5">
@@ -168,7 +172,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
     role: {
       key: 'role',
       title: "Personalize Your Experience",
-      icon: <User className="h-10 w-10 text-primary mb-3" />,
+      icon: <UserCog className="h-10 w-10 text-primary mb-3" />, // Changed icon
       description: "Select your role to tailor MediAssistant with the most relevant tools and dashboards for your needs.",
       content: (
         <RadioGroup
@@ -204,31 +208,32 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
       title: "Setup Complete!",
       icon: (
          <motion.svg
-            className="h-14 w-14 text-green-500 mb-4"
+            className="h-14 w-14 text-green-500 mb-3" // Slightly smaller margin
             fill="none"
-            viewBox="0 0 24 24"
+            viewBox="0 0 60 60" // Adjusted viewBox for potentially thicker strokes
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="3" // Slightly thicker stroke
             initial="hidden"
             animate="visible"
           >
             <motion.circle
-              cx="12" cy="12" r="10"
-              strokeDasharray="283" 
+              cx="30" cy="30" r="27" // Adjusted radius
+              strokeDasharray="170" // Approximate 2*PI*27
+              strokeDashoffset="170"
               variants={checkmarkCircleVariants}
-              className="text-green-500/30"
+              className="text-green-500/20" // Softer circle
             />
             <motion.path
               variants={checkmarkPathVariants}
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M5 13l4 4L19 7"
+              d="M15 30l10 10L45 20" // Adjusted checkmark path for new viewBox
             />
           </motion.svg>
       ),
       description: (
         <>
-          You&apos;re all set{selectedRole ? ` as a ${selectedRole === 'pro' ? 'Professional' : selectedRole === 'medico' ? 'Medical Student' : 'Patient/General User'}` : ''}.
+          You're all set{selectedRole ? ` as a ${selectedRole === 'pro' ? 'Professional' : selectedRole === 'medico' ? 'Medical Student' : 'Patient/User'}` : ''}.
           <br /> MediAssistant is now tailored for you. Enjoy!
         </>
       ),
@@ -238,8 +243,8 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
 
 
   const handleNext = () => {
-    const currentIdx = Object.keys(steps).indexOf(currentStepKey);
-    const nextStepKey = Object.keys(steps)[currentIdx + 1] as OnboardingStep | undefined;
+    const currentIdx = stepsOrder.indexOf(currentStepKey);
+    const nextStepKey = stepsOrder[currentIdx + 1] as OnboardingStep | undefined;
 
     if (currentStepKey === 'role' && !selectedRole) {
       // Optionally show a toast or message if role not selected
@@ -257,16 +262,15 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
   };
 
   const handlePrevious = () => {
-    const currentIdx = Object.keys(steps).indexOf(currentStepKey);
-    const prevStepKey = Object.keys(steps)[currentIdx - 1] as OnboardingStep | undefined;
+    const currentIdx = stepsOrder.indexOf(currentStepKey);
+    const prevStepKey = stepsOrder[currentIdx - 1] as OnboardingStep | undefined;
     if (prevStepKey) {
       setCurrentStepKey(prevStepKey);
     }
   };
 
   const currentStepContent = steps[currentStepKey];
-  const totalSteps = Object.keys(steps).length;
-  const currentStepIndex = Object.keys(steps).indexOf(currentStepKey);
+  const currentStepIndex = stepsOrder.indexOf(currentStepKey);
 
 
   return (
@@ -282,7 +286,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
             className="flex flex-col"
           >
             <DialogHeader className="text-center items-center pt-6 sm:pt-8 px-6">
-              {currentStepContent.icon && <motion.div variants={iconAnimation} initial="hidden" animate="visible" className="mb-3">{currentStepContent.icon}</motion.div>}
+              {currentStepContent.icon && <motion.div variants={iconAnimation} initial="hidden" animate="visible" className="mb-2">{currentStepContent.icon}</motion.div>}
               <DialogTitle className="text-2xl font-bold tracking-tight text-foreground">
                 {currentStepContent.title}
               </DialogTitle>
@@ -291,24 +295,24 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
               </DialogDescription>
             </DialogHeader>
 
-            {currentStepContent.content && (
-              <motion.div variants={contentVariants} className="px-6 py-4 max-h-[calc(70vh-180px)] overflow-y-auto custom-scrollbar">
+            {currentStepContent.content ? (
+              <motion.div variants={contentVariants} className="px-6 py-3 max-h-[calc(70vh-200px)] overflow-y-auto custom-scrollbar"> {/* Adjusted max-height and padding */}
                 {currentStepContent.content}
               </motion.div>
-            )}
+            ) : <div className="py-3"></div> /* Ensure some min height if no content */ }
 
-            <DialogFooter className="gap-2 sm:justify-between pt-4 pb-6 px-6 mt-auto border-t border-border/50 bg-muted/30">
-              <div className="flex items-center gap-2">
-                {currentStepContent.prevButtonText && (
-                  <Button variant="outline" onClick={handlePrevious} className="rounded-lg text-sm">
+
+            <DialogFooter className="flex-col sm:flex-row items-center justify-between gap-2 pt-3 pb-6 px-6 mt-auto border-t border-border/50 bg-muted/30">
+               {currentStepContent.prevButtonText ? (
+                  <Button variant="outline" onClick={handlePrevious} className="rounded-lg text-sm w-full sm:w-auto">
                     {currentStepContent.prevButtonText}
                   </Button>
-                )}
-              </div>
-               <div className="flex items-center justify-center">
-                {Array.from({ length: totalSteps }).map((_, index) => (
+                ) : <div className="w-full sm:w-auto"></div> /* Placeholder for spacing */ }
+
+              <div className="flex items-center justify-center my-2 sm:my-0">
+                {stepsOrder.map((stepKey, index) => (
                   <span
-                    key={`dot-${index}`}
+                    key={`dot-${stepKey}`}
                     className={cn(
                       "h-2 w-2 rounded-full mx-1 transition-all duration-300",
                       index === currentStepIndex ? "bg-primary scale-125" : "bg-muted-foreground/30"
@@ -319,7 +323,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
               <Button
                 onClick={handleNext}
                 disabled={(currentStepKey === 'role' && !selectedRole) || (currentStepKey === 'welcome' && !steps[currentStepKey].nextButtonText)}
-                className="rounded-lg text-sm bg-primary hover:bg-primary/90 text-primary-foreground group"
+                className="rounded-lg text-sm bg-primary hover:bg-primary/90 text-primary-foreground group w-full sm:w-auto"
               >
                 {currentStepContent.nextButtonText || "Next"}
                 {currentStepKey !== 'complete' && <ArrowRight className="ml-1.5 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />}
@@ -331,4 +335,4 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
     </Dialog>
   );
 }
-
+      
