@@ -66,12 +66,12 @@
     --chart-4: 30 80% 55%;
     --chart-5: 130 50% 50%;
 
-    /* Firebase Inspired Gradient Colors (Light Mode) */
+    /* Firebase Inspired Gradient Colors (Light Mode) - For General Use */
     --firebase-color-1-light-h: 45; --firebase-color-1-light-s: 100%; --firebase-color-1-light-l: 58%; /* Bright Yellow (#FFCA28) */
     --firebase-color-2-light-h: 36; --firebase-color-2-light-s: 100%; --firebase-color-2-light-l: 50%; /* Bright Orange (#FFA000) */
     --firebase-color-3-light-h: 25; --firebase-color-3-light-s: 100%; --firebase-color-3-light-l: 55%; /* Orange-Red (#FF8A65) */
     --firebase-color-4-light-h: 15; --firebase-color-4-light-s: 100%; --firebase-color-4-light-l: 60%; /* Reddish-Orange (#FF7043) */
-
+    
     /* Heart/ECG Icon Colors for Splash (Static Apple Event Poster) */
     --heart-stroke-initial-h: 210;
     --heart-stroke-initial-s: 100%;
@@ -102,14 +102,15 @@
     --notification-unread-dot-color: hsl(var(--primary)); 
 
     /* "MediAssistant Spark" Welcome Screen Colors - Light Mode */
-    --spark-bg-start-light: 210 60% 92%; 
-    --spark-bg-mid-light: 270 70% 94%;   
-    --spark-bg-end-light: 180 60% 93%;   
+    /* Made these slightly darker/more saturated for better visibility */
+    --spark-bg-start-light-h: 210; --spark-bg-start-light-s: 60%; --spark-bg-start-light-l: 88%; /* Slightly more saturated light blue */
+    --spark-bg-mid-light-h: 270;   --spark-bg-mid-light-s: 70%; --spark-bg-mid-light-l: 90%;   /* Slightly more saturated light purple */
+    --spark-bg-end-light-h: 180;   --spark-bg-end-light-s: 60%; --spark-bg-end-light-l: 89%;   /* Slightly more saturated light teal */
 
-    --spark-particle-color-1: 45 100% 85%; /* Pastel Yellow */
-    --spark-particle-color-2: 25 100% 88%; /* Pastel Orange-Red */
-    --spark-particle-color-3: 330 100% 90%;/* Pastel Pink */
-    --spark-particle-color-4: 200 100% 88%;/* Pastel Sky Blue */
+    --spark-particle-color-1-h: 45; --spark-particle-color-1-s: 100%; --spark-particle-color-1-l: 85%; /* Pastel Yellow */
+    --spark-particle-color-2-h: 25; --spark-particle-color-2-s: 100%; --spark-particle-color-2-l: 88%; /* Pastel Orange-Red */
+    --spark-particle-color-3-h: 330; --spark-particle-color-3-s: 100%; --spark-particle-color-3-l: 90%;/* Pastel Pink */
+    --spark-particle-color-4-h: 200; --spark-particle-color-4-s: 100%; --spark-particle-color-4-l: 88%;/* Pastel Sky Blue */
   }
 
   .dark {
@@ -169,7 +170,7 @@
     --chart-4: 40 90% 65%;
     --chart-5: 140 60% 60%;
 
-    /* Firebase Inspired Gradient Colors (Dark Mode) */
+    /* Firebase Inspired Gradient Colors (Dark Mode) - For General Use */
     --firebase-color-1-dark-h: 45; --firebase-color-1-dark-s: 100%; --firebase-color-1-dark-l: 65%;
     --firebase-color-2-dark-h: 36; --firebase-color-2-dark-s: 100%; --firebase-color-2-dark-l: 60%;
     --firebase-color-3-dark-h: 25; --firebase-color-3-dark-s: 100%; --firebase-color-3-dark-l: 65%;
@@ -186,10 +187,10 @@
     /* --notification-unread-dot-color is same as light mode (primary) */
 
     /* "MediAssistant Spark" Welcome Screen Colors - Dark Mode */
-    --spark-bg-start-dark: 220 40% 10%; 
-    --spark-bg-mid-dark: 260 50% 12%;   
-    --spark-bg-end-dark: 200 40% 11%;   
-
+    --spark-bg-start-dark-h: 220; --spark-bg-start-dark-s: 40%; --spark-bg-start-dark-l: 12%; /* Slightly richer dark blue */
+    --spark-bg-mid-dark-h: 260;   --spark-bg-mid-dark-s: 50%; --spark-bg-mid-dark-l: 15%;   /* Slightly richer dark purple */
+    --spark-bg-end-dark-h: 200;   --spark-bg-end-dark-s: 40%; --spark-bg-end-dark-l: 14%;   /* Slightly richer dark cyan/teal */
+    
     /* Spark particle colors remain the same as they are light against a dark bg */
   }
 }
@@ -209,6 +210,7 @@
   }
 }
 
+/* Allow scroll only if specific welcome/animation screens are NOT present */
 body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)) {
   overflow: auto;
 }
@@ -401,7 +403,7 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 }
 
 
-/* Firebase Gradient Text with Glow and Flow */
+/* Firebase Gradient Text with Flow (like for "Hello" greeting) */
 .firebase-gradient-text {
   background-size: 200% auto;
   background-image: linear-gradient(to right,
@@ -413,9 +415,6 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow:
-    0 0 4px hsla(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l),0.5),
-    0 0 8px hsla(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l),0.3);
   animation: firebase-gradient-flow 4s linear infinite;
 }
 
@@ -426,13 +425,10 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
     hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)) 50%,
     hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)) 75%,
     hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)) 100%);
-   text-shadow:
-    0 0 4px hsla(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l),0.5),
-    0 0 8px hsla(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l),0.3);
 }
 
 
-/* Firebase Gradient Text for Active Role - Static gradient with glow */
+/* Firebase Gradient Text for Active Role - Static gradient with subtle glow */
 .firebase-gradient-text-active-role {
   background-image: linear-gradient(to right,
     hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)) 0%,
@@ -444,7 +440,7 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 2px hsla(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l),0.4); /* Subtle glow */
+  text-shadow: 0 0 2px hsla(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), calc(var(--firebase-color-2-light-l) + 10%),0.6); /* Subtle glow, slightly lighter */
 }
 .dark .firebase-gradient-text-active-role {
    background-image: linear-gradient(to right,
@@ -453,7 +449,7 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
     hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)) 50%,
     hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)) 75%,
     hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)) 100%);
-   text-shadow: 0 0 2px hsla(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l),0.4);
+   text-shadow: 0 0 2px hsla(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), calc(var(--firebase-color-2-dark-l) + 10%),0.6);
 }
 
 
@@ -526,12 +522,12 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 
 /* Subtle pulse/glow for tool cards (can be applied conditionally) */
 @keyframes subtle-pulse-glow-light {
-  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsl(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),var(--firebase-color-1-light-l))/0.3); }
-  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsl(var(--firebase-color-2-light-h),var(--firebase-color-2-light-s),var(--firebase-color-2-light-l))/0.5); }
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsla(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),var(--firebase-color-1-light-l),0.3); }
+  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsla(var(--firebase-color-2-light-h),var(--firebase-color-2-light-s),var(--firebase-color-2-light-l),0.5); }
 }
 @keyframes subtle-pulse-glow-dark {
-  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsl(var(--firebase-color-1-dark-h),var(--firebase-color-1-dark-s),var(--firebase-color-1-dark-l))/0.3); }
-  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsl(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l))/0.5); }
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsla(var(--firebase-color-1-dark-h),var(--firebase-color-1-dark-s),var(--firebase-color-1-dark-l),0.3); }
+  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsla(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l),0.5); }
 }
 
 .animate-subtle-pulse-glow {
@@ -697,10 +693,11 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), var(--apple-event-deep-purple-l-start, 15%)); /* Fallback */
+  /* Updated fallback for Apple Event Poster to be a bit darker and more distinct */
+  background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), calc(var(--apple-event-deep-purple-l-start, 15%) - 5%));
 }
 .dark .event-poster-splash-screen {
-   background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), 10%);
+   background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), calc(var(--apple-event-deep-purple-l-start, 10%) - 3%));
 }
 
 .central-icon-container {
@@ -802,9 +799,9 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   justify-content: center;
   overflow: hidden;
   background-image: linear-gradient(135deg,
-    hsl(var(--spark-bg-start-light)),
-    hsl(var(--spark-bg-mid-light)),
-    hsl(var(--spark-bg-end-light))
+    hsl(var(--spark-bg-start-light-h), var(--spark-bg-start-light-s), var(--spark-bg-start-light-l)),
+    hsl(var(--spark-bg-mid-light-h), var(--spark-bg-mid-light-s), var(--spark-bg-mid-light-l)),
+    hsl(var(--spark-bg-end-light-h), var(--spark-bg-end-light-s), var(--spark-bg-end-light-l))
   );
   background-size: 300% 300%;
   animation: spark-background-animation-light 20s ease-in-out infinite alternate;
@@ -812,20 +809,22 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 
 .dark .spark-welcome-screen {
   background-image: linear-gradient(135deg,
-    hsl(var(--spark-bg-start-dark)),
-    hsl(var(--spark-bg-mid-dark)),
-    hsl(var(--spark-bg-end-dark))
+    hsl(var(--spark-bg-start-dark-h), var(--spark-bg-start-dark-s), var(--spark-bg-start-dark-l)),
+    hsl(var(--spark-bg-mid-dark-h), var(--spark-bg-mid-dark-s), var(--spark-bg-mid-dark-l)),
+    hsl(var(--spark-bg-end-dark-h), var(--spark-bg-end-dark-s), var(--spark-bg-end-dark-l))
   );
   animation-name: spark-background-animation-dark;
 }
 
 .spark-particle {
-  position: absolute; 
+  position: absolute; /* Will be positioned by framer-motion */
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  box-shadow: 0 0 8px 2px currentColor, 0 0 12px 4px hsla(var(--background), 0.3); 
-  will-change: transform, opacity;
+  /* Glow effect using box-shadow */
+  box-shadow: 0 0 8px 2px currentColor, /* Inner glow based on particle color */
+              0 0 12px 4px hsla(var(--background), 0.3); /* Softer outer glow against screen bg */
+  will-change: transform, opacity; /* Performance hint for animations */
 }
 /* End of "MediAssistant Spark" Styles */
 
@@ -854,15 +853,17 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 }
 
 .notification-item-card-compact {
+  /* Base styling, hover handled by Tailwind classes on the element */
   @apply p-1.5 rounded-md cursor-pointer transition-colors duration-150 flex items-start gap-2;
 }
+/* Example: specific hover for compact card if needed beyond Tailwind utilities in component
 .notification-item-card-compact:hover {
-  @apply hover:bg-muted/30;
+  background-color: hsl(var(--notification-item-compact-hover-bg));
 }
-
+*/
 .notification-unread-dot {
   @apply h-1.5 w-1.5 rounded-full mt-1 flex-shrink-0 self-center;
-  background-color: var(--notification-unread-dot-color);
+  background-color: var(--notification-unread-dot-color); /* Direct CSS variable use */
 }
 
 
@@ -882,15 +883,15 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 /* Animated Gradient Border for Notification Panel (Firebase Inspired) */
 .notification-panel-animated-border {
   position: relative;
-  border: 2px solid transparent; 
+  border: 2px solid transparent; /* Important: Keep border transparent for the mask effect */
 }
 
 .notification-panel-animated-border::before {
   content: "";
   position: absolute;
-  inset: -2px; 
-  border-radius: inherit; 
-  padding: 2px; 
+  inset: -2px; /* Covers the border area */
+  border-radius: inherit; /* Match panel's border-radius */
+  padding: 2px; /* Thickness of the border */
   background: linear-gradient(
     135deg,
     hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)),
@@ -903,13 +904,13 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   animation: animated-gradient-background 4s ease infinite;
   -webkit-mask: 
     linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0); 
+    linear-gradient(#fff 0 0); /* Mask to create the border effect */
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; 
-  mask-composite: exclude; 
-  z-index: -1; 
+  -webkit-mask-composite: xor; /* Older browsers might need 'destination-out' or other values */
+  mask-composite: exclude; /* Standard property */
+  z-index: -1; /* Ensure it's behind the panel's content */
 }
 
 .dark .notification-panel-animated-border::before {
@@ -976,3 +977,47 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
     @apply bg-muted-foreground/30;
 }
     
+/* Added fixes for keyframes used by subtle-pulse-glow animation */
+@keyframes subtle-pulse-glow-light {
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsla(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),var(--firebase-color-1-light-l),0.3); }
+  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsla(var(--firebase-color-2-light-h),var(--firebase-color-2-light-s),var(--firebase-color-2-light-l),0.5); }
+}
+@keyframes subtle-pulse-glow-dark {
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsla(var(--firebase-color-1-dark-h),var(--firebase-color-1-dark-s),var(--firebase-color-1-dark-l),0.3); }
+  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsla(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l),0.5); }
+}
+/* Fix for welcome-text-color-cycle */
+@keyframes welcome-text-color-cycle-light {
+  0%   { color: hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)); }
+  25%  { color: hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)); }
+  50%  { color: hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)); }
+  75%  { color: hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)); }
+  100% { color: hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)); }
+}
+@keyframes welcome-text-color-cycle-dark {
+  0%   { color: hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)); }
+  25%  { color: hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)); }
+  50%  { color: hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)); }
+  75%  { color: hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)); }
+  100% { color: hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)); }
+}
+
+/* Ensure Gemini CTA glow animations are defined correctly */
+@keyframes gemini-cta-glow-light {
+  0%, 100% {
+    box-shadow: 0 0 5px hsla(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),var(--firebase-color-1-light-l),0.3), 0 0 10px hsla(var(--firebase-color-2-light-h),var(--firebase-color-2-light-s),var(--firebase-color-2-light-l),0.2), 0 0 15px hsla(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),var(--firebase-color-3-light-l),0.2);
+  }
+  50% {
+    box-shadow: 0 0 10px hsla(var(--firebase-color-2-light-h),var(--firebase-color-2-light-s),var(--firebase-color-2-light-l),0.5), 0 0 20px hsla(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),var(--firebase-color-3-light-l),0.3), 0 0 30px hsla(var(--firebase-color-4-light-h),var(--firebase-color-4-light-s),var(--firebase-color-4-light-l),0.3);
+  }
+}
+@keyframes gemini-cta-glow-dark {
+    0%, 100% {
+    box-shadow: 0 0 5px hsla(var(--firebase-color-1-dark-h),var(--firebase-color-1-dark-s),var(--firebase-color-1-dark-l),0.3), 0 0 10px hsla(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l),0.2), 0 0 15px hsla(var(--firebase-color-3-dark-h),var(--firebase-color-3-dark-s),var(--firebase-color-3-dark-l),0.2);
+  }
+  50% {
+    box-shadow: 0 0 10px hsla(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l),0.5), 0 0 20px hsla(var(--firebase-color-3-dark-h),var(--firebase-color-3-dark-s),var(--firebase-color-3-dark-l),0.3), 0 0 30px hsla(var(--firebase-color-4-dark-h),var(--firebase-color-4-dark-s),var(--firebase-color-4-dark-l),0.3);
+  }
+}
+
+
