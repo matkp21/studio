@@ -6,11 +6,11 @@ import type { CSSProperties } from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { HeartPulse, BookHeart, BriefcaseMedical, CalendarDays, Clock } from "lucide-react";
+import { HeartPulse, BookHeart, BriefcaseMedical } from "lucide-react"; // Removed CalendarDays, Clock
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProMode } from '@/contexts/pro-mode-context';
-import { HeroWidgets, type HeroTask } from './hero-widgets';
+import { HeroWidgets, type HeroTask } from './hero-widgets'; // Ensure HeroWidgets is correctly imported
 
 const greetings = [
   { lang: "en", text: "Hello," },
@@ -22,12 +22,14 @@ const greetings = [
 
 const userName = "User"; // Replace with actual user name fetching
 
+// Firebase-inspired gradient styles
 const gradientStyle: CSSProperties = {
   backgroundImage: 'linear-gradient(to right, hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)), hsl(var(--firebase-color-2-light-h), var(--firebase-color-2-light-s), var(--firebase-color-2-light-l)), hsl(var(--firebase-color-3-light-h), var(--firebase-color-3-light-s), var(--firebase-color-3-light-l)), hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)))',
   WebkitBackgroundClip: 'text',
   backgroundClip: 'text',
   color: 'transparent'
 };
+
 const darkGradientStyle: CSSProperties = {
   backgroundImage: 'linear-gradient(to right, hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)), hsl(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), var(--firebase-color-2-dark-l)), hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)), hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)))',
   WebkitBackgroundClip: 'text',
@@ -40,13 +42,41 @@ export function HeroSection() {
   const [currentGreetingIndex, setCurrentGreetingIndex] = useState(0);
   const { userRole } = useProMode();
   const [heroTasks, setHeroTasks] = useState<HeroTask[]>([]);
-  const [currentGradientStyle, setCurrentGradientStyle] = useState(gradientStyle); // Default to light
+  const [currentDynamicGradientStyle, setCurrentDynamicGradientStyle] = useState(gradientStyle);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true); // Set client to true once mounted
     const interval = setInterval(() => {
       setCurrentGreetingIndex((prevIndex) => (prevIndex + 1) % greetings.length);
     }, 3000);
 
+    // For theme-aware gradient text
+    const updateGradientStyleForTheme = () => {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setCurrentDynamicGradientStyle(darkGradientStyle);
+      } else {
+        setCurrentDynamicGradientStyle(gradientStyle);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+        updateGradientStyleForTheme(); // Set initial style
+        const mediaQueryListener = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQueryListener.addEventListener('change', updateGradientStyleForTheme);
+        return () => {
+          clearInterval(interval);
+          mediaQueryListener.removeEventListener('change', updateGradientStyleForTheme);
+        };
+    } else {
+        // Fallback for SSR or if window.matchMedia is not available
+        setCurrentDynamicGradientStyle(gradientStyle); // Default to light theme style
+        return () => clearInterval(interval);
+    }
+  }, []);
+
+
+  useEffect(() => {
     if (userRole === 'pro') {
       const today = new Date();
       const tomorrow = new Date(today);
@@ -62,23 +92,6 @@ export function HeroSection() {
       ]);
     } else {
       setHeroTasks([]);
-    }
-     // For theme-aware gradient text
-    const updateGradientStyleForTheme = () => {
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        setCurrentGradientStyle(darkGradientStyle);
-      } else {
-        setCurrentGradientStyle(gradientStyle);
-      }
-    };
-    updateGradientStyleForTheme(); // Set initial style
-    const mediaQueryListener = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQueryListener.addEventListener('change', updateGradientStyleForTheme);
-
-
-    return () => {
-      clearInterval(interval);
-      mediaQueryListener.removeEventListener('change', updateGradientStyleForTheme);
     }
   }, [userRole]);
 
@@ -106,12 +119,22 @@ export function HeroSection() {
       text-white 
       firebase-button-interactive
     `;
-    ctaSpecificAnimation = "gemini-cta-button";
+    ctaSpecificAnimation = "gemini-cta-button"; // This provides the glow
   } else if (userRole === 'pro') {
     ctaLink = "/pro";
     ctaText = "Pro Clinical Suite";
     CtaIcon = BriefcaseMedical;
     ctaAriaLabel = "Go to Professional Clinical Suite";
+    ctaBaseClasses = `
+      bg-gradient-to-r 
+      from-purple-500 
+      via-purple-600 
+      to-purple-700 
+      hover:from-purple-600 
+      hover:to-purple-800 
+      text-white 
+      hover:shadow-purple-500/40
+    `;
     ctaSpecificAnimation = "gemini-cta-button"; 
   }
 
@@ -131,28 +154,37 @@ export function HeroSection() {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <AnimatePresence mode="wait">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center mb-6">
+      {isClient && ( // Only render AnimatePresence and its children on the client
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center mb-6">
+          <AnimatePresence mode="wait">
             <motion.span
               key={greetings[currentGreetingIndex].text}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.8, ease: "easeInOut" }}
-              style={currentGradientStyle}
+              style={currentDynamicGradientStyle}
               lang={greetings[currentGreetingIndex].lang}
               className="inline-block" 
             >
               {greetings[currentGreetingIndex].text}
             </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="ml-2 text-foreground dark:text-foreground" 
-            >{userName}</motion.span>
-           </h1>
-        </AnimatePresence>
+          </AnimatePresence>
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="ml-2 text-foreground dark:text-foreground" 
+          >{userName}</motion.span>
+         </h1>
+        )}
+         {!isClient && ( // Fallback for SSR or if JS is disabled (less ideal, shows default)
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center mb-6">
+                <span style={gradientStyle} className="inline-block">{greetings[0].text}</span>
+                <span className="ml-2 text-foreground dark:text-foreground">{userName}</span>
+            </h1>
+         )}
+
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -192,7 +224,7 @@ export function HeroSection() {
               <CtaIcon
                 className={cn(
                   "ml-2 h-6 w-6 group-hover:scale-110 animate-pulse-medical", 
-                   userRole === 'pro' || userRole === 'medico' ? "text-white" : "text-primary-foreground"
+                   userRole === 'pro' || userRole === 'medico' ? "text-white" : "text-primary-foreground" // Ensure icon color matches button text
                 )}
                 style={{"--medical-pulse-opacity-base": "0.8", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.15"} as CSSProperties}
               />
@@ -216,4 +248,3 @@ export function HeroSection() {
     </section>
   );
 }
-
