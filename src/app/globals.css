@@ -72,8 +72,7 @@
     --firebase-color-3-light-h: 25; --firebase-color-3-light-s: 100%; --firebase-color-3-light-l: 55%; /* Orange-Red (#FF8A65) */
     --firebase-color-4-light-h: 15; --firebase-color-4-light-s: 100%; --firebase-color-4-light-l: 60%; /* Reddish-Orange (#FF7043) */
 
-    /* --- HSL Variables for Apple Event Poster Theme (STATIC IMAGE VERSION) --- */
-    /* Heart/ECG Icon Colors */
+    /* Heart/ECG Icon Colors for Splash (Static Apple Event Poster) */
     --heart-stroke-initial-h: 210;
     --heart-stroke-initial-s: 100%;
     --heart-stroke-initial-l: 70%;
@@ -83,14 +82,14 @@
     --ecg-stroke-color-h: 200;
     --ecg-stroke-color-s: 100%;
     --ecg-stroke-color-l: 75%;
-    --heart-stroke-width: 2.5px; /* Default, can be overridden by component */
-    --ecg-stroke-width: 2.5px;   /* Default, can be overridden by component */
-    --heart-icon-splash-size: clamp(100px, 20vw, 180px); /* Default, can be overridden */
+    --heart-stroke-width: 2.5px;
+    --ecg-stroke-width: 2.5px;
+    --heart-icon-splash-size: clamp(100px, 20vw, 180px);
 
     /* Text Colors for Static Image Splash */
     --splash-text-main-color: white;
     --splash-text-tagline-color: rgba(255, 255, 255, 0.9);
-    /* Fallback BG color if image fails */
+    /* Fallback BG color if image fails for Apple Event Poster */
     --apple-event-deep-purple-h: 260;
     --apple-event-deep-purple-s: 65%;
     --apple-event-deep-purple-l-start: 15%;
@@ -100,12 +99,12 @@
     --notification-panel-compact-border: 210 20% 88%;
     --notification-item-compact-bg: 0 0% 100%;
     --notification-item-compact-hover-bg: 210 25% 96%;
-    --notification-unread-dot-color: hsl(var(--primary)); /* Primary blue for unread dot */
+    --notification-unread-dot-color: hsl(var(--primary)); 
 
     /* "MediAssistant Spark" Welcome Screen Colors - Light Mode */
-    --spark-bg-start-light: 210 60% 92%; /* Very light blue - Adjusted */
-    --spark-bg-mid-light: 270 70% 94%;   /* Very light purple - Adjusted */
-    --spark-bg-end-light: 180 60% 93%;   /* Very light teal/cyan - Adjusted */
+    --spark-bg-start-light: 210 60% 92%; 
+    --spark-bg-mid-light: 270 70% 94%;   
+    --spark-bg-end-light: 180 60% 93%;   
 
     --spark-particle-color-1: 45 100% 85%; /* Pastel Yellow */
     --spark-particle-color-2: 25 100% 88%; /* Pastel Orange-Red */
@@ -150,15 +149,15 @@
     --ring: 210 100% 65%;
 
     /* Sidebar specific colors - Dark Mode (Gemini Inspired) */
-    --sidebar-background: 220 30% 12%; /* Darker, slightly bluish grey */
-    --sidebar-foreground: 220 15% 88%; /* Light grey for text */
+    --sidebar-background: 220 30% 12%; 
+    --sidebar-foreground: 220 15% 88%; 
     --sidebar-primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 220 40% 22%; /* Darker blue for hover */
-    --sidebar-accent-foreground: 220 80% 80%; /* Lighter blue for text on hover */
+    --sidebar-accent: 220 40% 22%; 
+    --sidebar-accent-foreground: 220 80% 80%; 
     --sidebar-active-background: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
     --sidebar-active-foreground: hsl(var(--primary-foreground));
-    --sidebar-border: 220 25% 20%; /* Darker border */
+    --sidebar-border: 220 25% 20%; 
     --sidebar-ring: hsl(var(--ring));
     --sidebar-active-indicator-start: hsl(var(--sidebar-primary), 0.9);
     --sidebar-active-indicator-end: hsl(var(--sidebar-accent), 0.9);
@@ -187,9 +186,9 @@
     /* --notification-unread-dot-color is same as light mode (primary) */
 
     /* "MediAssistant Spark" Welcome Screen Colors - Dark Mode */
-    --spark-bg-start-dark: 220 40% 10%; /* Deep cool blue */
-    --spark-bg-mid-dark: 260 50% 12%;   /* Deep purple */
-    --spark-bg-end-dark: 200 40% 11%;   /* Deep teal */
+    --spark-bg-start-dark: 220 40% 10%; 
+    --spark-bg-mid-dark: 260 50% 12%;   
+    --spark-bg-end-dark: 200 40% 11%;   
 
     /* Spark particle colors remain the same as they are light against a dark bg */
   }
@@ -206,11 +205,10 @@
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* Default to hidden for splash/welcome states */
+    overflow: hidden; 
   }
 }
 
-/* Only allow scrolling if not showing these full-screen elements */
 body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)) {
   overflow: auto;
 }
@@ -315,7 +313,6 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 }
 
 .welcome-text-fg-animated {
-  color: hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l));
   animation-duration: 10s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
@@ -522,8 +519,8 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
     hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)),
     hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l))
   );
-  background-size: 400% 400%; /* Added for dark mode consistency */
-  animation: animated-gradient-background 5s ease infinite; /* Added for dark mode consistency */
+  background-size: 400% 400%; 
+  animation: animated-gradient-background 5s ease infinite; 
 }
 
 
@@ -628,14 +625,13 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   position: relative;
 }
 
-/* Active indicator bar - Applied by SidebarNav logic */
 .sidebar-active-item-glow::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 20%; /* Default for expanded sidebar */
-  bottom: 20%; /* Default for expanded sidebar */
-  width: 4px; /* Default for expanded sidebar */
+  top: 20%; 
+  bottom: 20%; 
+  width: 4px; 
   background-image: linear-gradient(to bottom, hsl(var(--sidebar-active-indicator-start)), hsl(var(--sidebar-active-indicator-end)));
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
@@ -643,11 +639,11 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   animation: sidebar-indicator-pulse 2s infinite ease-in-out;
 }
 
-/* Adjustments for collapsed sidebar active item indicator (applied via group data attribute) */
+/* Collapsed sidebar active item indicator */
 .group[data-collapsible="icon"] .sidebar-active-item-glow::before {
   top: 10%;
   bottom: 10%;
-  left: -2px; /* Shift slightly to be more visible on the edge */
+  left: -2px; /* Adjust position for collapsed icon state */
   width: 3px;
 }
 
@@ -672,7 +668,7 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   background-image: linear-gradient(
     to right,
     transparent 0%,
-    hsla(var(--sidebar-accent-foreground)/0.05) 30%, /* Softer shine */
+    hsla(var(--sidebar-accent-foreground)/0.05) 30%, 
     hsla(var(--sidebar-accent-foreground)/0.15) 50%,
     hsla(var(--sidebar-accent-foreground)/0.05) 70%,
     transparent 100%
@@ -680,7 +676,7 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   transform: translateX(-150%) translateY(-25%) rotate(25deg);
   transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
   pointer-events: none;
-  z-index: 1; /* Ensure it's above the button's content but below interactive elements if any were inside */
+  z-index: 1; 
 }
 .sidebar-item-shine:hover::after {
   transform: translateX(50%) translateY(-25%) rotate(25deg);
@@ -697,7 +693,7 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-image: url('/images/mediassistant-splash-background.png'); /* Ensure this path is correct */
+  background-image: url('/images/mediassistant-splash-background.png'); 
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -710,18 +706,16 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 .central-icon-container {
   position: relative;
   z-index: 2;
-  margin-bottom: 18vh; /* Pushes logo up from text */
+  margin-bottom: 18vh; 
 }
 
+/* Class for the <heart-ecg-icon> web component */
 .heart-ecg-icon-splash-static {
-  width: var(--heart-icon-splash-size); /* Uses CSS variable for size */
-  height: var(--heart-icon-splash-size);
-  display: block;
-  /* The pulse-glow animation for the whole icon */
+  --heart-icon-splash-size: clamp(100px, 22vw, 170px); /* Set the variable for the component */
   animation: pulse-glow-from-pack 2.0s ease-in-out infinite alternate;
-  /* Base filter is handled by the animation keyframes now */
 }
 
+/* Keyframe animation for the overall icon pulse and glow */
 @keyframes pulse-glow-from-pack {
   0%, 100% { /* Resting State */
     transform: scale(1);
@@ -765,7 +759,7 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 .tagline-splash-static .emoji {
   display: inline-block;
   vertical-align: middle;
-  font-size: inherit; /* Or adjust if needed */
+  font-size: inherit;
   animation: sparkle-subtle 2.2s infinite ease-in-out alternate;
 }
 @keyframes sparkle-subtle {
@@ -774,7 +768,6 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   100% { opacity: 0.7; transform: scale(1) rotate(-2deg); }
 }
 
-/* Entrance animation for splash screen icon and text containers */
 .splash-element-fade-in {
   opacity: 0;
   animation: fadeInElements 1.2s ease-out 0.75s forwards;
@@ -799,12 +792,21 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 }
 
 .spark-welcome-screen {
+  width: 100vw;
+  height: 100vh;
+  position: fixed; /* Ensure it covers the screen */
+  top:0; left:0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   background-image: linear-gradient(135deg,
     hsl(var(--spark-bg-start-light)),
     hsl(var(--spark-bg-mid-light)),
     hsl(var(--spark-bg-end-light))
   );
-  background-size: 300% 300%; /* Larger size for smooth animation */
+  background-size: 300% 300%;
   animation: spark-background-animation-light 20s ease-in-out infinite alternate;
 }
 
@@ -818,13 +820,12 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 }
 
 .spark-particle {
-  position: absolute; /* Positioned by Framer Motion */
+  position: absolute; 
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  box-shadow: 0 0 8px 2px currentColor, 0 0 12px 4px hsla(var(--background), 0.3); /* Glow effect */
-  /* Background color set dynamically via className in component */
-  will-change: transform, opacity; /* Optimize for animation */
+  box-shadow: 0 0 8px 2px currentColor, 0 0 12px 4px hsla(var(--background), 0.3); 
+  will-change: transform, opacity;
 }
 /* End of "MediAssistant Spark" Styles */
 
@@ -853,33 +854,15 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 }
 
 .notification-item-card-compact {
-  /* background-color: hsl(var(--notification-item-compact-bg)); */
-  /* Tailwind classes will handle specific bg for read/unread now */
   @apply p-1.5 rounded-md cursor-pointer transition-colors duration-150 flex items-start gap-2;
 }
 .notification-item-card-compact:hover {
-  /* background-color: hsl(var(--notification-item-compact-hover-bg)); */
-  /* Handled by Tailwind hover:bg-muted/30 */
-}
-.notification-item-card-compact.unread {
- /* @apply bg-primary/10 border border-primary/20; */
- /* Applied directly in component for now */
-}
-
-
-.dark .notification-item-card-compact {
-  /* background-color: hsl(var(--notification-item-compact-bg)); */
-}
-.dark .notification-item-card-compact:hover {
-  /* background-color: hsl(var(--notification-item-compact-hover-bg)); */
-}
-.dark .notification-item-card-compact.unread {
- /* @apply bg-primary/15 border border-primary/30; */
+  @apply hover:bg-muted/30;
 }
 
 .notification-unread-dot {
   @apply h-1.5 w-1.5 rounded-full mt-1 flex-shrink-0 self-center;
-  background-color: var(--notification-unread-dot-color); /* Directly use variable */
+  background-color: var(--notification-unread-dot-color);
 }
 
 
@@ -899,15 +882,15 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 /* Animated Gradient Border for Notification Panel (Firebase Inspired) */
 .notification-panel-animated-border {
   position: relative;
-  border: 2px solid transparent; /* Base border that will be covered */
+  border: 2px solid transparent; 
 }
 
 .notification-panel-animated-border::before {
   content: "";
   position: absolute;
-  inset: -2px; /* Covers the transparent border */
-  border-radius: inherit; /* Matches parent's border-radius */
-  padding: 2px; /* Creates the "border" thickness */
+  inset: -2px; 
+  border-radius: inherit; 
+  padding: 2px; 
   background: linear-gradient(
     135deg,
     hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)),
@@ -918,15 +901,15 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
   );
   background-size: 300% 300%;
   animation: animated-gradient-background 4s ease infinite;
-  -webkit-mask: /* Mask to create the border effect */
-    linear-gradient(#fff 0 0) content-box, /* Inner transparent area */
-    linear-gradient(#fff 0 0); /* Outer shape */
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0); 
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; /* Older Safari */
-  mask-composite: exclude; /* Standard */
-  z-index: -1; /* Behind the panel's actual content */
+  -webkit-mask-composite: xor; 
+  mask-composite: exclude; 
+  z-index: -1; 
 }
 
 .dark .notification-panel-animated-border::before {
@@ -938,8 +921,8 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
     hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)),
     hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l))
   );
-   background-size: 300% 300%; /* Added for dark mode consistency */
-   animation: animated-gradient-background 4s ease infinite; /* Added for dark mode consistency */
+   background-size: 300% 300%; 
+   animation: animated-gradient-background 4s ease infinite; 
 }
 
 /* Sidebar Notification Badge Styles */
@@ -992,8 +975,4 @@ body:not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not
 .onboarding-progress-dot-inactive {
     @apply bg-muted-foreground/30;
 }
-
-/* Ensure this is the last character in the file, or followed by a newline */
-    
-
     
