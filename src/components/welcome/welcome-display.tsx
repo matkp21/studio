@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'; // Added motion import
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
 import { AnimatedTagline } from '@/components/layout/animated-tagline';
@@ -36,7 +36,7 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
       opacity: 1,
       scale: 1,
       y: 0,
-      transition: { duration: 0.7, ease: [0.25, 1, 0.5, 1], delay: 0.3 } // Slightly faster delay
+      transition: { duration: 0.7, ease: [0.25, 1, 0.5, 1], delay: 0.3 }
     }
   };
 
@@ -45,7 +45,7 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut", delay: 0.8 } // Delay after logo
+      transition: { duration: 0.6, ease: "easeOut", delay: 0.8 }
     }
   };
 
@@ -54,7 +54,7 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut", delay: 1.2 } // Delay after app name
+      transition: { duration: 0.5, ease: "easeOut", delay: 1.2 }
     }
   };
 
@@ -66,8 +66,8 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
   // New refined SVG icon with SMIL animations
   const NewAnimatedHeartIcon = () => (
     <svg
-      className="simple-welcome-heart-icon" // Class for sizing and external CSS animation if needed
-      viewBox="0 0 64 64" // Adjusted viewBox for a potentially slightly different aspect ratio or padding
+      className="simple-welcome-heart-icon"
+      viewBox="0 0 64 64"
       xmlns="http://www.w3.org/2000/svg"
     >
       <style>{`
@@ -78,12 +78,12 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
         }
         .heart-path-simple {
           stroke: hsl(var(--heart-stroke-initial-h, 205), var(--heart-stroke-initial-s, 85%), var(--heart-stroke-initial-l, 60%));
-          stroke-width: var(--heart-stroke-width, 2.5px);
+          stroke-width: var(--heart-stroke-width, 2px); /* Corrected from 2.5px to 2px */
           fill: hsla(var(--heart-stroke-initial-h, 205), var(--heart-stroke-initial-s, 85%), var(--heart-stroke-initial-l, 60%), 0.1);
         }
         .ecg-path-simple {
           stroke: hsl(var(--ecg-stroke-color-h, 205), var(--ecg-stroke-color-s, 90%), var(--ecg-stroke-color-l, 65%));
-          stroke-width: var(--ecg-stroke-width, 3px); /* Slightly thicker ECG */
+          stroke-width: var(--ecg-stroke-width, 2px); /* Corrected from 3px to 2px */
           fill: none;
           stroke-dasharray: 50; /* Approximate length of the new ECG path. ADJUST THIS! */
           stroke-dashoffset: 50;
@@ -102,11 +102,17 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
           dur="1.8s"
           repeatCount="indefinite"
           additive="sum"
-          transform-origin="center"
           calcMode="spline"
           keyTimes="0; 0.5; 1"
-          keySplines="0.42 0 0.58 1; 0.42 0 0.58 1" // Smoother ease-in-out
+          keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
+          // Removed transform-origin="center"
         />
+         <animate attributeName="stroke"
+             values="hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l));
+                     hsl(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l));
+                     hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l))"
+             dur="3s"
+             repeatCount="indefinite"/>
       </path>
       {/* Simplified Single ECG Wave */}
       <path
@@ -122,8 +128,7 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
           keyTimes="0; 0.5; 1" // Draw, hold briefly, reset
           calcMode="linear"
         />
-        {/* Optional: Animate stroke color or opacity for the ECG wave */}
-        <animate 
+        <animate
           attributeName="stroke"
           values="hsl(var(--ecg-stroke-color-h), var(--ecg-stroke-color-s), var(--ecg-stroke-color-l)); hsl(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l)); hsl(var(--ecg-stroke-color-h), var(--ecg-stroke-color-s), var(--ecg-stroke-color-l))"
           dur="2.2s"
@@ -132,6 +137,7 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
       </path>
     </svg>
   );
+
 
   return (
     <motion.div
@@ -150,7 +156,7 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
 
       <motion.h1
         variants={appNameVariants}
-        className="simple-welcome-appname animated-gradient-text" 
+        className="simple-welcome-appname animated-gradient-text"
       >
         MediAssistant
       </motion.h1>
