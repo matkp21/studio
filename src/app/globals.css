@@ -72,27 +72,23 @@
     --firebase-color-3-light-h: 25; --firebase-color-3-light-s: 100%; --firebase-color-3-light-l: 55%; /* Orange-Red (#FF8A65) */
     --firebase-color-4-light-h: 15; --firebase-color-4-light-s: 100%; --firebase-color-4-light-l: 60%; /* Reddish-Orange (#FF7043) */
 
-    /* Heart/ECG Icon Colors for Nebula Splash (Static Apple Event Poster) */
-    --heart-stroke-initial-h: 200;
-    --heart-stroke-initial-s: 100%;
-    --heart-stroke-initial-l: 85%; /* Brighter for dark BG */
-    --heart-stroke-animated-h: 330;
-    --heart-stroke-animated-s: 100%;
-    --heart-stroke-animated-l: 85%; /* Brighter for dark BG */
-    --ecg-stroke-color-h: 180;
-    --ecg-stroke-color-s: 100%;
-    --ecg-stroke-color-l: 90%; /* Brighter for dark BG */
-    --heart-stroke-width: 2px;
+    /* Heart/ECG Icon Colors for new "Simple Welcome Screen" (consistent with web component defaults) */
+    --heart-stroke-width: 2px; /* Slightly thinner for a cleaner look */
     --ecg-stroke-width: 2px;
-    --heart-icon-splash-size: clamp(100px, 18vw, 150px); /* Slightly smaller default for Nebula */
+    --heart-icon-splash-size: clamp(100px, 18vw, 150px); /* Default size for the icon in simple welcome */
+    
+    --heart-stroke-initial-h: var(--primary-h);
+    --heart-stroke-initial-s: var(--primary-s);
+    --heart-stroke-initial-l: calc(var(--primary-l) + 10%); /* Slightly lighter primary */
+    
+    --heart-stroke-animated-h: var(--accent-h); /* Use accent for animation */
+    --heart-stroke-animated-s: var(--accent-s);
+    --heart-stroke-animated-l: var(--accent-l);
+    
+    --ecg-stroke-color-h: var(--primary-h);
+    --ecg-stroke-color-s: var(--primary-s);
+    --ecg-stroke-color-l: var(--primary-l);
 
-    /* Text Colors for Nebula Splash */
-    --splash-text-main-color: hsl(0, 0%, 95%);
-    --splash-text-tagline-color: hsl(0, 0%, 85%);
-    /* Fallback BG color if image fails for Apple Event Poster */
-    --apple-event-deep-purple-h: 260;
-    --apple-event-deep-purple-s: 65%;
-    --apple-event-deep-purple-l-start: 15%;
 
     /* Notification Panel (Compact, solid) - Light Mode */
     --notification-panel-compact-bg: 0 0% 100%; /* White */
@@ -100,26 +96,6 @@
     --notification-item-compact-bg: 0 0% 100%;
     --notification-item-compact-hover-bg: 210 25% 96%;
     --notification-unread-dot-color: hsl(var(--primary));
-
-    /* "MediAssistant Spark" / "Nebula Flow" Welcome Screen Colors - UPDATED TO PRO SUITE INSPIRED - Light Mode */
-    --spark-bg-start-light-h: 220; --spark-bg-start-light-s: 25%; --spark-bg-start-light-l: 95%; /* Very light cool gray */
-    --spark-bg-mid-light-h: 270;   --spark-bg-mid-light-s: 40%; --spark-bg-mid-light-l: 90%;   /* Very light desaturated lavender */
-    --spark-bg-end-light-h: 220;   --spark-bg-end-light-s: 20%; --spark-bg-end-light-l: 97%;   /* Off-white with cool tint */
-
-    --spark-particle-color-1-h: 45; --spark-particle-color-1-s: 100%; --spark-particle-color-1-l: 85%; /* Pastel Yellow */
-    --spark-particle-color-2-h: 25; --spark-particle-color-2-s: 100%; --spark-particle-color-2-l: 88%; /* Pastel Orange-Red */
-    --spark-particle-color-3-h: 330; --spark-particle-color-3-s: 100%; --spark-particle-color-3-l: 90%;/* Pastel Pink */
-    --spark-particle-color-4-h: 200; --spark-particle-color-4-s: 100%; --spark-particle-color-4-l: 88%;/* Pastel Sky Blue */
-
-    /* Nebula Flow Welcome Screen Specific */
-    --nebula-bg-start-h: 240; --nebula-bg-start-s: 70%; --nebula-bg-start-l: 8%; /* Deep Blue */
-    --nebula-bg-mid-h: 270;   --nebula-bg-mid-s: 65%; --nebula-bg-mid-l: 12%;   /* Deep Purple */
-    --nebula-bg-end-h: 220;   --nebula-bg-end-s: 50%; --nebula-bg-end-l: 5%; /* Near Black with Blue tint */
-
-    --nebula-particle-color-1-h: 45; --nebula-particle-color-1-s: 100%; --nebula-particle-color-1-l: 60%; /* Vibrant Yellow */
-    --nebula-particle-color-2-h: 25; --nebula-particle-color-2-s: 100%; --nebula-particle-color-2-l: 55%; /* Vibrant Orange */
-    --nebula-particle-color-3-h: 330; --nebula-particle-color-3-s: 100%; --nebula-particle-color-3-l: 65%;/* Vibrant Pink */
-    --nebula-particle-color-4-h: 190; --nebula-particle-color-4-s: 100%; --nebula-particle-color-4-l: 60%;/* Vibrant Cyan */
 
   }
 
@@ -186,8 +162,6 @@
     --firebase-color-3-dark-h: 25; --firebase-color-3-dark-s: 100%; --firebase-color-3-dark-l: 65%;
     --firebase-color-4-dark-h: 15; --firebase-color-4-dark-s: 100%; --firebase-color-4-dark-l: 70%;
 
-    /* Apple Event Poster Static Background - Dark Mode Fallback */
-    --apple-event-deep-purple-l-start: 10%;
 
     /* Notification Panel (Compact, solid) - Dark Mode */
     --notification-panel-compact-bg: 216 54% 18%;
@@ -196,36 +170,6 @@
     --notification-item-compact-hover-bg: 216 50% 22%;
     /* --notification-unread-dot-color is same as light mode (primary) */
 
-    /* "MediAssistant Spark" / "Nebula Flow" Welcome Screen Colors - UPDATED TO PRO SUITE INSPIRED - Dark Mode */
-    --spark-bg-start-dark-h: 222; --spark-bg-start-dark-s: 47%; --spark-bg-start-dark-l: 11%; /* slate-900 */
-    --spark-bg-mid-dark-h: 275;   --spark-bg-mid-dark-s: 60%; --spark-bg-mid-dark-l: 15%;   /* dark purple, like purple-950 */
-    --spark-bg-end-dark-h: 222;   --spark-bg-end-dark-s: 47%; --spark-bg-end-dark-l: 11%;   /* slate-900 */
-
-    /* Spark particle colors remain the same as they are light against a dark bg */
-
-     /* Nebula Flow Welcome Screen Specific - Dark mode is default for Nebula */
-    --nebula-bg-start-h: var(--nebula-bg-start-h); 
-    --nebula-bg-start-s: var(--nebula-bg-start-s); 
-    --nebula-bg-start-l: var(--nebula-bg-start-l); 
-    --nebula-bg-mid-h: var(--nebula-bg-mid-h);   
-    --nebula-bg-mid-s: var(--nebula-bg-mid-s); 
-    --nebula-bg-mid-l: var(--nebula-bg-mid-l);   
-    --nebula-bg-end-h: var(--nebula-bg-end-h);   
-    --nebula-bg-end-s: var(--nebula-bg-end-s); 
-    --nebula-bg-end-l: var(--nebula-bg-end-l);   
-
-    --nebula-particle-color-1-h: var(--nebula-particle-color-1-h); 
-    --nebula-particle-color-1-s: var(--nebula-particle-color-1-s); 
-    --nebula-particle-color-1-l: var(--nebula-particle-color-1-l);
-    --nebula-particle-color-2-h: var(--nebula-particle-color-2-h); 
-    --nebula-particle-color-2-s: var(--nebula-particle-color-2-s); 
-    --nebula-particle-color-2-l: var(--nebula-particle-color-2-l);
-    --nebula-particle-color-3-h: var(--nebula-particle-color-3-h); 
-    --nebula-particle-color-3-s: var(--nebula-particle-color-3-s); 
-    --nebula-particle-color-3-l: var(--nebula-particle-color-3-l);
-    --nebula-particle-color-4-h: var(--nebula-particle-color-4-h); 
-    --nebula-particle-color-4-s: var(--nebula-particle-color-4-s); 
-    --nebula-particle-color-4-l: var(--nebula-particle-color-4-l);
   }
 }
 
@@ -245,13 +189,13 @@
 }
 
 /* Allow scroll only if specific welcome/animation screens are NOT present */
-body:not(:has(.nebula-flow-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)) {
+body:not(:has(.simple-welcome-screen)):not(:has(.nebula-flow-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)) {
   overflow: auto;
 }
 
 
-/* --- Nebula Flow Welcome Screen --- */
-.nebula-flow-welcome-screen {
+/* --- Simple Welcome Screen ("Elegant Reveal") --- */
+.simple-welcome-screen {
   width: 100vw;
   height: 100vh;
   position: fixed;
@@ -261,66 +205,78 @@ body:not(:has(.nebula-flow-welcome-screen)):not(:has(.spark-welcome-screen)):not
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: linear-gradient(
-    160deg,
-    hsl(var(--nebula-bg-start-h), var(--nebula-bg-start-s), var(--nebula-bg-start-l)) 0%,
-    hsl(var(--nebula-bg-mid-h), var(--nebula-bg-mid-s), var(--nebula-bg-mid-l)) 50%,
-    hsl(var(--nebula-bg-end-h), var(--nebula-bg-end-s), var(--nebula-bg-end-l)) 100%
-  );
-  background-size: 300% 300%;
-  animation: nebula-background-animation 25s ease-in-out infinite alternate;
-  color: hsl(var(--foreground)); /* Default text color for Nebula should be light */
+  background-color: hsl(var(--background)); /* Clean, static background */
+  color: hsl(var(--foreground));
+  cursor: pointer; /* Indicate it's clickable to dismiss */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
-@keyframes nebula-background-animation {
-  0% { background-position: 0% 0%; }
-  50% { background-position: 100% 100%; }
-  100% { background-position: 0% 0%; }
+.simple-welcome-logo-container {
+  margin-bottom: 1.25rem; /* 20px */
 }
 
-.flow-particle {
-  position: absolute; /* Will be positioned by framer-motion */
-  width: 3px; /* Smaller, more like trails */
-  height: 60px; /* Long trails */
-  border-radius: 2px;
-  opacity: 0; /* Initial opacity controlled by framer-motion */
-  filter: blur(1px) brightness(1.5); /* Glow effect */
-  will-change: transform, opacity;
+.simple-welcome-heart-icon {
+  /* Sizing is controlled by --heart-icon-splash-size in :host styles of web component */
+  --heart-icon-splash-size: clamp(80px, 15vw, 120px); /* Responsive size for this welcome screen */
+  filter: drop-shadow(0 4px 12px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.25));
 }
 
-.flow-particle-color-1 { background-color: hsl(var(--nebula-particle-color-1-h), var(--nebula-particle-color-1-s), var(--nebula-particle-color-1-l)); }
-.flow-particle-color-2 { background-color: hsl(var(--nebula-particle-color-2-h), var(--nebula-particle-color-2-s), var(--nebula-particle-color-2-l)); }
-.flow-particle-color-3 { background-color: hsl(var(--nebula-particle-color-3-h), var(--nebula-particle-color-3-s), var(--nebula-particle-color-3-l)); }
-.flow-particle-color-4 { background-color: hsl(var(--nebula-particle-color-4-h), var(--nebula-particle-color-4-s), var(--nebula-particle-color-4-l)); }
-
-.logo-morph-particle {
-    position: absolute;
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background-color: hsl(var(--nebula-particle-color-4-h), var(--nebula-particle-color-4-s), calc(var(--nebula-particle-color-4-l) + 20%)); /* Brighter particles for logo */
-    box-shadow: 0 0 8px 2px hsla(var(--nebula-particle-color-4-h), var(--nebula-particle-color-4-s), calc(var(--nebula-particle-color-4-l) + 20%), 0.7);
-    will-change: transform, opacity;
+.simple-welcome-appname {
+  /* Uses .animated-gradient-text for styling */
+  margin-bottom: 0.5rem; /* Space between app name and tagline */
 }
 
-.heart-ecg-icon-nebula {
-  /* Uses variables defined in :host of web component, 
-     --heart-icon-splash-size can be overridden here if needed */
-  filter: drop-shadow(0 0 15px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6))
-          drop-shadow(0 0 30px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.4));
+.simple-welcome-tagline {
+  /* Text color inherited, or can be specifically set to text-muted-foreground */
 }
 
-.nebula-text-logo .animated-gradient-text { /* Specific for Logo text on Nebula screen */
-    background-image: linear-gradient(to right, 
-      hsl(var(--nebula-particle-color-1-h), var(--nebula-particle-color-1-s), calc(var(--nebula-particle-color-1-l) + 15%)) 0%, 
-      hsl(var(--nebula-particle-color-3-h), var(--nebula-particle-color-3-s), calc(var(--nebula-particle-color-3-l) + 10%)) 50%, 
-      hsl(var(--nebula-particle-color-1-h), var(--nebula-particle-color-1-s), calc(var(--nebula-particle-color-1-l) + 15%)) 100%);
-}
-.nebula-tagline {
-  /* Styles for the tagline on the nebula screen, if different from default AnimatedTagline */
+.simple-welcome-tagline .emoji {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 1.1em; /* Slightly larger if needed */
+  margin-left: 0.2em;
+  animation: sparkle-subtle 2.0s infinite ease-in-out alternate;
 }
 
+@keyframes sparkle-subtle {
+  0% { opacity: 0.7; transform: scale(1) rotate(-2deg); }
+  50% { opacity: 1; transform: scale(1.03) rotate(2deg); }
+  100% { opacity: 0.7; transform: scale(1) rotate(-2deg); }
+}
 
-/* Animation Utilities */
+/* --- End of Simple Welcome Screen Styles --- */
+
+
+/* --- REMOVED or COMMENTED OUT old splash screen styles --- */
+/* .event-poster-splash-screen { ... } */
+/* .splash-logo-container { ... } */
+/* .heart-ecg-icon-splash-static { ... } */
+/* .bottom-text-container-splash { ... } */
+/* .app-name-splash-static { ... } */
+/* .tagline-splash-static { ... } */
+/* @keyframes pulse-glow-from-pack { ... } */
+/* .splash-element-fade-in { ... } */
+/* @keyframes fadeInElements { ... } */
+
+/* --- REMOVED or COMMENTED OUT Nebula Flow styles --- */
+/* .nebula-flow-welcome-screen { ... } */
+/* @keyframes nebula-background-animation { ... } */
+/* .flow-particle { ... } */
+/* .flow-particle-color-1 etc. { ... } */
+/* .logo-morph-particle { ... } */
+/* .heart-ecg-icon-nebula { ... } */
+/* .nebula-text-logo .animated-gradient-text { ... } */
+
+/* --- REMOVED or COMMENTED OUT MediAssistant Spark styles --- */
+/* .spark-welcome-screen { ... } */
+/* @keyframes spark-background-animation-light { ... } */
+/* @keyframes spark-background-animation-dark { ... } */
+/* .dark .spark-welcome-screen { ... } */
+/* .spark-particle { ... } */
+/* .spark-particle.bg-\[hsl\(var\(--spark-particle-color-1\)\)\] { ... } etc. */
+
+
+/* Animation Utilities (Still useful) */
 .fade-in {
   opacity: 0;
   transform: translateY(10px);
@@ -409,6 +365,12 @@ body:not(:has(.nebula-flow-welcome-screen)):not(:has(.spark-welcome-screen)):not
   75%  { color: hsl(var(--firebase-color-4-light-h), var(--firebase-color-4-light-s), var(--firebase-color-4-light-l)); }
   100% { color: hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)); }
 }
+.welcome-text-fg-animated {
+  animation-duration: 10s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-name: welcome-text-color-cycle-light;
+}
 
 @keyframes welcome-text-color-cycle-dark {
   0%   { color: hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)); }
@@ -416,13 +378,6 @@ body:not(:has(.nebula-flow-welcome-screen)):not(:has(.spark-welcome-screen)):not
   50%  { color: hsl(var(--firebase-color-3-dark-h), var(--firebase-color-3-dark-s), var(--firebase-color-3-dark-l)); }
   75%  { color: hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)); }
   100% { color: hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)); }
-}
-
-.welcome-text-fg-animated {
-  animation-duration: 10s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-name: welcome-text-color-cycle-light;
 }
 .dark .welcome-text-fg-animated {
   animation-name: welcome-text-color-cycle-dark;
@@ -507,7 +462,7 @@ body:not(:has(.nebula-flow-welcome-screen)):not(:has(.spark-welcome-screen)):not
 }
 
 
-/* Firebase Gradient Text with Flow (like for "Hello" greeting) */
+/* Firebase Gradient Text (used for "Hello" in Hero, and "MediAssistant" in simple welcome) */
 .firebase-gradient-text {
   background-size: 200% auto;
   background-image: linear-gradient(to right,
@@ -784,192 +739,28 @@ body:not(:has(.nebula-flow-welcome-screen)):not(:has(.spark-welcome-screen)):not
 
 
 /* --- Styles for "Apple Event Poster" STATIC Background Version --- */
-.event-poster-splash-screen {
-  width: 100vw;
-  height: 100vh;
-  position: fixed; /* Ensure it covers the screen if it's the very first thing */
-  top:0; left:0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background-image: url('/images/mediassistant-splash-background.png');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), calc(var(--apple-event-deep-purple-l-start, 15%) - 5%));
-}
-.dark .event-poster-splash-screen {
-   background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), calc(var(--apple-event-deep-purple-l-start, 10%) - 3%));
-}
-
-.central-icon-container {
-  position: relative;
-  z-index: 2;
-  margin-bottom: 18vh; /* Push logo up from text */
-}
-
-/* Class for the <heart-ecg-icon> web component */
-.heart-ecg-icon-splash-static {
-  --heart-icon-splash-size: clamp(100px, 22vw, 170px); /* Set the variable for the component */
-  animation: pulse-glow-from-pack 2.0s ease-in-out infinite alternate;
-}
-
-/* Keyframe animation for the overall icon pulse and glow */
-@keyframes pulse-glow-from-pack {
-  0%, 100% { /* Resting State */
-    transform: scale(1);
-    filter: drop-shadow(0 0 12px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6));
-  }
-  50% { /* Peak Pulse State */
-    transform: scale(1.07);
-    filter: drop-shadow(0 0 20px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.8))
-            drop-shadow(0 0 8px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.5));
-  }
-}
-
-.bottom-text-container-splash {
-  position: absolute;
-  bottom: 7vh;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  z-index: 2;
-  width: 90%;
-  max-width: 550px;
-}
-
-.app-name-splash-static {
-  font-size: clamp(2rem, 5.5vw, 3.2rem);
-  font-weight: 600;
-  color: var(--splash-text-main-color);
-  margin: 0 0 0.25em 0;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-}
-
-.tagline-splash-static {
-  font-size: clamp(1rem, 2.8vw, 1.4rem);
-  font-weight: 300;
-  color: var(--splash-text-tagline-color);
-  margin: 0;
-  line-height: 1.45;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.25);
-}
-
-.tagline-splash-static .emoji {
-  display: inline-block;
-  vertical-align: middle;
-  font-size: inherit;
-  animation: sparkle-subtle 2.0s infinite ease-in-out alternate; /* Slowed down slightly */
-}
-@keyframes sparkle-subtle {
-  0% { opacity: 0.7; transform: scale(1) rotate(-2deg); }
-  50% { opacity: 1; transform: scale(1.03) rotate(2deg); } /* Less intense scale */
-  100% { opacity: 0.7; transform: scale(1) rotate(-2deg); }
-}
-
-.splash-element-fade-in {
-  opacity: 0;
-  animation: fadeInElements 1.2s ease-out 0.75s forwards;
-}
-@keyframes fadeInElements {
-  to {
-    opacity: 1;
-  }
-}
-/* --- End of Apple Event Poster STATIC Background Version Styles --- */
-
-/* --- Styles for "MediAssistant Spark" Welcome Screen --- */
-@keyframes spark-background-animation-light {
-  0% { background-position: 0% 0%; }
-  50% { background-position: 100% 100%; }
-  100% { background-position: 0% 0%; }
-}
-@keyframes spark-background-animation-dark { /* Updated to use new dark vars */
-  0% { background-position: 0% 0%; }
-  50% { background-position: 100% 100%; }
-  100% { background-position: 0% 0%; }
-}
-
-.spark-welcome-screen {
-  width: 100vw;
-  height: 100vh;
-  position: fixed; /* Ensure it covers the screen */
-  top:0; left:0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background-image: linear-gradient(
-    135deg,
-    hsl(var(--spark-bg-start-light-h), var(--spark-bg-start-light-s), var(--spark-bg-start-light-l)),
-    hsl(var(--spark-bg-mid-light-h), var(--spark-bg-mid-light-s), var(--spark-bg-mid-light-l)),
-    hsl(var(--spark-bg-end-light-h), var(--spark-bg-end-light-s), var(--spark-bg-end-light-l))
-  );
-  background-size: 300% 300%;
-  animation: spark-background-animation-light 20s ease-in-out infinite alternate;
-}
-
-.dark .spark-welcome-screen {
-  background-image: linear-gradient(
-    135deg,
-    hsl(var(--spark-bg-start-dark-h), var(--spark-bg-start-dark-s), var(--spark-bg-start-dark-l)),
-    hsl(var(--spark-bg-mid-dark-h), var(--spark-bg-mid-dark-s), var(--spark-bg-mid-dark-l)),
-    hsl(var(--spark-bg-end-dark-h), var(--spark-bg-end-dark-s), var(--spark-bg-end-dark-l))
-  );
-  animation-name: spark-background-animation-dark;
-}
-
-.spark-particle {
-  position: absolute; /* Will be positioned by framer-motion */
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  box-shadow: 0 0 8px 2px currentColor, /* Use current color for main glow */
-              0 0 12px 4px hsla(var(--background), 0.3); /* Subtle background-colored outer glow */
-  will-change: transform, opacity;
-}
-
-/* Example of applying spark particle colors - used by WelcomeDisplay.tsx */
-.spark-particle.bg-\[hsl\(var\(--spark-particle-color-1\)\)\] { background-color: hsl(var(--spark-particle-color-1-h), var(--spark-particle-color-1-s), var(--spark-particle-color-1-l)); color: hsl(var(--spark-particle-color-1-h), var(--spark-particle-color-1-s), var(--spark-particle-color-1-l));}
-.spark-particle.bg-\[hsl\(var\(--spark-particle-color-2\)\)\] { background-color: hsl(var(--spark-particle-color-2-h), var(--spark-particle-color-2-s), var(--spark-particle-color-2-l)); color: hsl(var(--spark-particle-color-2-h), var(--spark-particle-color-2-s), var(--spark-particle-color-2-l));}
-.spark-particle.bg-\[hsl\(var\(--spark-particle-color-3\)\)\] { background-color: hsl(var(--spark-particle-color-3-h), var(--spark-particle-color-3-s), var(--spark-particle-color-3-l)); color: hsl(var(--spark-particle-color-3-h), var(--spark-particle-color-3-s), var(--spark-particle-color-3-l));}
-.spark-particle.bg-\[hsl\(var\(--spark-particle-color-4\)\)\] { background-color: hsl(var(--spark-particle-color-4-h), var(--spark-particle-color-4-s), var(--spark-particle-color-4-l)); color: hsl(var(--spark-particle-color-4-h), var(--spark-particle-color-4-s), var(--spark-particle-color-4-l));}
-/* End of "MediAssistant Spark" Styles */
-
-
-/* Subtle Heart Pulse Animation for Tagline Emojis */
-@keyframes heartPulseSubtle {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.05); opacity: 1; }
-}
-
-.animate-heart-pulse-subtle {
-  animation: heartPulseSubtle 2.0s infinite ease-in-out;
-}
+/* .event-poster-splash-screen { ... } and related classes removed as we're using .simple-welcome-screen */
 
 
 /* --- Styles for Compact Notification Panel --- */
 .notification-panel-compact {
   background-color: hsl(var(--notification-panel-compact-bg));
-  border: 1px solid hsl(var(--notification-panel-compact-border)); /* Standard border */
+  border: 1px solid hsl(var(--notification-panel-compact-border));
   @apply rounded-xl shadow-2xl overflow-hidden fixed top-16 right-4 z-50 w-[320px] max-h-[400px] flex flex-col;
 }
 
 /* Animated Gradient Border for Notification Panel (Firebase Inspired) */
 .notification-panel-compact.notification-panel-animated-border {
-  border: 2px solid transparent; /* Make border transparent for ::before to show through */
+  border: 2px solid transparent; 
   position: relative;
 }
 
 .notification-panel-compact.notification-panel-animated-border::before {
   content: "";
   position: absolute;
-  inset: -2px; /* Covers the transparent border area */
-  border-radius: inherit; /* Match parent's border-radius */
-  padding: 2px; /* Thickness of the gradient border */
+  inset: -2px; 
+  border-radius: inherit; 
+  padding: 2px; 
   background: linear-gradient(
     135deg,
     hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)),
@@ -981,14 +772,14 @@ body:not(:has(.nebula-flow-welcome-screen)):not(:has(.spark-welcome-screen)):not
   background-size: 300% 300%;
   animation: animated-gradient-background 4s ease infinite;
   -webkit-mask:
-    linear-gradient(#fff 0 0) content-box, /* Keep content area transparent */
-    linear-gradient(#fff 0 0); /* Cover the border area */
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0); 
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; /* Standard name for this operation */
-  mask-composite: exclude; /* Standard name */
-  z-index: -1; /* Behind the panel content */
+  -webkit-mask-composite: xor; 
+  mask-composite: exclude; 
+  z-index: -1; 
 }
 
 .dark .notification-panel-compact.notification-panel-animated-border::before {
@@ -1092,6 +883,3 @@ body:not(:has(.nebula-flow-welcome-screen)):not(:has(.spark-welcome-screen)):not
 
 /* Final check for valid CSS */
 .ensure-css-parsing-ends-correctly { color: initial; }
-
-
-    
