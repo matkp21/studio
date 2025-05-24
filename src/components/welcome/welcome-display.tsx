@@ -1,12 +1,10 @@
-
 // src/components/welcome/welcome-display.tsx
 "use client";
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AnimatedTagline } from '@/components/layout/animated-tagline';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
-import { Logo } from '@/components/logo'; // Using the standard Logo component
+// Removed AnimatedTagline import as it's no longer used here
 
 // Web Component for Heart/ECG Icon (Internal SMIL animations)
 const defineHeartECGIconWebComponent = () => {
@@ -15,13 +13,13 @@ const defineHeartECGIconWebComponent = () => {
       constructor() {
         super();
         const shadow = this.attachShadow({ mode: 'open' });
-        const ecgPathLength = 68; // Pre-calculated length
+        const ecgPathLength = 68; 
 
         shadow.innerHTML = `
           <style>
             :host {
               display: inline-block;
-              width: var(--heart-icon-splash-size, 120px); /* Adjusted default size */
+              width: var(--heart-icon-splash-size, 120px);
               height: var(--heart-icon-splash-size, 120px);
             }
             svg {
@@ -33,14 +31,14 @@ const defineHeartECGIconWebComponent = () => {
               overflow: visible;
             }
             .heart-path-splash {
-              stroke: hsl(var(--heart-stroke-initial-h, 210), var(--heart-stroke-initial-s, 100%), var(--heart-stroke-initial-l, 85%));
+              stroke: hsl(var(--heart-stroke-initial-h, 200), var(--heart-stroke-initial-s, 100%), var(--heart-stroke-initial-l, 85%));
               fill: none;
-              stroke-width: var(--heart-stroke-width, 2px); /* Slightly thinner */
+              stroke-width: var(--heart-stroke-width, 2px);
             }
             .ecg-polyline-splash {
-              stroke: hsl(var(--ecg-stroke-color-h, 200), var(--ecg-stroke-color-s, 100%), var(--ecg-stroke-color-l, 90%));
+              stroke: hsl(var(--ecg-stroke-color-h, 180), var(--ecg-stroke-color-s, 100%), var(--ecg-stroke-color-l, 90%));
               fill: none;
-              stroke-width: var(--ecg-stroke-width, 2px); /* Slightly thinner */
+              stroke-width: var(--ecg-stroke-width, 2px);
               stroke-dasharray: ${ecgPathLength};
               stroke-dashoffset: ${ecgPathLength};
             }
@@ -76,54 +74,83 @@ interface WelcomeDisplayProps {
   onDisplayComplete: () => void;
 }
 
-const numFlowParticles = 30; // Increased number of particles for a denser flow
+const numFlowParticles = 35; // Number of flowing particles
+const numLogoParticles = 20; // Number of particles for logo morph
 
 const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) => {
   const [hasMounted, setHasMounted] = useState(false);
   const [flowParticleProps, setFlowParticleProps] = useState<any[]>([]);
+  const [logoParticleProps, setLogoParticleProps] = useState<any[]>([]);
+  const [showActualLogo, setShowActualLogo] = useState(false);
+  const [showAppName, setShowAppName] = useState(false);
 
   useEffect(() => {
     defineHeartECGIconWebComponent();
     setHasMounted(true);
 
+    const logoMorphTimer = setTimeout(() => {
+      setShowActualLogo(true);
+    }, 1500); // Time for logo particles to converge
+
+    const appNameTimer = setTimeout(() => {
+      setShowAppName(true);
+    }, 2200); // App name appears after logo
+
     const displayTimer = setTimeout(() => {
       onDisplayComplete();
-    }, 7000); // 7 seconds total for the splash
+    }, 4500); // Shorter duration now
 
-    return () => clearTimeout(displayTimer);
+    return () => {
+      clearTimeout(logoMorphTimer);
+      clearTimeout(appNameTimer);
+      clearTimeout(displayTimer);
+    };
   }, [onDisplayComplete]);
 
   useEffect(() => {
     if (hasMounted) {
-      const generatedProps = [...Array(numFlowParticles)].map((_, i) => {
-        const duration = Math.random() * 5 + 5; // 5-10 seconds duration for a slow flow
-        const initialY = Math.random() * 100; // Start anywhere vertically
+      // Flowing particles
+      const generatedFlowProps = [...Array(numFlowParticles)].map((_, i) => {
+        const duration = Math.random() * 6 + 7; // 7-13 seconds duration
+        const initialY = Math.random() * 100;
         const initialX = Math.random() * 100;
         return {
           id: `flow-particle-${i}`,
-          initial: { 
-            x: `${initialX}vw`, 
-            y: `${initialY}vh`, 
-            opacity: 0,
-            scale: Math.random() * 0.4 + 0.1 // smaller particles
-          },
+          initial: { x: `${initialX}vw`, y: `${initialY}vh`, opacity: 0, scale: Math.random() * 0.5 + 0.2 },
           animate: {
-            x: [`${initialX}vw`, `${Math.random() * 100}vw`, `${Math.random() * 100}vw`], // More horizontal drift
-            y: [`${initialY}vh`, `${(initialY + 20 + Math.random() * 30) % 100}vh`, `${(initialY + 50 + Math.random() * 50) % 100}vh`], // Slow downward/upward drift
-            opacity: [0, Math.random() * 0.3 + 0.1, 0], // Softer opacity
-            scale: [Math.random() * 0.4 + 0.1, Math.random() * 0.6 + 0.2, Math.random() * 0.4 + 0.1],
+            x: [`${initialX}vw`, `${Math.random() * 100}vw`, `${Math.random() * 100}vw`],
+            y: [`${initialY}vh`, `${(initialY + 20 + Math.random() * 40) % 100}vh`, `${(initialY + 60 + Math.random() * 40) % 100}vh`],
+            opacity: [0, Math.random() * 0.4 + 0.2, 0],
+            scale: [Math.random() * 0.5 + 0.2, Math.random() * 0.8 + 0.3, Math.random() * 0.5 + 0.2],
           },
-          transition: {
-            duration: duration,
-            repeat: Infinity,
-            repeatType: "loop", // Loop instead of mirror for continuous flow
-            ease: "linear",
-            delay: Math.random() * duration, // Random start times for a less synchronized look
-          },
-          colorClass: `flow-particle-color-${(i % 4) + 1}` // Cycle through 4 colors
+          transition: { duration: duration, repeat: Infinity, repeatType: "loop", ease: "linear", delay: Math.random() * duration },
+          colorClass: `flow-particle-color-${(i % 4) + 1}`
         };
       });
-      setFlowParticleProps(generatedProps);
+      setFlowParticleProps(generatedFlowProps);
+
+      // Logo morphing particles
+      const generatedLogoProps = [...Array(numLogoParticles)].map((_, i) => {
+        const angle = (i / numLogoParticles) * 2 * Math.PI;
+        const radius = 40 + Math.random() * 20; // pixels
+        return {
+          id: `logo-morph-particle-${i}`,
+          initial: { 
+            x: `calc(50vw + ${Math.cos(angle) * (radius + 100 + Math.random() * 100)}px - 2.5px)`, // Start further out
+            y: `calc(40vh + ${Math.sin(angle) * (radius + 100 + Math.random() * 100)}px - 2.5px)`, // Adjusted Y for logo position
+            scale: 0.1 + Math.random() * 0.3, 
+            opacity: 0 
+          },
+          animate: { 
+            x: `calc(50vw + ${Math.cos(angle) * radius}px - 2.5px)`, // Converge towards a circle
+            y: `calc(40vh + ${Math.sin(angle) * radius}px - 2.5px)`,
+            opacity: [0, 0.8, 0.6, 0], // Fade in, become prominent, then fade as logo appears
+            scale: [0.1, 1, 0.8, 0.2],
+          },
+          transition: { duration: 1.5, ease: "circOut", delay: i * 0.02 } // Staggered start
+        };
+      });
+      setLogoParticleProps(generatedLogoProps);
     }
   }, [hasMounted]);
 
@@ -133,59 +160,26 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
     exit: { opacity: 0, transition: { duration: 0.5, delay: 0.3 } }
   };
 
-  // Staggered reveal for text elements
-  const textContainerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        delayChildren: 2.0, // Start revealing text after logo forms
-        staggerChildren: 0.4,
-      },
-    },
-  };
-
-  const textItemVariants = {
+  const appNameTextVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 80, damping: 15 } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
   };
-  
-  // Logo "morphing" simulation: particles converge, then logo appears
-  const logoParticleCount = 15;
-  const [logoParticles, setLogoParticles] = useState<any[]>([]);
-  const [showActualLogo, setShowActualLogo] = useState(false);
 
-  useEffect(() => {
-    if (hasMounted) {
-      const particles = Array.from({ length: logoParticleCount }).map((_, i) => ({
-        id: `logo-p-${i}`,
-        initialX: `${Math.random() * 60 + 20}vw`, // Start scattered more centrally
-        initialY: `${Math.random() * 60 + 20}vh`,
-        finalX: `calc(50vw + ${Math.cos(i * (2 * Math.PI / logoParticleCount)) * 50 - 20}px)`, // Converge to a circle around logo
-        finalY: `calc(40vh + ${Math.sin(i * (2 * Math.PI / logoParticleCount)) * 50 - 20}px)`, // Adjust Y for logo position
-      }));
-      setLogoParticles(particles);
-
-      // Trigger actual logo appearance
-      const logoTimer = setTimeout(() => {
-        setShowActualLogo(true);
-      }, 1800); // Time for particles to converge
-
-      return () => clearTimeout(logoTimer);
-    }
-  }, [hasMounted]);
-
+  const actualLogoVariants = {
+    hidden: { opacity: 0, scale: 0.3 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.8, type: "spring", stiffness:150, damping:15, delay: 0.2 } }, // Delay slightly more
+  };
 
   return (
     <motion.div
-      className="nebula-flow-welcome-screen" // New class for this theme
+      className="nebula-flow-welcome-screen"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
-      onClick={onDisplayComplete}
+      onClick={onDisplayComplete} // Click anywhere to skip
     >
-      {/* Flowing Particles Background */}
+      {/* Flowing Background Particles */}
       {hasMounted && flowParticleProps.map(props => (
         <motion.div
           key={props.id}
@@ -199,54 +193,47 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
       {/* Central Content Area */}
       <div className="z-10 flex flex-col items-center justify-center text-center h-full">
         {/* Logo Morphing Particles - visible before actual logo */}
-        {!showActualLogo && hasMounted && logoParticles.map(p => (
+        {hasMounted && !showActualLogo && logoParticleProps.map(p => (
             <motion.div
               key={p.id}
-              className="logo-morph-particle"
-              initial={{ x: p.initialX, y: p.initialY, scale:0.2, opacity: 0.8 }}
-              animate={{ x: p.finalX, y: p.finalY, scale:0.05, opacity:0.3 }}
-              transition={{ duration: 1.5, ease: "circOut", delay: 0.2 }}
+              className="logo-morph-particle" // Ensure this class has appropriate styling (size, color, blur)
+              initial={p.initial}
+              animate={p.animate}
+              transition={p.transition}
             />
         ))}
         
-        {/* Actual Logo - fades in after particles converge */}
+        {/* Actual Logo - appears after particles converge */}
         {hasMounted && (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={showActualLogo ? { opacity: 1, scale: 1, transition: { duration: 0.7, delay:0.1, ease:"backOut" }} : {}}
-            className="mb-5" // Adjusted margin
+            className="mb-3" // Reduced margin
+            initial="hidden"
+            animate={showActualLogo ? "visible" : "hidden"}
+            variants={actualLogoVariants}
           >
-             {/* Using the Logo component directly might be simpler if it handles its own animation well enough */}
-             {/* <Logo simple={false} /> */}
-             {/* Or if the web component is preferred for specific control: */}
             <heart-ecg-icon class="heart-ecg-icon-nebula"></heart-ecg-icon>
           </motion.div>
         )}
 
-        {/* Animated Text Block */}
-        <motion.div
-          variants={textContainerVariants}
-          initial="hidden"
-          animate={hasMounted && showActualLogo ? "visible" : "hidden"} // Only animate text after logo is shown
-          className="space-y-2"
-        >
-          <motion.p variants={textItemVariants} className="text-3xl sm:text-4xl font-medium text-neutral-200">
-            Welcome, User!
-          </motion.p>
-          <motion.div variants={textItemVariants}>
-             <Logo simple={false} className="justify-center nebula-text-logo" />
+        {/* App Name - appears after logo */}
+        {hasMounted && (
+          <motion.div
+            initial="hidden"
+            animate={showAppName ? "visible" : "hidden"}
+            variants={appNameTextVariants}
+          >
+            <h1 className="text-4xl sm:text-5xl font-semibold nebula-text-logo">
+              MediAssistant
+            </h1>
           </motion.div>
-          <motion.div variants={textItemVariants}>
-            <AnimatedTagline className="text-md sm:text-lg text-neutral-300/80 nebula-tagline" />
-          </motion.div>
-        </motion.div>
+        )}
       </div>
 
-      {/* Tap to Continue Hint */}
+      {/* Tap to Continue Hint - appears later */}
       {hasMounted && (
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1, transition: { delay: 5.0 } }} // Appears later
+          animate={{ opacity: 1, transition: { delay: 3.5 } }} // Appears later
           className="absolute bottom-8 text-xs text-neutral-400/70 flex items-center gap-1 z-20"
         >
           Tap to continue <ArrowRight size={14} />
@@ -257,5 +244,3 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
 };
 
 export default WelcomeDisplay;
-
-    
