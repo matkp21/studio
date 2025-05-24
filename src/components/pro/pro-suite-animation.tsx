@@ -98,7 +98,13 @@ export function ProSuiteAnimation({ onAnimationComplete }: ProSuiteAnimationProp
         Initializing Advanced Tools...
       </motion.p>
 
-      <svg width="90%" maxWidth="400" height="100" viewBox="0 0 300 100" className="absolute bottom-10 opacity-25">
+      <svg 
+        width="90%" 
+        style={{ maxWidth: '400px' }} 
+        height="100" 
+        viewBox="0 0 300 100" 
+        className="absolute bottom-10 opacity-25"
+      >
         <motion.path
           d="M0 50 Q 75 10, 150 50 T 300 50"
           fill="transparent"
