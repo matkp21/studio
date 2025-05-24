@@ -66,13 +66,28 @@
     --chart-4: 30 80% 55%;
     --chart-5: 130 50% 50%;
 
-    /* Firebase Inspired Gradient Colors (Light Mode) - For General Use */
+     /* Firebase Inspired Gradient Colors (Light Mode) - For General Use */
     --firebase-color-1-light-h: 45; --firebase-color-1-light-s: 100%; --firebase-color-1-light-l: 58%; /* Bright Yellow (#FFCA28) */
     --firebase-color-2-light-h: 36; --firebase-color-2-light-s: 100%; --firebase-color-2-light-l: 50%; /* Bright Orange (#FFA000) */
     --firebase-color-3-light-h: 25; --firebase-color-3-light-s: 100%; --firebase-color-3-light-l: 55%; /* Orange-Red (#FF8A65) */
     --firebase-color-4-light-h: 15; --firebase-color-4-light-s: 100%; --firebase-color-4-light-l: 60%; /* Reddish-Orange (#FF7043) */
 
-    /* Heart/ECG Icon Colors for new "Simple Welcome Screen" (consistent with web component defaults) */
+
+    /* --- "MediAssistant Spark" Welcome Screen Colors (Light Mode) --- */
+    /* Soft Abstract Gradient Background */
+    --spark-bg-start-light-h: 275; --spark-bg-start-light-s: 60%; --spark-bg-start-light-l: 92%; /* Soft Lavender */
+    --spark-bg-mid-light-h: 200;   --spark-bg-mid-light-s: 70%; --spark-bg-mid-light-l: 94%;   /* Soft Sky Blue */
+    --spark-bg-end-light-h: 180;   --spark-bg-end-light-s: 65%; --spark-bg-end-light-l: 90%;   /* Soft Aqua/Teal tint */
+
+    /* Particle Colors (Pastel Firebase-Inspired) */
+    --spark-particle-color-1-h: 45; --spark-particle-color-1-s: 100%; --spark-particle-color-1-l: 80%; /* Pastel Yellow */
+    --spark-particle-color-2-h: 30; --spark-particle-color-2-s: 100%; --spark-particle-color-2-l: 75%; /* Pastel Orange */
+    --spark-particle-color-3-h: 0;  --spark-particle-color-3-s: 100%; --spark-particle-color-3-l: 80%; /* Pastel Pink/Red */
+    --spark-particle-color-4-h: 280;--spark-particle-color-4-s: 100%; --spark-particle-color-4-l: 82%; /* Pastel Purple */
+    /* --- End of Spark Welcome Screen Colors --- */
+
+    /* --- "Elegant Reveal" Welcome Screen Colors (Light Mode) --- */
+    /* Heart/ECG Icon Colors for new "Simple Welcome Screen" */
     --heart-stroke-width: 2px; /* Slightly thinner for a cleaner look */
     --ecg-stroke-width: 2px;
     --heart-icon-splash-size: clamp(100px, 18vw, 150px); /* Default size for the icon in simple welcome */
@@ -88,7 +103,7 @@
     --ecg-stroke-color-h: var(--primary-h);
     --ecg-stroke-color-s: var(--primary-s);
     --ecg-stroke-color-l: var(--primary-l);
-
+    /* --- End of Elegant Reveal Colors --- */
 
     /* Notification Panel (Compact, solid) - Light Mode */
     --notification-panel-compact-bg: 0 0% 100%; /* White */
@@ -163,13 +178,39 @@
     --firebase-color-4-dark-h: 15; --firebase-color-4-dark-s: 100%; --firebase-color-4-dark-l: 70%;
 
 
+    /* --- "MediAssistant Spark" Welcome Screen Colors (Dark Mode) --- */
+    /* Darker, Moody Abstract Gradient Background */
+    --spark-bg-start-dark-h: 222; --spark-bg-start-dark-s: 47%; --spark-bg-start-dark-l: 11%; /* Slate-900 like */
+    --spark-bg-mid-dark-h: 275;   --spark-bg-mid-dark-s: 60%; --spark-bg-mid-dark-l: 15%;   /* Deep Purple */
+    --spark-bg-end-dark-h: 210;   --spark-bg-end-dark-s: 50%; --spark-bg-end-dark-l: 13%;   /* Dark Blue */
+
+    /* Particle Colors (Still vibrant but against dark BG) */
+    --spark-particle-color-1-h: 45; --spark-particle-color-1-s: 100%; --spark-particle-color-1-l: 65%; /* Yellow */
+    --spark-particle-color-2-h: 30; --spark-particle-color-2-s: 100%; --spark-particle-color-2-l: 60%; /* Orange */
+    --spark-particle-color-3-h: 0;  --spark-particle-color-3-s: 90%; --spark-particle-color-3-l: 65%; /* Pink/Red */
+    --spark-particle-color-4-h: 280;--spark-particle-color-4-s: 90%; --spark-particle-color-4-l: 70%; /* Purple */
+    /* --- End of Spark Welcome Screen Colors --- */
+
+    /* --- "Elegant Reveal" Welcome Screen Colors (Dark Mode) --- */
+    --heart-stroke-initial-h: var(--primary-h);
+    --heart-stroke-initial-s: var(--primary-s);
+    --heart-stroke-initial-l: var(--primary-l);
+    
+    --heart-stroke-animated-h: var(--accent-h);
+    --heart-stroke-animated-s: var(--accent-s);
+    --heart-stroke-animated-l: var(--accent-l);
+    
+    --ecg-stroke-color-h: var(--primary-h);
+    --ecg-stroke-color-s: var(--primary-s);
+    --ecg-stroke-color-l: calc(var(--primary-l) + 5%); /* Slightly brighter for dark mode */
+    /* --- End of Elegant Reveal Colors --- */
+
     /* Notification Panel (Compact, solid) - Dark Mode */
     --notification-panel-compact-bg: 216 54% 18%;
     --notification-panel-compact-border: 216 40% 25%;
     --notification-item-compact-bg: 216 54% 18%;
     --notification-item-compact-hover-bg: 216 50% 22%;
     /* --notification-unread-dot-color is same as light mode (primary) */
-
   }
 }
 
@@ -193,8 +234,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.nebula-flow-welcome-screen)):no
   overflow: auto;
 }
 
-
-/* --- Simple Welcome Screen ("Elegant Reveal") --- */
+/* --- "Elegant Reveal" Welcome Screen --- */
 .simple-welcome-screen {
   width: 100vw;
   height: 100vh;
@@ -205,7 +245,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.nebula-flow-welcome-screen)):no
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-color: hsl(var(--background)); /* Clean, static background */
+  background-color: hsl(var(--background)); /* Clean, static background from theme */
   color: hsl(var(--foreground));
   cursor: pointer; /* Indicate it's clickable to dismiss */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
@@ -215,66 +255,108 @@ body:not(:has(.simple-welcome-screen)):not(:has(.nebula-flow-welcome-screen)):no
   margin-bottom: 1.25rem; /* 20px */
 }
 
-.simple-welcome-heart-icon {
-  /* Sizing is controlled by --heart-icon-splash-size in :host styles of web component */
-  --heart-icon-splash-size: clamp(80px, 15vw, 120px); /* Responsive size for this welcome screen */
-  filter: drop-shadow(0 4px 12px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.25));
-}
+/* Styles for the new heart icon SVG (used in Elegant Reveal) */
+/* Sizing and drop shadow are defined in the SVG's style tag for simplicity */
+/* .simple-welcome-heart-icon is applied to the svg element itself */
 
 .simple-welcome-appname {
-  /* Uses .animated-gradient-text for styling */
+  /* Uses .animated-gradient-text for styling if Logo component isn't used for text */
   margin-bottom: 0.5rem; /* Space between app name and tagline */
+  font-size: clamp(2rem, 6vw, 3.5rem); /* Responsive size for App Name */
+  font-weight: 600;
 }
 
 .simple-welcome-tagline {
-  /* Text color inherited, or can be specifically set to text-muted-foreground */
+  text-align: center;
+  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+  /* Text color inherited from .simple-welcome-screen or can be specifically set */
 }
 
 .simple-welcome-tagline .emoji {
   display: inline-block;
   vertical-align: middle;
-  font-size: 1.1em; /* Slightly larger if needed */
-  margin-left: 0.2em;
-  animation: sparkle-subtle 2.0s infinite ease-in-out alternate;
+  font-size: 1.1em;
+  /* Removed animation for static emojis as per "Elegant Reveal" simplicity */
 }
 
-@keyframes sparkle-subtle {
-  0% { opacity: 0.7; transform: scale(1) rotate(-2deg); }
-  50% { opacity: 1; transform: scale(1.03) rotate(2deg); }
-  100% { opacity: 0.7; transform: scale(1) rotate(-2deg); }
-}
 
-/* --- End of Simple Welcome Screen Styles --- */
-
-
-/* --- REMOVED or COMMENTED OUT old splash screen styles --- */
+/* --- REMOVED/COMMENTED "Apple Event Poster" specific styles like .event-poster-splash-screen --- */
 /* .event-poster-splash-screen { ... } */
-/* .splash-logo-container { ... } */
+/* .central-icon-container { ... } */
 /* .heart-ecg-icon-splash-static { ... } */
 /* .bottom-text-container-splash { ... } */
 /* .app-name-splash-static { ... } */
 /* .tagline-splash-static { ... } */
 /* @keyframes pulse-glow-from-pack { ... } */
-/* .splash-element-fade-in { ... } */
-/* @keyframes fadeInElements { ... } */
 
-/* --- REMOVED or COMMENTED OUT Nebula Flow styles --- */
+/* --- REMOVED/COMMENTED "Nebula Flow" styles --- */
 /* .nebula-flow-welcome-screen { ... } */
 /* @keyframes nebula-background-animation { ... } */
 /* .flow-particle { ... } */
-/* .flow-particle-color-1 etc. { ... } */
-/* .logo-morph-particle { ... } */
-/* .heart-ecg-icon-nebula { ... } */
-/* .nebula-text-logo .animated-gradient-text { ... } */
 
-/* --- REMOVED or COMMENTED OUT MediAssistant Spark styles --- */
-/* .spark-welcome-screen { ... } */
-/* @keyframes spark-background-animation-light { ... } */
-/* @keyframes spark-background-animation-dark { ... } */
-/* .dark .spark-welcome-screen { ... } */
-/* .spark-particle { ... } */
-/* .spark-particle.bg-\[hsl\(var\(--spark-particle-color-1\)\)\] { ... } etc. */
 
+/* --- "MediAssistant Spark" Welcome Screen Styles (Still active for when that theme is chosen) --- */
+@keyframes spark-background-animation-light {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes spark-background-animation-dark {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.spark-welcome-screen {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  
+  background: linear-gradient(
+    135deg,
+    hsl(var(--spark-bg-start-light-h), var(--spark-bg-start-light-s), var(--spark-bg-start-light-l)),
+    hsl(var(--spark-bg-mid-light-h), var(--spark-bg-mid-light-s), var(--spark-bg-mid-light-l)),
+    hsl(var(--spark-bg-end-light-h), var(--spark-bg-end-light-s), var(--spark-bg-end-light-l))
+  );
+  background-size: 400% 400%;
+  animation: spark-background-animation-light 20s ease infinite;
+}
+
+.dark .spark-welcome-screen {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--spark-bg-start-dark-h), var(--spark-bg-start-dark-s), var(--spark-bg-start-dark-l)),
+    hsl(var(--spark-bg-mid-dark-h), var(--spark-bg-mid-dark-s), var(--spark-bg-mid-dark-l)),
+    hsl(var(--spark-bg-end-dark-h), var(--spark-bg-end-dark-s), var(--spark-bg-end-dark-l))
+  );
+  background-size: 400% 400%;
+  animation-name: spark-background-animation-dark; /* Use dark mode animation */
+}
+
+/* Styles for individual spark particles (used by WelcomeDisplay.tsx) */
+.spark-particle {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  position: absolute; /* Positioned by framer-motion */
+  box-shadow: 0 0 8px 2px currentColor; /* Creates a glow effect using the particle's color */
+  opacity: 0; /* Initial state for framer-motion */
+}
+/* Assigning specific colors to particles (can be done via WelcomeDisplay.tsx as well) */
+.spark-particle.bg-\[hsl\(var\(--spark-particle-color-1\)\)\] { background-color: hsl(var(--spark-particle-color-1-h), var(--spark-particle-color-1-s), var(--spark-particle-color-1-l)); color: hsl(var(--spark-particle-color-1-h), var(--spark-particle-color-1-s), var(--spark-particle-color-1-l));}
+.spark-particle.bg-\[hsl\(var\(--spark-particle-color-2\)\)\] { background-color: hsl(var(--spark-particle-color-2-h), var(--spark-particle-color-2-s), var(--spark-particle-color-2-l)); color: hsl(var(--spark-particle-color-2-h), var(--spark-particle-color-2-s), var(--spark-particle-color-2-l));}
+.spark-particle.bg-\[hsl\(var\(--spark-particle-color-3\)\)\] { background-color: hsl(var(--spark-particle-color-3-h), var(--spark-particle-color-3-s), var(--spark-particle-color-3-l)); color: hsl(var(--spark-particle-color-3-h), var(--spark-particle-color-3-s), var(--spark-particle-color-3-l));}
+.spark-particle.bg-\[hsl\(var\(--spark-particle-color-4\)\)\] { background-color: hsl(var(--spark-particle-color-4-h), var(--spark-particle-color-4-s), var(--spark-particle-color-4-l)); color: hsl(var(--spark-particle-color-4-h), var(--spark-particle-color-4-s), var(--spark-particle-color-4-l));}
+/* --- End of Spark Welcome Screen Styles --- */
 
 /* Animation Utilities (Still useful) */
 .fade-in {
@@ -338,7 +420,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.nebula-flow-welcome-screen)):no
   100% { background-position: 0% center; }
 }
 
-/* Pulse animation for medical icon */
+/* Pulse animation for medical icon (e.g., heart in tagline) */
 @keyframes pulseMedical {
   0%, 100% {
     opacity: var(--medical-pulse-opacity-base, 0.8);
@@ -349,6 +431,15 @@ body:not(:has(.simple-welcome-screen)):not(:has(.nebula-flow-welcome-screen)):no
     transform: scale(var(--medical-pulse-scale-peak, 1.2));
   }
 }
+/* For the tagline heart specifically */
+@keyframes heart-pulse-subtle {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.12); opacity: 1; }
+}
+.animate-heart-pulse-subtle {
+  animation: heart-pulse-subtle 2.0s infinite ease-in-out;
+}
+
 
 .animate-pulse-medical {
   animation: pulseMedical 1.8s infinite ease-in-out;
@@ -736,11 +827,6 @@ body:not(:has(.simple-welcome-screen)):not(:has(.nebula-flow-welcome-screen)):no
 .sidebar-item-shine:hover::after {
   transform: translateX(50%) translateY(-25%) rotate(25deg);
 }
-
-
-/* --- Styles for "Apple Event Poster" STATIC Background Version --- */
-/* .event-poster-splash-screen { ... } and related classes removed as we're using .simple-welcome-screen */
-
 
 /* --- Styles for Compact Notification Panel --- */
 .notification-panel-compact {
