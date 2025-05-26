@@ -30,7 +30,7 @@ export function ImageProcessingMode() {
       <Card className="shadow-lg border-border/50 rounded-xl">
         <CardHeader>
           <CardTitle className="text-2xl">Upload Image</CardTitle>
-          <CardDescription>Upload a medical image (e.g., X-ray) for AI-powered annotation. For educational/research use.</CardDescription>
+          <CardDescription>Upload a medical image (e.g., X-ray) for AI-powered annotation, aiming for the analytical depth demonstrated by specialized models like MedGemma. For educational/research use.</CardDescription>
         </CardHeader>
         <CardContent>
           <ImageUploader onAnalysisComplete={handleAnalysisComplete} setIsLoading={setIsLoading} />
@@ -100,7 +100,7 @@ export function ImageProcessingMode() {
               )}
               {/* This specific alert for medico when analysisResult is present is now covered by the general medico alert above */}
               {/* {userRole === 'medico' && analysisResult && ( ... )} */}
-              
+
               {!uploadedImage && !analysisResult && (
                  <div className="flex flex-col items-center justify-center text-muted-foreground py-10 flex-grow">
                     <ImageOff className="h-12 w-12 mb-3 text-muted-foreground/70" />

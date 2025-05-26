@@ -1,3 +1,4 @@
+
 // src/components/pro/pro-dashboard.tsx
 "use client";
 
@@ -8,26 +9,26 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import { cn } from '@/lib/utils';
-import { 
-  Brain, ClipboardCheck, Users, Mic, BarChart3, BriefcaseMedical, 
+import {
+  Brain, ClipboardCheck, Users, Mic, BarChart3, BriefcaseMedical,
   FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, ArrowRight, Settings, Star, GripVertical, CheckSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // Import the actual components
-import { DifferentialDiagnosisAssistant } from './differential-diagnosis-assistant'; 
+import { DifferentialDiagnosisAssistant } from './differential-diagnosis-assistant';
 import { DischargeSummaryGenerator } from './discharge-summary-generator';
 import { TreatmentProtocolNavigator } from './treatment-protocol-navigator';
 import { RoundsTool } from './rounds-tool';
 import { PharmacopeiaChecker } from './pharmacopeia-checker';
 import { SmartDictation } from './smart-dictation';
 import { ClinicalCalculatorSuite } from './clinical-calculator-suite';
-import { ReferralStreamliner } from './referral-streamliner'; 
-import { PatientCommunicationDrafter } from './patient-communication-drafter'; 
-import { OnCallHandoverAssistant } from './on-call-handover-assistant'; 
-import { ResearchSummarizer } from './research-summarizer'; 
+import { ReferralStreamliner } from './referral-streamliner';
+import { PatientCommunicationDrafter } from './patient-communication-drafter';
+import { OnCallHandoverAssistant } from './on-call-handover-assistant';
+import { ResearchSummarizer } from './research-summarizer';
 
-type ActiveToolId = 
+type ActiveToolId =
   | 'diffDx'
   | 'protocols'
   | 'pharmacopeia'
@@ -46,21 +47,21 @@ interface ProTool {
   title: string;
   description: string;
   icon: React.ElementType;
-  component: React.ElementType; 
+  component: React.ElementType;
   comingSoon?: boolean;
 }
 
 const allProToolsList: ProTool[] = [
-  { id: 'diffDx', title: 'Differential Diagnosis Assistant', description: 'AI-powered suggestions, investigations, and initial management steps.', icon: Brain, component: DifferentialDiagnosisAssistant, comingSoon: false },
-  { id: 'discharge', title: 'Discharge Summary Generator', description: 'Ultra-streamlined, predictive discharge summary creation.', icon: FilePlus, component: DischargeSummaryGenerator, comingSoon: false }, 
-  { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator, comingSoon: false }, 
+  { id: 'diffDx', title: 'Differential Diagnosis Assistant', description: 'AI-powered suggestions (inspired by the reasoning of MedGemma/MedLM), investigations, and initial management steps.', icon: Brain, component: DifferentialDiagnosisAssistant, comingSoon: false },
+  { id: 'discharge', title: 'Discharge Summary Generator', description: 'Ultra-streamlined, predictive discharge summary creation.', icon: FilePlus, component: DischargeSummaryGenerator, comingSoon: false },
+  { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator, comingSoon: false },
   { id: 'rounds', title: 'Patient Rounds Tool', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool, comingSoon: false }, // Renamed from "Rounds Tool 2.0"
   { id: 'pharmacopeia', title: 'Pharmacopeia & Interaction Checker', description: 'Comprehensive drug database and interaction analysis.', icon: Pill, component: PharmacopeiaChecker, comingSoon: false },
   { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation, comingSoon: false },
   { id: 'calculators', title: 'Intelligent Clinical Calculators', description: 'Suite of scores and criteria (GRACE, Wells\', etc.).', icon: BarChart3, component: ClinicalCalculatorSuite, comingSoon: false },
   { id: 'referral', title: 'Referral & Consultation Streamliner', description: 'Templates and quick summary generation for referrals.', icon: PhoneForwarded, component: ReferralStreamliner, comingSoon: false },
   { id: 'patientComm', title: 'Patient Communication Drafter', description: 'AI drafts for patient-friendly explanations and instructions.', icon: MessageSquareHeart, component: PatientCommunicationDrafter, comingSoon: false },
-  { id: 'onCallHandover', title: 'On-Call Handover Assistant', description: 'Structured handovers with "if-then" scenarios and escalation.', icon: Users, component: OnCallHandoverAssistant, comingSoon: false }, 
+  { id: 'onCallHandover', title: 'On-Call Handover Assistant', description: 'Structured handovers with "if-then" scenarios and escalation.', icon: Users, component: OnCallHandoverAssistant, comingSoon: false },
   { id: 'research', title: 'Research & Literature Summarizer', description: 'AI summaries of key papers for clinical questions.', icon: Library, component: ResearchSummarizer, comingSoon: false },
 ];
 
@@ -83,7 +84,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
         className={cn(
           "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
           !isEditMode && "hover:shadow-lg cursor-pointer",
-          isFrequentlyUsed && !isEditMode && "tool-card-frequent firebase-gradient-border-hover", 
+          isFrequentlyUsed && !isEditMode && "tool-card-frequent firebase-gradient-border-hover",
           tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
           isEditMode && "cursor-grab" // Indicate draggable in edit mode
         )}
@@ -104,7 +105,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
           <div className="flex items-center gap-3 mb-1.5">
             <div className={cn(
                 "p-2 rounded-lg bg-primary/10 text-primary transition-colors duration-300",
-                isFrequentlyUsed && !isEditMode ? "bg-gradient-to-br from-[hsl(var(--welcome-color-1)/0.2)] to-[hsl(var(--welcome-color-3)/0.2)] text-foreground" : (!isEditMode && "group-hover:bg-primary/20")
+                isFrequentlyUsed && !isEditMode ? "bg-gradient-to-br from-[hsl(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),calc(var(--firebase-color-1-light-l)_-_10%))/0.2] to-[hsl(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),calc(var(--firebase-color-3-light-l)_-_10%))/0.2] text-foreground" : (!isEditMode && "group-hover:bg-primary/20")
             )}>
                 <tool.icon className={cn(
                     "h-7 w-7 transition-transform duration-300",
@@ -146,13 +147,13 @@ export function ProModeDashboard() {
   const [activeDialog, setActiveDialog] = useState<ActiveToolId>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   // Placeholder for user-configured tools. In a real app, this would come from user settings/localStorage.
-  const [displayedTools, setDisplayedTools] = useState<ProTool[]>(allProToolsList); 
+  const [displayedTools, setDisplayedTools] = useState<ProTool[]>(allProToolsList);
 
   const currentTool = allProToolsList.find(tool => tool.id === activeDialog);
 
   const frequentlyUsedTools = displayedTools.filter(tool => frequentlyUsedToolIds.includes(tool.id));
   const otherTools = displayedTools.filter(tool => !frequentlyUsedToolIds.includes(tool.id));
-  
+
   // TODO: Implement drag-and-drop and tool selection logic when isEditMode is true.
 
   return (

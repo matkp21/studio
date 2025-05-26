@@ -1,3 +1,4 @@
+
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
@@ -19,8 +20,8 @@ import { DrugDosageCalculator } from './drug-dosage-calculator';
 import { SolvedQuestionPapersViewer } from './solved-question-papers-viewer';
 import { FlowchartCreator } from './flowchart-creator';
 import { ProgressTracker } from './progress-tracker';
-import { 
-  NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy, 
+import {
+  NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
   Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical
 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
@@ -28,9 +29,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
-type ActiveToolId = 
-  | 'papers' 
-  | 'notes' 
+type ActiveToolId =
+  | 'papers'
+  | 'notes'
   | 'topics'
   | 'flowcharts'
   | 'flashcards'
@@ -50,13 +51,13 @@ interface MedicoTool {
   title: string;
   description: string;
   icon: React.ElementType;
-  component: React.ElementType; 
+  component: React.ElementType;
   comingSoon?: boolean;
 }
 
 const medicoToolsList: MedicoTool[] = [
   { id: 'papers', title: 'Previous Question Papers', description: 'Access and solve past MBBS question papers (essays, short notes, MCQs).', icon: BookCopy, component: SolvedQuestionPapersViewer, comingSoon: false },
-  { id: 'notes', title: 'Study Notes Generator', description: 'Generate and view concise notes for medical topics.', icon: NotebookText, component: StudyNotesGenerator, comingSoon: false },
+  { id: 'notes', title: 'Study Notes Generator', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: StudyNotesGenerator, comingSoon: false },
   { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study based on exam trends or user performance.', icon: TrendingUp, component: HighYieldTopicPredictor, comingSoon: false },
   { id: 'flowcharts', title: 'Flowchart Creator', description: 'Generate flowcharts for medical topics to aid revision.', icon: Workflow, component: FlowchartCreator, comingSoon: false },
   { id: 'flashcards', title: 'Flashcard Generator', description: 'Create digital flashcards for quick revision.', icon: Layers, component: FlashcardGenerator, comingSoon: false },
@@ -90,7 +91,7 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
         className={cn(
           "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
           !isEditMode && "hover:shadow-lg cursor-pointer",
-          isFrequentlyUsed && !isEditMode && "tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow", 
+          isFrequentlyUsed && !isEditMode && "tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
           tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
           isEditMode && "cursor-grab"
         )}
@@ -111,12 +112,12 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
           <div className="flex items-center gap-3 mb-1.5">
             <div className={cn(
                 "p-2 rounded-lg bg-primary/10 text-primary transition-colors duration-300",
-                isFrequentlyUsed && !isEditMode ? "bg-gradient-to-br from-[hsl(var(--welcome-color-1)/0.2)] to-[hsl(var(--welcome-color-3)/0.2)] text-foreground" : (!isEditMode && "group-hover:bg-primary/20")
+                isFrequentlyUsed && !isEditMode ? "bg-gradient-to-br from-[hsl(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),calc(var(--firebase-color-1-light-l)_-_10%))/0.2] to-[hsl(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),calc(var(--firebase-color-3-light-l)_-_10%))/0.2] text-foreground" : (!isEditMode && "group-hover:bg-primary/20")
             )}>
                 <tool.icon className={cn(
                     "h-7 w-7 transition-transform duration-300",
                     !isEditMode && "group-hover:scale-110",
-                    isFrequentlyUsed && !isEditMode ? "text-primary" : "text-primary" 
+                    isFrequentlyUsed && !isEditMode ? "text-sky-500" : "text-primary"
                 )} />
             </div>
             <CardTitle className={cn(
@@ -152,7 +153,7 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
 export function MedicoDashboard() {
   const [activeDialog, setActiveDialog] = useState<ActiveToolId>(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [displayedTools] = useState<MedicoTool[]>(medicoToolsList); 
+  const [displayedTools] = useState<MedicoTool[]>(medicoToolsList);
 
   const currentTool = displayedTools.find(tool => tool.id === activeDialog);
 

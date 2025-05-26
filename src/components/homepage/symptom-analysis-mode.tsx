@@ -6,15 +6,15 @@ import { useState } from 'react';
 import { SymptomForm } from '@/components/symptom-analyzer/symptom-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, ListChecks, Sparkles, Brain, PencilRuler } from 'lucide-react'; 
+import { Loader2, ListChecks, Sparkles, Brain, PencilRuler } from 'lucide-react';
 import type { SymptomAnalyzerOutput } from '@/ai/flows/symptom-analyzer-flow';
-import { useProMode } from '@/contexts/pro-mode-context'; 
+import { useProMode } from '@/contexts/pro-mode-context';
 
 export function SymptomAnalysisMode() {
   const [analysisResult, setAnalysisResult] = useState<SymptomAnalyzerOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { isProMode, userRole } = useProMode(); 
+  const { isProMode, userRole } = useProMode();
 
   const handleAnalysisComplete = (result: SymptomAnalyzerOutput | null, err?: string) => {
     setAnalysisResult(result);
@@ -27,7 +27,7 @@ export function SymptomAnalysisMode() {
       <Card className="shadow-lg border-border/50 rounded-xl">
         <CardHeader>
           <CardTitle className="text-2xl">Enter Symptoms</CardTitle>
-          <CardDescription>Describe the symptoms. Our AI will provide potential insights. Not for self-diagnosis.</CardDescription>
+          <CardDescription>Describe the symptoms. Our AI, aspiring to the insight of models like MedGemma and MedLM, will provide potential insights. Not for self-diagnosis.</CardDescription>
         </CardHeader>
         <CardContent>
           <SymptomForm onAnalysisComplete={handleAnalysisComplete} setIsLoading={setIsLoading} isLoading={isLoading} />
@@ -52,7 +52,7 @@ export function SymptomAnalysisMode() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           {userRole === 'medico' && (
              <Alert variant="default" className="my-4 border-sky-500/50 bg-sky-500/10 rounded-lg">
               <PencilRuler className="h-5 w-5 text-sky-600" />

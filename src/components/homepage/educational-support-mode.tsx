@@ -6,8 +6,8 @@ import { useState } from 'react';
 import { GuidelineQueryForm } from '@/components/guideline-retrieval/guideline-query-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, Info, BookMarked, School, PencilRuler } from 'lucide-react'; 
-import type { GuidelineRetrievalOutput } from '@/ai/flows/guideline-retrieval';
+import { Loader2, Info, BookMarked, School, PencilRuler } from 'lucide-react';
+import type { GuidelineRetrievalOutput } from '@/ai/flows/guideline-retrieval'; // Make sure this path is correct
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useProMode } from '@/contexts/pro-mode-context';
 
@@ -29,7 +29,7 @@ export function EducationalSupportMode() {
         <CardHeader>
           <CardTitle className="text-2xl">Query Guidelines</CardTitle>
           <CardDescription>
-            Search for clinical guidelines or educational material on medical topics.
+            Search for clinical guidelines or educational material, leveraging AI that learns from the comprehensive understanding of models like MedLM.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -57,7 +57,7 @@ export function EducationalSupportMode() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           {userRole === 'medico' && (
             <Alert variant="default" className="my-4 border-sky-500/50 bg-sky-500/10 rounded-lg">
               <PencilRuler className="h-5 w-5 text-sky-600" />
@@ -73,15 +73,27 @@ export function EducationalSupportMode() {
             </Alert>
           )}
 
-          {retrievalResult && !isLoading && !error && (
+          {retrievalResult && retrievalResult.results && !isLoading && !error && (
             <div className="space-y-3 fade-in mt-2"> {/* Added mt-2 for spacing */}
               <h3 className="font-semibold text-lg text-foreground flex items-center">
                 <BookMarked className="mr-2 h-5 w-5 text-primary" />
                 Guidelines & Information:
               </h3>
               <ScrollArea className="h-60 md:h-72 border rounded-lg bg-secondary/30">
-                <div className="p-4 text-secondary-foreground whitespace-pre-wrap text-sm">
-                  {retrievalResult.guidelines}
+                 <div className="p-4 text-secondary-foreground whitespace-pre-wrap text-sm">
+                  {retrievalResult.results.length > 0 ? (
+                    <ul className="space-y-3">
+                      {retrievalResult.results.map((item, index) => (
+                        <li key={index} className="pb-2 mb-2 border-b border-border/30 last:border-b-0">
+                          <h4 className="font-medium text-sm text-foreground">{item.title}</h4>
+                          {item.source && <p className="text-xs text-muted-foreground mb-1">Source: {item.source}</p>}
+                          <p className="text-xs">{item.summary}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No specific guidelines found for your query. Try broadening your search.</p>
+                  )}
                 </div>
               </ScrollArea>
             </div>
