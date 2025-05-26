@@ -73,11 +73,17 @@
     --firebase-color-4-light-h: 15; --firebase-color-4-light-s: 100%; --firebase-color-4-light-l: 60%; /* Reddish-Orange (#FF7043) */
 
 
-    /* --- "Elegant Reveal" Welcome Screen Colors (Light Mode) --- */
+    /* --- "Elegant Reveal" Welcome Screen Colors & Sizing (Light Mode) --- */
     /* Background for the "Elegant Reveal" screen is the main app background */
     /* Icon & Text colors for "Elegant Reveal" */
     --heart-stroke-width: 2px; /* Maintained for heart icon in Logo */
-    --heart-icon-splash-size: clamp(100px, 18vw, 150px); /* For the Logo on welcome screen */
+    --heart-icon-splash-size-min: 60px;
+    --heart-icon-splash-size-vw: 15vw;
+    --heart-icon-splash-size-max: 120px;
+    --logo-text-splash-size-min: 1.8rem;
+    --logo-text-splash-size-vw: 5vw;
+    --logo-text-splash-size-max: 3rem;
+
 
     /* --- "MediAssistant Spark" Welcome Screen Colors (Light Mode) - REVISED --- */
     /* Adjusted for a Pro Clinical Suite like background for "Spark" if used, otherwise "Elegant Reveal" uses simple background */
@@ -163,6 +169,14 @@
     --firebase-color-3-dark-h: 25; --firebase-color-3-dark-s: 100%; --firebase-color-3-dark-l: 65%;
     --firebase-color-4-dark-h: 15; --firebase-color-4-dark-s: 100%; --firebase-color-4-dark-l: 70%;
 
+    /* --- "Elegant Reveal" Welcome Screen Sizing (Dark Mode) --- */
+    --heart-icon-splash-size-min: 60px;
+    --heart-icon-splash-size-vw: 15vw;
+    --heart-icon-splash-size-max: 120px;
+    --logo-text-splash-size-min: 1.8rem;
+    --logo-text-splash-size-vw: 5vw;
+    --logo-text-splash-size-max: 3rem;
+
     /* --- "MediAssistant Spark" Welcome Screen Colors (Dark Mode) - REVISED --- */
     --spark-bg-start-dark-h: 222; --spark-bg-start-dark-s: 47%; --spark-bg-start-dark-l: 11%; /* Slate-900 like */
     --spark-bg-mid-dark-h: 275;   --spark-bg-mid-dark-s: 60%; --spark-bg-mid-dark-l: 15%;   /* Deep Purple */
@@ -199,7 +213,7 @@
 }
 
 /* Allow scroll only if specific welcome/animation screens are NOT present */
-body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)) {
+body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)) {
   overflow: auto;
 }
 
@@ -217,7 +231,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   background-color: hsl(var(--background)); /* Clean, static background from theme */
   color: hsl(var(--foreground));
   cursor: pointer; /* Indicate it's clickable to dismiss */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: var(--font-ubuntu-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji");
 }
 
 .simple-welcome-tagline { /* Styles for the AnimatedTagline component's container */
@@ -227,6 +241,18 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 }
 .dark .simple-welcome-tagline {
   color: hsl(var(--foreground), 0.85);
+}
+
+/* Styles applied to the logo elements specifically within the simple-welcome-screen */
+.simple-welcome-screen .welcome-logo-container .logo-icon-container,
+.simple-welcome-screen .welcome-logo-container .logo-icon-container svg {
+  width: clamp(var(--heart-icon-splash-size-min), var(--heart-icon-splash-size-vw), var(--heart-icon-splash-size-max));
+  height: clamp(var(--heart-icon-splash-size-min), var(--heart-icon-splash-size-vw), var(--heart-icon-splash-size-max));
+}
+
+.simple-welcome-screen .welcome-logo-container .logo-text {
+  font-size: clamp(var(--logo-text-splash-size-min), var(--logo-text-splash-size-vw), var(--logo-text-splash-size-max));
+  /* Any other text specific styles for the welcome screen logo text if needed */
 }
 /* --- End of "Elegant Reveal" Welcome Screen Styles --- */
 
@@ -255,7 +281,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   overflow: hidden;
   color: hsl(var(--foreground)); /* Default text color */
   cursor: pointer;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: var(--font-ubuntu-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji");
 
   background: linear-gradient(
     135deg,
@@ -943,17 +969,18 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
     --apple-event-light-beam-mid-a: 0.6;
 
     /* Heart/ECG Icon Colors for this specific splash screen */
-    --heart-stroke-initial-h: 0; /* White for high contrast on dark bg */
-    --heart-stroke-initial-s: 0%;
-    --heart-stroke-initial-l: 100%;
+    /* HSL Variables for Heart/ECG Icon in Splash Screen */
+    --heart-stroke-initial-h: 210; /* Example: A cool blue */
+    --heart-stroke-initial-s: 90%;
+    --heart-stroke-initial-l: 65%;
 
-    --heart-stroke-animated-h: 0; /* Can remain white or have a subtle color pulse */
-    --heart-stroke-animated-s: 0%;
-    --heart-stroke-animated-l: 100%;
+    --heart-stroke-animated-h: 330; /* Example: A vibrant pink/magenta */
+    --heart-stroke-animated-s: 100%;
+    --heart-stroke-animated-l: 70%;
 
-    --ecg-stroke-color-h: 0; /* White */
-    --ecg-stroke-color-s: 0%;
-    --ecg-stroke-color-l: 100%;
+    --ecg-stroke-color-h: 200; /* Example: A slightly different cool blue */
+    --ecg-stroke-color-s: 100%;
+    --ecg-stroke-color-l: 75%;
 
 
     /* Text Colors for this specific splash screen */
@@ -964,17 +991,20 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
      but the poster itself is dark, so these might be the same as light.
      If the light theme splash is different, then this would be more distinct. */
   .dark { /* These specific overrides might not be needed if the splash is always dark themed */
-    --splash-heart-stroke-h: 0;
-    --splash-heart-stroke-s: 0%;
-    --splash-heart-stroke-l: 100%;
-    --splash-ecg-stroke-h: 0;
-    --splash-ecg-stroke-s: 0%;
-    --splash-ecg-stroke-l: 100%;
+    --heart-stroke-initial-h: 210;
+    --heart-stroke-initial-s: 90%;
+    --heart-stroke-initial-l: 70%; /* Slightly brighter for dark mode */
+    --heart-stroke-animated-h: 330;
+    --heart-stroke-animated-s: 100%;
+    --heart-stroke-animated-l: 75%; /* Slightly brighter for dark mode */
+    --ecg-stroke-color-h: 200;
+    --ecg-stroke-color-s: 100%;
+    --ecg-stroke-color-l: 80%; /* Slightly brighter for dark mode */
+
     --splash-text-main-color: white;
     --splash-text-tagline-color: rgba(255, 255, 255, 0.9);
   }
 }
-
 
 .event-poster-splash-screen {
   width: 100vw;
@@ -988,6 +1018,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   justify-content: center; /* Vertically centers icon container */
   overflow: hidden;
   cursor: pointer; /* Click anywhere to continue */
+  font-family: var(--font-ubuntu-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
 
   /* Using the static background image */
   background-image: url('/images/mediassistant-splash-background.png'); /* Ensure this path is correct */
@@ -1004,46 +1035,42 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   margin-bottom: 18vh; /* Pushes logo UP from the text block a bit */
 }
 
-.heart-ecg-icon-splash-static { /* Applied to your <heart-ecg-icon> Web Component */
-  /* --heart-stroke-width & --ecg-stroke-width are set in the component's shadow DOM */
+.heart-ecg-icon-splash-static {
   /* Sizing and stroke properties for the icon within the welcome screen */
-  --heart-icon-splash-size: clamp(120px, 22vw, 180px); /* Use the component's variable */
+  --heart-icon-splash-size: clamp(120px, 22vw, 180px);
   width: var(--heart-icon-splash-size);
   height: auto;
 
   /* Overriding SMIL animation colors using CSS variables passed to the component */
-  --heart-stroke-initial-h: var(--splash-heart-stroke-h);
-  --heart-stroke-initial-s: var(--splash-heart-stroke-s);
-  --heart-stroke-initial-l: var(--splash-heart-stroke-l);
-  --heart-stroke-animated-h: var(--splash-heart-animated-h);
-  --heart-stroke-animated-s: var(--splash-heart-animated-s);
-  --heart-stroke-animated-l: var(--splash-heart-animated-l);
-  --ecg-stroke-color-h: var(--splash-ecg-stroke-h);
-  --ecg-stroke-color-s: var(--splash-ecg-stroke-s);
-  --ecg-stroke-color-l: var(--splash-ecg-stroke-l);
+  /* Note: SMIL attribute animation via CSS variables has mixed browser support.
+     Hardcoding colors directly in the SVG <animate> values is often more reliable.
+     These variables are for potential future use or if a JS solution injects them.
+  */
+  --heart-stroke-initial: hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l));
+  --heart-stroke-animated: hsl(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l));
+  --ecg-stroke-color: hsl(var(--ecg-stroke-color-h), var(--ecg-stroke-color-s), var(--ecg-stroke-color-l));
 
   display: block;
-  animation: pulse-glow-from-pack 2.5s ease-in-out infinite alternate; /* External glow/pulse */
-  filter: drop-shadow(0px 0px 15px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.5))
-          drop-shadow(0px 0px 30px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.3));
+  /* External CSS Pulse & Glow Animation */
+  animation: pulse-glow-from-pack 2.5s ease-in-out infinite alternate;
 }
 
-/* Keyframes for the overall icon's pulse & glow */
+/* Your keyframe animation for the SVG's overall pulse and glow */
 @keyframes pulse-glow-from-pack {
   0% {
     transform: scale(1);
-    filter: drop-shadow(0 0 12px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.6))
-            drop-shadow(0 0 20px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.3));
+    filter: drop-shadow(0 0 12px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6))
+            drop-shadow(0 0 20px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.3));
   }
   50% {
     transform: scale(1.07); /* More pronounced scale for heartbeat */
-    filter: drop-shadow(0 0 20px hsla(var(--splash-heart-animated-h), var(--splash-heart-animated-s), var(--splash-heart-animated-l), 0.8)) /* More intense animated glow */
-            drop-shadow(0 0 35px hsla(var(--splash-heart-animated-h), var(--splash-heart-animated-s), var(--splash-heart-animated-l), 0.5));
+    filter: drop-shadow(0 0 20px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.8)) /* More intense animated glow */
+            drop-shadow(0 0 35px hsla(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l), 0.5));
   }
   100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 12px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.6))
-            drop-shadow(0 0 20px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.3));
+    filter: drop-shadow(0 0 12px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.6))
+            drop-shadow(0 0 20px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.3));
   }
 }
 
@@ -1082,7 +1109,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   font-size: inherit;
 }
 
-/* Entrance animation for logo and text blocks */
+/* Entrance animation for logo and text blocks (applied via JS or component logic) */
 .splash-element-fade-in {
   opacity: 0;
   animation: fadeInElements 1s ease-out 0.5s forwards; /* 0.5s delay after screen potentially loads */
