@@ -7,21 +7,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
 import { AnimatedTagline } from '@/components/layout/animated-tagline';
-// import { Logo } from '@/components/logo'; // Logo component is not used in this simple version
 
 // Simpler Animated Heart Icon for "Elegant Reveal"
 const SimpleAnimatedHeartIcon = () => {
+  // Path for a clean heart shape. You can adjust this path if needed.
+  const heartPathD = "M32 55.74C31.28 55.47 1.5 34.82 1.5 20.48C1.5 10.13 10.08 2.26 20.25 2.26C27.19 2.26 32 7.49 32 7.49S36.81 2.26 43.75 2.26C53.92 2.26 62.5 10.13 62.5 20.48C62.5 34.82 32.72 55.47 32 55.74Z";
+
   return (
     <svg
-      className="simple-welcome-heart-icon" // This class will control size via globals.css
-      viewBox="0 0 64 58" // Adjusted viewBox for a more typical heart shape
+      className="simple-welcome-heart-icon" // Styled by globals.css for size and drop-shadow
+      viewBox="0 0 64 58" // Adjusted viewBox
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M32 55.74C31.28 55.47 1.5 34.82 1.5 20.48C1.5 10.13 10.08 2.26 20.25 2.26C27.19 2.26 32 7.49 32 7.49S36.81 2.26 43.75 2.26C53.92 2.26 62.5 10.13 62.5 20.48C62.5 34.82 32.72 55.47 32 55.74Z"
-        fill="hsl(var(--simple-heart-fill-h, 205), var(--simple-heart-fill-s, 90%), var(--simple-heart-fill-l, 70%))"
-        stroke="hsl(var(--simple-heart-fill-h, 205), var(--simple-heart-fill-s, 80%), calc(var(--simple-heart-fill-l, 70%) - 10%))" // Slightly darker stroke
-        strokeWidth="1.5" // Thinner stroke for a cleaner look
+        d={heartPathD}
+        fill="hsl(var(--simple-heart-fill-h), var(--simple-heart-fill-s), var(--simple-heart-fill-l))"
+        stroke="hsl(var(--simple-heart-fill-h), var(--simple-heart-fill-s), calc(var(--simple-heart-fill-l) - 10%))"
+        strokeWidth="1.5"
       >
         {/* Breathing animation for fill opacity */}
         <animate
@@ -40,11 +42,11 @@ const SimpleAnimatedHeartIcon = () => {
           values="1; 1.05; 1" // Increased scale for more visible pulse
           dur="1.6s" // Slightly faster, more heartbeat-like
           repeatCount="indefinite"
-          additive="sum" // Ensures scaling is from the center of the path's own coordinate system
+          additive="sum"
           calcMode="spline"
           keyTimes="0; 0.3; 1" // Quicker peak
           keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
-          transform-origin="center"
+          // transform-origin="center" // REMOVED this invalid attribute
         />
       </path>
     </svg>
@@ -63,23 +65,18 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
     setHasMounted(true);
     const displayTimer = setTimeout(() => {
       onDisplayComplete();
-    }, 4500); // Total duration of the welcome screen
+    }, 4500); // Total duration for the welcome screen
 
     return () => clearTimeout(displayTimer);
   }, [onDisplayComplete]);
 
-
   if (!hasMounted) {
-    // Fallback for SSR or before mount to prevent hydration issues with framer-motion
-    // Applying basic styles inline to avoid className issues pre-hydration
     return (
       <div
         className="simple-welcome-screen"
-        style={{ opacity: 0 }}
-        onClick={onDisplayComplete} // Allow click to skip even if JS for animation hasn't run
-      >
-        {/* Optionally, a very simple static version of the logo or app name here */}
-      </div>
+        style={{ opacity: 0 }} // Start invisible to prevent flash of unstyled content
+        onClick={onDisplayComplete}
+      />
     );
   }
 
@@ -125,12 +122,12 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
 
   return (
     <motion.div
-      className="simple-welcome-screen"
+      className="simple-welcome-screen" // Styled by globals.css for background
       variants={screenVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
-      onClick={onDisplayComplete} // Click anywhere to skip
+      onClick={onDisplayComplete} // Click anywhere to skip/continue
     >
       <motion.div variants={logoContainerVariants} className="simple-welcome-logo-container">
         <SimpleAnimatedHeartIcon />
@@ -138,7 +135,7 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
 
       <motion.h1
         variants={appNameVariants}
-        className="simple-welcome-appname firebase-gradient-text"
+        className="simple-welcome-appname firebase-gradient-text" // Using firebase gradient for app name
       >
         MediAssistant
       </motion.h1>
@@ -157,4 +154,4 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
   );
 };
 
-export default WelcomeDisplay; // Added default export
+export default WelcomeDisplay;
