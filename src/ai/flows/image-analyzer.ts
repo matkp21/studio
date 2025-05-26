@@ -1,6 +1,9 @@
+
 'use server';
 /**
  * @fileOverview AI-powered medical image annotation flow.
+ * Aims for general analysis, with future aspirations to integrate specialized models
+ * like MedGemma for expert-level interpretation in fields like radiology.
  *
  * - analyzeImage - A function that analyzes a medical image and provides annotations.
  * - AnalyzeImageInput - The input type for the analyzeImage function.
@@ -22,7 +25,7 @@ export type AnalyzeImageInput = z.infer<typeof AnalyzeImageInputSchema>;
 const AnalyzeImageOutputSchema = z.object({
   annotations: z
     .string()
-    .describe('AI-powered annotations highlighting key areas of interest in the medical image. These could be textual descriptions or structured data for potential 2D/3D AR overlays.'),
+    .describe('AI-powered annotations highlighting key areas of interest in the medical image. These could be textual descriptions or structured data for potential 2D/3D AR overlays. Future enhancements aim for expert-level detail akin to specialized models like MedGemma.'),
   // Future: arUrl: z.string().url().optional().describe('A URL to an AR-compatible view of the annotated image, potentially using WebXR.'),
 });
 export type AnalyzeImageOutput = z.infer<typeof AnalyzeImageOutputSchema>;
@@ -36,12 +39,13 @@ const prompt = ai.definePrompt({
   input: {schema: AnalyzeImageInputSchema},
   output: {schema: AnalyzeImageOutputSchema},
   prompt: `You are a medical imaging analysis AI. You are provided with a
-medical image, and your task is to generate annotations that highlight key areas of interest to assist medical professionals in their diagnosis.
+medical image, and your task is to generate general annotations that highlight key areas of interest to assist medical professionals in their diagnosis.
+Provide detailed textual annotations for the given medical image. Focus on identifying and describing any abnormalities, key anatomical features, or other relevant details that could aid in diagnosis. Be as specific as possible in your descriptions.
+If applicable, consider how these annotations might be represented in a 2D or 3D space for Augmented Reality (AR) visualization (e.g., identifying coordinates or regions of interest for overlay).
 
 Image: {{media url=imageDataUri}}
 
-Provide detailed textual annotations for the given medical image. Focus on identifying and describing any abnormalities, key anatomical features, or other relevant details that could aid in diagnosis. Be as specific as possible in your descriptions.
-If applicable, consider how these annotations might be represented in a 2D or 3D space for Augmented Reality (AR) visualization (e.g., identifying coordinates or regions of interest for overlay).
+Note: For highly specialized interpretations, such as detailed radiological reads requiring the expertise of models like MedGemma, future integrations are planned. This prompt is for general feature identification with the current model.
 `,
 });
 

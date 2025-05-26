@@ -1,3 +1,4 @@
+
 "use client";
 
 import { PageWrapper } from '@/components/layout/page-wrapper';
@@ -6,26 +7,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { UploadCloud, CameraOff, Loader2, Info, ScanEye, Wand2 } from 'lucide-react'; // Added Wand2 for interactivity hint
+import { UploadCloud, CameraOff, Loader2, Info, ScanEye, Wand2 } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import { cn } from '@/lib/utils'; // Import cn
 
 interface Annotation {
   id: string;
   text: string;
   position: { x: number; y: number }; // Normalized coordinates (0-1) relative to image/video
-  // For interactive AR: could include properties for 3D positioning, scale, interaction triggers
 }
 
 interface AnnotatedImage {
   id: string;
   name: string;
-  imageUrl: string; // For static image display
+  imageUrl: string;
   annotations: Annotation[];
 }
 
-// Sample data - in a real app, this might come from an API or user uploads
 const sampleAnnotatedImages: AnnotatedImage[] = [
   {
     id: 'xray-1',
@@ -53,10 +53,7 @@ export default function ARViewerPage() {
   const [selectedAnnotatedImage, setSelectedAnnotatedImage] = useState<AnnotatedImage | null>(null);
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
-  
-  // State for AR annotations rendered over video (for demonstration of concept)
   const [arAnnotations, setArAnnotations] = useState<Annotation[]>([]);
-
   const { toast } = useToast();
 
   useEffect(() => {
@@ -118,17 +115,16 @@ export default function ARViewerPage() {
       reader.onloadend = () => {
         const imageUrl = reader.result as string;
         setUploadedImagePreview(imageUrl);
-        // Simulate loading annotations for the uploaded image or using AI
-        // For demo, provide some default annotations if it's an uploaded image.
-        // In a real app, these might come from an AI image analysis flow.
         const newSelectedImage: AnnotatedImage = {
             id: `custom-${Date.now()}`,
             name: file.name,
             imageUrl: imageUrl,
-            annotations: [{id: 'custom-anno-1', text: 'Custom point 1', position: {x:0.25, y:0.25}}, {id: 'custom-anno-2', text: 'Custom point 2', position: {x:0.75, y:0.75}}], 
+            annotations: [
+                {id: 'custom-anno-1', text: 'User point 1 (AI analysis pending)', position: {x:0.25, y:0.25}}, 
+                {id: 'custom-anno-2', text: 'User point 2 (AI analysis pending)', position: {x:0.75, y:0.75}}
+            ], 
         };
         setSelectedAnnotatedImage(newSelectedImage);
-        // Update AR annotations if an image is selected
         setArAnnotations(newSelectedImage.annotations); 
       };
       reader.readAsDataURL(file);
@@ -138,32 +134,25 @@ export default function ARViewerPage() {
   const selectSampleImage = (image: AnnotatedImage) => {
     setSelectedAnnotatedImage(image);
     setUploadedImageFile(null);
-    setUploadedImagePreview(image.imageUrl); // Show sample image as preview
-    setArAnnotations(image.annotations); // Load annotations for AR view
+    setUploadedImagePreview(image.imageUrl);
+    setArAnnotations(image.annotations);
   };
 
-  // TODO: Implement real-time AR object detection and annotation placement
-  // This would involve:
-  // 1. Capturing frames from the video stream (videoRef.current).
-  // 2. Sending frames to an ML model (e.g., TensorFlow.js, or a backend API) for object/feature detection.
-  // 3. Receiving coordinates or bounding boxes of detected features.
-  // 4. Mapping these coordinates to the video display.
-  // 5. Dynamically updating `arAnnotations` state with new annotations based on detection.
-  // This is a complex task beyond simple UI updates.
-
   return (
-    <PageWrapper title="Augmented Reality Viewer" className="flex flex-col h-[calc(100vh-var(--header-height,8rem))]"> {/* Adjust height based on header */}
-      <div className="grid md:grid-cols-3 gap-4 flex-1 min-h-0"> {/* Ensure grid children can shrink */}
+    <PageWrapper title="Augmented Reality Viewer" className="flex flex-col h-[calc(100vh-var(--header-height,8rem))]">
+      <div className="grid md:grid-cols-3 gap-4 flex-1 min-h-0">
         <Card className="shadow-md md:col-span-1 h-full flex flex-col">
           <CardHeader>
             <CardTitle>AR Controls & Info</CardTitle>
-            <CardDescription>Load images and view annotations in AR.</CardDescription>
+            <CardDescription>
+              Load images to view conceptual annotations. Future versions aim for real-time analysis with MedGemma-like precision for AR overlays.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 flex-grow overflow-y-auto">
             <div>
               <Label htmlFor="image-upload" className="mb-2 block">Upload Medical Image</Label>
               <Input id="image-upload" type="file" accept="image/*" onChange={handleImageFileChange} className="mb-2" />
-              {uploadedImagePreview && selectedAnnotatedImage?.id.startsWith('custom-') && ( // Only show uploaded preview if it's a custom upload
+              {uploadedImagePreview && selectedAnnotatedImage?.id.startsWith('custom-') && (
                 <div className="mt-2 p-2 border rounded-md">
                   <p className="font-semibold text-sm">Uploaded:</p>
                   <Image src={uploadedImagePreview} alt="Uploaded preview" width={100} height={100} className="rounded-md object-contain" data-ai-hint="medical scan" />
@@ -197,7 +186,7 @@ export default function ARViewerPage() {
                     <Wand2 className="h-5 w-5 text-accent" />
                     <AlertTitle className="text-accent font-semibold">Interactive AR</AlertTitle>
                     <AlertDescription className="text-accent/80 text-xs">
-                      Future: Annotations could appear interactively on the live camera feed based on real-time analysis and where you focus.
+                      Future: Annotations could appear interactively on the live camera feed based on real-time analysis from advanced models.
                     </AlertDescription>
                   </Alert>
               </div>
@@ -228,7 +217,6 @@ export default function ARViewerPage() {
               </Alert>
             )}
             
-            {/* Video Element - always render to attach ref, hide if no permission */}
             <video 
                 ref={videoRef} 
                 className={cn(
@@ -248,7 +236,6 @@ export default function ARViewerPage() {
                  </Alert>
              )}
              
-            {/* AR Overlays: Render annotations on top of the video feed */}
             {hasCameraPermission && !isLoadingCamera && arAnnotations.length > 0 && (
               <div className="absolute inset-0 pointer-events-none">
                 {arAnnotations.map(anno => (
@@ -258,13 +245,11 @@ export default function ARViewerPage() {
                     style={{
                       left: `${anno.position.x * 100}%`,
                       top: `${anno.position.y * 100}%`,
-                      transform: 'translate(-50%, -50%)', // Center the annotation point
+                      transform: 'translate(-50%, -50%)',
                     }}
                     title={anno.text}
                   >
-                    {/* Simple dot or icon for annotation point */}
                     <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                    {/* Optionally display text, but can get crowded. Tooltip is better for text. */}
                   </div>
                 ))}
               </div>

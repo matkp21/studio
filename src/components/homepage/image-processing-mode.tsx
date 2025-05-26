@@ -30,7 +30,10 @@ export function ImageProcessingMode() {
       <Card className="shadow-lg border-border/50 rounded-xl">
         <CardHeader>
           <CardTitle className="text-2xl">Upload Image</CardTitle>
-          <CardDescription>Upload a medical image (e.g., X-ray) for AI-powered annotation, aiming for the analytical depth demonstrated by specialized models like MedGemma. For educational/research use.</CardDescription>
+          <CardDescription>
+            Upload a medical image (e.g., X-ray, CT scan). Our current AI provides general analysis.
+            We aim to integrate specialized models like MedGemma in the future for expert-level interpretation. For educational/research use.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <ImageUploader onAnalysisComplete={handleAnalysisComplete} setIsLoading={setIsLoading} />
@@ -40,7 +43,9 @@ export function ImageProcessingMode() {
       <Card className="shadow-lg border-border/50 rounded-xl">
         <CardHeader>
           <CardTitle className="text-2xl">Analysis & Annotations</CardTitle>
-          <CardDescription>AI-generated insights. Not a substitute for professional medical advice.</CardDescription>
+          <CardDescription>
+            AI-generated insights based on current models. Future enhancements aim for MedGemma-level detail. Not a substitute for professional medical advice.
+          </CardDescription>
         </CardHeader>
         <CardContent className="min-h-[300px] flex flex-col justify-start"> {/* Changed to justify-start */}
           {isLoading && (
@@ -65,7 +70,6 @@ export function ImageProcessingMode() {
                 <ul className="list-disc pl-5 mt-1 text-xs">
                   <li><code>/notes &lt;topic&gt;</code></li>
                   <li><code>/mcq &lt;topic&gt; [num]</code></li>
-                  {/* <li>Try Interactive Anatomy: <code>/anatomy &lt;structure&gt;</code></li> */}
                 </ul>
               </AlertDescription>
             </Alert>
@@ -94,13 +98,10 @@ export function ImageProcessingMode() {
                   <Sparkles className="h-5 w-5 text-primary" />
                   <AlertTitle className="text-primary font-semibold">Pro Mode Active</AlertTitle>
                   <AlertDescription className="text-primary/80 text-xs">
-                    Advanced clinical annotations, detailed JSON data, and further analytical tools would be available.
+                    Advanced clinical annotations, detailed JSON data, and further analytical tools would be available, aspiring to MedGemma capabilities.
                   </AlertDescription>
                 </Alert>
               )}
-              {/* This specific alert for medico when analysisResult is present is now covered by the general medico alert above */}
-              {/* {userRole === 'medico' && analysisResult && ( ... )} */}
-
               {!uploadedImage && !analysisResult && (
                  <div className="flex flex-col items-center justify-center text-muted-foreground py-10 flex-grow">
                     <ImageOff className="h-12 w-12 mb-3 text-muted-foreground/70" />
