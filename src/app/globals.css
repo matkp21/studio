@@ -73,33 +73,23 @@
     --firebase-color-4-light-h: 15; --firebase-color-4-light-s: 100%; --firebase-color-4-light-l: 60%; /* Reddish-Orange (#FF7043) */
 
 
+    /* --- "Elegant Reveal" Welcome Screen Colors (Light Mode) --- */
+    /* Background for the "Elegant Reveal" screen is the main app background */
+    /* Icon & Text colors for "Elegant Reveal" */
+    --heart-stroke-width: 2px; /* Maintained for heart icon in Logo */
+    --heart-icon-splash-size: clamp(100px, 18vw, 150px); /* For the Logo on welcome screen */
+
     /* --- "MediAssistant Spark" Welcome Screen Colors (Light Mode) - REVISED --- */
-    /* Adjusted for a Pro Clinical Suite like background */
+    /* Adjusted for a Pro Clinical Suite like background for "Spark" if used, otherwise "Elegant Reveal" uses simple background */
     --spark-bg-start-light-h: 220; --spark-bg-start-light-s: 25%; --spark-bg-start-light-l: 95%; /* Very light, cool gray */
     --spark-bg-mid-light-h: 270;   --spark-bg-mid-light-s: 40%; --spark-bg-mid-light-l: 90%;   /* Very light, desaturated lavender */
     --spark-bg-end-light-h: 220;   --spark-bg-end-light-s: 20%; --spark-bg-end-light-l: 97%;   /* Off-white with cool tint */
 
-
-    /* Particle Colors (Pastel Firebase-Inspired) */
+    /* Particle Colors (Pastel Firebase-Inspired) for "Spark" screen */
     --spark-particle-color-1-h: 45; --spark-particle-color-1-s: 100%; --spark-particle-color-1-l: 80%; /* Pastel Yellow */
     --spark-particle-color-2-h: 30; --spark-particle-color-2-s: 100%; --spark-particle-color-2-l: 75%; /* Pastel Orange */
     --spark-particle-color-3-h: 0;  --spark-particle-color-3-s: 100%; --spark-particle-color-3-l: 80%; /* Pastel Pink/Red */
     --spark-particle-color-4-h: 280;--spark-particle-color-4-s: 100%; --spark-particle-color-4-l: 82%; /* Pastel Purple */
-    /* --- End of Spark Welcome Screen Colors --- */
-
-    /* --- "Elegant Reveal" Welcome Screen Colors (Light Mode) --- */
-    /* Heart/ECG Icon Colors for new "Simple Welcome Screen" */
-    --heart-stroke-width: 2px; 
-    /* --ecg-stroke-width: 2px; */ /* Removed as ECG line is gone */
-    --heart-icon-splash-size: clamp(100px, 18vw, 150px); 
-    
-    /* For the simplified heart icon */
-    --simple-heart-fill-h: 205;
-    --simple-heart-fill-s: 90%;
-    --simple-heart-fill-l: 70%; /* Adjusted for fill */
-
-    /* Removed old heart stroke and ECG line colors as they are no longer used by SimpleAnimatedHeartIcon */
-    /* --- End of Elegant Reveal Colors --- */
 
     /* Notification Panel (Compact, solid) - Light Mode */
     --notification-panel-compact-bg: 0 0% 100%; /* White */
@@ -173,26 +163,16 @@
     --firebase-color-3-dark-h: 25; --firebase-color-3-dark-s: 100%; --firebase-color-3-dark-l: 65%;
     --firebase-color-4-dark-h: 15; --firebase-color-4-dark-s: 100%; --firebase-color-4-dark-l: 70%;
 
-
     /* --- "MediAssistant Spark" Welcome Screen Colors (Dark Mode) - REVISED --- */
-    /* Adjusted for a Pro Clinical Suite like background */
     --spark-bg-start-dark-h: 222; --spark-bg-start-dark-s: 47%; --spark-bg-start-dark-l: 11%; /* Slate-900 like */
     --spark-bg-mid-dark-h: 275;   --spark-bg-mid-dark-s: 60%; --spark-bg-mid-dark-l: 15%;   /* Deep Purple */
     --spark-bg-end-dark-h: 222;   --spark-bg-end-dark-s: 47%; --spark-bg-end-dark-l: 11%;   /* Slate-900 like */
 
-    /* Particle Colors (Still vibrant but against dark BG) */
+    /* Particle Colors (Still vibrant but against dark BG) for "Spark" screen */
     --spark-particle-color-1-h: 45; --spark-particle-color-1-s: 100%; --spark-particle-color-1-l: 65%; /* Yellow */
     --spark-particle-color-2-h: 30; --spark-particle-color-2-s: 100%; --spark-particle-color-2-l: 60%; /* Orange */
     --spark-particle-color-3-h: 0;  --spark-particle-color-3-s: 90%; --spark-particle-color-3-l: 65%; /* Pink/Red */
     --spark-particle-color-4-h: 280;--spark-particle-color-4-s: 90%; --spark-particle-color-4-l: 70%; /* Purple */
-    /* --- End of Spark Welcome Screen Colors --- */
-
-    /* --- "Elegant Reveal" Welcome Screen Colors (Dark Mode) --- */
-    /* For the simplified heart icon */
-    --simple-heart-fill-h: 205; /* Same HSL values as light mode for the icon, as it needs to stand out on dark background */
-    --simple-heart-fill-s: 85%;
-    --simple-heart-fill-l: 65%; /* Slightly adjusted for dark theme visibility */
-    /* --- End of Elegant Reveal Colors --- */
 
     /* Notification Panel (Compact, solid) - Dark Mode */
     --notification-panel-compact-bg: 216 54% 18%;
@@ -240,32 +220,18 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
-.simple-welcome-logo-container {
-  margin-bottom: 1.25rem; /* 20px */
-}
-
-/* Styles for the new heart icon SVG (used in Elegant Reveal) */
-.simple-welcome-heart-icon {
-  width: var(--heart-icon-splash-size, clamp(100px, 18vw, 150px)); /* Size controlled by CSS variable */
-  height: auto; /* Maintain aspect ratio */
-  filter: drop-shadow(0 2px 8px hsla(var(--simple-heart-fill-h), var(--simple-heart-fill-s), var(--simple-heart-fill-l), 0.3));
-  /* The path inside SVG will use CSS variables for fill color */
-}
-
-.simple-welcome-appname {
-  margin-bottom: 0.5rem; /* Space between app name and tagline */
-  font-size: clamp(2rem, 6vw, 3.5rem); /* Responsive size for App Name */
-  font-weight: 600;
-}
-
-.simple-welcome-tagline {
+.simple-welcome-tagline { /* Styles for the AnimatedTagline component's container */
   text-align: center;
-  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
-  /* Text color inherited from .simple-welcome-screen or can be specifically set */
+  font-size: clamp(1.1rem, 3vw, 1.5rem); /* Adjusted for prominence */
+  color: hsl(var(--foreground), 0.9);
 }
+.dark .simple-welcome-tagline {
+  color: hsl(var(--foreground), 0.85);
+}
+/* --- End of "Elegant Reveal" Welcome Screen Styles --- */
 
 
-/* --- "MediAssistant Spark" Welcome Screen Styles (Still active for when that theme is chosen) --- */
+/* --- "MediAssistant Spark" Welcome Screen Styles --- */
 @keyframes spark-background-animation-light {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -290,7 +256,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   color: hsl(var(--foreground)); /* Default text color */
   cursor: pointer;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  
+
   background: linear-gradient(
     135deg,
     hsl(var(--spark-bg-start-light-h), var(--spark-bg-start-light-s), var(--spark-bg-start-light-l)),
@@ -328,23 +294,18 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 .bg-\[hsl\(var\(--spark-particle-color-4\)\)\] { background-color: hsl(var(--spark-particle-color-4-h), var(--spark-particle-color-4-s), var(--spark-particle-color-4-l)); color: hsl(var(--spark-particle-color-4-h), var(--spark-particle-color-4-s), var(--spark-particle-color-4-l));}
 /* --- End of Spark Welcome Screen Styles --- */
 
-/* Animation Utilities (Still useful) */
-.fade-in {
-  opacity: 0;
-  transform: translateY(10px);
-  animation: fadeInAnimation 0.5s ease-out forwards;
-}
+
+/* Animation Utilities */
 @keyframes fadeInAnimation {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-
-.slide-in-bottom {
+.fade-in {
   opacity: 0;
-  transform: translateY(20px);
-  animation: slideInBottomAnimation 0.7s ease-in-out forwards;
+  transform: translateY(10px);
+  animation: fadeInAnimation 0.5s ease-out forwards;
 }
 
 @keyframes slideInBottomAnimation {
@@ -352,6 +313,11 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
     opacity: 1;
     transform: translateY(0);
   }
+}
+.slide-in-bottom {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideInBottomAnimation 0.7s ease-in-out forwards;
 }
 
 /* Content Crossfade */
@@ -375,6 +341,11 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 }
 
 /* Animated Gradient Text for Logo and other elements */
+@keyframes gradient-flow {
+  0% { background-position: 0% center; }
+  50% { background-position: 200% center; }
+  100% { background-position: 0% center; }
+}
 .animated-gradient-text {
   background-size: 200% auto;
   background-image: linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--primary)) 100%);
@@ -384,11 +355,6 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   color: transparent;
 }
 
-@keyframes gradient-flow {
-  0% { background-position: 0% center; }
-  50% { background-position: 200% center; }
-  100% { background-position: 0% center; }
-}
 
 /* Pulse animation for medical icon (e.g., heart in tagline) */
 @keyframes pulseMedical {
@@ -401,20 +367,19 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
     transform: scale(var(--medical-pulse-scale-peak, 1.2));
   }
 }
-/* For the tagline heart specifically */
+.animate-pulse-medical {
+  animation: pulseMedical 1.8s infinite ease-in-out;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* For the tagline heart specifically for AnimatedTagline */
 @keyframes heart-pulse-subtle {
   0%, 100% { transform: scale(1); opacity: 0.8; }
   50% { transform: scale(1.12); opacity: 1; }
 }
 .animate-heart-pulse-subtle {
   animation: heart-pulse-subtle 2.0s infinite ease-in-out;
-}
-
-
-.animate-pulse-medical {
-  animation: pulseMedical 1.8s infinite ease-in-out;
-  display: inline-flex;
-  align-items: center;
 }
 
 
@@ -524,6 +489,11 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 
 
 /* Firebase Gradient Text (used for "Hello" in Hero, and "MediAssistant" in simple welcome) */
+@keyframes firebase-gradient-flow {
+  to {
+    background-position: 200% center;
+  }
+}
 .firebase-gradient-text {
   background-size: 200% auto;
   background-image: linear-gradient(to right,
@@ -570,13 +540,6 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
     hsl(var(--firebase-color-4-dark-h), var(--firebase-color-4-dark-s), var(--firebase-color-4-dark-l)) 75%,
     hsl(var(--firebase-color-1-dark-h), var(--firebase-color-1-dark-s), var(--firebase-color-1-dark-l)) 100%);
    text-shadow: 0 0 2px hsla(var(--firebase-color-2-dark-h), var(--firebase-color-2-dark-s), calc(var(--firebase-color-2-dark-l) + 10%),0.6);
-}
-
-
-@keyframes firebase-gradient-flow {
-  to {
-    background-position: 200% center;
-  }
 }
 
 
@@ -645,16 +608,16 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsla(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),var(--firebase-color-1-light-l),0.3); }
   50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsla(var(--firebase-color-2-light-h),var(--firebase-color-2-light-s),var(--firebase-color-2-light-l),0.5); }
 }
-@keyframes subtle-pulse-glow-dark {
-  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsla(var(--firebase-color-1-dark-h),var(--firebase-color-1-dark-s),var(--firebase-color-1-dark-l),0.3); }
-  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsla(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l),0.5); }
-}
-
 .animate-subtle-pulse-glow {
   animation-duration: 2.5s;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
   animation-name: subtle-pulse-glow-light;
+}
+
+@keyframes subtle-pulse-glow-dark {
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.1), 0 0 10px hsl(var(--primary) / 0.05), 0 0 2px hsla(var(--firebase-color-1-dark-h),var(--firebase-color-1-dark-s),var(--firebase-color-1-dark-l),0.3); }
+  50% { box-shadow: 0 0 10px hsl(var(--primary) / 0.2), 0 0 15px hsl(var(--primary) / 0.1), 0 0 5px hsla(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l),0.5); }
 }
 .dark .animate-subtle-pulse-glow {
   animation-name: subtle-pulse-glow-dark;
@@ -707,6 +670,13 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
     box-shadow: 0 0 10px hsla(var(--firebase-color-2-light-h),var(--firebase-color-2-light-s),var(--firebase-color-2-light-l),0.5), 0 0 20px hsla(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),var(--firebase-color-3-light-l),0.3), 0 0 30px hsla(var(--firebase-color-4-light-h),var(--firebase-color-4-light-s),var(--firebase-color-4-light-l),0.3);
   }
 }
+.gemini-cta-button {
+  animation-duration: 3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-name: gemini-cta-glow-light;
+}
+
 @keyframes gemini-cta-glow-dark {
     0%, 100% {
     box-shadow: 0 0 5px hsla(var(--firebase-color-1-dark-h),var(--firebase-color-1-dark-s),var(--firebase-color-1-dark-l),0.3), 0 0 10px hsla(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l),0.2), 0 0 15px hsla(var(--firebase-color-3-dark-h),var(--firebase-color-3-dark-s),var(--firebase-color-3-dark-l),0.2);
@@ -714,13 +684,6 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   50% {
     box-shadow: 0 0 10px hsla(var(--firebase-color-2-dark-h),var(--firebase-color-2-dark-s),var(--firebase-color-2-dark-l),0.5), 0 0 20px hsla(var(--firebase-color-3-dark-h),var(--firebase-color-3-dark-s),var(--firebase-color-3-dark-l),0.3), 0 0 30px hsla(var(--firebase-color-4-dark-h),var(--firebase-color-4-dark-s),var(--firebase-color-4-dark-l),0.3);
   }
-}
-
-.gemini-cta-button {
-  animation-duration: 3s;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  animation-name: gemini-cta-glow-light;
 }
 .dark .gemini-cta-button {
   animation-name: gemini-cta-glow-dark;
@@ -807,16 +770,16 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 
 /* Animated Gradient Border for Notification Panel (Firebase Inspired) */
 .notification-panel-compact.notification-panel-animated-border {
-  border: 2px solid transparent; 
+  border: 2px solid transparent;
   position: relative;
 }
 
 .notification-panel-compact.notification-panel-animated-border::before {
   content: "";
   position: absolute;
-  inset: -2px; 
-  border-radius: inherit; 
-  padding: 2px; 
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
   background: linear-gradient(
     135deg,
     hsl(var(--firebase-color-1-light-h), var(--firebase-color-1-light-s), var(--firebase-color-1-light-l)),
@@ -828,14 +791,14 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   background-size: 300% 300%;
   animation: animated-gradient-background 4s ease infinite;
   -webkit-mask:
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0); 
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; 
-  mask-composite: exclude; 
-  z-index: -1; 
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
 }
 
 .dark .notification-panel-compact.notification-panel-animated-border::before {
@@ -856,14 +819,13 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   @apply p-1.5 rounded-md cursor-pointer transition-colors duration-150 flex items-start gap-2;
 }
 .notification-unread-dot {
-  /* @apply h-1.5 w-1.5 rounded-full mt-1 flex-shrink-0 self-center; Remove Tailwind class application */
   height: 0.375rem; /* 6px */
   width: 0.375rem; /* 6px */
   border-radius: 9999px; /* full */
   margin-top: 0.25rem; /* mt-1 */
   flex-shrink: 0;
   align-self: center;
-  background-color: var(--notification-unread-dot-color); /* Use CSS variable */
+  background-color: var(--notification-unread-dot-color);
 }
 
 
@@ -943,6 +905,198 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   to { transform: scale(1); opacity: 1; }
 }
 
+/* --- "Apple Event Poster" Style Pre-Login Splash Screen --- */
+/* Root variables for the Apple Event Poster theme */
+@layer base {
+  :root {
+    /* Deep Space Background Colors (Sampled & Adapted from Apple Poster) */
+    --apple-event-deep-purple-h: 260;
+    --apple-event-deep-purple-s: 65%;
+    --apple-event-deep-purple-l-start: 15%;
+    --apple-event-deep-purple-l-mid: 22%;
+
+    --apple-event-mid-blue-h: 235;
+    --apple-event-mid-blue-s: 55%;
+    --apple-event-mid-blue-l: 30%;
+
+    /* Color Blooms / Nebula (Vibrant accents) */
+    --apple-event-bloom-magenta-h: 310;
+    --apple-event-bloom-magenta-s: 75%;
+    --apple-event-bloom-magenta-l: 45%;
+    --apple-event-bloom-magenta-a: 0.7;
+
+    --apple-event-bloom-orange-h: 30;
+    --apple-event-bloom-orange-s: 95%;
+    --apple-event-bloom-orange-l: 55%;
+    --apple-event-bloom-orange-a: 0.65;
+
+    --apple-event-bloom-yellow-h: 45;
+    --apple-event-bloom-yellow-s: 100%;
+    --apple-event-bloom-yellow-l: 60%;
+    --apple-event-bloom-yellow-a: 0.5;
+
+    /* Light Beams */
+    --apple-event-light-beam-core-l: 97%;
+    --apple-event-light-beam-h: 200;
+    --apple-event-light-beam-s: 90%;
+    --apple-event-light-beam-edge-a: 0.3;
+    --apple-event-light-beam-mid-a: 0.6;
+
+    /* Heart/ECG Icon Colors for this specific splash screen */
+    --heart-stroke-initial-h: 0; /* White for high contrast on dark bg */
+    --heart-stroke-initial-s: 0%;
+    --heart-stroke-initial-l: 100%;
+
+    --heart-stroke-animated-h: 0; /* Can remain white or have a subtle color pulse */
+    --heart-stroke-animated-s: 0%;
+    --heart-stroke-animated-l: 100%;
+
+    --ecg-stroke-color-h: 0; /* White */
+    --ecg-stroke-color-s: 0%;
+    --ecg-stroke-color-l: 100%;
+
+
+    /* Text Colors for this specific splash screen */
+    --splash-text-main-color: white;
+    --splash-text-tagline-color: rgba(255, 255, 255, 0.9);
+  }
+  /* Dark mode specific overrides for Apple Event Poster if needed,
+     but the poster itself is dark, so these might be the same as light.
+     If the light theme splash is different, then this would be more distinct. */
+  .dark { /* These specific overrides might not be needed if the splash is always dark themed */
+    --splash-heart-stroke-h: 0;
+    --splash-heart-stroke-s: 0%;
+    --splash-heart-stroke-l: 100%;
+    --splash-ecg-stroke-h: 0;
+    --splash-ecg-stroke-s: 0%;
+    --splash-ecg-stroke-l: 100%;
+    --splash-text-main-color: white;
+    --splash-text-tagline-color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+
+.event-poster-splash-screen {
+  width: 100vw;
+  height: 100vh;
+  position: fixed; /* Ensure it covers the whole viewport */
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Vertically centers icon container */
+  overflow: hidden;
+  cursor: pointer; /* Click anywhere to continue */
+
+  /* Using the static background image */
+  background-image: url('/images/mediassistant-splash-background.png'); /* Ensure this path is correct */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  /* Fallback if image fails to load */
+  background-color: hsl(var(--apple-event-deep-purple-h, 260), var(--apple-event-deep-purple-s, 65%), 15%);
+}
+
+.central-icon-container {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 18vh; /* Pushes logo UP from the text block a bit */
+}
+
+.heart-ecg-icon-splash-static { /* Applied to your <heart-ecg-icon> Web Component */
+  /* --heart-stroke-width & --ecg-stroke-width are set in the component's shadow DOM */
+  /* Sizing and stroke properties for the icon within the welcome screen */
+  --heart-icon-splash-size: clamp(120px, 22vw, 180px); /* Use the component's variable */
+  width: var(--heart-icon-splash-size);
+  height: auto;
+
+  /* Overriding SMIL animation colors using CSS variables passed to the component */
+  --heart-stroke-initial-h: var(--splash-heart-stroke-h);
+  --heart-stroke-initial-s: var(--splash-heart-stroke-s);
+  --heart-stroke-initial-l: var(--splash-heart-stroke-l);
+  --heart-stroke-animated-h: var(--splash-heart-animated-h);
+  --heart-stroke-animated-s: var(--splash-heart-animated-s);
+  --heart-stroke-animated-l: var(--splash-heart-animated-l);
+  --ecg-stroke-color-h: var(--splash-ecg-stroke-h);
+  --ecg-stroke-color-s: var(--splash-ecg-stroke-s);
+  --ecg-stroke-color-l: var(--splash-ecg-stroke-l);
+
+  display: block;
+  animation: pulse-glow-from-pack 2.5s ease-in-out infinite alternate; /* External glow/pulse */
+  filter: drop-shadow(0px 0px 15px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.5))
+          drop-shadow(0px 0px 30px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.3));
+}
+
+/* Keyframes for the overall icon's pulse & glow */
+@keyframes pulse-glow-from-pack {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 12px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.6))
+            drop-shadow(0 0 20px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.3));
+  }
+  50% {
+    transform: scale(1.07); /* More pronounced scale for heartbeat */
+    filter: drop-shadow(0 0 20px hsla(var(--splash-heart-animated-h), var(--splash-heart-animated-s), var(--splash-heart-animated-l), 0.8)) /* More intense animated glow */
+            drop-shadow(0 0 35px hsla(var(--splash-heart-animated-h), var(--splash-heart-animated-s), var(--splash-heart-animated-l), 0.5));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 12px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.6))
+            drop-shadow(0 0 20px hsla(var(--splash-heart-stroke-h), var(--splash-heart-stroke-s), var(--splash-heart-stroke-l), 0.3));
+  }
+}
+
+
+.bottom-text-container-splash {
+  position: absolute;
+  bottom: 7vh;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 2;
+  width: 90%;
+  max-width: 550px;
+}
+
+.app-name-splash-static {
+  font-size: clamp(2rem, 5.5vw, 3.2rem);
+  font-weight: 600;
+  color: var(--splash-text-main-color);
+  margin: 0 0 0.25em 0;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.tagline-splash-static {
+  font-size: clamp(1rem, 2.8vw, 1.4rem);
+  font-weight: 300;
+  color: var(--splash-text-tagline-color);
+  margin: 0;
+  line-height: 1.45;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.25);
+}
+
+.tagline-splash-static .emoji {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: inherit;
+}
+
+/* Entrance animation for logo and text blocks */
+.splash-element-fade-in {
+  opacity: 0;
+  animation: fadeInElements 1s ease-out 0.5s forwards; /* 0.5s delay after screen potentially loads */
+}
+
+@keyframes fadeInElements {
+  to {
+    opacity: 1;
+  }
+}
+/* --- End of Apple Event Poster Splash Screen Styles --- */
+
+
 /* Final check for valid CSS */
 .ensure-css-parsing-ends-correctly { color: initial; }
 
+    
