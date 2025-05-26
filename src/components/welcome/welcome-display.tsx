@@ -1,97 +1,60 @@
+
 // src/components/welcome/welcome-display.tsx
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { ArrowRight } from 'lucide-react';
-import { AnimatedTagline } from '@/components/layout/animated-tagline'; // Using AnimatedTagline for the tagline
+import { AnimatedTagline } from '@/components/layout/animated-tagline';
+// import { Logo } from '@/components/logo'; // Logo component is not used in this simple version
 
-interface WelcomeDisplayProps {
-  onDisplayComplete: () => void;
-}
-
-// New simpler animated heart icon based on the provided image
-const NewAnimatedHeartIcon = () => {
-  // IMPORTANT: You need to calculate the actual path length of the .ecg-path-simple polyline
-  // and replace the '50' in stroke-dasharray and the animate values below.
-  // To do this:
-  // 1. Temporarily render this SVG in a browser.
-  // 2. Open developer tools, inspect the <polyline class="ecg-path-simple"> element.
-  // 3. In the console, type: $0.getTotalLength() (where $0 is the selected element).
-  // 4. Use the returned value to replace '50'.
-  const ecgPathLength = 50; // Placeholder - UPDATE THIS!
-
+// Simpler Animated Heart Icon for "Elegant Reveal"
+const SimpleAnimatedHeartIcon = () => {
   return (
     <svg
-      className="simple-welcome-heart-icon" // Class for sizing and external CSS animations if any
-      viewBox="0 0 64 64" // Adjusted viewBox if needed for the new icon proportions
+      className="simple-welcome-heart-icon" // This class will control size via globals.css
+      viewBox="0 0 64 58" // Adjusted viewBox for a more typical heart shape
       xmlns="http://www.w3.org/2000/svg"
     >
-      <style>{`
-        .simple-welcome-heart-icon {
-          width: var(--heart-icon-splash-size, clamp(100px, 18vw, 150px));
-          height: auto;
-          filter: drop-shadow(0 2px 8px hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.3));
-        }
-        .heart-path-simple {
-          stroke-width: var(--heart-stroke-width, 2px);
-          fill: hsla(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l), 0.05); /* Very subtle fill */
-        }
-        .ecg-path-simple {
-          stroke-width: var(--ecg-stroke-width, 2px);
-          fill: none;
-          stroke-dasharray: ${ecgPathLength};
-          stroke-dashoffset: ${ecgPathLength};
-        }
-      `}</style>
-      {/* Heart Shape - Simplified to match image */}
       <path
-        className="heart-path-simple"
-        d="M32 10 C18 10 10 18 10 26 C10 38 32 52 32 52 C32 52 54 38 54 26 C54 18 46 10 32 10 Z" // Standard heart shape, adjust if needed
+        d="M32 55.74C31.28 55.47 1.5 34.82 1.5 20.48C1.5 10.13 10.08 2.26 20.25 2.26C27.19 2.26 32 7.49 32 7.49S36.81 2.26 43.75 2.26C53.92 2.26 62.5 10.13 62.5 20.48C62.5 34.82 32.72 55.47 32 55.74Z"
+        fill="hsl(var(--simple-heart-fill-h, 205), var(--simple-heart-fill-s, 90%), var(--simple-heart-fill-l, 70%))"
+        stroke="hsl(var(--simple-heart-fill-h, 205), var(--simple-heart-fill-s, 80%), calc(var(--simple-heart-fill-l, 70%) - 10%))" // Slightly darker stroke
+        strokeWidth="1.5" // Thinner stroke for a cleaner look
       >
+        {/* Breathing animation for fill opacity */}
         <animate
-          attributeName="stroke"
-          values="hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l)); hsl(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l)); hsl(var(--heart-stroke-initial-h), var(--heart-stroke-initial-s), var(--heart-stroke-initial-l))"
-          dur="2.5s" // Slower color pulse
-          repeatCount="indefinite" />
-        <animateTransform
-          attributeName="transform"
-          type="scale"
-          values="1; 1.03; 1" // Subtle scale pulse
-          dur="1.8s"
+          attributeName="fill-opacity"
+          values="0.7; 1; 0.7"
+          dur="2.2s"
           repeatCount="indefinite"
-          additive="sum"
           calcMode="spline"
           keyTimes="0; 0.5; 1"
           keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
         />
-      </path>
-      {/* Simplified Single ECG Wave - Centered horizontally, adjust Y for vertical placement */}
-      <polyline
-        className="ecg-path-simple"
-        points="20,33 26,33 30,28 34,38 38,33 44,33" // Example points for a simpler wave
-        stroke="hsl(var(--ecg-stroke-color-h), var(--ecg-stroke-color-s), var(--ecg-stroke-color-l))"
-      >
-        <animate
-          attributeName="stroke-dashoffset"
-          values={`${ecgPathLength};0;${ecgPathLength}`}
-          dur="2.2s"
-          begin="0.3s"
+        {/* Subtle scale pulse for heartbeat effect */}
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          values="1; 1.05; 1" // Increased scale for more visible pulse
+          dur="1.6s" // Slightly faster, more heartbeat-like
           repeatCount="indefinite"
-          keyTimes="0; 0.5; 1"
-          calcMode="linear"
+          additive="sum" // Ensures scaling is from the center of the path's own coordinate system
+          calcMode="spline"
+          keyTimes="0; 0.3; 1" // Quicker peak
+          keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
+          transform-origin="center"
         />
-         <animate attributeName="stroke"
-             values="hsl(var(--ecg-stroke-color-h), var(--ecg-stroke-color-s), var(--ecg-stroke-color-l)); hsl(var(--heart-stroke-animated-h), var(--heart-stroke-animated-s), var(--heart-stroke-animated-l)); hsl(var(--ecg-stroke-color-h), var(--ecg-stroke-color-s), var(--ecg-stroke-color-l))"
-             dur="2.5s"
-             begin="0.3s"
-             repeatCount="indefinite" />
-      </polyline>
+      </path>
     </svg>
   );
 };
 
+
+interface WelcomeDisplayProps {
+  onDisplayComplete: () => void;
+}
 
 const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) => {
   const [hasMounted, setHasMounted] = useState(false);
@@ -100,16 +63,31 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
     setHasMounted(true);
     const displayTimer = setTimeout(() => {
       onDisplayComplete();
-    }, 4500); // Duration of the welcome screen
+    }, 4500); // Total duration of the welcome screen
 
     return () => clearTimeout(displayTimer);
   }, [onDisplayComplete]);
 
+
+  if (!hasMounted) {
+    // Fallback for SSR or before mount to prevent hydration issues with framer-motion
+    // Applying basic styles inline to avoid className issues pre-hydration
+    return (
+      <div
+        className="simple-welcome-screen"
+        style={{ opacity: 0 }}
+        onClick={onDisplayComplete} // Allow click to skip even if JS for animation hasn't run
+      >
+        {/* Optionally, a very simple static version of the logo or app name here */}
+      </div>
+    );
+  }
+
   // Framer Motion Variants
   const screenVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.5 } },
-    exit: { opacity: 0, transition: { duration: 0.5, delay: 0.3 } }
+    visible: { opacity: 1, transition: { duration: 0.5, ease: "easeInOut" } },
+    exit: { opacity: 0, transition: { duration: 0.5, delay: 0.3,  ease: "easeInOut" } }
   };
 
   const logoContainerVariants = {
@@ -131,7 +109,7 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
     }
   };
 
-  const taglineContainerVariants = { // Renamed from taglineVariants for clarity
+  const taglineContainerVariants = {
     hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
@@ -142,18 +120,12 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
 
   const continueHintVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0, transition: { delay: 2.5, duration: 0.5 } }
+    visible: { opacity: 1, y: 0, transition: { delay: 2.5, duration: 0.5, ease: "easeOut" } }
   };
-
-  if (!hasMounted) {
-    // Render nothing or a very simple placeholder on the server and initial client render
-    // to avoid hydration issues with the Web Component or complex animations.
-    return <div className="simple-welcome-screen" style={{ opacity: 0 }} onClick={onDisplayComplete}></div>;
-  }
 
   return (
     <motion.div
-      className="simple-welcome-screen" // Styled for "Elegant Reveal"
+      className="simple-welcome-screen"
       variants={screenVariants}
       initial="hidden"
       animate="visible"
@@ -161,17 +133,16 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
       onClick={onDisplayComplete} // Click anywhere to skip
     >
       <motion.div variants={logoContainerVariants} className="simple-welcome-logo-container">
-        <NewAnimatedHeartIcon />
+        <SimpleAnimatedHeartIcon />
       </motion.div>
 
       <motion.h1
         variants={appNameVariants}
-        className="simple-welcome-appname animated-gradient-text" // Retained gradient for app name
+        className="simple-welcome-appname firebase-gradient-text"
       >
         MediAssistant
       </motion.h1>
 
-      {/* AnimatedTagline component for the tagline */}
       <motion.div variants={taglineContainerVariants}>
         <AnimatedTagline className="simple-welcome-tagline" />
       </motion.div>
@@ -186,4 +157,4 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
   );
 };
 
-export default WelcomeDisplay;
+export default WelcomeDisplay; // Added default export

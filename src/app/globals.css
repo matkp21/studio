@@ -90,21 +90,15 @@
     /* --- "Elegant Reveal" Welcome Screen Colors (Light Mode) --- */
     /* Heart/ECG Icon Colors for new "Simple Welcome Screen" */
     --heart-stroke-width: 2px; 
-    --ecg-stroke-width: 2px;
+    /* --ecg-stroke-width: 2px; */ /* Removed as ECG line is gone */
     --heart-icon-splash-size: clamp(100px, 18vw, 150px); 
     
-    /* Light Blue for the new icon */
-    --heart-stroke-initial-h: 205;
-    --heart-stroke-initial-s: 85%;
-    --heart-stroke-initial-l: 60%; 
-    
-    --heart-stroke-animated-h: 205; 
-    --heart-stroke-animated-s: 85%;
-    --heart-stroke-animated-l: 65%; /* Slightly lighter for pulse */
-    
-    --ecg-stroke-color-h: 205;
-    --ecg-stroke-color-s: 90%; /* Slightly more saturated for ECG line */
-    --ecg-stroke-color-l: 65%;
+    /* For the simplified heart icon */
+    --simple-heart-fill-h: 205;
+    --simple-heart-fill-s: 90%;
+    --simple-heart-fill-l: 70%; /* Adjusted for fill */
+
+    /* Removed old heart stroke and ECG line colors as they are no longer used by SimpleAnimatedHeartIcon */
     /* --- End of Elegant Reveal Colors --- */
 
     /* Notification Panel (Compact, solid) - Light Mode */
@@ -194,18 +188,10 @@
     /* --- End of Spark Welcome Screen Colors --- */
 
     /* --- "Elegant Reveal" Welcome Screen Colors (Dark Mode) --- */
-    /* Uses the same light blue HSL values as light mode for the icon, as it needs to stand out */
-    --heart-stroke-initial-h: 205;
-    --heart-stroke-initial-s: 85%;
-    --heart-stroke-initial-l: 60%;
-    
-    --heart-stroke-animated-h: 205;
-    --heart-stroke-animated-s: 85%;
-    --heart-stroke-animated-l: 65%;
-    
-    --ecg-stroke-color-h: 205;
-    --ecg-stroke-color-s: 90%;
-    --ecg-stroke-color-l: 65%;
+    /* For the simplified heart icon */
+    --simple-heart-fill-h: 205; /* Same HSL values as light mode for the icon, as it needs to stand out on dark background */
+    --simple-heart-fill-s: 85%;
+    --simple-heart-fill-l: 65%; /* Slightly adjusted for dark theme visibility */
     /* --- End of Elegant Reveal Colors --- */
 
     /* Notification Panel (Compact, solid) - Dark Mode */
@@ -259,7 +245,12 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 }
 
 /* Styles for the new heart icon SVG (used in Elegant Reveal) */
-/* .simple-welcome-heart-icon is applied to the svg element itself inside WelcomeDisplay.tsx */
+.simple-welcome-heart-icon {
+  width: var(--heart-icon-splash-size, clamp(100px, 18vw, 150px)); /* Size controlled by CSS variable */
+  height: auto; /* Maintain aspect ratio */
+  filter: drop-shadow(0 2px 8px hsla(var(--simple-heart-fill-h), var(--simple-heart-fill-s), var(--simple-heart-fill-l), 0.3));
+  /* The path inside SVG will use CSS variables for fill color */
+}
 
 .simple-welcome-appname {
   margin-bottom: 0.5rem; /* Space between app name and tagline */
@@ -954,3 +945,4 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 
 /* Final check for valid CSS */
 .ensure-css-parsing-ends-correctly { color: initial; }
+
