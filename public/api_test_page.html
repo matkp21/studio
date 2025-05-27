@@ -1,191 +1,384 @@
 <!DOCTYPE html>
-     <html>
-     <head>
-       <title>MediAssistant - API Test Page</title>
-       <style>
-         body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f7f6; color: #333; }
-         h1, h2 { color: #00796b; }
-         input, button { padding: 10px; margin: 5px 5px 15px 0; border-radius: 5px; border: 1px solid #ccc; }
-         button { background-color: #00796b; color: white; cursor: pointer; }
-         button:hover { background-color: #004d40; }
-         .container { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-         .result { margin-top: 10px; font-size: 16px; white-space: pre-wrap; background-color: #e0f2f1; padding: 10px; border-radius: 5px; border: 1px solid #b2dfdb; }
-         .disclaimer { color: red; font-weight: bold; margin-bottom: 15px; text-align: center; }
-       </style>
-     </head>
-     <body>
-       <div class="disclaimer">
-         <p>Disclaimer: This page is for testing API integrations and is not a substitute for professional medical advice. Always consult a qualified healthcare provider.</p>
-       </div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediAssistant - API Test Page</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f7f9;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 25px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    h1, h2 {
+      color: #2c3e50;
+      border-bottom: 2px solid #e0f7fa;
+      padding-bottom: 10px;
+      margin-top: 0;
+    }
+    h1 { text-align: center; margin-bottom: 20px;}
+    .feature-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background-color: #fdfdfd;
+    }
+    input[type="text"], input[type="email"], input[type="password"], button {
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    input[type="text"], input[type="email"], input[type="password"] {
+      width: calc(100% - 24px);
+    }
+    button {
+      background-color: #008080; /* Teal */
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      border: none;
+    }
+    button:hover {
+      background-color: #006666;
+    }
+    .result-box {
+      margin-top: 15px;
+      padding: 15px;
+      background-color: #e0f7fa; /* Light Blue */
+      border: 1px solid #b2ebf2;
+      border-radius: 6px;
+      white-space: pre-wrap; /* To respect newlines in the result */
+      font-size: 15px;
+      min-height: 40px;
+    }
+    .disclaimer {
+      color: #d32f2f; /* Red */
+      font-size: 13px;
+      font-style: italic;
+      margin-bottom: 15px;
+      text-align: center;
+      padding: 10px;
+      background-color: #ffebee;
+      border: 1px solid #ffcdd2;
+      border-radius: 6px;
+    }
+    #authResult {
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+    #authResult.success { background-color: #e8f5e9; color: #2e7d32; }
+    #authResult.error { background-color: #ffebee; color: #c62828; }
+    #authResult.info { background-color: #e3f2fd; color: #1565c0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p class="disclaimer">Disclaimer: This application is for informational and demonstrative purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+    <h1>MediAssistant - API Test Page</h1>
 
-       <h1>MediAssistant - API Integrations Test</h1>
+    <!-- Authentication Section -->
+    <div class="feature-section">
+      <h2>Login / User Status</h2>
+      <input id="emailInput" placeholder="Email" type="email" />
+      <input id="passwordInput" placeholder="Password" type="password" />
+      <button id="loginButton">Login</button>
+      <button id="logoutButton" style="display: none;">Logout</button>
+      <div id="authResult" class="info">Checking authentication status...</div>
+    </div>
 
-       <div class="container">
-         <h2>Medication Search (OpenFDA)</h2>
-         <input id="drugInput" placeholder="Enter drug name (e.g., ibuprofen)" />
-         <button id="searchDrugButton">Search Drug</button>
-         <div id="drugResult" class="result">Results will appear here...</div>
-       </div>
+    <!-- Drug Search for OpenFDA -->
+    <div class="feature-section">
+      <h2>Medication Search (OpenFDA)</h2>
+      <input id="drugInput" placeholder="Enter drug name (e.g., ibuprofen)" type="text" />
+      <button id="searchDrugButton">Search Drug</button>
+      <div id="drugResult" class="result-box"></div>
+    </div>
 
-       <div class="container">
-         <h2>Health Library - Genetics (MedlinePlus)</h2>
-         <input id="geneInput" placeholder="Enter gene (e.g., BRCA1)" />
-         <button id="searchGeneButton">Search Gene</button>
-         <div id="geneResult" class="result">Results will appear here...</div>
-       </div>
-       
-       <div class="container">
-         <h2>Health Library - Diseases (ICD-10 Firestore Search)</h2>
-         <input id="diseaseInput" placeholder="Enter disease (e.g., diabetes)" />
-         <button id="searchDiseaseButton">Search Disease</button>
-         <div id="diseaseResult" class="result">Results will appear here... (Ensure ICD-10 data is in Firestore 'diseases' collection)</div>
-       </div>
-
-       <!-- Firebase SDK -->
-       <!-- Make sure to use the SDK versions compatible with the v8 syntax used below if not updating -->
-       <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-       <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-functions-compat.js"></script>
-       <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-
-       <script>
-         // Initialize Firebase
-         // IMPORTANT: Replace with your actual Firebase project configuration!
-         const firebaseConfig = {
-           apiKey: "YOUR_API_KEY", // REPLACE
-           authDomain: "YOUR_PROJECT_ID.firebaseapp.com", // REPLACE
-           projectId: "YOUR_PROJECT_ID", // REPLACE
-           storageBucket: "YOUR_PROJECT_ID.appspot.com", // REPLACE
-           messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // REPLACE
-           appId: "YOUR_APP_ID" // REPLACE
-         };
-         firebase.initializeApp(firebaseConfig);
-         const functions = firebase.functions(); // Using v8 compat for functions
-         const db = firebase.firestore(); // Using v8 compat for firestore
-
-         // Search Drug (OpenFDA)
-         document.getElementById('searchDrugButton').addEventListener('click', () => {
-           const drugName = document.getElementById('drugInput').value;
-           const drugResultDiv = document.getElementById('drugResult');
-           drugResultDiv.innerText = 'Searching...';
-
-           if (!drugName) {
-             drugResultDiv.innerText = 'Please enter a drug name!';
-             return;
-           }
-           const searchDrug = functions.httpsCallable('searchDrug');
-           searchDrug({ drugName: drugName })
-             .then(result => {
-               const data = result.data;
-               console.log("OpenFDA Raw Result:", data);
-               if (data && data.openfda) {
-                 const brand_name = data.openfda.brand_name ? data.openfda.brand_name.join(', ') : 'Unknown Brand';
-                 const indications = data.indications_and_usage ? data.indications_and_usage.join(' ') : 'Not listed';
-                 const adverse_reactions = data.adverse_reactions ? data.adverse_reactions.join(' ') : 'Not listed';
-                 drugResultDiv.innerText = 
-                   `Drug: ${brand_name}\n\nIndications & Usage:\n${indications.substring(0, 500)}...\n\nAdverse Reactions:\n${adverse_reactions.substring(0,500)}...`;
-                 
-                 // Save to Firestore (example)
-                 db.collection('medicationSearches').add({
-                   drugName: drugName,
-                   brandName: brand_name,
-                   timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                 }).catch(err => console.error("Error saving to Firestore:", err));
-               } else if (data && data.error) {
-                 drugResultDiv.innerText = `API Error: ${data.error}`;
-               } 
-                else {
-                 drugResultDiv.innerText = 'No results found or unexpected data format from OpenFDA.';
-               }
-             })
-             .catch(error => {
-               console.error("Cloud Function call error (searchDrug):", error);
-               drugResultDiv.innerText = 'Error calling Cloud Function: ' + error.message;
-             });
-         });
-
-         // Search Gene (MedlinePlus)
-         document.getElementById('searchGeneButton').addEventListener('click', () => {
-           const geneName = document.getElementById('geneInput').value;
-           const geneResultDiv = document.getElementById('geneResult');
-           geneResultDiv.innerText = 'Searching...';
-
-           if (!geneName) {
-             geneResultDiv.innerText = 'Please enter a gene name!';
-             return;
-           }
-           const searchGene = functions.httpsCallable('searchGene');
-           searchGene({ geneName: geneName })
-             .then(result => {
-               const data = result.data;
-               console.log("MedlinePlus Raw Result:", data);
-               if (data && data.title) {
-                 geneResultDiv.innerText = 
-                   `Title: ${data.title}\n\nSummary:\n${data.summary || 'Not listed'}`;
-                 
-                 // Save to Firestore (example)
-                 db.collection('geneticsSearches').add({
-                   geneName: geneName,
-                   title: data.title,
-                   timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                 }).catch(err => console.error("Error saving to Firestore:", err));
-               } else if (data && data.error) {
-                geneResultDiv.innerText = `API Error: ${data.error}`;
-               }
-               else {
-                 geneResultDiv.innerText = 'No results found or unexpected data format from MedlinePlus.';
-               }
-             })
-             .catch(error => {
-               console.error("Cloud Function call error (searchGene):", error);
-               geneResultDiv.innerText = 'Error calling Cloud Function: ' + error.message;
-             });
-         });
-
-         // Search Disease (ICD-10 from Firestore)
-         document.getElementById('searchDiseaseButton').addEventListener('click', () => {
-           const diseaseNameInput = document.getElementById('diseaseInput').value;
-           const diseaseResultDiv = document.getElementById('diseaseResult');
-           diseaseResultDiv.innerText = 'Searching...';
-
-           if (!diseaseNameInput) {
-             diseaseResultDiv.innerText = 'Please enter a disease name!';
-             return;
-           }
-           // Simple case-insensitive search requires more complex querying or data structuring.
-           // This is a basic prefix search. For better results, consider storing lowercase names.
-           const diseaseName = diseaseNameInput.charAt(0).toUpperCase() + diseaseNameInput.slice(1).toLowerCase();
-
-           db.collection('diseases')
-             .where('name', '>=', diseaseName)
-             .where('name', '<=', diseaseName + '\uf8ff')
-             .limit(5) // Limit results
-             .get()
-             .then(querySnapshot => {
-               if (!querySnapshot.empty) {
-                 let resultsText = 'Found:\n';
-                 querySnapshot.forEach(doc => {
-                    const data = doc.data();
-                    resultsText += `\nDisease: ${data.name}\nCode: ${data.code || 'Not listed'}\n---`;
-                 });
-                 diseaseResultDiv.innerText = resultsText;
-
-                 // Example: Save search term to Firestore
-                 db.collection('diseaseSearchesLog').add({
-                   searchTerm: diseaseNameInput,
-                   timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                 }).catch(err => console.error("Error saving to Firestore:", err));
-
-               } else {
-                 diseaseResultDiv.innerText = `No results found for "${diseaseNameInput}" in Firestore. Ensure data is loaded.`;
-               }
-             })
-             .catch(error => {
-               console.error("Firestore query error (diseases):", error);
-               diseaseResultDiv.innerText = 'Error querying Firestore: ' + error.message;
-             });
-         });
-       </script>
-     </body>
-     </html>
-     
+    <!-- Genetics Search for MedlinePlus -->
+    <div class="feature-section">
+      <h2>Health Library - Genetics (MedlinePlus)</h2>
+      <input id="geneInput" placeholder="Enter gene (e.g., BRCA1)" type="text" />
+      <button id="searchGeneButton">Search Gene</button>
+      <div id="geneResult" class="result-box"></div>
+    </div>
     
+    <!-- Disease Search (ICD-10 Firestore Search) -->
+    <div class="feature-section">
+        <h2>Health Library - Diseases (ICD-10 Firestore Search)</h2>
+        <input id="diseaseInput" placeholder="Enter disease (e.g., diabetes)" type="text" />
+        <button id="searchDiseaseButton">Search Disease</button>
+        <div id="diseaseResult" class="result-box"></div>
+    </div>
+
+    <!-- X-ray Analysis Section -->
+    <div class="feature-section">
+      <h2>X-ray Analysis (Professional Mode)</h2>
+      <input id="xrayInput" type="text" placeholder="Enter X-ray image URL" value="https://upload.wikimedia.org/wikipedia/commons/c/c8/Chest_Xray_PA_3-8-2010.png" />
+      <button id="analyzeXrayButton">Analyze X-ray</button>
+      <div id="xrayResult" class="result-box"></div>
+    </div>
+
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-functions-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Initialize Firebase - REPLACE WITH YOUR ACTUAL CONFIG
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID",
+      measurementId: "YOUR_MEASUREMENT_ID" // Optional
+    };
+    firebase.initializeApp(firebaseConfig);
+    const functions = firebase.functions();
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // --- General Error Handler ---
+    // window.onerror = function (message, source, lineno, colno, error) {
+    //   const authResultDiv = document.getElementById('authResult');
+    //   if (authResultDiv) {
+    //       authResultDiv.innerText = 'App Error: ' + message;
+    //       authResultDiv.className = 'result-box error';
+    //   }
+    //   return true;
+    // };
+
+    // --- Authentication Logic ---
+    const loginButton = document.getElementById('loginButton');
+    const logoutButton = document.getElementById('logoutButton');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const authResultDiv = document.getElementById('authResult');
+
+    loginButton.addEventListener('click', () => {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      if (!email || !password) {
+        authResultDiv.innerText = 'Please enter email and password!';
+        authResultDiv.className = 'result-box error';
+        return;
+      }
+      auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          authResultDiv.innerText = 'Logged in successfully as ' + userCredential.user.email;
+          authResultDiv.className = 'result-box success';
+        })
+        .catch(error => {
+          authResultDiv.innerText = 'Login Error: ' + error.message;
+          authResultDiv.className = 'result-box error';
+        });
+    });
+
+    logoutButton.addEventListener('click', () => {
+      auth.signOut()
+        .then(() => {
+          authResultDiv.innerText = 'Logged out successfully!';
+          authResultDiv.className = 'result-box info';
+        })
+        .catch(error => {
+          authResultDiv.innerText = 'Logout Error: ' + error.message;
+          authResultDiv.className = 'result-box error';
+        });
+    });
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        authResultDiv.innerText = 'User is logged in: ' + user.email;
+        authResultDiv.className = 'result-box success';
+        loginButton.style.display = 'none';
+        emailInput.style.display = 'none';
+        passwordInput.style.display = 'none';
+        logoutButton.style.display = 'inline-block';
+      } else {
+        authResultDiv.innerText = 'No user is logged in.';
+        authResultDiv.className = 'result-box info';
+        loginButton.style.display = 'inline-block';
+        emailInput.style.display = 'inline-block';
+        passwordInput.style.display = 'inline-block';
+        logoutButton.style.display = 'none';
+      }
+    });
+
+    // --- Feature Logic ---
+
+    // Search Drug (OpenFDA)
+    document.getElementById('searchDrugButton').addEventListener('click', () => {
+      const drugName = document.getElementById('drugInput').value;
+      const drugResultDiv = document.getElementById('drugResult');
+      if (!drugName) {
+        drugResultDiv.innerText = 'Please enter a drug name!';
+        return;
+      }
+      drugResultDiv.innerText = 'Searching drug...';
+      const searchDrug = functions.httpsCallable('searchDrug');
+      searchDrug({ drugName: drugName })
+        .then(result => {
+          const data = result.data;
+          console.log("OpenFDA Raw Result:", data);
+          if (data && data.results && data.results.length > 0 && data.results[0].openfda) {
+            const firstResult = data.results[0];
+            let displayText = `Drug: ${firstResult.openfda.brand_name?.[0] || firstResult.openfda.generic_name?.[0] || 'N/A'}\n`;
+            displayText += `Manufacturer: ${firstResult.openfda.manufacturer_name?.[0] || 'N/A'}\n`;
+            displayText += `Indications: ${(firstResult.indications_and_usage?.[0] || 'Not listed').substring(0,500)}...\n`;
+            displayText += `Adverse Reactions: ${(firstResult.adverse_reactions?.[0] || 'Not listed').substring(0,500)}...\n`;
+            displayText += `\nDisclaimer: This is not a substitute for professional medical advice.`;
+            drugResultDiv.innerText = displayText;
+            db.collection('medications').add({
+              query: drugName,
+              resultName: firstResult.openfda.brand_name?.[0] || firstResult.openfda.generic_name?.[0],
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(err => console.error("Error writing to Firestore:", err));
+          } else if (data && data.message) {
+            drugResultDiv.innerText = data.message + '\nDisclaimer: This is not a substitute for professional medical advice.';
+          } else {
+            drugResultDiv.innerText = 'No results found or unexpected data format from OpenFDA.\nDisclaimer: This is not a substitute for professional medical advice.';
+          }
+        })
+        .catch(error => {
+          console.error("searchDrug function error:", error);
+          drugResultDiv.innerText = 'Error calling searchDrug function: ' + error.message;
+        });
+    });
+
+    // Search Gene (MedlinePlus)
+    document.getElementById('searchGeneButton').addEventListener('click', () => {
+      const geneName = document.getElementById('geneInput').value;
+      const geneResultDiv = document.getElementById('geneResult');
+      if (!geneName) {
+        geneResultDiv.innerText = 'Please enter a gene name!';
+        return;
+      }
+      geneResultDiv.innerText = 'Searching gene...';
+      const searchGene = functions.httpsCallable('searchGene');
+      searchGene({ geneName: geneName })
+        .then(result => {
+          const data = result.data;
+          console.log("MedlinePlus Raw Result:", data);
+          if (data && data.title) {
+            let displayText = `Title: ${data.title}\n`;
+            displayText += `Summary: ${(data.summary || 'Not listed').substring(0,500)}...\n`;
+            if(data.link) displayText += `Link: ${data.link}\n`;
+            displayText += `\nDisclaimer: This is not a substitute for professional medical advice.`;
+            geneResultDiv.innerText = displayText;
+            db.collection('genetics').add({
+              query: geneName,
+              title: data.title,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(err => console.error("Error writing to Firestore:", err));
+          } else if (data && data.message) {
+            geneResultDiv.innerText = data.message + '\nDisclaimer: This is not a substitute for professional medical advice.';
+          }
+           else {
+            geneResultDiv.innerText = 'No results found or unexpected data format from MedlinePlus.\nDisclaimer: This is not a substitute for professional medical advice.';
+          }
+        })
+        .catch(error => {
+          console.error("searchGene function error:", error);
+          geneResultDiv.innerText = 'Error calling searchGene function: ' + error.message;
+        });
+    });
+    
+    // Search Disease (ICD-10 Firestore Search)
+    document.getElementById('searchDiseaseButton').addEventListener('click', () => {
+        const diseaseName = document.getElementById('diseaseInput').value;
+        const diseaseResultDiv = document.getElementById('diseaseResult');
+        if (!diseaseName) {
+            diseaseResultDiv.innerText = 'Please enter a disease name!';
+            return;
+        }
+        diseaseResultDiv.innerText = 'Searching disease in Firestore...';
+        db.collection('diseases')
+            .where('name', '>=', diseaseName)
+            .where('name', '<=', diseaseName + '\uf8ff') // For startsWith like query
+            .limit(5) // Limit results
+            .get()
+            .then(querySnapshot => {
+                if (!querySnapshot.empty) {
+                    let resultsText = "Found:\n";
+                    querySnapshot.forEach(doc => {
+                        const data = doc.data();
+                        resultsText += `Disease: ${data.name}, Code: ${data.code || 'N/A'}\n`;
+                    });
+                    resultsText += '\nDisclaimer: This is not a substitute for professional medical advice.';
+                    diseaseResultDiv.innerText = resultsText;
+                    db.collection('diseasesSearches').add({
+                        query: diseaseName,
+                        firstResultName: querySnapshot.docs[0].data().name,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }).catch(err => console.error("Error writing to Firestore:", err));
+                } else {
+                    diseaseResultDiv.innerText = 'No results found in Firestore for "' + diseaseName + '".\nDisclaimer: This is not a substitute for professional medical advice.';
+                }
+            })
+            .catch(error => {
+                console.error("Firestore disease search error:", error);
+                diseaseResultDiv.innerText = 'Error searching Firestore: ' + error.message;
+            });
+    });
+
+    // Analyze X-ray (Conceptual Hugging Face Model Call via Cloud Function)
+    document.getElementById('analyzeXrayButton').addEventListener('click', () => {
+      const xrayUrl = document.getElementById('xrayInput').value;
+      const xrayResultDiv = document.getElementById('xrayResult');
+      if (!xrayUrl) {
+        xrayResultDiv.innerText = 'Please enter an X-ray image URL!';
+        return;
+      }
+      xrayResultDiv.innerText = 'Analyzing X-ray...';
+      const analyzeXray = functions.httpsCallable('analyzeXray');
+      analyzeXray({ imageUrl: xrayUrl })
+        .then(result => {
+          const data = result.data;
+          console.log("Xray Analysis Raw result:", data);
+          if (data && data.description) { // Expecting a 'description' field
+            xrayResultDiv.innerText = 
+              `Description: ${data.description}\n\nDisclaimer: This is a simulated AI analysis and not a substitute for professional medical evaluation.`;
+            // Save to Firestore
+            db.collection('xrayAnalyses').add({ // Changed collection name
+              imageUrl: xrayUrl,
+              description: data.description,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(err => console.error("Error writing to Firestore:", err));
+          } else if (data && data.error) {
+             xrayResultDiv.innerText = 'Analysis Error: ' + data.error + '\nDisclaimer: This is a simulated AI analysis.';
+          }
+           else {
+            xrayResultDiv.innerText = 'Error: No description available or unexpected data format from analysis.\nDisclaimer: This is a simulated AI analysis.';
+          }
+        })
+        .catch(error => {
+          console.error("analyzeXray function error:", error);
+          xrayResultDiv.innerText = 'Error calling analyzeXray function: ' + error.message;
+        });
+    });
+
+  </script>
+</body>
+</html>
