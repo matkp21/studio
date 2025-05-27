@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+     <html>
+     <head>
+       <title>MediAssistant - API Test Page</title>
+       <style>
+         body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f7f6; color: #333; }
+         h1, h2 { color: #00796b; }
+         input, button { padding: 10px; margin: 5px 5px 15px 0; border-radius: 5px; border: 1px solid #ccc; }
+         button { background-color: #00796b; color: white; cursor: pointer; }
+         button:hover { background-color: #004d40; }
+         .container { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+         .result { margin-top: 10px; font-size: 16px; white-space: pre-wrap; background-color: #e0f2f1; padding: 10px; border-radius: 5px; border: 1px solid #b2dfdb; }
+         .disclaimer { color: red; font-weight: bold; margin-bottom: 15px; text-align: center; }
+       </style>
+     </head>
+     <body>
+       <div class="disclaimer">
+         <p>Disclaimer: This page is for testing API integrations and is not a substitute for professional medical advice. Always consult a qualified healthcare provider.</p>
+       </div>
+
+       <h1>MediAssistant - API Integrations Test</h1>
+
+       <div class="container">
+         <h2>Medication Search (OpenFDA)</h2>
+         <input id="drugInput" placeholder="Enter drug name (e.g., ibuprofen)" />
+         <button id="searchDrugButton">Search Drug</button>
+         <div id="drugResult" class="result">Results will appear here...</div>
+       </div>
+
+       <div class="container">
+         <h2>Health Library - Genetics (MedlinePlus)</h2>
+         <input id="geneInput" placeholder="Enter gene (e.g., BRCA1)" />
+         <button id="searchGeneButton">Search Gene</button>
+         <div id="geneResult" class="result">Results will appear here...</div>
+       </div>
+       
+       <div class="container">
+         <h2>Health Library - Diseases (ICD-10 Firestore Search)</h2>
+         <input id="diseaseInput" placeholder="Enter disease (e.g., diabetes)" />
+         <button id="searchDiseaseButton">Search Disease</button>
+         <div id="diseaseResult" class="result">Results will appear here... (Ensure ICD-10 data is in Firestore 'diseases' collection)</div>
+       </div>
+
+       <!-- Firebase SDK -->
+       <!-- Make sure to use the SDK versions compatible with the v8 syntax used below if not updating -->
+       <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+       <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-functions-compat.js"></script>
+       <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+       <script>
+         // Initialize Firebase
+         // IMPORTANT: Replace with your actual Firebase project configuration!
+         const firebaseConfig = {
+           apiKey: "YOUR_API_KEY", // REPLACE
+           authDomain: "YOUR_PROJECT_ID.firebaseapp.com", // REPLACE
+           projectId: "YOUR_PROJECT_ID", // REPLACE
+           storageBucket: "YOUR_PROJECT_ID.appspot.com", // REPLACE
+           messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // REPLACE
+           appId: "YOUR_APP_ID" // REPLACE
+         };
+         firebase.initializeApp(firebaseConfig);
+         const functions = firebase.functions(); // Using v8 compat for functions
+         const db = firebase.firestore(); // Using v8 compat for firestore
+
+         // Search Drug (OpenFDA)
+         document.getElementById('searchDrugButton').addEventListener('click', () => {
+           const drugName = document.getElementById('drugInput').value;
+           const drugResultDiv = document.getElementById('drugResult');
+           drugResultDiv.innerText = 'Searching...';
+
+           if (!drugName) {
+             drugResultDiv.innerText = 'Please enter a drug name!';
+             return;
+           }
+           const searchDrug = functions.httpsCallable('searchDrug');
+           searchDrug({ drugName: drugName })
+             .then(result => {
+               const data = result.data;
+               console.log("OpenFDA Raw Result:", data);
+               if (data && data.openfda) {
+                 const brand_name = data.openfda.brand_name ? data.openfda.brand_name.join(', ') : 'Unknown Brand';
+                 const indications = data.indications_and_usage ? data.indications_and_usage.join(' ') : 'Not listed';
+                 const adverse_reactions = data.adverse_reactions ? data.adverse_reactions.join(' ') : 'Not listed';
+                 drugResultDiv.innerText = 
+                   `Drug: ${brand_name}\n\nIndications & Usage:\n${indications.substring(0, 500)}...\n\nAdverse Reactions:\n${adverse_reactions.substring(0,500)}...`;
+                 
+                 // Save to Firestore (example)
+                 db.collection('medicationSearches').add({
+                   drugName: drugName,
+                   brandName: brand_name,
+                   timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                 }).catch(err => console.error("Error saving to Firestore:", err));
+               } else if (data && data.error) {
+                 drugResultDiv.innerText = `API Error: ${data.error}`;
+               } 
+                else {
+                 drugResultDiv.innerText = 'No results found or unexpected data format from OpenFDA.';
+               }
+             })
+             .catch(error => {
+               console.error("Cloud Function call error (searchDrug):", error);
+               drugResultDiv.innerText = 'Error calling Cloud Function: ' + error.message;
+             });
+         });
+
+         // Search Gene (MedlinePlus)
+         document.getElementById('searchGeneButton').addEventListener('click', () => {
+           const geneName = document.getElementById('geneInput').value;
+           const geneResultDiv = document.getElementById('geneResult');
+           geneResultDiv.innerText = 'Searching...';
+
+           if (!geneName) {
+             geneResultDiv.innerText = 'Please enter a gene name!';
+             return;
+           }
+           const searchGene = functions.httpsCallable('searchGene');
+           searchGene({ geneName: geneName })
+             .then(result => {
+               const data = result.data;
+               console.log("MedlinePlus Raw Result:", data);
+               if (data && data.title) {
+                 geneResultDiv.innerText = 
+                   `Title: ${data.title}\n\nSummary:\n${data.summary || 'Not listed'}`;
+                 
+                 // Save to Firestore (example)
+                 db.collection('geneticsSearches').add({
+                   geneName: geneName,
+                   title: data.title,
+                   timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                 }).catch(err => console.error("Error saving to Firestore:", err));
+               } else if (data && data.error) {
+                geneResultDiv.innerText = `API Error: ${data.error}`;
+               }
+               else {
+                 geneResultDiv.innerText = 'No results found or unexpected data format from MedlinePlus.';
+               }
+             })
+             .catch(error => {
+               console.error("Cloud Function call error (searchGene):", error);
+               geneResultDiv.innerText = 'Error calling Cloud Function: ' + error.message;
+             });
+         });
+
+         // Search Disease (ICD-10 from Firestore)
+         document.getElementById('searchDiseaseButton').addEventListener('click', () => {
+           const diseaseNameInput = document.getElementById('diseaseInput').value;
+           const diseaseResultDiv = document.getElementById('diseaseResult');
+           diseaseResultDiv.innerText = 'Searching...';
+
+           if (!diseaseNameInput) {
+             diseaseResultDiv.innerText = 'Please enter a disease name!';
+             return;
+           }
+           // Simple case-insensitive search requires more complex querying or data structuring.
+           // This is a basic prefix search. For better results, consider storing lowercase names.
+           const diseaseName = diseaseNameInput.charAt(0).toUpperCase() + diseaseNameInput.slice(1).toLowerCase();
+
+           db.collection('diseases')
+             .where('name', '>=', diseaseName)
+             .where('name', '<=', diseaseName + '\uf8ff')
+             .limit(5) // Limit results
+             .get()
+             .then(querySnapshot => {
+               if (!querySnapshot.empty) {
+                 let resultsText = 'Found:\n';
+                 querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    resultsText += `\nDisease: ${data.name}\nCode: ${data.code || 'Not listed'}\n---`;
+                 });
+                 diseaseResultDiv.innerText = resultsText;
+
+                 // Example: Save search term to Firestore
+                 db.collection('diseaseSearchesLog').add({
+                   searchTerm: diseaseNameInput,
+                   timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                 }).catch(err => console.error("Error saving to Firestore:", err));
+
+               } else {
+                 diseaseResultDiv.innerText = `No results found for "${diseaseNameInput}" in Firestore. Ensure data is loaded.`;
+               }
+             })
+             .catch(error => {
+               console.error("Firestore query error (diseases):", error);
+               diseaseResultDiv.innerText = 'Error querying Firestore: ' + error.message;
+             });
+         });
+       </script>
+     </body>
+     </html>
+     
+    
