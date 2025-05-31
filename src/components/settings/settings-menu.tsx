@@ -11,7 +11,9 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import {
-  UserCircle, ShieldCheck, Palette, BellRing, Database, Lock, Users, HelpCircle, Info, LogOut, Trash2, BriefcaseMedical, School, Stethoscope, UserCog, Settings2 as SettingsIcon, AlertTriangle, Pill, Edit
+  UserCircle, ShieldCheck, Palette, BellRing, Database, Lock, Users, HelpCircle, Info, LogOut, Trash2, BriefcaseMedical, School, Stethoscope, UserCog, Settings2 as SettingsIcon, AlertTriangle, Pill, Edit,
+  FileText, // Added FileText here
+  EyeOff, SlidersHorizontal, Languages, BellOff, Volume2, MailWarning, CloudLightning, Download, Pin, Mic, Phone, BookOpen, MessageSquareHeart
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -25,16 +27,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Added Select
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 
 export function SettingsMenu() {
-  const { userRole, selectUserRole } = useProMode(); // Removed isProMode as it's derived
+  const { userRole, selectUserRole } = useProMode();
   const { toast } = useToast();
 
   const handleLogout = () => {
     toast({ title: "Logged Out", description: "You have been successfully logged out. (Demo)" });
-    selectUserRole(null); 
+    selectUserRole(null);
   };
 
   const handleDeleteAccount = () => {
@@ -43,14 +45,14 @@ export function SettingsMenu() {
       title: "Account Deletion Requested",
       description: "Your account deletion process has started. (Demo)"
     });
-    selectUserRole(null); 
+    selectUserRole(null);
   };
-  
-  const getRoleDisplayString = (role: UserRole | null): string => { 
+
+  const getRoleDisplayString = (role: UserRole | null): string => {
     if (role === 'pro') return 'Professional';
     if (role === 'medico') return 'Medical Student';
     if (role === 'diagnosis') return 'Patient/User';
-    return 'Guest'; 
+    return 'Guest';
   }
 
   const isGuest = userRole === null;
@@ -68,15 +70,15 @@ export function SettingsMenu() {
         <SettingsSection title="Account Management" icon={UserCircle}>
           <SettingsItem label="Profile Information" description="View and edit your display name, email, bio." icon={Edit} actionElement={<Link href="/profile"><Button variant="outline" size="sm">Edit Profile</Button></Link>} />
           <SettingsItem label="Account Security" description="Change password, manage 2FA." icon={ShieldCheck} actionElement={<Button variant="outline" size="sm" disabled>Manage Security</Button>} />
-          <SettingsItem 
-            label="Current User Mode" 
-            description={`You are currently using: ${getRoleDisplayString(userRole)}`} 
-            icon={UserCog} 
+          <SettingsItem
+            label="Current User Mode"
+            description={`You are currently using: ${getRoleDisplayString(userRole)}`}
+            icon={UserCog}
             actionElement={
-              <Select 
-                value={userRole ?? ''} // Handle null case for Select value
+              <Select
+                value={userRole ?? ''}
                 onValueChange={(value) => {
-                  if (value) { // Ensure a role is selected
+                  if (value) {
                     selectUserRole(value as Exclude<UserRole, null>);
                     toast({ title: "User Role Updated", description: `Switched to ${getRoleDisplayString(value as UserRole)} mode.`});
                   }
@@ -96,7 +98,7 @@ export function SettingsMenu() {
                   ))}
                 </SelectContent>
               </Select>
-            } 
+            }
           />
           <SettingsItem label="Subscription Management" description="View plan details." icon={FileText} actionElement={<Button variant="outline" size="sm" disabled>View Subscription</Button>} />
         </SettingsSection>
@@ -196,10 +198,10 @@ export function SettingsMenu() {
       {!isGuest ? (
         <SettingsSection title="Account Actions" icon={UserCog}>
           <SettingsItem label="Log Out" icon={LogOut} actionElement={<Button variant="outline" onClick={handleLogout}>Log Out</Button>} />
-          <SettingsItem 
-            label="Delete Account" 
-            description="Permanently delete your account and data." 
-            icon={Trash2} 
+          <SettingsItem
+            label="Delete Account"
+            description="Permanently delete your account and data."
+            icon={Trash2}
             actionElement={
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -220,7 +222,7 @@ export function SettingsMenu() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-            } 
+            }
           />
         </SettingsSection>
       ) : (
