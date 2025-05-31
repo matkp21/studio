@@ -1,3 +1,4 @@
+
 // src/components/settings/settings-menu.tsx
 "use client";
 
@@ -10,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import {
-  UserCircle, ShieldCheck, Palette, BellRing, Database, Lock, Users, HelpCircle, Info, LogOut, Trash2, BriefcaseMedical, School, Stethoscope, Workflow, Edit, SlidersHorizontal, Languages, EyeOff, BellOff, Volume2, MailWarning, CloudLightning, Download, Pin, FileText, BookOpen, Mic, CalculatorIcon, Phone, MessageSquareHeart, UserCog, Settings2 as SettingsIcon, AlertTriangle, Pill // Added Pill here
+  UserCircle, ShieldCheck, Palette, BellRing, Database, Lock, Users, HelpCircle, Info, LogOut, Trash2, BriefcaseMedical, School, Stethoscope, UserCog, Settings2 as SettingsIcon, AlertTriangle, Pill, Edit
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -24,16 +25,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Added Select
+import { cn } from '@/lib/utils';
 
 export function SettingsMenu() {
-  const { userRole, selectUserRole, isProMode } = useProMode();
+  const { userRole, selectUserRole } = useProMode(); // Removed isProMode as it's derived
   const { toast } = useToast();
 
   const handleLogout = () => {
     toast({ title: "Logged Out", description: "You have been successfully logged out. (Demo)" });
-    // Actual logout logic here (e.g., clear context, redirect)
-    selectUserRole(null); // Example: reset role
+    selectUserRole(null); 
   };
 
   const handleDeleteAccount = () => {
@@ -42,18 +43,23 @@ export function SettingsMenu() {
       title: "Account Deletion Requested",
       description: "Your account deletion process has started. (Demo)"
     });
-    // Actual account deletion logic here
-    selectUserRole(null); // Example: reset role
+    selectUserRole(null); 
   };
   
-  const getRoleDisplayString = (role: UserRole | null): string => { // Added null check for role
+  const getRoleDisplayString = (role: UserRole | null): string => { 
     if (role === 'pro') return 'Professional';
     if (role === 'medico') return 'Medical Student';
     if (role === 'diagnosis') return 'Patient/User';
-    return 'Guest'; // Changed from 'User' to 'Guest' for consistency
+    return 'Guest'; 
   }
 
   const isGuest = userRole === null;
+
+  const userRolesForSelection: { value: Exclude<UserRole, null>; label: string; icon: React.ElementType }[] = [
+    { value: 'pro', label: 'Professional', icon: BriefcaseMedical },
+    { value: 'medico', label: 'Medical Student', icon: School },
+    { value: 'diagnosis', label: 'Patient/User', icon: Stethoscope },
+  ];
 
   return (
     <div className="p-4 sm:p-6 space-y-8">
@@ -67,9 +73,29 @@ export function SettingsMenu() {
             description={`You are currently using: ${getRoleDisplayString(userRole)}`} 
             icon={UserCog} 
             actionElement={
-              <Link href="/#mode-switcher"> 
-                <Button variant="outline" size="sm">Change Mode</Button>
-              </Link>
+              <Select 
+                value={userRole ?? ''} // Handle null case for Select value
+                onValueChange={(value) => {
+                  if (value) { // Ensure a role is selected
+                    selectUserRole(value as Exclude<UserRole, null>);
+                    toast({ title: "User Role Updated", description: `Switched to ${getRoleDisplayString(value as UserRole)} mode.`});
+                  }
+                }}
+              >
+                <SelectTrigger className="w-[180px] rounded-md text-xs">
+                  <SelectValue placeholder="Change mode..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {userRolesForSelection.map(roleOption => (
+                    <SelectItem key={roleOption.value} value={roleOption.value}>
+                      <div className="flex items-center gap-2">
+                        <roleOption.icon className="h-4 w-4" />
+                        {roleOption.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             } 
           />
           <SettingsItem label="Subscription Management" description="View plan details." icon={FileText} actionElement={<Button variant="outline" size="sm" disabled>View Subscription</Button>} />
@@ -199,10 +225,9 @@ export function SettingsMenu() {
         </SettingsSection>
       ) : (
          <SettingsSection title="Account" icon={UserCircle}>
-            <SettingsItem label="You are currently using MediAssistant as a guest." description="Sign up or log in to access more features and save your data." icon={Info} actionElement={<Button variant="default" size="sm">Sign Up / Log In</Button>}/>
+            <SettingsItem label="You are currently using MediAssistant as a guest." description="Sign up or log in to access more features and save your data." icon={Info} actionElement={<Link href="/login"><Button variant="default" size="sm">Sign Up / Log In</Button></Link>}/>
         </SettingsSection>
       )}
     </div>
   );
 }
-
