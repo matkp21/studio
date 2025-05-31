@@ -1,3 +1,4 @@
+
 // src/components/layout/app-layout.tsx
 "use client";
 
@@ -9,7 +10,8 @@ import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
 import {
   PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info,
-  MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, Bell, ChevronDown, Edit, HeartPulse
+  MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, Bell, ChevronDown, Edit, HeartPulse,
+  Moon, Sun // Import Moon and Sun icons
 } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
@@ -19,9 +21,10 @@ import { Footer } from './footer';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
 import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
+import { useTheme } from '@/contexts/theme-provider'; // Import useTheme
 import { Badge } from '@/components/ui/badge';
 import { AnimatedTagline } from '@/components/layout/animated-tagline';
-import WelcomeDisplay from '@/components/welcome/welcome-display'; // Changed to default import
+import WelcomeDisplay from '@/components/welcome/welcome-display'; 
 import type { NotificationItem } from '@/types/notifications';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -50,6 +53,35 @@ const ToggleSidebarButton = () => {
   );
 };
 
+const ThemeToggleButton = () => {
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    // Avoid rendering button server-side or before hydration to prevent mismatch
+    return <div className="h-9 w-9 sm:h-10 sm:w-10" />; // Placeholder for layout
+  }
+
+  const toggle = () => {
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+  };
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={toggle}
+      className="h-9 w-9 sm:h-10 sm:w-10 rounded-full text-foreground/80 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      aria-label={resolvedTheme === 'dark' ? "Switch to light theme" : "Switch to dark theme"}
+    >
+      {resolvedTheme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+    </Button>
+  );
+};
+
+
 export function AppLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
@@ -61,13 +93,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  // const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false); // Derived from unreadCount
-  // const [hasNewNotification, setHasNewNotification] = useState(false); // For temporary 'comet' animation
-
+  
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
   const fetchNotifications = useCallback(() => {
-    // In a real app, this would fetch from Firestore or an API
     const mockNotifications: NotificationItem[] = [
       { id: '1', type: 'medication_reminder', title: 'Medication Reminder', body: 'Time for Amoxicillin (500mg). Check instructions.', timestamp: new Date(Date.now() - 1000 * 60 * 5), isRead: false, deepLink: '/medications' },
       { id: 'sys-maint', type: 'system_update', title: 'System Maintenance Scheduled', body: 'Brief maintenance tonight at 2 AM. No impact expected.', timestamp: new Date(Date.now() - 1000 * 60 * 30), isRead: false, deepLink: '/' },
@@ -78,21 +107,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
     const sortedNotifications = mockNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     setNotifications(sortedNotifications);
     setUnreadCount(sortedNotifications.filter(n => !n.isRead).length);
-    // setHasUnreadNotifications(sortedNotifications.some(n => !n.isRead));
   }, []);
 
   useEffect(() => {
     fetchNotifications();
-    // TODO: Set up real-time listener for notifications (e.g., Firestore listener, FCM)
-    // This listener would call fetchNotifications or directly update state.
-    // For now, simulating new notification arrival for demo purposes:
-    // const newNotifTimer = setTimeout(() => {
-    //   setHasNewNotification(true);
-    //   setUnreadCount(prev => prev + 1); // Simulate adding one
-    //   setHasUnreadNotifications(true);
-    //   setTimeout(() => setHasNewNotification(false), 10000); // New notification animation duration
-    // }, 15000); // After 15 seconds
-    // return () => clearTimeout(newNotifTimer);
   }, [fetchNotifications]);
 
 
@@ -101,7 +119,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
       const newNotifications = prev.map(n => n.id === id ? { ...n, isRead: true } : n);
       const newUnreadCount = newNotifications.filter(n => !n.isRead).length;
       setUnreadCount(newUnreadCount);
-      // setHasUnreadNotifications(newUnreadCount > 0);
       return newNotifications;
     });
   }, []);
@@ -109,17 +126,15 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const handleMarkAllAsRead = useCallback(() => {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     setUnreadCount(0);
-    // setHasUnreadNotifications(false);
-    // setHasNewNotification(false); // Clear new notification flag too
     toast({ title: "Notifications Updated", description: "All notifications marked as read." });
   }, [toast]);
 
 
   const handleLogout = () => {
     toast({ title: "Logged Out", description: "You have been successfully logged out. (Demo)" });
-    selectUserRole(null); // Reset user role to guest
-    setIsAccountMenuOpen(false); // Close dropdown
-    router.push('/login'); // Redirect to login
+    selectUserRole(null); 
+    setIsAccountMenuOpen(false); 
+    router.push('/login'); 
   };
 
   const getRoleDisplayString = (role: UserRole | null): string => {
@@ -135,9 +150,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
     let welcomeDisplayShownThisSession = false;
 
     if (typeof window !== 'undefined') {
-      // For testing, force these screens to show:
-      onboardingComplete = false; // localStorage.getItem('onboardingComplete') === 'true';
-      welcomeDisplayShownThisSession = false; // sessionStorage.getItem('welcomeDisplayShown') === 'true';
+      onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+      welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
       
       const storedUserRole = localStorage.getItem('userRole') as UserRole;
 
@@ -160,15 +174,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [userRole, selectUserRole]); // userRole added as dep
+  }, [userRole, selectUserRole]); 
 
   const handleOnboardingClose = () => {
     setShowOnboardingModal(false);
-    let welcomeDisplayShownThisSession = false; // Reset for welcome screen check
+    let welcomeDisplayShownThisSession = false; 
     if (typeof window !== 'undefined') {
       localStorage.setItem('onboardingComplete', 'true');
-       // For testing, force welcome display:
-      welcomeDisplayShownThisSession = false; // sessionStorage.getItem('welcomeDisplayShown') === 'true';
+      welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
     }
     if (!welcomeDisplayShownThisSession) {
       setShowWelcomeDisplay(true);
@@ -187,7 +200,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
     if (showOnboardingModal) {
       return <OnboardingModal isOpen={showOnboardingModal} onClose={handleOnboardingClose} />;
     }
-    // This implies pre-onboarding, or welcome display is active
     return <WelcomeDisplay onDisplayComplete={handleWelcomeDisplayComplete} />;
   }
 
@@ -228,7 +240,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
              <AnimatedTagline />
           </div>
 
-          <nav className="flex items-center gap-2 sm:gap-4">
+          <nav className="flex items-center gap-2 sm:gap-3">
+            <ThemeToggleButton /> 
             {userRole === 'pro' && (
               <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10 hidden sm:flex items-center gap-1.5 py-1 px-2.5">
                 <Sparkles className="h-3.5 w-3.5" />
@@ -330,7 +343,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </header>
         <main className="flex-1 flex flex-col overflow-auto relative">
           {React.Children.map(children, child => {
-            if (React.isValidElement(child) && typeof child.type !== 'string') { // Check if it's a React component
+            if (React.isValidElement(child) && typeof child.type !== 'string') { 
               return React.cloneElement(child as React.ReactElement<any>, { 
                 notifications, 
                 markNotificationAsRead: handleMarkAsRead, 

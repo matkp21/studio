@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Toaster } from "@/components/ui/toaster";
 import { ProModeProvider } from '@/contexts/pro-mode-context';
+import { ThemeProvider } from '@/contexts/theme-provider'; // Import ThemeProvider
 
 export function ClientLayoutWrapper({
   children,
@@ -27,9 +28,11 @@ export function ClientLayoutWrapper({
   }, []);
 
   return (
-    <ProModeProvider>
-      <AppLayout>{children}</AppLayout>
-      <Toaster />
-    </ProModeProvider>
+    <ThemeProvider defaultTheme="dark" storageKey="mediassistant-theme">
+      <ProModeProvider>
+        <AppLayout>{children}</AppLayout>
+        <Toaster />
+      </ProModeProvider>
+    </ThemeProvider>
   );
 }
