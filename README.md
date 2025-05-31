@@ -106,6 +106,39 @@ This project is set up to run in Firebase Studio.
         ```
         (This will typically deploy Hosting, Functions, Firestore rules, etc., based on your `firebase.json` configuration).
 
+## Troubleshooting Common Issues
+
+### Google AI / Genkit Errors (e.g., 403 Forbidden, API_KEY_SERVICE_BLOCKED)
+
+If you encounter errors like `[GoogleGenerativeAI Error]: Error fetching from ... [403 Forbidden] Requests to this API generativelanguage.googleapis.com ... are blocked` or similar:
+
+This usually means there's an issue with your Google Cloud Project configuration for the API key being used. The error message often includes your project ID (e.g., `consumer":"projects/YOUR_PROJECT_ID"`).
+
+**Action Required in Google Cloud Console for project `YOUR_PROJECT_ID`:**
+
+1.  **Enable the API:**
+    *   Go to the Google Cloud Console: [https://console.cloud.google.com/](https://console.cloud.google.com/)
+    *   Ensure you have the correct project selected.
+    *   Navigate to "APIs & Services" > "Library".
+    *   Search for "**Generative Language API**" (it might also be listed as "Google AI Generative Language API" or similar).
+    *   Click on it and ensure it is **Enabled**. If not, enable it.
+    *   _Alternatively, if you plan to use models via Vertex AI, ensure the "Vertex AI API" is enabled._
+
+2.  **Check Billing:**
+    *   Most Google Cloud APIs, including generative AI services, require a billing account to be linked to your project and billing to be enabled.
+    *   Navigate to "Billing" in the Google Cloud Console and verify that your project is associated with an active billing account.
+
+3.  **Check API Key Restrictions:**
+    *   If you've set restrictions on your API key (e.g., API restrictions, application restrictions), ensure it's allowed to access the "Generative Language API".
+    *   Navigate to "APIs & Services" > "Credentials".
+    *   Select your API key.
+    *   Review and adjust "API restrictions" and "Application restrictions" as needed. For initial testing, you might temporarily set API restrictions to "Don't restrict key" and then tighten them later.
+
+4.  **Valid API Key:**
+    *   Double-check that the `GOOGLE_API_KEY` in your `.env` file (for local development) or your environment configuration (for deployed environments) is correct and has not expired or been revoked.
+
+After making any necessary changes in the Google Cloud Console, it might take a few minutes for them to propagate. Then, try running your application again.
+
 ## Project Structure (Simplified Overview)
 
 *   `src/app/`: Next.js App Router pages and layouts.
@@ -134,4 +167,3 @@ This is a project in active development. Contributions and suggestions are welco
 
 (Specify your license if applicable, e.g., MIT, Apache 2.0, or proprietary).
 For now, this is a private project for development in Firebase Studio.
-```
