@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { useState, useEffect } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Clock, PlusCircle, Trash2, ListFilter, Activity, BellPlus, BriefcaseMedical, FilePlus } from "lucide-react"; // Added FilePlus
+import { CalendarIcon, Clock, PlusCircle, Trash2, ListFilter, Activity, BellPlus, BriefcaseMedical, FilePlus, ClipboardEdit } from "lucide-react"; // Added ClipboardEdit
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"; // Added Dialog components
@@ -171,7 +171,13 @@ export function PatientTabs() {
             </Button>
             
             <div className="mt-6 space-y-4 max-h-[400px] overflow-y-auto p-1">
-              {roundNotes.length === 0 && <p className="text-muted-foreground text-center py-10">No round notes yet. Add one above!</p>}
+              {roundNotes.length === 0 && (
+                <div className="text-muted-foreground text-center min-h-[200px] flex flex-col items-center justify-center bg-muted/20 rounded-lg p-8">
+                  <ClipboardEdit className="h-16 w-16 mb-4 text-primary/70" />
+                  <p className="text-lg font-semibold">No Round Notes Logged</p>
+                  <p className="text-sm">Add patient round details using the form above.</p>
+                </div>
+              )}
               {roundNotes.map(note => (
                 <Card key={note.id} className="bg-card/80 backdrop-blur-sm shadow-sm rounded-lg">
                   <CardHeader className="flex flex-row justify-between items-start pb-2 pt-4 px-4">
