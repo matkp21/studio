@@ -86,14 +86,14 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
   return (
     <DialogTrigger asChild>
       <motion.div
-        whileHover={!isEditMode ? { y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.2)" } : {}}
-        transition={{ type: "spring", stiffness: 300 }}
+        whileHover={!isEditMode ? { y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.1)" } : {}}
+        transition={{ type: "spring", stiffness: 300, damping: 15 }}
         className={cn(
-          "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
-          !isEditMode && "hover:shadow-lg cursor-pointer",
-          isFrequentlyUsed && !isEditMode && "tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
+          "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border",
+          !isEditMode && "hover:shadow-xl cursor-pointer hover:border-primary/30",
+          isFrequentlyUsed && !isEditMode && "border-primary/20", // Subtle border for frequently used
           tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
-          isEditMode && "cursor-grab"
+          isEditMode && "cursor-grab border-dashed border-muted-foreground/50"
         )}
         onClick={() => !isEditMode && !tool.comingSoon && onLaunch(tool.id)}
         role="button"
@@ -112,17 +112,16 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
           <div className="flex items-center gap-3 mb-1.5">
             <div className={cn(
                 "p-2 rounded-lg bg-primary/10 text-primary transition-colors duration-300",
-                isFrequentlyUsed && !isEditMode ? "bg-gradient-to-br from-[hsl(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),calc(var(--firebase-color-1-light-l)_-_10%))/0.2] to-[hsl(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),calc(var(--firebase-color-3-light-l)_-_10%))/0.2] text-foreground" : (!isEditMode && "group-hover:bg-primary/20")
+                !isEditMode && "group-hover:bg-primary/20"
             )}>
                 <tool.icon className={cn(
                     "h-7 w-7 transition-transform duration-300",
-                    !isEditMode && "group-hover:scale-110",
-                    isFrequentlyUsed && !isEditMode ? "text-sky-500" : "text-primary"
+                    !isEditMode && "group-hover:scale-110 text-primary"
                 )} />
             </div>
             <CardTitle className={cn(
-                "text-lg leading-tight",
-                isFrequentlyUsed && !isEditMode && "text-foreground"
+                "text-lg leading-tight text-foreground",
+                 !isEditMode && "group-hover:text-primary"
             )}>{tool.title}</CardTitle>
           </div>
           <CardDescription className="text-xs leading-relaxed line-clamp-2 min-h-[2.5em]">{tool.description}</CardDescription>
@@ -136,7 +135,6 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
              <div className="w-full text-right">
                 <Button variant="link" size="sm" disabled={isEditMode} className={cn(
                     "text-primary group-hover:underline p-0 h-auto text-xs",
-                     isFrequentlyUsed && !isEditMode && "text-foreground hover:text-primary",
                      isEditMode && "text-muted-foreground cursor-default"
                     )}>
                    Open Tool <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -241,3 +239,4 @@ export function MedicoDashboard() {
     </div>
   );
 }
+
