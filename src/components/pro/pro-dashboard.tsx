@@ -83,8 +83,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
         transition={{ type: "spring", stiffness: 300 }}
         className={cn(
           "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
-          !isEditMode && "hover:shadow-lg cursor-pointer",
-          isFrequentlyUsed && !isEditMode && "tool-card-frequent firebase-gradient-border-hover",
+          !isEditMode && "hover:shadow-lg cursor-pointer tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow", // Apply to all cards on hover when not in edit mode
           tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
           isEditMode && "cursor-grab" // Indicate draggable in edit mode
         )}
@@ -98,24 +97,24 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
         {isEditMode && (
           <GripVertical className="absolute top-2 left-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder (conceptual)" />
         )}
-        {isFrequentlyUsed && !isEditMode && (
+        {isFrequentlyUsed && !isEditMode && ( // Keep star only for actual frequently used ones
           <Star className="absolute top-2 right-2 h-5 w-5 text-yellow-400 fill-yellow-400 z-10" />
         )}
         <CardHeader className="pb-3 pt-4 px-4">
           <div className="flex items-center gap-3 mb-1.5">
             <div className={cn(
                 "p-2 rounded-lg bg-primary/10 text-primary transition-colors duration-300",
-                isFrequentlyUsed && !isEditMode ? "bg-gradient-to-br from-[hsl(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),calc(var(--firebase-color-1-light-l)_-_10%))/0.2] to-[hsl(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),calc(var(--firebase-color-3-light-l)_-_10%))/0.2] text-foreground" : (!isEditMode && "group-hover:bg-primary/20")
+                !isEditMode && "group-hover:bg-gradient-to-br group-hover:from-[hsl(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),calc(var(--firebase-color-1-light-l)_-_10%))/0.2] group-hover:to-[hsl(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),calc(var(--firebase-color-3-light-l)_-_10%))/0.2] group-hover:text-foreground"
             )}>
                 <tool.icon className={cn(
                     "h-7 w-7 transition-transform duration-300",
                     !isEditMode && "group-hover:scale-110",
-                    isFrequentlyUsed && !isEditMode ? "text-purple-500" : "text-primary" // Updated icon color for frequently used
+                    !isEditMode && "group-hover:text-purple-500" // Generic hover icon color
                 )} />
             </div>
             <CardTitle className={cn(
                 "text-lg leading-tight",
-                isFrequentlyUsed && !isEditMode && "text-foreground"
+                !isEditMode && "group-hover:text-foreground"
             )}>{tool.title}</CardTitle>
           </div>
           <CardDescription className="text-xs leading-relaxed line-clamp-2 min-h-[2.5em]">{tool.description}</CardDescription>
@@ -129,7 +128,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
              <div className="w-full text-right">
                 <Button variant="link" size="sm" disabled={isEditMode} className={cn(
                     "text-primary group-hover:underline p-0 h-auto text-xs",
-                     isFrequentlyUsed && !isEditMode && "text-foreground hover:text-primary",
+                     !isEditMode && "group-hover:text-foreground group-hover:hover:text-primary",
                      isEditMode && "text-muted-foreground cursor-default"
                     )}>
                    Open Tool <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -239,3 +238,4 @@ export function ProModeDashboard() {
     </div>
   );
 }
+
