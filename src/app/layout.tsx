@@ -51,13 +51,13 @@ export default function RootLayout({
         <meta name="theme-color" content="hsl(180, 100%, 25%)" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="hsl(216, 65%, 11%)" media="(prefers-color-scheme: dark)" />
         
-        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        {/* <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" /> */}
         {/* Add more apple-touch-icon sizes if available */}
-        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+        {/* <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" /> */}
+        {/* <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" /> */}
         
         {/* Other meta tags from previous state */}
-        <meta name="msapplication-config" content="/icons/browserconfig.xml" />
+        {/* <meta name="msapplication-config" content="/icons/browserconfig.xml" /> */}
       </head>
       <body className={`${poppins.variable} antialiased`}>
         <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
