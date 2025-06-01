@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import {
   PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info,
   MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, Bell, ChevronDown, Edit, HeartPulse,
-  Moon, Sun // Import Moon and Sun icons
+  Moon, Sun, Loader2 // Added Loader2
 } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
@@ -21,10 +21,12 @@ import { Footer } from './footer';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
 import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
-import { useTheme } from '@/contexts/theme-provider'; // Import useTheme
+import { useTheme } from '@/contexts/theme-provider'; 
 import { Badge } from '@/components/ui/badge';
 import { AnimatedTagline } from '@/components/layout/animated-tagline';
 import WelcomeDisplay from '@/components/welcome/welcome-display'; 
+import { ProSuiteAnimation } from '@/components/pro/pro-suite-animation';
+import { MedicoHubAnimation } from '@/components/medico/medico-hub-animation';
 import type { NotificationItem } from '@/types/notifications';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -60,8 +62,7 @@ const ThemeToggleButton = () => {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    // Avoid rendering button server-side or before hydration to prevent mismatch
-    return <div className="h-9 w-9 sm:h-10 sm:w-10" />; // Placeholder for layout
+    return <div className="h-9 w-9 sm:h-10 sm:w-10" />; 
   }
 
   const toggle = () => {
@@ -84,25 +85,52 @@ const ThemeToggleButton = () => {
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
-  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-  const [showWelcomeDisplay, setShowWelcomeDisplay] = useState(false);
-  const [clientLoaded, setClientLoaded] = useState(false);
   const { userRole, selectUserRole } = useProMode();
   const { toast } = useToast();
   const router = useRouter();
 
+  const [currentDisplayState, setCurrentDisplayState] = useState<'loading' | 'onboarding' | 'proAnim' | 'medicoAnim' | 'genericWelcome' | 'app'>('loading');
+
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  
+  // Effect to initialize userRole from localStorage and determine initial display state
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedRole = localStorage.getItem('userRole') as UserRole | null;
+      if (storedRole && !userRole) {
+        selectUserRole(storedRole); 
+        // The state update from selectUserRole might be async.
+        // We'll rely on a re-run of this effect when userRole changes.
+        return; 
+      }
+
+      const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+      const welcomeShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
+
+      if (!onboardingComplete) {
+        setCurrentDisplayState('onboarding');
+      } else if (!welcomeShownThisSession) {
+        // Use the userRole from context, which should be up-to-date by now or on next effect run
+        if (userRole === 'pro') {
+          setCurrentDisplayState('proAnim');
+        } else if (userRole === 'medico') {
+          setCurrentDisplayState('medicoAnim');
+        } else { // 'diagnosis' or null (guest)
+          setCurrentDisplayState('genericWelcome');
+        }
+      } else {
+        setCurrentDisplayState('app');
+      }
+    }
+  }, [userRole, selectUserRole]);
+
 
   const fetchNotifications = useCallback(() => {
     const mockNotifications: NotificationItem[] = [
       { id: '1', type: 'medication_reminder', title: 'Medication Reminder', body: 'Time for Amoxicillin (500mg). Check instructions.', timestamp: new Date(Date.now() - 1000 * 60 * 5), isRead: false, deepLink: '/medications' },
       { id: 'sys-maint', type: 'system_update', title: 'System Maintenance Scheduled', body: 'Brief maintenance tonight at 2 AM. No impact expected.', timestamp: new Date(Date.now() - 1000 * 60 * 30), isRead: false, deepLink: '/' },
-      { id: '2', type: 'appointment_reminder', title: 'Appointment Soon', body: 'Cardiology check-up in 1 hour. Remember pre-appointment notes.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), isRead: true, deepLink: '/' },
-      { id: '3', type: 'study_material_update', title: 'New Notes Available', body: 'Endocrine System notes updated with latest diagrams.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), isRead: false, deepLink: '/medico' },
-      { id: '4', type: 'general', title: 'MediAssistant v1.2 Update!', body: 'Explore new features and performance improvements across all modes.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48), isRead: true, deepLink: '/' },
     ];
     const sortedNotifications = mockNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     setNotifications(sortedNotifications);
@@ -111,14 +139,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchNotifications();
+    const handleScroll = () => {
+      if (typeof window !== 'undefined') {
+        setScrolled(window.scrollY > 20);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [fetchNotifications]);
-
 
   const handleMarkAsRead = useCallback((id: string) => {
     setNotifications(prev => {
       const newNotifications = prev.map(n => n.id === id ? { ...n, isRead: true } : n);
-      const newUnreadCount = newNotifications.filter(n => !n.isRead).length;
-      setUnreadCount(newUnreadCount);
+      setUnreadCount(newNotifications.filter(n => !n.isRead).length);
       return newNotifications;
     });
   }, []);
@@ -129,11 +162,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
     toast({ title: "Notifications Updated", description: "All notifications marked as read." });
   }, [toast]);
 
-
   const handleLogout = () => {
     toast({ title: "Logged Out", description: "You have been successfully logged out. (Demo)" });
     selectUserRole(null); 
     setIsAccountMenuOpen(false); 
+    sessionStorage.removeItem('welcomeDisplayShown'); // Allow welcome screen on next login
     router.push('/login'); 
   };
 
@@ -143,67 +176,58 @@ export function AppLayout({ children }: { children: ReactNode }) {
     if (role === 'diagnosis') return 'Patient/User';
     return 'Guest';
   };
-
-  useEffect(() => {
-    setClientLoaded(true);
-    let onboardingComplete = false;
-    let welcomeDisplayShownThisSession = false;
-
-    if (typeof window !== 'undefined') {
-      onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
-      welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
-      
-      const storedUserRole = localStorage.getItem('userRole') as UserRole;
-
-      if (!onboardingComplete) {
-        setShowOnboardingModal(true);
-      } else {
-        if (!welcomeDisplayShownThisSession) {
-          setShowWelcomeDisplay(true);
-        }
-        if (storedUserRole && !userRole) {
-          selectUserRole(storedUserRole);
-        }
-      }
-    }
-
-    const handleScroll = () => {
-      if (typeof window !== 'undefined') {
-        setScrolled(window.scrollY > 20);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [userRole, selectUserRole]); 
-
+  
   const handleOnboardingClose = () => {
-    setShowOnboardingModal(false);
-    let welcomeDisplayShownThisSession = false; 
     if (typeof window !== 'undefined') {
       localStorage.setItem('onboardingComplete', 'true');
-      welcomeDisplayShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
-    }
-    if (!welcomeDisplayShownThisSession) {
-      setShowWelcomeDisplay(true);
+      // Re-evaluate which welcome animation to show based on role potentially set during onboarding
+      const roleFromStorage = localStorage.getItem('userRole') as UserRole | null;
+      // Update context if onboarding modal set it directly (though ideally it uses selectUserRole)
+      if (roleFromStorage && roleFromStorage !== userRole) {
+          selectUserRole(roleFromStorage); 
+      }
+      // Transition based on the (potentially newly set) role
+      if (roleFromStorage === 'pro') {
+          setCurrentDisplayState('proAnim');
+      } else if (roleFromStorage === 'medico') {
+          setCurrentDisplayState('medicoAnim');
+      } else {
+          setCurrentDisplayState('genericWelcome');
+      }
     }
   };
   
-  const handleWelcomeDisplayComplete = () => {
-    setShowWelcomeDisplay(false);
+  const handleAnimationComplete = () => {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('welcomeDisplayShown', 'true');
     }
+    setCurrentDisplayState('app');
   };
 
 
-  if (!clientLoaded || showOnboardingModal || showWelcomeDisplay) {
-    if (showOnboardingModal) {
-      return <OnboardingModal isOpen={showOnboardingModal} onClose={handleOnboardingClose} />;
-    }
-    return <WelcomeDisplay onDisplayComplete={handleWelcomeDisplayComplete} />;
+  // Render logic based on currentDisplayState
+  if (currentDisplayState === 'loading') {
+    // Minimal loading placeholder to avoid flash of unstyled content or layout shifts
+    return <div className="fixed inset-0 bg-background flex items-center justify-center"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
   }
 
+  if (currentDisplayState === 'onboarding') {
+    return <OnboardingModal isOpen={true} onClose={handleOnboardingClose} />;
+  }
 
+  if (currentDisplayState === 'proAnim') {
+    return <ProSuiteAnimation onAnimationComplete={handleAnimationComplete} />;
+  }
+
+  if (currentDisplayState === 'medicoAnim') {
+    return <MedicoHubAnimation onAnimationComplete={handleAnimationComplete} />;
+  }
+
+  if (currentDisplayState === 'genericWelcome') {
+    return <WelcomeDisplay onDisplayComplete={handleAnimationComplete} />;
+  }
+  
+  // currentDisplayState === 'app'
   return (
     <SidebarProvider defaultOpen={true}>
       <Sidebar
@@ -312,7 +336,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
                         <DropdownMenuSubContent>
-                        <DropdownMenuRadioGroup value={userRole || ''} onValueChange={(role) => { selectUserRole(role as UserRole); setIsAccountMenuOpen(false); }}>
+                        <DropdownMenuRadioGroup value={userRole || ''} onValueChange={(role) => { selectUserRole(role as UserRole); setIsAccountMenuOpen(false); setCurrentDisplayState('loading'); /* Trigger re-evaluation */ }}>
                             <DropdownMenuRadioItem value="pro" className="flex items-center gap-2 cursor-pointer">
                                 <BriefcaseMedical className="h-4 w-4 text-purple-500" />
                                 <span className={cn(userRole === 'pro' && "firebase-gradient-text-active-role font-semibold")}>Professional</span>
