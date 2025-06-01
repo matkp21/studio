@@ -77,12 +77,12 @@
     /* Background for the "Elegant Reveal" screen is the main app background */
     /* Icon & Text colors for "Elegant Reveal" */
     --heart-stroke-width: 2px; /* Maintained for heart icon in Logo */
-    --heart-icon-splash-size-min: 60px;
-    --heart-icon-splash-size-vw: 15vw;
-    --heart-icon-splash-size-max: 120px;
-    --logo-text-splash-size-min: 1.8rem;
-    --logo-text-splash-size-vw: 5vw;
-    --logo-text-splash-size-max: 3rem;
+    --heart-icon-splash-size-min: 70px;
+    --heart-icon-splash-size-vw: 17vw;
+    --heart-icon-splash-size-max: 140px;
+    --logo-text-splash-size-min: 2.0rem;
+    --logo-text-splash-size-vw: 5.5vw;
+    --logo-text-splash-size-max: 3.3rem;
 
 
     /* --- "MediAssistant Spark" Welcome Screen Colors (Light Mode) - REVISED --- */
@@ -170,12 +170,12 @@
     --firebase-color-4-dark-h: 15; --firebase-color-4-dark-s: 100%; --firebase-color-4-dark-l: 70%;
 
     /* --- "Elegant Reveal" Welcome Screen Sizing (Dark Mode) --- */
-    --heart-icon-splash-size-min: 60px;
-    --heart-icon-splash-size-vw: 15vw;
-    --heart-icon-splash-size-max: 120px;
-    --logo-text-splash-size-min: 1.8rem;
-    --logo-text-splash-size-vw: 5vw;
-    --logo-text-splash-size-max: 3rem;
+    --heart-icon-splash-size-min: 70px;
+    --heart-icon-splash-size-vw: 17vw;
+    --heart-icon-splash-size-max: 140px;
+    --logo-text-splash-size-min: 2.0rem;
+    --logo-text-splash-size-vw: 5.5vw;
+    --logo-text-splash-size-max: 3.3rem;
 
     /* --- "MediAssistant Spark" Welcome Screen Colors (Dark Mode) - REVISED --- */
     --spark-bg-start-dark-h: 222; --spark-bg-start-dark-s: 47%; --spark-bg-start-dark-l: 11%; /* Slate-900 like */
@@ -236,6 +236,9 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 
 .simple-welcome-tagline { /* Styles for the AnimatedTagline component's container */
   text-align: center;
+  font-family: var(--font-poppins);
+  font-weight: 300; /* Poppins Light */
+  letter-spacing: 0.025em;
   font-size: clamp(1.1rem, 3vw, 1.5rem); /* Adjusted for prominence */
   color: hsl(var(--foreground), 0.9);
 }
@@ -244,10 +247,14 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 }
 
 /* Styles applied to the logo elements specifically within the simple-welcome-screen */
-.simple-welcome-screen .welcome-logo-container .logo-icon-container,
-.simple-welcome-screen .welcome-logo-container .logo-icon-container svg {
+.simple-welcome-screen .welcome-logo-container .logo-icon-container {
   width: clamp(var(--heart-icon-splash-size-min), var(--heart-icon-splash-size-vw), var(--heart-icon-splash-size-max));
   height: clamp(var(--heart-icon-splash-size-min), var(--heart-icon-splash-size-vw), var(--heart-icon-splash-size-max));
+}
+
+.simple-welcome-screen .welcome-logo-container .logo-icon-container svg {
+    width: 60%; 
+    height: 60%;
 }
 
 .simple-welcome-screen .welcome-logo-container .logo-text {
@@ -343,7 +350,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 .slide-in-bottom {
   opacity: 0;
   transform: translateY(20px);
-  animation: slideInBottomAnimation 0.7s ease-in-out forwards;
+  animation: slideInBottomAnimation 0.6s ease-out forwards;
 }
 
 /* Content Crossfade */
@@ -1112,7 +1119,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 /* Entrance animation for logo and text blocks (applied via JS or component logic) */
 .splash-element-fade-in {
   opacity: 0;
-  animation: fadeInElements 1s ease-out 0.5s forwards; /* 0.5s delay after screen potentially loads */
+  animation: fadeInElements 0.7s ease-out 0.5s forwards; /* 0.5s delay after screen potentially loads */
 }
 
 @keyframes fadeInElements {
