@@ -27,7 +27,7 @@ type FlashcardFormValues = z.infer<typeof formSchema>;
 interface FlashcardDisplay extends MedicoFlashcard {
   id: string;
   isFlipped: boolean;
-  status?: 'new' | 'learning' | 'mastered';
+  status: 'new' | 'learning' | 'mastered'; // Status is now mandatory
 }
 
 export function FlashcardGenerator() {
@@ -57,7 +57,7 @@ export function FlashcardGenerator() {
         ...fc,
         id: `${data.topic}-${index}-${Date.now()}`,
         isFlipped: false,
-        status: 'new' as 'new',
+        status: 'new' as 'new', // Default status
       }));
       setGeneratedFlashcards(displayFlashcards);
       toast({
@@ -89,10 +89,10 @@ export function FlashcardGenerator() {
   const markCardStatus = (id: string, status: 'learning' | 'mastered') => {
      setGeneratedFlashcards(prev =>
       prev?.map(card =>
-        card.id === id ? { ...card, status: status, isFlipped: false } : card // auto-flip back
+        card.id === id ? { ...card, status: status, isFlipped: false } : card // auto-flip back to front
       ) || null
     );
-  }
+  };
 
 
   return (
@@ -169,7 +169,7 @@ export function FlashcardGenerator() {
               <Layers className="h-6 w-6 text-blue-600" />
               Flashcards: {currentTopic}
             </CardTitle>
-            <CardDescription>Click a card to flip it. Mark your progress.</CardDescription>
+            <CardDescription>Click a card to flip it. Mark your progress using the buttons below each card.</CardDescription>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[500px] p-1 border bg-background rounded-lg">
@@ -178,29 +178,52 @@ export function FlashcardGenerator() {
                   <Card 
                     key={card.id} 
                     className={cn(
-                        "min-h-[200px] flex flex-col justify-between cursor-pointer shadow-md rounded-lg overflow-hidden transition-all duration-300 ease-in-out transform hover:scale-105",
-                        card.status === 'mastered' && 'border-green-500 bg-green-500/10',
-                        card.status === 'learning' && 'border-yellow-500 bg-yellow-500/10',
-                        card.isFlipped && 'bg-secondary'
+                        "min-h-[220px] flex flex-col justify-between shadow-md rounded-lg overflow-hidden transition-all duration-300 ease-in-out transform hover:scale-[1.03] focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2",
+                        card.status === 'mastered' && 'border-2 border-green-500 bg-green-500/5',
+                        card.status === 'learning' && 'border-2 border-yellow-500 bg-yellow-500/5',
+                        card.status === 'new' && 'border-border',
+                        card.isFlipped && 'bg-secondary/30'
                     )}
                   >
                     <CardContent 
-                        className="flex-grow flex items-center justify-center p-4 text-center"
+                        className="flex-grow flex items-center justify-center p-4 text-center cursor-pointer min-h-[150px]"
                         onClick={() => flipCard(card.id)}
+                        role="button"
+                        aria-label={`Flashcard: ${card.isFlipped ? 'Back' : 'Front'}. Question: ${card.front}. Click to flip.`}
+                        tabIndex={0}
+                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && flipCard(card.id)}
                     >
-                      <p className="text-sm md:text-base text-foreground">
+                      <p className="text-sm md:text-base text-foreground whitespace-pre-wrap">
                         {card.isFlipped ? card.back : card.front}
                       </p>
                     </CardContent>
-                    <CardFooter className="p-2 border-t bg-muted/50 flex justify-between items-center">
-                        <Button variant="ghost" size="sm" onClick={() => flipCard(card.id)} className="text-xs hover:bg-primary/10">
-                            <ArrowLeftRight className="mr-1 h-3 w-3" /> Flip
+                    <CardFooter className="p-2 border-t bg-muted/20 flex justify-between items-center">
+                        <Button variant="ghost" size="sm" onClick={() => flipCard(card.id)} className="text-xs text-muted-foreground hover:text-primary hover:bg-primary/10 flex-1 justify-center">
+                            <ArrowLeftRight className="mr-1.5 h-3.5 w-3.5" /> Flip
                         </Button>
-                        <div className="space-x-1">
-                             <Button variant={card.status === 'learning' ? "default" : "outline"} size="iconSm" onClick={() => markCardStatus(card.id, 'learning')} className="text-xs border-yellow-500 text-yellow-600 hover:bg-yellow-500/20 h-7 w-7">
+                        <div className="flex gap-1.5">
+                             <Button 
+                                variant={card.status === 'learning' ? "secondary" : "outline"} 
+                                size="iconSm" 
+                                onClick={() => markCardStatus(card.id, 'learning')} 
+                                className={cn(
+                                    "h-7 w-7 rounded-md",
+                                    card.status === 'learning' ? "bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-600" : "border-yellow-500 text-yellow-600 hover:bg-yellow-500/10"
+                                )}
+                                aria-label="Mark as learning"
+                            >
                                 <XCircle className="h-4 w-4" />
                             </Button>
-                            <Button variant={card.status === 'mastered' ? "default" : "outline"} size="iconSm" onClick={() => markCardStatus(card.id, 'mastered')} className="text-xs border-green-500 text-green-600 hover:bg-green-500/20 h-7 w-7">
+                            <Button 
+                                variant={card.status === 'mastered' ? "default" : "outline"} 
+                                size="iconSm" 
+                                onClick={() => markCardStatus(card.id, 'mastered')} 
+                                className={cn(
+                                    "h-7 w-7 rounded-md",
+                                    card.status === 'mastered' ? "bg-green-600 hover:bg-green-700 text-white border-green-700" : "border-green-600 text-green-600 hover:bg-green-500/10"
+                                )}
+                                aria-label="Mark as mastered"
+                            >
                                 <CheckCircle className="h-4 w-4" />
                             </Button>
                         </div>
