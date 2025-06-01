@@ -6,8 +6,8 @@ import { useState } from 'react';
 import { SymptomForm } from '@/components/symptom-analyzer/symptom-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, ListChecks, Sparkles, Brain, PencilRuler, CheckCircle, AlertTriangle, Info } from 'lucide-react';
-import type { SymptomAnalyzerOutput, DiagnosisItem } from '@/ai/flows/symptom-analyzer-flow'; // Updated import
+import { Loader2, ListChecks, Sparkles, Brain, PencilRuler, CheckCircle, AlertTriangle, Info, Microscope } from 'lucide-react'; // Added Microscope
+import type { SymptomAnalyzerOutput, DiagnosisItem, InvestigationItem } from '@/ai/flows/symptom-analyzer-flow'; // Updated import
 import { useProMode } from '@/contexts/pro-mode-context';
 import { cn } from '@/lib/utils';
 
@@ -115,14 +115,14 @@ export function SymptomAnalysisMode() {
               {analysisResult.suggestedInvestigations && analysisResult.suggestedInvestigations.length > 0 && (
                 <div>
                     <h3 className="font-semibold text-md text-foreground flex items-center mb-1.5 mt-3">
-                        <Sparkles className="mr-2 h-4 w-4 text-primary" />
+                        <Microscope className="mr-2 h-4 w-4 text-primary" /> {/* Changed icon */}
                         Suggested Investigations:
                     </h3>
-                    <ul className="list-disc list-inside pl-5 space-y-1 text-sm">
-                        {analysisResult.suggestedInvestigations.map((inv, index) => (
-                            <li key={index}>
+                    <ul className="space-y-1.5 text-sm">
+                        {analysisResult.suggestedInvestigations.map((inv: InvestigationItem, index: number) => (
+                            <li key={index} className="p-2 bg-muted/30 rounded-md border border-border/20">
                                 <span className="font-medium">{inv.name}</span>
-                                {inv.rationale && <span className="text-xs text-muted-foreground italic"> - {inv.rationale}</span>}
+                                {inv.rationale && <p className="text-xs text-muted-foreground italic mt-0.5">{inv.rationale}</p>}
                             </li>
                         ))}
                     </ul>

@@ -29,7 +29,9 @@ const prompt = ai.definePrompt({
     - 'name': The name of the condition.
     - 'confidence': Your qualitative confidence level (High, Medium, Low, or Possible).
     - 'rationale': Brief supporting evidence or reasoning, and mention any red flag symptoms associated with urgent/serious differentials.
-2.  A prioritized list of suggested investigations for the top few likely diagnoses. Include brief rationale snippets for why each test is suggested.
+2.  A prioritized list of suggested investigations for the top few likely diagnoses. For each investigation, include:
+    - 'name': The name of the investigation (e.g., "Chest X-ray (PA and Lateral)").
+    - 'rationale': A brief rationale for why this test is suggested (e.g., "To confirm lung consolidation if pneumonia suspected.").
 3.  A list of suggested initial management steps or considerations for the most likely diagnoses. Mention if specific guidelines (e.g., WHO, NICE) should be consulted.
 
 Symptoms: {{{symptoms}}}
@@ -43,7 +45,7 @@ Patient Context:
 Output Format:
 Ensure your output strictly adheres to the SymptomAnalyzerOutputSchema JSON structure.
 'diagnoses' should be an array of objects, each with 'name', optional 'confidence', and optional 'rationale'.
-'suggestedInvestigations' should be an array of objects, each with 'name' and 'rationale'.
+'suggestedInvestigations' should be an array of objects, each with 'name' and optional 'rationale'.
 'suggestedManagement' should be an array of strings.
 
 Example for a single diagnosis object in the 'diagnoses' array:
@@ -59,7 +61,12 @@ Example for diagnoses array:
   { "name": "Pulmonary Embolism", "confidence": "Low", "rationale": "Consider if sudden onset dyspnea, pleuritic chest pain, or risk factors present. Red flags: Unilateral leg swelling, hemoptysis." }
 ]
 
-Example for suggestedInvestigations:
+Example for a single investigation object in 'suggestedInvestigations':
+{
+  "name": "Chest X-ray (PA and Lateral)",
+  "rationale": "To confirm lung consolidation if pneumonia suspected."
+}
+Example for suggestedInvestigations array:
 [
   { "name": "Chest X-ray (PA and Lateral)", "rationale": "To confirm lung consolidation if pneumonia suspected." },
   { "name": "Sputum for Gram Stain & Culture", "rationale": "To identify causative organism in suspected respiratory infection." }
@@ -68,8 +75,7 @@ Example for suggestedInvestigations:
 Example for suggestedManagement:
 [
   "Consider empirical antibiotics (e.g., Amoxicillin-Clavulanate or Doxycycline) based on local guidelines and patient allergies if bacterial pneumonia is highly suspected.",
-  "Oxygen therapy if SpO2 < 92%.",
-  "Advise patient to consult a healthcare professional for definitive diagnosis and treatment."
+  "Oxygen therapy if SpO2 < 92%."
 ]
 
 Always include a disclaimer that this information is for informational purposes only and not a substitute for professional medical advice.
@@ -84,25 +90,34 @@ const symptomAnalyzerFlow = ai.defineFlow(
   },
   async (input: SymptomAnalyzerInput) => {
     const {output} = await prompt(input);
+    
+    const defaultDisclaimer = "This information is for informational purposes only and not a substitute for professional medical advice. Always consult with a qualified healthcare provider for any health concerns or before making any decisions related to your health or treatment.";
+    const consultProfessionalMessage = "It is crucial to consult a healthcare professional for an accurate diagnosis and appropriate treatment plan.";
+
     if (!output) {
       console.error("Symptom analyzer prompt did not return an output.");
       return { 
         diagnoses: [{ name: "Could not determine potential diagnoses at this time. Please consult a medical professional.", confidence: "Unknown", rationale: "AI model did not return expected output." }],
         suggestedInvestigations: [],
-        suggestedManagement: ["Advise consulting a medical professional."],
-        disclaimer: "This information is for informational purposes only and not a substitute for professional medical advice."
+        suggestedManagement: [consultProfessionalMessage],
+        disclaimer: defaultDisclaimer
       };
     }
-     // Ensure disclaimer is always present
+    
     const finalOutput = { ...output };
+
+    // Ensure disclaimer is always present
     if (!finalOutput.disclaimer) {
-      finalOutput.disclaimer = "This information is for informational purposes only and not a substitute for professional medical advice. Always consult with a qualified healthcare provider for any health concerns or before making any decisions related to your health or treatment.";
-    }
-    if (!finalOutput.suggestedManagement?.some(m => m.toLowerCase().includes("consult a healthcare professional"))) {
-        if (!finalOutput.suggestedManagement) finalOutput.suggestedManagement = [];
-        finalOutput.suggestedManagement.push("It is crucial to consult a healthcare professional for an accurate diagnosis and appropriate treatment plan.");
+      finalOutput.disclaimer = defaultDisclaimer;
     }
 
+    // Ensure "consult a professional" is in management suggestions
+    if (!finalOutput.suggestedManagement) {
+        finalOutput.suggestedManagement = [];
+    }
+    if (!finalOutput.suggestedManagement.some(m => m.toLowerCase().includes("consult a healthcare professional") || m.toLowerCase().includes("consult a medical professional"))) {
+        finalOutput.suggestedManagement.push(consultProfessionalMessage);
+    }
 
     return finalOutput;
   }

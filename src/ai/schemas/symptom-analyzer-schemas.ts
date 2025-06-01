@@ -20,6 +20,8 @@ export const InvestigationSchema = z.object({
   name: z.string().describe('Name of the suggested investigation (e.g., "Chest X-ray", "CBC").'),
   rationale: z.string().optional().describe('Brief reason why this investigation is suggested.'),
 });
+export type InvestigationItem = z.infer<typeof InvestigationSchema>;
+
 
 export const DiagnosisItemSchema = z.object({
   name: z.string().describe('The name of the potential diagnosis.'),
@@ -30,7 +32,7 @@ export type DiagnosisItem = z.infer<typeof DiagnosisItemSchema>;
 
 export const SymptomAnalyzerOutputSchema = z.object({
   diagnoses: z.array(DiagnosisItemSchema).describe('A list of potential differential diagnoses, each with a name, optional confidence, and optional rationale.'),
-  suggestedInvestigations: z.array(InvestigationSchema).optional().describe('A list of suggested investigations for the top likely diagnoses.'),
+  suggestedInvestigations: z.array(InvestigationSchema).optional().describe('A list of suggested investigations for the top likely diagnoses, each with a name and optional rationale.'),
   suggestedManagement: z.array(z.string()).optional().describe('A list of suggested initial management steps or considerations.'),
   disclaimer: z.string().optional().describe('A standard disclaimer advising consultation with a medical professional.'),
 });
