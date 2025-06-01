@@ -6,9 +6,20 @@ import { useState } from 'react';
 import { SymptomForm } from '@/components/symptom-analyzer/symptom-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, ListChecks, Sparkles, Brain, PencilRuler } from 'lucide-react';
-import type { SymptomAnalyzerOutput } from '@/ai/flows/symptom-analyzer-flow';
+import { Loader2, ListChecks, Sparkles, Brain, PencilRuler, CheckCircle, AlertTriangle, Info } from 'lucide-react';
+import type { SymptomAnalyzerOutput, DiagnosisItem } from '@/ai/flows/symptom-analyzer-flow'; // Updated import
 import { useProMode } from '@/contexts/pro-mode-context';
+import { cn } from '@/lib/utils';
+
+function getConfidenceColor(confidence?: DiagnosisItem['confidence']): string {
+  switch (confidence) {
+    case 'High': return 'text-green-600 dark:text-green-400';
+    case 'Medium': return 'text-yellow-600 dark:text-yellow-400';
+    case 'Low': return 'text-orange-600 dark:text-orange-400';
+    case 'Possible': return 'text-blue-600 dark:text-blue-400';
+    default: return 'text-muted-foreground';
+  }
+}
 
 export function SymptomAnalysisMode() {
   const [analysisResult, setAnalysisResult] = useState<SymptomAnalyzerOutput | null>(null);
@@ -39,7 +50,7 @@ export function SymptomAnalysisMode() {
           <CardTitle className="text-2xl">Analysis Results</CardTitle>
           <CardDescription>Potential diagnoses based on symptoms. Always consult a medical professional.</CardDescription>
         </CardHeader>
-        <CardContent className="min-h-[250px] flex flex-col justify-start"> {/* Changed to justify-start */}
+        <CardContent className="min-h-[250px] flex flex-col justify-start">
           {isLoading && (
             <div className="flex flex-col items-center justify-center text-muted-foreground py-10">
               <Loader2 className="h-10 w-10 animate-spin text-primary mb-3" />
@@ -48,18 +59,19 @@ export function SymptomAnalysisMode() {
           )}
           {error && !isLoading && (
             <Alert variant="destructive" className="rounded-lg my-4">
+              <AlertTriangle className="h-5 w-5" />
               <AlertTitle>Analysis Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
-          {userRole === 'medico' && (
+          {userRole === 'medico' && !isLoading && (
              <Alert variant="default" className="my-4 border-sky-500/50 bg-sky-500/10 rounded-lg">
               <PencilRuler className="h-5 w-5 text-sky-600" />
               <AlertTitle className="text-sky-700 dark:text-sky-500 font-semibold">Medico Study Tools</AlertTitle>
-              <AlertDescription className="text-sky-600/80 dark:text-sky-500/80">
+              <AlertDescription className="text-sky-600/80 dark:text-sky-500/80 text-xs">
                 Use symptom analysis for differential diagnosis practice. For notes &amp; MCQs, use chat commands:
-                <ul className="list-disc pl-5 mt-1 text-xs">
+                <ul className="list-disc pl-5 mt-1">
                   <li><code>/notes &lt;topic&gt;</code></li>
                   <li><code>/mcq &lt;topic&gt; [num]</code></li>
                 </ul>
@@ -68,20 +80,77 @@ export function SymptomAnalysisMode() {
           )}
 
           {analysisResult && !isLoading && !error && (
-            <div className="space-y-3 fade-in mt-2">
-              <h3 className="font-semibold text-lg text-foreground flex items-center">
-                <ListChecks className="mr-2 h-5 w-5 text-primary" />
-                Potential Considerations:
-              </h3>
-              {analysisResult.diagnoses.length > 0 ? (
-                <ul className="list-disc list-inside bg-secondary/50 p-4 rounded-lg space-y-1 text-sm text-secondary-foreground">
-                  {analysisResult.diagnoses.map((diagnosis, index) => (
-                    <li key={index}>{diagnosis}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted-foreground text-sm">No specific considerations could be determined based on the input.</p>
+            <div className="space-y-4 fade-in mt-2">
+              <div>
+                <h3 className="font-semibold text-lg text-foreground flex items-center mb-2">
+                  <ListChecks className="mr-2 h-5 w-5 text-primary" />
+                  Potential Considerations:
+                </h3>
+                {analysisResult.diagnoses.length > 0 ? (
+                  <ul className="space-y-2">
+                    {analysisResult.diagnoses.map((diag, index) => (
+                      <li key={index} className="p-3 bg-muted/40 rounded-lg border border-border/30">
+                        <div className="flex justify-between items-start">
+                          <span className="font-medium text-sm text-foreground">{diag.name}</span>
+                          {diag.confidence && (
+                            <span className={cn("text-xs font-semibold px-1.5 py-0.5 rounded-full", getConfidenceColor(diag.confidence), 
+                              diag.confidence === 'High' ? 'bg-green-500/10' : 
+                              diag.confidence === 'Medium' ? 'bg-yellow-500/10' : 
+                              diag.confidence === 'Low' ? 'bg-orange-500/10' : 
+                              diag.confidence === 'Possible' ? 'bg-blue-500/10' : ''
+                            )}>
+                              {diag.confidence}
+                            </span>
+                          )}
+                        </div>
+                        {diag.rationale && <p className="text-xs text-muted-foreground mt-1 italic">{diag.rationale}</p>}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-muted-foreground text-sm">No specific considerations could be determined based on the input.</p>
+                )}
+              </div>
+
+              {analysisResult.suggestedInvestigations && analysisResult.suggestedInvestigations.length > 0 && (
+                <div>
+                    <h3 className="font-semibold text-md text-foreground flex items-center mb-1.5 mt-3">
+                        <Sparkles className="mr-2 h-4 w-4 text-primary" />
+                        Suggested Investigations:
+                    </h3>
+                    <ul className="list-disc list-inside pl-5 space-y-1 text-sm">
+                        {analysisResult.suggestedInvestigations.map((inv, index) => (
+                            <li key={index}>
+                                <span className="font-medium">{inv.name}</span>
+                                {inv.rationale && <span className="text-xs text-muted-foreground italic"> - {inv.rationale}</span>}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
               )}
+
+              {analysisResult.suggestedManagement && analysisResult.suggestedManagement.length > 0 && (
+                 <div>
+                    <h3 className="font-semibold text-md text-foreground flex items-center mb-1.5 mt-3">
+                         <CheckCircle className="mr-2 h-4 w-4 text-primary" />
+                        Suggested Management Steps:
+                    </h3>
+                    <ul className="list-disc list-inside pl-5 space-y-1 text-sm">
+                        {analysisResult.suggestedManagement.map((man, index) => (
+                            <li key={index}>{man}</li>
+                        ))}
+                    </ul>
+                </div>
+              )}
+
+              {analysisResult.disclaimer && (
+                 <Alert variant="default" className="mt-4 border-amber-500/50 bg-amber-500/10 text-xs">
+                    <Info className="h-4 w-4 text-amber-600" />
+                    <AlertTitle className="text-amber-700 dark:text-amber-500 font-semibold">Disclaimer</AlertTitle>
+                    <AlertDescription className="text-amber-600/90 dark:text-amber-500/90">{analysisResult.disclaimer}</AlertDescription>
+                 </Alert>
+              )}
+
               {isProMode && userRole === 'pro' && (
                 <Alert variant="default" className="mt-4 border-primary/50 bg-primary/10 rounded-lg">
                   <Sparkles className="h-5 w-5 text-primary" />
@@ -95,12 +164,14 @@ export function SymptomAnalysisMode() {
           )}
 
           {!isLoading && !analysisResult && !error && (
-            <p className="text-muted-foreground text-center py-10 flex-grow flex items-center justify-center">
-              Results will appear here once symptoms are submitted.
-            </p>
+            <div className="flex flex-col items-center justify-center text-muted-foreground py-10 flex-grow">
+                <Brain className="h-12 w-12 mb-3 text-muted-foreground/50" />
+                <p>Results will appear here once symptoms are submitted.</p>
+            </div>
           )}
         </CardContent>
       </Card>
     </div>
   );
 }
+

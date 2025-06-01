@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent that analyzes symptoms and provides potential diagnoses,
@@ -24,7 +25,10 @@ const prompt = ai.definePrompt({
   input: {schema: SymptomAnalyzerInputSchema},
   output: {schema: SymptomAnalyzerOutputSchema},
   prompt: `You are an AI medical expert. Based on the symptoms and patient context provided, generate:
-1.  A list of potential differential diagnoses, ranked by probability if possible. Include brief supporting evidence or rationale for each, and mention any red flag symptoms associated with urgent/serious differentials.
+1.  A list of potential differential diagnoses. For each diagnosis, include:
+    - 'name': The name of the condition.
+    - 'confidence': Your qualitative confidence level (High, Medium, Low, or Possible).
+    - 'rationale': Brief supporting evidence or reasoning, and mention any red flag symptoms associated with urgent/serious differentials.
 2.  A prioritized list of suggested investigations for the top few likely diagnoses. Include brief rationale snippets for why each test is suggested.
 3.  A list of suggested initial management steps or considerations for the most likely diagnoses. Mention if specific guidelines (e.g., WHO, NICE) should be consulted.
 
@@ -37,16 +41,22 @@ Patient Context:
 {{/if}}
 
 Output Format:
-Ensure your output strictly adheres to the SymptomAnalyzerOutputSchema.
-'diagnoses' should be an array of strings, each potentially including ranking, rationale, and red flags.
+Ensure your output strictly adheres to the SymptomAnalyzerOutputSchema JSON structure.
+'diagnoses' should be an array of objects, each with 'name', optional 'confidence', and optional 'rationale'.
 'suggestedInvestigations' should be an array of objects, each with 'name' and 'rationale'.
 'suggestedManagement' should be an array of strings.
 
-Example for diagnoses:
+Example for a single diagnosis object in the 'diagnoses' array:
+{
+  "name": "Community-Acquired Pneumonia",
+  "confidence": "High",
+  "rationale": "Supported by cough, fever, and reported crackles. Red flags: severe dyspnea, SpO2 <90%."
+}
+Example for diagnoses array:
 [
-  "Community-Acquired Pneumonia (High Probability): Supported by cough, fever, and reported crackles. Red flags: severe dyspnea, SpO2 <90%.",
-  "Acute Bronchitis (Moderate Probability): Cough present, but fever might be low grade or absent. Usually viral.",
-  "Pulmonary Embolism (Low Probability, High Urgency): Consider if sudden onset dyspnea, pleuritic chest pain, or risk factors present (e.g., recent surgery, immobility). Red flags: Unilateral leg swelling, hemoptysis."
+  { "name": "Community-Acquired Pneumonia", "confidence": "High", "rationale": "Supported by cough, fever, and reported crackles. Red flags: severe dyspnea, SpO2 <90%." },
+  { "name": "Acute Bronchitis", "confidence": "Medium", "rationale": "Cough present, but fever might be low grade or absent. Usually viral." },
+  { "name": "Pulmonary Embolism", "confidence": "Low", "rationale": "Consider if sudden onset dyspnea, pleuritic chest pain, or risk factors present. Red flags: Unilateral leg swelling, hemoptysis." }
 ]
 
 Example for suggestedInvestigations:
@@ -77,7 +87,7 @@ const symptomAnalyzerFlow = ai.defineFlow(
     if (!output) {
       console.error("Symptom analyzer prompt did not return an output.");
       return { 
-        diagnoses: ["Could not determine potential diagnoses at this time. Please consult a medical professional."],
+        diagnoses: [{ name: "Could not determine potential diagnoses at this time. Please consult a medical professional.", confidence: "Unknown", rationale: "AI model did not return expected output." }],
         suggestedInvestigations: [],
         suggestedManagement: ["Advise consulting a medical professional."],
         disclaimer: "This information is for informational purposes only and not a substitute for professional medical advice."

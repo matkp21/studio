@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview Defines Zod schemas for symptom analysis input and output.
  * These schemas are used by both the symptom analyzer flow and its corresponding tool.
@@ -20,8 +21,15 @@ export const InvestigationSchema = z.object({
   rationale: z.string().optional().describe('Brief reason why this investigation is suggested.'),
 });
 
+export const DiagnosisItemSchema = z.object({
+  name: z.string().describe('The name of the potential diagnosis.'),
+  confidence: z.enum(['High', 'Medium', 'Low', 'Possible']).optional().describe('The AI s confidence level for this diagnosis.'),
+  rationale: z.string().optional().describe('A brief rationale for considering this diagnosis, including any red flags if applicable.'),
+});
+export type DiagnosisItem = z.infer<typeof DiagnosisItemSchema>;
+
 export const SymptomAnalyzerOutputSchema = z.object({
-  diagnoses: z.array(z.string()).describe('A list of potential differential diagnoses based on the symptoms provided.'),
+  diagnoses: z.array(DiagnosisItemSchema).describe('A list of potential differential diagnoses, each with a name, optional confidence, and optional rationale.'),
   suggestedInvestigations: z.array(InvestigationSchema).optional().describe('A list of suggested investigations for the top likely diagnoses.'),
   suggestedManagement: z.array(z.string()).optional().describe('A list of suggested initial management steps or considerations.'),
   disclaimer: z.string().optional().describe('A standard disclaimer advising consultation with a medical professional.'),
