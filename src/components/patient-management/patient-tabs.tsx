@@ -2,7 +2,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; // Added CardFooter
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -10,16 +10,20 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { useState, useEffect } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Clock, PlusCircle, Trash2, ListFilter, Activity, BellPlus, BriefcaseMedical } from "lucide-react";
+import { CalendarIcon, Clock, PlusCircle, Trash2, ListFilter, Activity, BellPlus, BriefcaseMedical, FilePlus } from "lucide-react"; // Added FilePlus
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"; // Added Dialog components
+import { DischargeSummaryGenerator } from '@/components/pro/discharge-summary-generator'; // Added DischargeSummaryGenerator
+import { ScrollArea } from "../ui/scroll-area";
+
 
 interface RoundNote {
   id: string;
   date: Date;
   notes: string;
   patientName: string;
-  admissionOpdNumber?: string; // Added Admission/OPD Number
+  admissionOpdNumber?: string; 
 }
 
 interface Reminder {
@@ -34,7 +38,7 @@ export function PatientTabs() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   
   const [roundPatientName, setRoundPatientName] = useState('');
-  const [roundAdmissionOpdNumber, setRoundAdmissionOpdNumber] = useState(''); // State for Admission/OPD Number
+  const [roundAdmissionOpdNumber, setRoundAdmissionOpdNumber] = useState(''); 
   const [roundNoteText, setRoundNoteText] = useState('');
   const [roundDate, setRoundDate] = useState<Date | undefined>(new Date());
 
@@ -43,6 +47,8 @@ export function PatientTabs() {
   const [reminderDateTime, setReminderDateTime] = useState<Date | undefined>(new Date());
   
   const [isClient, setIsClient] = useState(false);
+  const [showDischargeModal, setShowDischargeModal] = useState(false); // State for discharge summary modal
+
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -53,13 +59,13 @@ export function PatientTabs() {
     const newNote: RoundNote = {
       id: Date.now().toString(),
       patientName: roundPatientName,
-      admissionOpdNumber: roundAdmissionOpdNumber, // Include Admission/OPD Number
+      admissionOpdNumber: roundAdmissionOpdNumber, 
       date: roundDate,
       notes: roundNoteText,
     };
     setRoundNotes(prev => [newNote, ...prev]);
     setRoundPatientName('');
-    setRoundAdmissionOpdNumber(''); // Reset Admission/OPD Number
+    setRoundAdmissionOpdNumber(''); 
     setRoundNoteText('');
   };
 
@@ -76,11 +82,11 @@ export function PatientTabs() {
     setReminderText('');
   };
 
-  const deleteRoundNote = (id: string) => { // Removed patientName as it's not used here
+  const deleteRoundNote = (id: string) => { 
     setRoundNotes(prev => prev.filter(note => note.id !== id));
   };
 
-  const deleteReminder = (id: string) => { // Removed patientName as it's not used here
+  const deleteReminder = (id: string) => { 
     setReminders(prev => prev.filter(reminder => reminder.id !== id));
   };
 
@@ -128,7 +134,7 @@ export function PatientTabs() {
                 <Label htmlFor="round-admission-opd">Admission/OPD No.</Label>
                 <Input id="round-admission-opd" placeholder="e.g., A123 / OPD456" value={roundAdmissionOpdNumber} onChange={e => setRoundAdmissionOpdNumber(e.target.value)} className="rounded-lg"/>
               </div>
-              <div className="space-y-2 md:col-span-2"> {/* Date picker full width on small screens */}
+              <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="round-date">Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -189,6 +195,28 @@ export function PatientTabs() {
               ))}
             </div>
           </CardContent>
+          <CardFooter className="p-4 border-t">
+            <Dialog open={showDischargeModal} onOpenChange={setShowDischargeModal}>
+              <DialogTrigger asChild>
+                <Button variant="default" className="w-full sm:w-auto rounded-lg group">
+                  <FilePlus className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-105" />
+                  Generate Discharge Summary
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
+                <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
+                  <DialogTitle className="text-2xl flex items-center gap-2">
+                    <FilePlus className="h-6 w-6 text-primary" /> Discharge Summary Generator
+                  </DialogTitle>
+                </DialogHeader>
+                <ScrollArea className="flex-grow overflow-y-auto">
+                  <div className="p-6 pt-0">
+                    <DischargeSummaryGenerator />
+                  </div>
+                </ScrollArea>
+              </DialogContent>
+            </Dialog>
+          </CardFooter>
         </Card>
       </TabsContent>
 
