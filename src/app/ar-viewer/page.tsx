@@ -7,16 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { UploadCloud, CameraOff, Loader2, Info, ScanEye, Wand2 } from 'lucide-react';
+import { UploadCloud, CameraOff, Loader2, Info, ScanEye, Wand2, Brain } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
-import { cn } from '@/lib/utils'; // Import cn
+import { cn } from '@/lib/utils';
+import { analyzeImage, type AnalyzeImageInput, type AnalyzeImageOutput } from '@/ai/flows/image-analyzer'; // Import AI flow
 
 interface Annotation {
   id: string;
   text: string;
-  position: { x: number; y: number }; // Normalized coordinates (0-1) relative to image/video
+  position: { x: number; y: number }; 
 }
 
 interface AnnotatedImage {
@@ -30,18 +31,20 @@ const sampleAnnotatedImages: AnnotatedImage[] = [
   {
     id: 'xray-1',
     name: 'Chest X-Ray - Sample A',
-    imageUrl: 'https://picsum.photos/seed/xray1/800/600', 
+    imageUrl: 'https://placehold.co/800x600.png',
+    dataAiHint: "medical xray",
     annotations: [
-      { id: 'anno-1a', text: 'Possible nodule', position: { x: 0.3, y: 0.4 } },
-      { id: 'anno-1b', text: 'Area of interest', position: { x: 0.6, y: 0.5 } },
+      { id: 'anno-1a', text: 'Possible nodule (Sample)', position: { x: 0.3, y: 0.4 } },
+      { id: 'anno-1b', text: 'Area of interest (Sample)', position: { x: 0.6, y: 0.5 } },
     ],
   },
   {
     id: 'ct-scan-1',
     name: 'CT Scan - Sample B',
-    imageUrl: 'https://picsum.photos/seed/ctscan1/800/600',
+    imageUrl: 'https://placehold.co/800x600.png',
+    dataAiHint: "medical ct scan",
     annotations: [
-      { id: 'anno-2a', text: 'Anomaly detected', position: { x: 0.5, y: 0.3 } },
+      { id: 'anno-2a', text: 'Anomaly detected (Sample)', position: { x: 0.5, y: 0.3 } },
     ],
   },
 ];
@@ -52,9 +55,12 @@ export default function ARViewerPage() {
   const [isLoadingCamera, setIsLoadingCamera] = useState(true);
   const [selectedAnnotatedImage, setSelectedAnnotatedImage] = useState<AnnotatedImage | null>(null);
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
-  const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
+  const [uploadedImageDataUri, setUploadedImageDataUri] = useState<string | null>(null); // Store Data URI
   const [arAnnotations, setArAnnotations] = useState<Annotation[]>([]);
   const { toast } = useToast();
+  const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+
 
   useEffect(() => {
     const getCameraPermission = async () => {
@@ -99,6 +105,57 @@ export default function ARViewerPage() {
     };
   }, [toast]);
 
+  const handleImageUploadAndAnalysis = async (file: File, imageDataUri: string) => {
+    setIsAnalyzingImage(true);
+    setAnalysisError(null);
+    const tempId = `custom-${Date.now()}`;
+    const initialAnnotatedImage: AnnotatedImage = {
+      id: tempId,
+      name: file.name,
+      imageUrl: imageDataUri,
+      annotations: [{id: 'loading-anno', text: 'AI Analysis in progress...', position: {x:0.5, y:0.5}}],
+    };
+    setSelectedAnnotatedImage(initialAnnotatedImage);
+    setArAnnotations(initialAnnotatedImage.annotations);
+
+    try {
+      const analysisInput: AnalyzeImageInput = { imageDataUri };
+      const aiResult: AnalyzeImageOutput = await analyzeImage(analysisInput);
+      
+      const aiDrivenAnnotations: Annotation[] = aiResult.annotations.map((anno, index) => ({
+        id: `ai-anno-${tempId}-${index}`,
+        text: anno.text,
+        position: anno.position,
+      }));
+
+      const finalAnnotatedImage: AnnotatedImage = {
+        ...initialAnnotatedImage,
+        annotations: aiDrivenAnnotations.length > 0 ? aiDrivenAnnotations : [{id: 'no-ai-anno', text: 'AI analysis complete. No specific points highlighted or format error.', position: {x:0.5, y:0.5}}],
+      };
+      
+      setSelectedAnnotatedImage(finalAnnotatedImage);
+      setArAnnotations(finalAnnotatedImage.annotations);
+      toast({
+        title: "AI Analysis Complete",
+        description: `Found ${aiDrivenAnnotations.length} annotation point(s).`,
+      });
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Unknown error during AI analysis.";
+      setAnalysisError(errorMsg);
+      toast({
+        title: "AI Analysis Failed",
+        description: errorMsg,
+        variant: "destructive",
+      });
+       const errorAnnotation: Annotation = { id: 'error-anno', text: `AI Analysis Error: ${errorMsg.substring(0,50)}...`, position: {x:0.5, y:0.5}};
+       setSelectedAnnotatedImage(prev => prev ? {...prev, annotations: [errorAnnotation]} : { id: tempId, name: file.name, imageUrl: imageDataUri, annotations: [errorAnnotation]});
+       setArAnnotations([errorAnnotation]);
+    } finally {
+      setIsAnalyzingImage(false);
+    }
+  };
+
+
   const handleImageFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -110,22 +167,14 @@ export default function ARViewerPage() {
         });
         return;
       }
-      setUploadedImageFile(file);
+      setUploadedImageFile(file); // Keep the file object if needed later
       const reader = new FileReader();
       reader.onloadend = () => {
-        const imageUrl = reader.result as string;
-        setUploadedImagePreview(imageUrl);
-        const newSelectedImage: AnnotatedImage = {
-            id: `custom-${Date.now()}`,
-            name: file.name,
-            imageUrl: imageUrl,
-            annotations: [
-                {id: 'custom-anno-1', text: 'User point 1 (AI analysis pending)', position: {x:0.25, y:0.25}}, 
-                {id: 'custom-anno-2', text: 'User point 2 (AI analysis pending)', position: {x:0.75, y:0.75}}
-            ], 
-        };
-        setSelectedAnnotatedImage(newSelectedImage);
-        setArAnnotations(newSelectedImage.annotations); 
+        const dataUri = reader.result as string;
+        setUploadedImageDataUri(dataUri); // Store Data URI
+        setAnalysisError(null);
+        // Trigger analysis
+        handleImageUploadAndAnalysis(file, dataUri);
       };
       reader.readAsDataURL(file);
     }
@@ -134,8 +183,10 @@ export default function ARViewerPage() {
   const selectSampleImage = (image: AnnotatedImage) => {
     setSelectedAnnotatedImage(image);
     setUploadedImageFile(null);
-    setUploadedImagePreview(image.imageUrl);
+    setUploadedImageDataUri(image.imageUrl); // Show sample image URL in preview
     setArAnnotations(image.annotations);
+    setAnalysisError(null);
+    setIsAnalyzingImage(false); // Not analyzing sample images
   };
 
   return (
@@ -145,17 +196,17 @@ export default function ARViewerPage() {
           <CardHeader>
             <CardTitle>AR Controls & Info</CardTitle>
             <CardDescription>
-              Load images to view conceptual annotations. Future versions aim for real-time analysis with MedGemma-like precision for AR overlays.
+              Upload images for AI-powered annotations or select a sample. Future versions aim for real-time analysis.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 flex-grow overflow-y-auto">
             <div>
               <Label htmlFor="image-upload" className="mb-2 block">Upload Medical Image</Label>
               <Input id="image-upload" type="file" accept="image/*" onChange={handleImageFileChange} className="mb-2" />
-              {uploadedImagePreview && selectedAnnotatedImage?.id.startsWith('custom-') && (
+              {uploadedImageDataUri && selectedAnnotatedImage?.id.startsWith('custom-') && (
                 <div className="mt-2 p-2 border rounded-md">
                   <p className="font-semibold text-sm">Uploaded:</p>
-                  <Image src={uploadedImagePreview} alt="Uploaded preview" width={100} height={100} className="rounded-md object-contain" data-ai-hint="medical scan" />
+                  <Image src={uploadedImageDataUri} alt="Uploaded preview" width={100} height={100} className="rounded-md object-contain" data-ai-hint="medical scan" />
                 </div>
               )}
             </div>
@@ -168,19 +219,32 @@ export default function ARViewerPage() {
                 ))}
             </div>
 
+            {analysisError && (
+                 <Alert variant="destructive" className="mt-3">
+                    <Brain className="h-5 w-5" />
+                    <AlertTitle>AI Analysis Issue</AlertTitle>
+                    <AlertDescription className="text-xs">{analysisError}</AlertDescription>
+                 </Alert>
+            )}
+
             {selectedAnnotatedImage && (
               <div className="mt-4 p-3 bg-secondary/50 rounded-lg">
                 <h3 className="font-semibold text-lg mb-2 flex items-center">
                     <ScanEye className="mr-2 h-5 w-5 text-primary"/> Annotations for {selectedAnnotatedImage.name}
                 </h3>
-                {selectedAnnotatedImage.annotations.length > 0 ? (
-                    <ul className="list-disc list-inside space-y-1 text-sm">
+                {isAnalyzingImage && selectedAnnotatedImage.id.startsWith('custom-') && (
+                    <div className="flex items-center text-sm text-muted-foreground py-2">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin"/> AI analyzing image...
+                    </div>
+                )}
+                {!isAnalyzingImage && selectedAnnotatedImage.annotations.length > 0 ? (
+                    <ul className="list-disc list-inside space-y-1 text-sm max-h-40 overflow-y-auto pr-2">
                     {selectedAnnotatedImage.annotations.map(anno => (
-                        <li key={anno.id}>{anno.text} (Demo Pos: x:{anno.position.x.toFixed(2)}, y:{anno.position.y.toFixed(2)})</li>
+                        <li key={anno.id}>{anno.text} (Pos: x:{anno.position.x.toFixed(2)}, y:{anno.position.y.toFixed(2)})</li>
                     ))}
                     </ul>
-                ) : (
-                    <p className="text-sm text-muted-foreground">No annotations for this image.</p>
+                ) : !isAnalyzingImage && (
+                    <p className="text-sm text-muted-foreground">No annotations to display for this image.</p>
                 )}
                  <Alert variant="default" className="mt-3 border-accent/50 bg-accent/10 rounded-lg">
                     <Wand2 className="h-5 w-5 text-accent" />
@@ -197,7 +261,7 @@ export default function ARViewerPage() {
         <Card className="shadow-md md:col-span-2 h-full flex flex-col relative overflow-hidden">
           <CardHeader>
             <CardTitle>Live AR View</CardTitle>
-            <CardDescription>Camera feed with overlaid annotations (conceptual).</CardDescription>
+            <CardDescription>Camera feed with overlaid annotations.</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex items-center justify-center bg-muted/30 relative">
             {isLoadingCamera && (
@@ -257,6 +321,7 @@ export default function ARViewerPage() {
             {selectedAnnotatedImage && hasCameraPermission && (
                 <div className="absolute top-4 left-4 bg-black/50 text-white p-2 rounded-md text-xs pointer-events-none">
                     Displaying annotations for: {selectedAnnotatedImage.name}
+                     {isAnalyzingImage && selectedAnnotatedImage.id.startsWith('custom-') && " (AI Analyzing...)"}
                 </div>
             )}
           </CardContent>

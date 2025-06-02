@@ -22,11 +22,19 @@ const AnalyzeImageInputSchema = z.object({
 });
 export type AnalyzeImageInput = z.infer<typeof AnalyzeImageInputSchema>;
 
+// Updated Annotation structure
+const AnnotationSchema = z.object({
+  text: z.string().describe("A textual description of the finding or area of interest."),
+  position: z.object({
+    x: z.number().min(0).max(1).describe("Normalized x-coordinate (0.0 to 1.0) of the annotation's center."),
+    y: z.number().min(0).max(1).describe("Normalized y-coordinate (0.0 to 1.0) of the annotation's center."),
+  }).describe("The normalized position of the annotation on the image."),
+});
+export type Annotation = z.infer<typeof AnnotationSchema>;
+
+
 const AnalyzeImageOutputSchema = z.object({
-  annotations: z
-    .string()
-    .describe('AI-powered annotations highlighting key areas of interest in the medical image. These could be textual descriptions or structured data for potential 2D/3D AR overlays. Future enhancements aim for expert-level detail akin to specialized models like MedGemma.'),
-  // Future: arUrl: z.string().url().optional().describe('A URL to an AR-compatible view of the annotated image, potentially using WebXR.'),
+  annotations: z.array(AnnotationSchema).describe('AI-powered annotations highlighting key areas of interest. Each annotation includes text and a normalized position (x, y).'),
 });
 export type AnalyzeImageOutput = z.infer<typeof AnalyzeImageOutputSchema>;
 
@@ -38,14 +46,23 @@ const prompt = ai.definePrompt({
   name: 'analyzeImagePrompt',
   input: {schema: AnalyzeImageInputSchema},
   output: {schema: AnalyzeImageOutputSchema},
-  prompt: `You are a medical imaging analysis AI. You are provided with a
-medical image, and your task is to generate general annotations that highlight key areas of interest to assist medical professionals in their diagnosis.
-Provide detailed textual annotations for the given medical image. Focus on identifying and describing any abnormalities, key anatomical features, or other relevant details that could aid in diagnosis. Be as specific as possible in your descriptions.
-If applicable, consider how these annotations might be represented in a 2D or 3D space for Augmented Reality (AR) visualization (e.g., identifying coordinates or regions of interest for overlay).
+  prompt: `You are a medical imaging analysis AI. You are provided with a medical image. Your task is to identify key areas of interest or potential abnormalities.
+For each finding, provide:
+1. A concise textual description ('text').
+2. A normalized position ('position') for where this finding is located on the image. The position should be an object with 'x' and 'y' coordinates, where both x and y are numbers between 0.0 (top/left) and 1.0 (bottom/right), representing the center of the finding.
 
 Image: {{media url=imageDataUri}}
 
-Note: For highly specialized interpretations, such as detailed radiological reads requiring the expertise of models like MedGemma, future integrations are planned. This prompt is for general feature identification with the current model.
+Format your output as a JSON object strictly conforming to the AnalyzeImageOutputSchema, specifically:
+{
+  "annotations": [
+    { "text": "Description of finding 1", "position": { "x": 0.25, "y": 0.3 } },
+    { "text": "Description of finding 2", "position": { "x": 0.7, "y": 0.65 } }
+    // ... more annotations if relevant
+  ]
+}
+If no specific findings are apparent, return an empty "annotations" array: { "annotations": [] }.
+Focus on identifying 2-3 key points if possible.
 `,
 });
 
@@ -57,9 +74,11 @@ const analyzeImageFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    // In a future implementation, if an AR URL is generated, it would be added here.
-    // For now, the output schema includes an optional arUrl field.
-    return output!;
+    if (!output) {
+      console.error("Image analysis prompt did not return an output for image:", input.imageDataUri ? input.imageDataUri.substring(0,50) + "..." : "undefined");
+      return { annotations: [] };
+    }
+    return output;
   }
 );
 

@@ -8,7 +8,7 @@ import { ImageUploader } from '@/components/image-analyzer/image-uploader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, ImageOff, ScanEye, Sparkles, TestTubeDiagonal, PencilRuler } from 'lucide-react';
-import type { AnalyzeImageOutput } from '@/ai/flows/image-analyzer';
+import type { AnalyzeImageOutput, Annotation } from '@/ai/flows/image-analyzer'; // Updated import for Annotation
 import { useProMode } from '@/contexts/pro-mode-context';
 
 export function ImageProcessingMode() {
@@ -47,7 +47,7 @@ export function ImageProcessingMode() {
             AI-generated insights based on current models. Future enhancements aim for MedGemma-level detail. Not a substitute for professional medical advice.
           </CardDescription>
         </CardHeader>
-        <CardContent className="min-h-[300px] flex flex-col justify-start"> {/* Changed to justify-start */}
+        <CardContent className="min-h-[300px] flex flex-col justify-start">
           {isLoading && (
             <div className="flex flex-col items-center justify-center text-muted-foreground py-10">
               <Loader2 className="h-10 w-10 animate-spin text-primary mb-3" />
@@ -65,9 +65,9 @@ export function ImageProcessingMode() {
             <Alert variant="default" className="my-4 border-sky-500/50 bg-sky-500/10 rounded-lg">
               <PencilRuler className="h-5 w-5 text-sky-600" />
               <AlertTitle className="text-sky-700 dark:text-sky-500 font-semibold">Medico Study Tools</AlertTitle>
-              <AlertDescription className="text-sky-600/80 dark:text-sky-500/80">
+              <AlertDescription className="text-sky-600/80 dark:text-sky-500/80 text-xs">
                 Study image annotations. For notes &amp; MCQs, use chat commands:
-                <ul className="list-disc pl-5 mt-1 text-xs">
+                <ul className="list-disc pl-5 mt-1">
                   <li><code>/notes &lt;topic&gt;</code></li>
                   <li><code>/mcq &lt;topic&gt; [num]</code></li>
                 </ul>
@@ -76,22 +76,30 @@ export function ImageProcessingMode() {
           )}
 
           {!isLoading && !error && (
-            <div className="space-y-4 fade-in mt-2"> {/* Added mt-2 */}
+            <div className="space-y-4 fade-in mt-2">
               {uploadedImage && (
                 <div className="mb-4 border border-border/30 rounded-lg overflow-hidden aspect-video relative bg-muted/50">
                   <Image src={uploadedImage} alt="Uploaded medical scan" layout="fill" objectFit="contain" data-ai-hint="medical scan" />
                 </div>
               )}
-              {analysisResult && (
+              {analysisResult && analysisResult.annotations && analysisResult.annotations.length > 0 && (
                 <div className="space-y-2">
                   <h3 className="font-semibold text-lg text-foreground flex items-center">
                     <ScanEye className="mr-2 h-5 w-5 text-primary"/>
                     Annotations:
                   </h3>
-                  <p className="text-sm bg-secondary/50 p-4 rounded-lg text-secondary-foreground whitespace-pre-wrap max-h-60 overflow-y-auto">
-                    {analysisResult.annotations}
-                  </p>
+                  <ul className="text-sm bg-secondary/50 p-4 rounded-lg text-secondary-foreground space-y-1 max-h-60 overflow-y-auto">
+                    {analysisResult.annotations.map((anno: Annotation, index: number) => (
+                      <li key={index} className="border-b border-border/20 pb-1 last:border-b-0">
+                        <span className="font-medium">{anno.text}</span>
+                        <span className="text-xs text-muted-foreground"> (Pos: x:{anno.position.x.toFixed(2)}, y:{anno.position.y.toFixed(2)})</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              )}
+              {analysisResult && analysisResult.annotations && analysisResult.annotations.length === 0 && !isLoading && (
+                <p className="text-sm text-muted-foreground p-4 bg-muted/30 rounded-lg">AI analysis complete. No specific annotation points were identified or returned in the expected format.</p>
               )}
               {isProMode && userRole === 'pro' && analysisResult && (
                 <Alert variant="default" className="mt-4 border-primary/50 bg-primary/10 rounded-lg">
