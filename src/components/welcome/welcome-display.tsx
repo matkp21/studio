@@ -19,7 +19,7 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
     setHasMounted(true);
     const displayTimer = setTimeout(() => {
       onDisplayComplete();
-    }, 4500); // Total duration for the welcome screen
+    }, 4800); // Adjusted total duration for the welcome screen
 
     return () => clearTimeout(displayTimer);
   }, [onDisplayComplete]);
@@ -56,13 +56,18 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut", delay: 0.9 } // Delay after logo
+      transition: { duration: 0.5, ease: "easeOut", delay: 0.8 } // Delay after logo
     }
+  };
+
+  const setupMessageVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { delay: 1.3, duration: 0.6, ease: "easeOut" } } // After tagline
   };
   
   const continueHintVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0, transition: { delay: 2.0, duration: 0.5, ease: "easeOut" } } // Delay after tagline
+    visible: { opacity: 1, y: 0, transition: { delay: 2.0, duration: 0.5, ease: "easeOut" } } // After setup message
   };
 
 
@@ -83,6 +88,13 @@ const WelcomeDisplay: React.FC<WelcomeDisplayProps> = ({ onDisplayComplete }) =>
         {/* Using the existing AnimatedTagline component which has its own internal animations */}
         <AnimatedTagline className="simple-welcome-tagline" />
       </motion.div>
+
+      <motion.p
+        variants={setupMessageVariants}
+        className="mt-4 text-center text-sm text-muted-foreground/90 max-w-xs px-4"
+      >
+        You&apos;re all set! Explore the features and enjoy MediAssistant.
+      </motion.p>
 
       <motion.div
         variants={continueHintVariants}
