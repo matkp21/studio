@@ -20,7 +20,9 @@ const greetings = [
   { lang: "fr", text: "Bonjour," },
 ];
 
-const userName = "User"; // Replace with actual user name fetching
+// Updated placeholder userName for consistency.
+// In a real application, this should be fetched from an authentication context.
+const userName = "Dr. Medi User"; 
 
 export function HeroSection() {
   const [currentGreetingIndex, setCurrentGreetingIndex] = useState(0);
