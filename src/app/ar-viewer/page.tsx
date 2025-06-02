@@ -7,12 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { UploadCloud, CameraOff, Loader2, Info, ScanEye, Wand2, Brain } from 'lucide-react';
+import { UploadCloud, CameraOff, Loader2, Info, ScanEye, Wand2, Brain, BookOpen, Search } from 'lucide-react'; // Added BookOpen, Search
 import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { analyzeImage, type AnalyzeImageInput, type AnalyzeImageOutput } from '@/ai/flows/image-analyzer'; // Import AI flow
+import { analyzeImage, type AnalyzeImageInput, type AnalyzeImageOutput } from '@/ai/flows/image-analyzer';
+import { getAnatomyDescription, type MedicoAnatomyVisualizerOutput } from '@/ai/flows/medico/anatomy-visualizer-flow'; // Import anatomy flow
+import { Dialog, DialogContent, DialogHeader, DialogTitle as DialogTitleComponent, DialogDescription as DialogDescriptionComponent, DialogFooter, DialogClose } from "@/components/ui/dialog"; // Renamed DialogTitle and DialogDescription
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Annotation {
   id: string;
@@ -24,6 +27,7 @@ interface AnnotatedImage {
   id: string;
   name: string;
   imageUrl: string;
+  dataAiHint?: string; // Make dataAiHint optional as custom uploads won't have it
   annotations: Annotation[];
 }
 
@@ -35,7 +39,7 @@ const sampleAnnotatedImages: AnnotatedImage[] = [
     dataAiHint: "medical xray",
     annotations: [
       { id: 'anno-1a', text: 'Possible nodule (Sample)', position: { x: 0.3, y: 0.4 } },
-      { id: 'anno-1b', text: 'Area of interest (Sample)', position: { x: 0.6, y: 0.5 } },
+      { id: 'anno-1b', text: 'Rib', position: { x: 0.6, y: 0.5 } }, // Made one specific for anatomy lookup
     ],
   },
   {
@@ -44,7 +48,7 @@ const sampleAnnotatedImages: AnnotatedImage[] = [
     imageUrl: 'https://placehold.co/800x600.png',
     dataAiHint: "medical ct scan",
     annotations: [
-      { id: 'anno-2a', text: 'Anomaly detected (Sample)', position: { x: 0.5, y: 0.3 } },
+      { id: 'anno-2a', text: 'Liver', position: { x: 0.5, y: 0.3 } }, // Specific for anatomy lookup
     ],
   },
 ];
@@ -55,11 +59,18 @@ export default function ARViewerPage() {
   const [isLoadingCamera, setIsLoadingCamera] = useState(true);
   const [selectedAnnotatedImage, setSelectedAnnotatedImage] = useState<AnnotatedImage | null>(null);
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
-  const [uploadedImageDataUri, setUploadedImageDataUri] = useState<string | null>(null); // Store Data URI
+  const [uploadedImageDataUri, setUploadedImageDataUri] = useState<string | null>(null);
   const [arAnnotations, setArAnnotations] = useState<Annotation[]>([]);
   const { toast } = useToast();
   const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+
+  // State for Anatomy Detail Dialog
+  const [showAnatomyDetailDialog, setShowAnatomyDetailDialog] = useState(false);
+  const [selectedAnnotationTextForDetail, setSelectedAnnotationTextForDetail] = useState<string | null>(null);
+  const [anatomyDetailLoading, setAnatomyDetailLoading] = useState(false);
+  const [anatomyDetailData, setAnatomyDetailData] = useState<MedicoAnatomyVisualizerOutput | null>(null);
+  const [anatomyDetailError, setAnatomyDetailError] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -167,13 +178,12 @@ export default function ARViewerPage() {
         });
         return;
       }
-      setUploadedImageFile(file); // Keep the file object if needed later
+      setUploadedImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         const dataUri = reader.result as string;
-        setUploadedImageDataUri(dataUri); // Store Data URI
+        setUploadedImageDataUri(dataUri);
         setAnalysisError(null);
-        // Trigger analysis
         handleImageUploadAndAnalysis(file, dataUri);
       };
       reader.readAsDataURL(file);
@@ -183,10 +193,33 @@ export default function ARViewerPage() {
   const selectSampleImage = (image: AnnotatedImage) => {
     setSelectedAnnotatedImage(image);
     setUploadedImageFile(null);
-    setUploadedImageDataUri(image.imageUrl); // Show sample image URL in preview
+    setUploadedImageDataUri(image.imageUrl);
     setArAnnotations(image.annotations);
     setAnalysisError(null);
-    setIsAnalyzingImage(false); // Not analyzing sample images
+    setIsAnalyzingImage(false);
+  };
+
+  const handleViewAnatomyDetail = async (annotationText: string) => {
+    setSelectedAnnotationTextForDetail(annotationText);
+    setAnatomyDetailLoading(true);
+    setAnatomyDetailData(null);
+    setAnatomyDetailError(null);
+    setShowAnatomyDetailDialog(true);
+
+    try {
+      const result = await getAnatomyDescription({ anatomicalStructure: annotationText });
+      setAnatomyDetailData(result);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Failed to fetch anatomy details.";
+      setAnatomyDetailError(errorMsg);
+      toast({
+        title: "Anatomy Lookup Failed",
+        description: errorMsg,
+        variant: "destructive",
+      });
+    } finally {
+      setAnatomyDetailLoading(false);
+    }
   };
 
   return (
@@ -196,7 +229,7 @@ export default function ARViewerPage() {
           <CardHeader>
             <CardTitle>AR Controls & Info</CardTitle>
             <CardDescription>
-              Upload images for AI-powered annotations or select a sample. Future versions aim for real-time analysis.
+              Upload images for AI annotations or select samples. Click "Learn More" on an annotation for anatomical details.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 flex-grow overflow-y-auto">
@@ -206,7 +239,7 @@ export default function ARViewerPage() {
               {uploadedImageDataUri && selectedAnnotatedImage?.id.startsWith('custom-') && (
                 <div className="mt-2 p-2 border rounded-md">
                   <p className="font-semibold text-sm">Uploaded:</p>
-                  <Image src={uploadedImageDataUri} alt="Uploaded preview" width={100} height={100} className="rounded-md object-contain" data-ai-hint="medical scan" />
+                  <Image src={uploadedImageDataUri} alt="Uploaded preview" width={100} height={100} className="rounded-md object-contain" data-ai-hint={selectedAnnotatedImage?.dataAiHint || "medical scan"} />
                 </div>
               )}
             </div>
@@ -238,19 +271,29 @@ export default function ARViewerPage() {
                     </div>
                 )}
                 {!isAnalyzingImage && selectedAnnotatedImage.annotations.length > 0 ? (
-                    <ul className="list-disc list-inside space-y-1 text-sm max-h-40 overflow-y-auto pr-2">
+                    <ScrollArea className="max-h-32 pr-2">
+                    <ul className="space-y-1.5 text-sm">
                     {selectedAnnotatedImage.annotations.map(anno => (
-                        <li key={anno.id}>{anno.text} (Pos: x:{anno.position.x.toFixed(2)}, y:{anno.position.y.toFixed(2)})</li>
+                        <li key={anno.id} className="flex justify-between items-center p-1.5 bg-background/70 rounded-md border border-border/30">
+                            <div>
+                                <p className="font-medium">{anno.text}</p>
+                                <p className="text-xs text-muted-foreground">(Pos: x:{anno.position.x.toFixed(2)}, y:{anno.position.y.toFixed(2)})</p>
+                            </div>
+                            <Button variant="link" size="xs" onClick={() => handleViewAnatomyDetail(anno.text)} className="text-primary p-0 h-auto text-xs">
+                                <Search className="mr-1 h-3 w-3"/>Learn More
+                            </Button>
+                        </li>
                     ))}
                     </ul>
+                    </ScrollArea>
                 ) : !isAnalyzingImage && (
                     <p className="text-sm text-muted-foreground">No annotations to display for this image.</p>
                 )}
                  <Alert variant="default" className="mt-3 border-accent/50 bg-accent/10 rounded-lg">
                     <Wand2 className="h-5 w-5 text-accent" />
-                    <AlertTitle className="text-accent font-semibold">Interactive AR</AlertTitle>
+                    <AlertTitle className="text-accent font-semibold">Interactive AR & Study</AlertTitle>
                     <AlertDescription className="text-accent/80 text-xs">
-                      Future: Annotations could appear interactively on the live camera feed based on real-time analysis from advanced models.
+                      Future: Annotations could appear interactively on the live camera. Use "Learn More" to get anatomical details.
                     </AlertDescription>
                   </Alert>
               </div>
@@ -261,7 +304,7 @@ export default function ARViewerPage() {
         <Card className="shadow-md md:col-span-2 h-full flex flex-col relative overflow-hidden">
           <CardHeader>
             <CardTitle>Live AR View</CardTitle>
-            <CardDescription>Camera feed with overlaid annotations.</CardDescription>
+            <CardDescription>Camera feed with overlaid annotations. Click an annotation to learn more.</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex items-center justify-center bg-muted/30 relative">
             {isLoadingCamera && (
@@ -301,20 +344,24 @@ export default function ARViewerPage() {
              )}
              
             {hasCameraPermission && !isLoadingCamera && arAnnotations.length > 0 && (
-              <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute inset-0"> {/* Removed pointer-events-none to make dots clickable */}
                 {arAnnotations.map(anno => (
-                  <div
+                  <button // Changed div to button for accessibility and click handling
                     key={anno.id}
-                    className="absolute bg-primary/70 text-primary-foreground text-xs p-1 rounded shadow-lg pointer-events-auto"
+                    className="absolute bg-primary/70 hover:bg-primary/90 text-primary-foreground text-xs p-1 rounded-full shadow-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
                     style={{
                       left: `${anno.position.x * 100}%`,
                       top: `${anno.position.y * 100}%`,
                       transform: 'translate(-50%, -50%)',
+                      width: '16px', height: '16px', // Made dots slightly larger for easier clicking
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}
-                    title={anno.text}
+                    title={`Learn more about: ${anno.text}`}
+                    onClick={() => handleViewAnatomyDetail(anno.text)}
+                    aria-label={`Learn more about ${anno.text}`}
                   >
-                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  </div>
+                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div> {/* Inner dot for visual */}
+                  </button>
                 ))}
               </div>
             )}
@@ -327,6 +374,63 @@ export default function ARViewerPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Anatomy Detail Dialog */}
+      <Dialog open={showAnatomyDetailDialog} onOpenChange={setShowAnatomyDetailDialog}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitleComponent className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-primary" />
+              Anatomy Details: {selectedAnnotationTextForDetail}
+            </DialogTitleComponent>
+            <DialogDescriptionComponent>
+              Detailed information about the selected anatomical structure or finding.
+            </DialogDescriptionComponent>
+          </DialogHeader>
+          <ScrollArea className="max-h-[60vh] mt-4 pr-2">
+            {anatomyDetailLoading && (
+              <div className="flex items-center justify-center py-10">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="ml-2 text-muted-foreground">Fetching details...</p>
+              </div>
+            )}
+            {anatomyDetailError && !anatomyDetailLoading && (
+              <Alert variant="destructive">
+                <AlertTitle>Error Fetching Details</AlertTitle>
+                <AlertDescription>{anatomyDetailError}</AlertDescription>
+              </Alert>
+            )}
+            {anatomyDetailData && !anatomyDetailLoading && !anatomyDetailError && (
+              <div className="space-y-3 text-sm">
+                <div>
+                  <h4 className="font-semibold text-foreground mb-1">Description:</h4>
+                  <p className="text-muted-foreground whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">{anatomyDetailData.description}</p>
+                </div>
+                {anatomyDetailData.relatedStructures && anatomyDetailData.relatedStructures.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-1">Related Structures:</h4>
+                    <ul className="list-disc list-inside ml-4 text-muted-foreground">
+                      {anatomyDetailData.relatedStructures.map((structure, index) => (
+                        <li key={index}>{structure}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                 {!anatomyDetailData.description && (!anatomyDetailData.relatedStructures || anatomyDetailData.relatedStructures.length === 0) && (
+                    <p className="text-muted-foreground text-center py-6">No detailed information available in our database for "{selectedAnnotationTextForDetail}".</p>
+                 )}
+              </div>
+            )}
+          </ScrollArea>
+          <DialogFooter className="mt-6">
+            <DialogClose asChild>
+              <Button type="button" variant="outline" className="rounded-md">Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageWrapper>
   );
 }
+
+    
