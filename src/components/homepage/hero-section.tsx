@@ -20,12 +20,12 @@ const greetings = [
   { lang: "fr", text: "Bonjour," },
 ];
 
-const userName = "Dr. Medi User";
+// const userName = "Dr. Medi User"; // User name removed
 
 export function HeroSection() {
   const [currentGreetingIndex, setCurrentGreetingIndex] = useState(0);
   const { userRole } = useProMode();
-  const [heroTasks, setHeroTasks] = useState<HeroTask[]>([]);
+  const [heroTasks, setHeroTasks] = useState<HeroTask[]>([]); // Using HeroTask type for clarity
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -124,23 +124,18 @@ export function HeroSection() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.8, ease: "easeInOut" }}
               lang={greetings[currentGreetingIndex].lang}
-              className="inline-block animated-gradient-text"
+              className="inline-block firebase-gradient-text" // Changed to firebase-gradient-text
             >
               {greetings[currentGreetingIndex].text}
             </motion.span>
           </AnimatePresence>
-          <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="ml-2 animated-gradient-text" // Applied gradient to username
-          >{userName}</motion.span>
+          {/* User name span removed */}
          </h1>
         )}
         {!isClient && ( // Fallback for SSR/initial render before client-side hydration
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center mb-6">
-                <span className="inline-block animated-gradient-text">{greetings[0].text}</span>
-                <span className="ml-2 animated-gradient-text">{userName}</span>
+                <span className="inline-block firebase-gradient-text">{greetings[0].text}</span>
+                {/* User name span removed */}
             </h1>
          )}
 
