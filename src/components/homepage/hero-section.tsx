@@ -3,10 +3,10 @@
 "use client";
 
 import type { CSSProperties } from 'react';
-import React, { useState, useEffect, useCallback } from 'react'; // Ensured React is imported
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { HeartPulse, BookHeart, BriefcaseMedical, Sparkles } from "lucide-react"; // Added Sparkles
+import { HeartPulse, BookHeart, BriefcaseMedical, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProMode } from '@/contexts/pro-mode-context';
@@ -20,7 +20,7 @@ const greetings = [
   { lang: "fr", text: "Bonjour," },
 ];
 
-const userName = "Dr. Medi User"; 
+const userName = "Dr. Medi User";
 
 export function HeroSection() {
   const [currentGreetingIndex, setCurrentGreetingIndex] = useState(0);
@@ -99,8 +99,6 @@ export function HeroSection() {
 
   return (
     <section className="relative bg-background py-16 md:py-20 overflow-hidden">
-      {/* Removed SVG dot pattern for a cleaner look */}
-      
       {/* Decorative blurred gradient circles */}
       <motion.div
         className="absolute top-[-50px] left-[-50px] w-72 h-72 sm:w-96 sm:h-96 bg-gradient-to-br from-primary/30 to-accent/30 rounded-full blur-3xl opacity-20 dark:opacity-15 pointer-events-none"
@@ -139,7 +137,7 @@ export function HeroSection() {
           >{userName}</motion.span>
          </h1>
         )}
-        {!isClient && (
+        {!isClient && ( // Fallback for SSR/initial render before client-side hydration
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center mb-6">
                 <span className="inline-block animated-gradient-text">{greetings[0].text}</span>
                 <span className="ml-2 animated-gradient-text">{userName}</span>
@@ -161,7 +159,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
-          className="text-md sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-8" // Changed to text-muted-foreground
+          className="text-md sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-8"
         >
           Your intelligent partner for AI-powered diagnostics, imaging analysis, and educational support—all at your fingertips.
         </motion.p>
