@@ -6,11 +6,11 @@ import type { CSSProperties } from 'react';
 import React, { useState, useEffect, useCallback } from 'react'; // Ensured React is imported
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { HeartPulse, BookHeart, BriefcaseMedical } from "lucide-react";
+import { HeartPulse, BookHeart, BriefcaseMedical, Sparkles } from "lucide-react"; // Added Sparkles
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProMode } from '@/contexts/pro-mode-context';
-import { HeroWidgets, type HeroTask } from './hero-widgets';
+import { HeroWidgets } from './hero-widgets';
 
 const greetings = [
   { lang: "en", text: "Hello," },
@@ -20,8 +20,6 @@ const greetings = [
   { lang: "fr", text: "Bonjour," },
 ];
 
-// Updated placeholder userName for consistency.
-// In a real application, this should be fetched from an authentication context.
 const userName = "Dr. Medi User"; 
 
 export function HeroSection() {
@@ -97,22 +95,25 @@ export function HeroSection() {
       hover:shadow-purple-500/40
       gemini-cta-button
     `;
-    // ctaSpecificAnimation = "gemini-cta-button"; // Already included in ctaBaseClasses
   }
 
   return (
     <section className="relative bg-background py-16 md:py-20 overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none opacity-10 dark:opacity-5">
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="softWavePattern" patternUnits="userSpaceOnUse" width="100" height="100" patternTransform="scale(1) rotate(0)">
-              <path d="M0 50 Q 25 25, 50 50 T 100 50" stroke="hsl(var(--primary)/0.2)" strokeWidth="0.5" fill="none"/>
-              <path d="M0 60 Q 25 35, 50 60 T 100 60" stroke="hsl(var(--accent)/0.15)" strokeWidth="0.5" fill="none"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#softWavePattern)" />
-        </svg>
-      </div>
+      {/* Removed SVG dot pattern for a cleaner look */}
+      
+      {/* Decorative blurred gradient circles */}
+      <motion.div
+        className="absolute top-[-50px] left-[-50px] w-72 h-72 sm:w-96 sm:h-96 bg-gradient-to-br from-primary/30 to-accent/30 rounded-full blur-3xl opacity-20 dark:opacity-15 pointer-events-none"
+        animate={{ scale: [1, 1.05, 1], opacity: [0.2, 0.25, 0.2] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        aria-hidden="true"
+      />
+      <motion.div
+        className="absolute bottom-[-80px] right-[-80px] w-80 h-80 sm:w-[400px] sm:h-[400px] bg-gradient-to-tl from-accent/30 to-primary/30 rounded-full blur-3xl opacity-20 dark:opacity-15 pointer-events-none"
+        animate={{ scale: [1, 1.03, 1], opacity: [0.2, 0.23, 0.2] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        aria-hidden="true"
+      />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
       {isClient && (
@@ -125,7 +126,7 @@ export function HeroSection() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.8, ease: "easeInOut" }}
               lang={greetings[currentGreetingIndex].lang}
-              className="inline-block animated-gradient-text" // Ensured this class is applied
+              className="inline-block animated-gradient-text"
             >
               {greetings[currentGreetingIndex].text}
             </motion.span>
@@ -134,15 +135,14 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="ml-2 text-foreground dark:text-foreground"
+            className="ml-2 animated-gradient-text" // Applied gradient to username
           >{userName}</motion.span>
          </h1>
         )}
-        {!isClient && ( // Fallback for SSR
+        {!isClient && (
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center mb-6">
-                {/* For SSR, we might want a non-animated version or just the first greeting */}
                 <span className="inline-block animated-gradient-text">{greetings[0].text}</span>
-                <span className="ml-2 text-foreground dark:text-foreground">{userName}</span>
+                <span className="ml-2 animated-gradient-text">{userName}</span>
             </h1>
          )}
 
@@ -150,15 +150,18 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="text-xl sm:text-2xl md:text-3xl font-semibold text-foreground/90 dark:text-foreground/90 mb-4"
+          className="text-xl sm:text-2xl md:text-3xl font-semibold text-foreground/90 dark:text-foreground/90 mb-4 flex items-center justify-center"
         >
-          Welcome to <span className="animated-gradient-text">MediAssistant</span>.
+          Welcome to&nbsp;
+          <span className="animated-gradient-text">MediAssistant</span>
+          <Sparkles className="ml-2 h-6 w-6 text-accent animate-pulse-medical" style={{"--medical-pulse-opacity-base": "0.6", "--medical-pulse-opacity-peak": "1", "--medical-pulse-scale-peak": "1.2"} as CSSProperties} />
+          .
         </motion.p>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
-          className="text-md sm:text-lg md:text-xl text-foreground/80 dark:text-foreground/80 max-w-3xl mx-auto mb-8"
+          className="text-md sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-8" // Changed to text-muted-foreground
         >
           Your intelligent partner for AI-powered diagnostics, imaging analysis, and educational support—all at your fingertips.
         </motion.p>
@@ -203,8 +206,6 @@ export function HeroSection() {
           </motion.div>
         )}
       </div>
-       <div aria-hidden="true" className="absolute top-1/4 left-10 w-20 h-20 bg-primary/5 rounded-full opacity-30 animate-pulse delay-500"></div>
-       <div aria-hidden="true" className="absolute bottom-1/4 right-10 w-24 h-24 bg-accent/5 rounded-lg opacity-20 animate-pulse delay-1000 transform rotate-45"></div>
     </section>
   );
 }
