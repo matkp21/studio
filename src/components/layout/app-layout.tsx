@@ -3,15 +3,15 @@
 "use client";
 
 import type { ReactNode } from 'react';
-import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '@/components/ui/button';
 import {
   PanelLeftOpen, PanelRightOpen, Settings, LogOut, UserCircle, Sparkles, Info,
   MessageSquareHeart, BriefcaseMedical, School, Stethoscope, UserCog, Bell, ChevronDown, Edit, HeartPulse,
-  Moon, Sun, Loader2 // Added Loader2
+  Moon, Sun, Loader2
 } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
@@ -29,6 +29,7 @@ import { ProSuiteAnimation } from '@/components/pro/pro-suite-animation';
 import { MedicoHubAnimation } from '@/components/medico/medico-hub-animation';
 import type { NotificationItem } from '@/types/notifications';
 import { useToast } from '@/hooks/use-toast';
+import { NotificationPanelCompact } from './notification-panel-compact'; // Import new panel
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -88,21 +89,22 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const { userRole, selectUserRole } = useProMode();
   const { toast } = useToast();
   const router = useRouter();
+  const pathname = usePathname();
 
   const [currentDisplayState, setCurrentDisplayState] = useState<'loading' | 'onboarding' | 'proAnim' | 'medicoAnim' | 'genericWelcome' | 'app'>('loading');
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
+  const notificationPanelRef = useRef<HTMLDivElement>(null);
+  const notificationBellRef = useRef<HTMLButtonElement>(null);
   
-  // Effect to initialize userRole from localStorage and determine initial display state
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedRole = localStorage.getItem('userRole') as UserRole | null;
       if (storedRole && !userRole) {
         selectUserRole(storedRole); 
-        // The state update from selectUserRole might be async.
-        // We'll rely on a re-run of this effect when userRole changes.
         return; 
       }
 
@@ -111,26 +113,27 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
       if (!onboardingComplete) {
         setCurrentDisplayState('onboarding');
-      } else if (!welcomeShownThisSession) {
-        // Use the userRole from context, which should be up-to-date by now or on next effect run
+      } else if (!welcomeShownThisSession && !['/login', '/signup'].includes(pathname)) {
         if (userRole === 'pro') {
           setCurrentDisplayState('proAnim');
         } else if (userRole === 'medico') {
           setCurrentDisplayState('medicoAnim');
-        } else { // 'diagnosis' or null (guest)
+        } else { 
           setCurrentDisplayState('genericWelcome');
         }
       } else {
         setCurrentDisplayState('app');
       }
     }
-  }, [userRole, selectUserRole]);
+  }, [userRole, selectUserRole, pathname]);
 
 
   const fetchNotifications = useCallback(() => {
     const mockNotifications: NotificationItem[] = [
       { id: '1', type: 'medication_reminder', title: 'Medication Reminder', body: 'Time for Amoxicillin (500mg). Check instructions.', timestamp: new Date(Date.now() - 1000 * 60 * 5), isRead: false, deepLink: '/medications' },
       { id: 'sys-maint', type: 'system_update', title: 'System Maintenance Scheduled', body: 'Brief maintenance tonight at 2 AM. No impact expected.', timestamp: new Date(Date.now() - 1000 * 60 * 30), isRead: false, deepLink: '/' },
+      { id: '2', type: 'appointment_reminder', title: 'Appointment Soon', body: 'Cardiology check-up in 1 hour. Remember pre-appointment notes.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), isRead: true, deepLink: '/' },
+      { id: '3', type: 'study_material_update', title: 'New Notes Available', body: 'Endocrine System notes updated with latest diagrams.', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), isRead: false, deepLink: '/medico' },
     ];
     const sortedNotifications = mockNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     setNotifications(sortedNotifications);
@@ -147,6 +150,22 @@ export function AppLayout({ children }: { children: ReactNode }) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [fetchNotifications]);
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationPanelRef.current && !notificationPanelRef.current.contains(event.target as Node) &&
+          notificationBellRef.current && !notificationBellRef.current.contains(event.target as Node)) {
+        setIsNotificationPanelOpen(false);
+      }
+    };
+    if (isNotificationPanelOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isNotificationPanelOpen]);
+
 
   const handleMarkAsRead = useCallback((id: string) => {
     setNotifications(prev => {
@@ -160,13 +179,20 @@ export function AppLayout({ children }: { children: ReactNode }) {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     setUnreadCount(0);
     toast({ title: "Notifications Updated", description: "All notifications marked as read." });
+    setIsNotificationPanelOpen(false);
   }, [toast]);
+  
+  const handleViewAllNotifications = () => {
+    router.push('/notifications');
+    setIsNotificationPanelOpen(false);
+  };
 
   const handleLogout = () => {
     toast({ title: "Logged Out", description: "You have been successfully logged out. (Demo)" });
     selectUserRole(null); 
     setIsAccountMenuOpen(false); 
-    sessionStorage.removeItem('welcomeDisplayShown'); // Allow welcome screen on next login
+    setIsNotificationPanelOpen(false);
+    sessionStorage.removeItem('welcomeDisplayShown'); 
     router.push('/login'); 
   };
 
@@ -180,13 +206,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const handleOnboardingClose = () => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('onboardingComplete', 'true');
-      // Re-evaluate which welcome animation to show based on role potentially set during onboarding
       const roleFromStorage = localStorage.getItem('userRole') as UserRole | null;
-      // Update context if onboarding modal set it directly (though ideally it uses selectUserRole)
       if (roleFromStorage && roleFromStorage !== userRole) {
           selectUserRole(roleFromStorage); 
       }
-      // Transition based on the (potentially newly set) role
       if (roleFromStorage === 'pro') {
           setCurrentDisplayState('proAnim');
       } else if (roleFromStorage === 'medico') {
@@ -204,10 +227,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
     setCurrentDisplayState('app');
   };
 
+  if (['/login', '/signup'].includes(pathname)) {
+    return <>{children}</>; // Render only children for auth pages
+  }
 
-  // Render logic based on currentDisplayState
   if (currentDisplayState === 'loading') {
-    // Minimal loading placeholder to avoid flash of unstyled content or layout shifts
     return <div className="fixed inset-0 bg-background flex items-center justify-center"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
   }
 
@@ -227,7 +251,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
     return <WelcomeDisplay onDisplayComplete={handleAnimationComplete} />;
   }
   
-  // currentDisplayState === 'app'
   return (
     <SidebarProvider defaultOpen={true}>
       <Sidebar
@@ -266,6 +289,36 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
           <nav className="flex items-center gap-2 sm:gap-3">
             <ThemeToggleButton /> 
+            
+            <Button
+                ref={notificationBellRef}
+                variant="ghost"
+                size="icon"
+                className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full text-foreground/80 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label="Toggle notifications panel"
+                onClick={() => setIsNotificationPanelOpen(prev => !prev)}
+            >
+                <Bell className="h-5 w-5" />
+                {unreadCount > 0 && (
+                <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 min-w-0 p-0 flex items-center justify-center text-xs animate-pulse">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                </Badge>
+                )}
+            </Button>
+            {isNotificationPanelOpen && (
+                <div ref={notificationPanelRef}>
+                    <NotificationPanelCompact
+                    notifications={notifications.slice(0, 7)} // Show recent or unread, adjust logic as needed
+                    hasUnreadNotifications={unreadCount > 0}
+                    onClose={() => setIsNotificationPanelOpen(false)}
+                    onMarkAllAsRead={handleMarkAllAsRead}
+                    onMarkAsRead={handleMarkAsRead}
+                    onViewAllNotifications={handleViewAllNotifications}
+                    className={unreadCount > 0 ? "notification-panel-animated-border" : ""}
+                    />
+                </div>
+            )}
+            
             {userRole === 'pro' && (
               <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10 hidden sm:flex items-center gap-1.5 py-1 px-2.5">
                 <Sparkles className="h-3.5 w-3.5" />
@@ -315,7 +368,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                       </Link>
                     </DropdownMenuItem>
                      <DropdownMenuItem asChild>
-                        <Link href="/notifications" className="flex items-center gap-2 cursor-pointer" onClick={() => setIsAccountMenuOpen(false)}>
+                        <Link href="/notifications" className="flex items-center gap-2 cursor-pointer" onClick={() => { setIsAccountMenuOpen(false); setIsNotificationPanelOpen(false);}}>
                            <Bell className="h-4 w-4 text-muted-foreground" /> Notifications
                            {unreadCount > 0 && (
                             <Badge variant="destructive" className="ml-auto h-5 px-1.5 text-xs">
@@ -336,7 +389,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
                         <DropdownMenuSubContent>
-                        <DropdownMenuRadioGroup value={userRole || ''} onValueChange={(role) => { selectUserRole(role as UserRole); setIsAccountMenuOpen(false); setCurrentDisplayState('loading'); /* Trigger re-evaluation */ }}>
+                        <DropdownMenuRadioGroup value={userRole || ''} onValueChange={(role) => { selectUserRole(role as UserRole); setIsAccountMenuOpen(false); setCurrentDisplayState('loading'); setIsNotificationPanelOpen(false); }}>
                             <DropdownMenuRadioItem value="pro" className="flex items-center gap-2 cursor-pointer">
                                 <BriefcaseMedical className="h-4 w-4 text-purple-500" />
                                 <span className={cn(userRole === 'pro' && "firebase-gradient-text-active-role font-semibold")}>Professional</span>

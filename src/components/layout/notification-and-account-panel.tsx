@@ -69,7 +69,7 @@ const NotificationItemCard: React.FC<NotificationItemCardProps> = ({ item, onMar
       onClick={handleItemClick}
       className={cn(
         "notification-item-card-in-panel flex items-start gap-3 p-2.5 rounded-lg cursor-pointer transition-colors duration-150", // Adjusted padding
-        item.isRead ? 'bg-white/70 dark:bg-zinc-800/70 hover:bg-white/80 dark:hover:bg-zinc-700/80' : 'bg-blue-500/15 dark:bg-blue-400/15 hover:bg-blue-500/25 dark:hover:bg-blue-400/25 border border-blue-500/40 dark:border-blue-400/40',
+        item.isRead ? 'bg-card hover:bg-muted/30' : 'bg-primary/10 hover:bg-primary/20 border border-primary/30',
       )}
     >
       {!item.isRead && (
@@ -107,7 +107,7 @@ interface NotificationAndAccountPanelProps {
   avatarUrl?: string;
   onLogout: () => void;
   onSelectUserRole: (role: UserRole) => void;
-  getRoleDisplayString: (role: UserRole) => string;
+  getRoleDisplayString: (role: UserRole | null) => string;
 }
 
 export function NotificationAndAccountPanel({
@@ -150,23 +150,23 @@ export function NotificationAndAccountPanel({
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="tabbed-user-panel fixed top-16 right-4 z-50 w-[360px] max-h-[450px] flex flex-col rounded-xl shadow-2xl overflow-hidden"
+      className="notification-panel-compact notification-panel-animated-border" // Using compact styling with animated border
       aria-modal="true"
       role="dialog"
     >
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'notifications' | 'account')} className="flex flex-col h-full">
-        <TabsList className="tabbed-user-panel-tabs-list grid w-full grid-cols-2 h-12 shrink-0">
-          <TabsTrigger value="notifications" className="tabbed-user-panel-trigger">
+        <TabsList className="grid w-full grid-cols-2 h-12 shrink-0 bg-notification-panel-compact-bg border-b border-notification-panel-compact-border">
+          <TabsTrigger value="notifications" className="data-[state=active]:bg-sidebar-accent data-[state=active]:text-sidebar-accent-foreground rounded-tl-lg">
             <BellRing className="mr-1.5 h-4 w-4" /> Notifications
             {hasUnreadNotifications && <span className="ml-1.5 h-2 w-2 rounded-full bg-destructive animate-pulse"></span>}
           </TabsTrigger>
-          <TabsTrigger value="account" className="tabbed-user-panel-trigger">
+          <TabsTrigger value="account" className="data-[state=active]:bg-sidebar-accent data-[state=active]:text-sidebar-accent-foreground rounded-tr-lg">
             <UserCircle className="mr-1.5 h-4 w-4" /> Account
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="notifications" className="tabbed-user-panel-content flex-grow overflow-hidden flex flex-col">
-          <div className="p-3 border-b border-border/10 flex justify-between items-center shrink-0">
+        <TabsContent value="notifications" className="flex-grow overflow-hidden flex flex-col bg-notification-panel-compact-bg">
+          <div className="p-3 border-b border-notification-panel-compact-border flex justify-between items-center shrink-0">
             <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
             <Button variant="link" size="xs" onClick={onMarkAllAsRead} className="text-muted-foreground hover:text-primary p-0 h-auto">
               Mark all as read
@@ -190,7 +190,7 @@ export function NotificationAndAccountPanel({
               )}
             </AnimatePresence>
           </ScrollArea>
-          <div className="p-2 border-t border-border/10 flex justify-between items-center shrink-0">
+          <div className="p-2 border-t border-notification-panel-compact-border flex justify-between items-center shrink-0">
             <Button variant="link" size="xs" onClick={onViewAllNotifications} className="text-primary p-0 h-auto">
               View All Notifications
             </Button>
@@ -201,10 +201,10 @@ export function NotificationAndAccountPanel({
           </div>
         </TabsContent>
 
-        <TabsContent value="account" className="tabbed-user-panel-content flex-grow overflow-hidden flex flex-col">
-            <div className="p-4 border-b border-border/10 flex items-center gap-3 shrink-0">
+        <TabsContent value="account" className="flex-grow overflow-hidden flex flex-col bg-notification-panel-compact-bg">
+            <div className="p-4 border-b border-notification-panel-compact-border flex items-center gap-3 shrink-0">
                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={avatarUrl || "https://picsum.photos/id/237/200/200"} alt={userName || "User"} />
+                    <AvatarImage src={avatarUrl || "https://picsum.photos/id/237/200/200"} alt={userName || "User"} data-ai-hint="user doctor" />
                     <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground">
                       {userName ? userName.charAt(0).toUpperCase() : <UserCircle />}
                     </AvatarFallback>
@@ -220,7 +220,7 @@ export function NotificationAndAccountPanel({
                 <Link key={item.href} href={item.href} passHref legacyBehavior>
                   <a
                     onClick={onClose}
-                    className="account-menu-item-in-panel flex items-center gap-3 p-2.5 rounded-md hover:bg-muted/50 dark:hover:bg-zinc-700/50 transition-colors text-sm text-foreground"
+                    className="flex items-center gap-3 p-2.5 rounded-md hover:bg-muted/50 dark:hover:bg-zinc-700/50 transition-colors text-sm text-foreground"
                   >
                     <item.icon className="h-5 w-5 text-muted-foreground" />
                     <span>{item.label}</span>
@@ -242,7 +242,7 @@ export function NotificationAndAccountPanel({
               <Button
                 variant="ghost"
                 onClick={() => { onLogout(); onClose(); }}
-                className="account-menu-item-in-panel w-full flex items-center justify-start gap-3 p-2.5 rounded-md hover:bg-destructive/10 dark:hover:bg-destructive/20 transition-colors text-sm text-destructive"
+                className="w-full flex items-center justify-start gap-3 p-2.5 rounded-md hover:bg-destructive/10 dark:hover:bg-destructive/20 transition-colors text-sm text-destructive"
               >
                 <LogOut className="h-5 w-5" />
                 <span>Log Out</span>
