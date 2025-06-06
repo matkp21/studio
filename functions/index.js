@@ -119,4 +119,9 @@ exports.searchICD10 = functions.https.onCall(async (data, context) => {
   }
 });
 
+// Simple health check function
+exports.healthCheck = functions.https.onCall(async (data, context) => {
+  console.log("Health check function called. Data:", data, "Context Auth:", context.auth ? "Authenticated" : "Unauthenticated");
+  return { status: "ok", timestamp: new Date().toISOString(), message: "Backend API is responsive." };
+});
     
