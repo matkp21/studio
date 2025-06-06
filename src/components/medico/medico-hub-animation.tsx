@@ -102,7 +102,13 @@ export function MedicoHubAnimation({ onAnimationComplete }: MedicoHubAnimationPr
         Loading Your Learning Tools...
       </motion.p>
 
-      <svg width="80%" maxWidth="350" height="80" viewBox="0 0 300 80" className="absolute bottom-12 opacity-30">
+      <svg 
+        width="80%" 
+        style={{ maxWidth: '350px' }} 
+        height="80" 
+        viewBox="0 0 300 80" 
+        className="absolute bottom-12 opacity-30"
+      >
         {/* Simulating stacked books or notes */}
         <motion.rect x="0" y="40" width="300" height="15" rx="3" fill="url(#medicoLineGradient)" variants={lineVariants} custom={0} />
         <motion.rect x="20" y="20" width="260" height="15" rx="3" fill="url(#medicoLineGradient)" variants={lineVariants} custom={1} />
@@ -119,4 +125,3 @@ export function MedicoHubAnimation({ onAnimationComplete }: MedicoHubAnimationPr
     </motion.div>
   );
 }
-
