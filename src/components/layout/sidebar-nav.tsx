@@ -26,7 +26,8 @@ import {
   Info,
   HeartPulse,
   PillIcon,
-  BellRing, // Added BellRing for Notifications
+  BellRing,
+  Orbit, // Added Orbit for 3D Explorer
 } from 'lucide-react';
 import {
   Tooltip,
@@ -44,6 +45,7 @@ const baseNavItems = [
   { href: '/chat', label: 'Chat', icon: MessageSquareHeart, ariaLabel: 'Open Chat interface' },
   { href: '/medications', label: 'Medications', icon: PillIcon, ariaLabel: 'Manage Medications' },
   { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye, ariaLabel: 'Open AR Viewer' },
+  { href: '/explorer', label: '3D Explorer', icon: Orbit, ariaLabel: 'Open 3D Interactive Explorer' },
   // Notifications will be added dynamically below
 ];
 
@@ -102,7 +104,13 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
     ariaLabel: 'View Notifications',
     badgeCount: unreadNotificationCount
   };
-  navItems.splice(4, 0, notificationsNavItem); // Insert after AR Viewer
+  // Insert after 3D Explorer, or at a suitable position
+  const explorerIndex = navItems.findIndex(item => item.href === '/explorer');
+  if (explorerIndex !== -1) {
+    navItems.splice(explorerIndex + 1, 0, notificationsNavItem);
+  } else { // Fallback if explorer isn't found for some reason
+    navItems.splice(4, 0, notificationsNavItem);
+  }
 
 
   const handleLogout = () => {

@@ -1,4 +1,3 @@
-
 // src/app/layout.tsx
 // Remove "use client" - this is now a Server Component
 import type { Metadata } from 'next';
@@ -58,6 +57,9 @@ export default function RootLayout({
         
         {/* Other meta tags from previous state */}
         {/* <meta name="msapplication-config" content="/icons/browserconfig.xml" /> */}
+
+        {/* Script for <model-viewer> web component */}
+        <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js" async></script>
       </head>
       <body className={`${poppins.variable} antialiased`}>
         <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
