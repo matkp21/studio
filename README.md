@@ -8,26 +8,31 @@ MediAssistant is an intelligent, multifaceted web application designed to serve 
 MediAssistant offers tailored experiences through different user modes:
 
 *   **Patient/User Mode:**
-    *   Symptom Checker (AI-powered insights)
-    *   Medication Management & Reminders
-    *   Personal Health Record (Lite)
-    *   Appointment Management
-    *   Health & Wellness Tracking
-    *   Curated Health Library (OpenFDA, MedlinePlus Genetics, WHO ICD-10 integration)
+    *   Symptom Checker (AI-powered insights via main UI or Chat)
+    *   Medication Management & Reminders (including detailed "Do's and Don'ts" drug information)
+    *   Personal Health Record (Lite - Conceptual)
+    *   Appointment Management (Conceptual)
+    *   Health & Wellness Tracking (Conceptual)
+    *   Curated Health Library (Conceptual: OpenFDA, MedlinePlus Genetics, WHO ICD-10 integration)
+    *   **AR Features (Conceptual):** AR Body Explorer, AR Condition Visualizer, Medication Effects Viewer, AR Child Health Educator.
 *   **Medico (Medical Student) Mode:**
-    *   **Study Aids:** Previous Question Papers, Study Notes Generator, High-Yield Topic Predictor, Flashcard Creator, Flowchart Creator (Conceptual), Mnemonics Generator, MCQ Generator.
+    *   **Study Aids:** Previous Question Papers, Study Notes Generator, High-Yield Topic Predictor, Flashcard Creator, Flowchart Creator (Conceptual), Mnemonics Generator, MCQ Generator. (Accessible via Medico Dashboard & Chat commands)
     *   **Planning & Tracking:** Study Timetable Creator, Progress Tracker (Conceptual).
     *   **Interactive Learning:** Clinical Case Simulations, Differential Diagnosis Trainer, Interactive Anatomy Visualizer, Virtual Patient Rounds.
     *   **Practice Tools:** Drug Dosage Calculator.
+    *   **AR Features (Conceptual):** AR Anatomy Lab, Clinical Skills AR Tutor, Pathology Visuals, AR Surgical Steps Demo, Augmented Flashcards.
 *   **Professional (Clinician) Mode:**
     *   **Clinical Decision Support:** AI-Powered Differential Diagnosis Assistant, Evidence-Based Treatment Protocol Navigator.
     *   **Workflow Optimization:** Advanced Pharmacopeia & Interaction Checker, Smart Dictation & Note Assistant, Quick Discharge Summary Generator, Rounds Tool, Referral Streamliner, On-Call Handover Assistant.
     *   **Knowledge Enhancement:** AI-Powered Research & Literature Summarizer.
+    *   **AR Features (Conceptual):** AR Anatomy Overlay, AR Clinical Guides, 3D Organ Viewer, AR Patient Education, Emergency Triage AR Cards.
 *   **Common Features:**
-    *   AR Viewer (Conceptual)
-    *   Advanced AI Chat
-    *   User Feedback System
-    *   Dedicated Notifications Page
+    *   **AR Viewer:** General image analysis ("Snapshot & Analyze" live feed, or upload images) with AI annotations. Conceptually supports role-specific AR tools.
+    *   **Advanced AI Chat:** Conversational AI with tool usage (e.g., symptom analysis, Medico commands).
+    *   User Feedback System.
+    *   Dedicated Notifications Page.
+    *   Global Clock Widget in header (Clock, Timer, Reminders).
+    *   Dynamic "Hello," greeting on homepage with Firebase/Gemini-inspired gradient.
 
 ## Design Philosophy
 
@@ -39,7 +44,7 @@ The app embraces a clean, modern, professional, and highly aesthetic design lang
 *   **Styling:** Tailwind CSS, ShadCN UI Components
 *   **AI Integration:** Genkit (with Google AI/Gemini models)
 *   **Backend & Database:** Firebase (Authentication, Firestore, Cloud Functions, Cloud Storage, Hosting, FCM)
-*   **External APIs (Conceptual/Implemented):** OpenFDA, MedlinePlus Genetics, WHO ICD-10, Hugging Face (for specialized models like MedGemma via Cloud Functions).
+*   **External APIs (Conceptual/Implemented):** OpenFDA, MedlinePlus Genetics, WHO ICD-10, Hugging Face (for specialized models via Cloud Functions).
 
 ## Getting Started
 
@@ -142,22 +147,35 @@ After making any necessary changes in the Google Cloud Console, it might take a 
 ## Project Structure (Simplified Overview)
 
 *   `src/app/`: Next.js App Router pages and layouts.
+    *   `(auth)/`: Login and Signup pages.
+    *   `ar-viewer/`: Augmented Reality viewer page (conceptual tools, image analysis).
+    *   `chat/`: AI Chat interface.
+    *   `medications/`: Medication management tools.
+    *   `medico/`: Medico Study Hub dashboard and tools.
+    *   `pro/`: Professional Clinical Suite dashboard and tools.
+    *   `notifications/`: Dedicated notifications page.
+    *   `profile/`: User profile page.
+    *   `settings/`: Application settings page.
 *   `src/components/`: Reusable UI components.
-    *   `layout/`: Core layout components (Header, Sidebar, Footer, etc.).
-    *   `homepage/`: Components specific to the main landing page.
-    *   `medico/`: Components for the Medico Study Hub.
-    *   `pro/`: Components for the Professional Clinical Suite.
+    *   `layout/`: Core layout components (Header, Sidebar, Footer, GlobalClockWidget, etc.).
+    *   `homepage/`: Components specific to the main landing page (Hero, ModeSwitcher, etc.).
+    *   `medico/`: Components for the Medico Study Hub tools.
+    *   `pro/`: Components for the Professional Clinical Suite tools.
+    *   `chat/`: Chat interface components.
+    *   `medications/`: Medication management components.
+    *   `ar-viewer/` (or `image-analyzer/`): Components for image upload/analysis.
     *   `ui/`: ShadCN UI components.
 *   `src/ai/`: Genkit flows, schemas, and AI-related logic.
-    *   `flows/`: Genkit flow definitions.
+    *   `flows/`: Genkit flow definitions (chat, symptom analysis, medico tools, pro tools).
     *   `schemas/`: Zod schemas for flow inputs/outputs.
-    *   `tools/`: Genkit tool definitions.
-*   `src/contexts/`: React context providers (e.g., `ProModeContext`).
-*   `src/hooks/`: Custom React hooks.
-*   `src/lib/`: Utility functions.
-*   `src/types/`: TypeScript type definitions.
+    *   `tools/`: Genkit tool definitions (e.g., symptom analyzer tool for chat).
+*   `src/contexts/`: React context providers (e.g., `ProModeContext`, `ThemeProvider`).
+*   `src/hooks/`: Custom React hooks (e.g., `useToast`, `useMobile`).
+*   `src/lib/`: Utility functions (e.g., `cn`).
+*   `src/types/`: TypeScript type definitions (e.g., `medication.ts`, `notifications.ts`, `ar-tools.ts`).
+*   `src/config/`: Application-specific configurations (e.g., `ar-tools-config.ts`).
 *   `public/`: Static assets (images, manifest.json, sw.js).
-*   `functions/`: Firebase Cloud Functions (for traditional backend tasks and API integrations outside Genkit).
+*   `functions/`: Firebase Cloud Functions (e.g., `searchDrug`, `searchGene`, `searchICD10`, `healthCheck`).
 
 ## Contributing
 
