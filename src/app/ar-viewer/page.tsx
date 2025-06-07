@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle as AlertTitleComponent } from '@/components/ui/alert';
-import { UploadCloud, CameraOff, Loader2, Info, ScanEye, Wand2, Brain, BookOpen, Search, Camera, SlidersHorizontal, Video, RotateCcw } from 'lucide-react';
+import { UploadCloud, CameraOff, Loader2, Info, ScanEye, Wand2, Brain, BookOpen, Search, Camera, SlidersHorizontal, Video, RotateCcw, ExternalLink } from 'lucide-react';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -16,9 +16,10 @@ import { analyzeImage, type AnalyzeImageInput, type AnalyzeImageOutput } from '@
 import { getAnatomyDescription, type MedicoAnatomyVisualizerOutput } from '@/ai/flows/medico/anatomy-visualizer-flow';
 import { Dialog, DialogContent, DialogHeader, DialogTitle as DialogTitleComponent, DialogDescription as DialogDescriptionComponent, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useProMode, type UserRole } from '@/contexts/pro-mode-context'; // Import useProMode
-import { allArTools, proArTools, medicoArTools, userArTools } from '@/config/ar-tools-config'; // Import AR tool configurations
-import type { ArToolDefinition } from '@/types/ar-tools'; // Import AR tool type
+import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
+import { proArTools, medicoArTools, userArTools } from '@/config/ar-tools-config';
+import type { ArToolDefinition } from '@/types/ar-tools';
+import { Badge } from '@/components/ui/badge';
 
 interface Annotation {
   id: string;
@@ -58,7 +59,7 @@ const sampleAnnotatedImages: AnnotatedImage[] = [
 
 export default function ARViewerPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null); // For capturing snapshots
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [isLoadingCamera, setIsLoadingCamera] = useState(true);
   const [selectedAnnotatedImage, setSelectedAnnotatedImage] = useState<AnnotatedImage | null>(null);
@@ -123,7 +124,7 @@ export default function ARViewerPage() {
     };
     setSelectedAnnotatedImage(initialAnnotatedImage);
     setArAnnotations(initialAnnotatedImage.annotations);
-    setSelectedArTool(null); // Clear conceptual tool when analyzing a new image
+    setSelectedArTool(null);
 
     try {
       const analysisInput: AnalyzeImageInput = { imageDataUri };
@@ -181,28 +182,24 @@ export default function ARViewerPage() {
     const context = canvas.getContext('2d');
     if (context) {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageDataUri = canvas.toDataURL('image/jpeg'); // Or 'image/png'
+      const imageDataUri = canvas.toDataURL('image/jpeg');
       const fileName = `Captured Image - ${new Date().toLocaleString()}.jpg`;
-      
-      // Create a mock File object for consistency, or adjust handleImageUploadAndAnalysis to accept URI directly
-      // For simplicity, passing a {name: string} object to satisfy the first arg of handleImageUploadAndAnalysis
       handleImageUploadAndAnalysis({name: fileName}, imageDataUri);
-      setUploadedImageDataUri(imageDataUri); // For potential preview if needed elsewhere
-      setUploadedImageFile(null); // Clear any previously uploaded file
+      setUploadedImageDataUri(imageDataUri);
+      setUploadedImageFile(null);
     } else {
       toast({ title: "Capture Failed", description: "Could not process video frame.", variant: "destructive" });
     }
   };
 
-
   const selectSampleImage = (image: AnnotatedImage) => {
     setSelectedAnnotatedImage(image);
     setUploadedImageFile(null);
-    setUploadedImageDataUri(image.imageUrl); // Use the sample image URL
+    setUploadedImageDataUri(image.imageUrl);
     setArAnnotations(image.annotations);
     setAnalysisError(null);
     setIsAnalyzingImage(false);
-    setSelectedArTool(null); // Clear conceptual tool
+    setSelectedArTool(null);
   };
 
   const handleViewAnatomyDetail = async (annotationText: string) => {
@@ -225,7 +222,7 @@ export default function ARViewerPage() {
   
   const handleSelectArTool = (tool: ArToolDefinition) => {
     setSelectedArTool(tool);
-    setSelectedAnnotatedImage(null); // Clear any image analysis when selecting a conceptual tool
+    setSelectedAnnotatedImage(null);
     setArAnnotations([]);
     setUploadedImageDataUri(null);
     toast({ title: `Conceptual Tool Selected: ${tool.title}`, description: "The live view is now conceptually primed for this AR feature.", duration: 4000 });
@@ -237,7 +234,7 @@ export default function ARViewerPage() {
         <Info className="h-5 w-5 text-amber-600" />
         <AlertTitleComponent className="font-semibold text-amber-700 dark:text-amber-500">AR Viewer Functionality</AlertTitleComponent>
         <AlertDescription className="text-amber-600/90 dark:text-amber-500/90 text-xs">
-          Current: Upload/capture images for AI annotation &amp; explore anatomy. Conceptual: Select role-specific AR tools below to see their descriptions. Full AR interactions are planned for future versions.
+          Current: Upload/capture images for AI annotation &amp; explore anatomy. Conceptual: Select role-specific AR tools below to see their descriptions and placeholder details. Full AR interactions are planned for future versions.
         </AlertDescription>
       </Alert>
       <div className="grid md:grid-cols-3 gap-4 flex-1 min-h-0">
@@ -249,7 +246,6 @@ export default function ARViewerPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 flex-grow overflow-y-auto">
-            {/* Conceptual AR Tool Selector */}
             <div>
               <Label className="mb-2 block font-semibold text-primary">Role-Specific AR Tools ({userRole || 'Guest'})</Label>
               <ScrollArea className="max-h-48 pr-2 space-y-1.5">
@@ -267,7 +263,6 @@ export default function ARViewerPage() {
               </ScrollArea>
             </div>
             <hr className="my-3 border-border/50"/>
-            {/* Image Upload and Sample Selection */}
             <div>
               <Label htmlFor="image-upload" className="mb-2 block">Upload Image for General Analysis</Label>
               <Input id="image-upload" type="file" accept="image/*" onChange={handleFileChange} className="mb-2" />
@@ -295,15 +290,25 @@ export default function ARViewerPage() {
               </Alert>
             )}
 
-            {/* Display Area for Selected Conceptual Tool OR Image Annotations */}
             {selectedArTool ? (
-              <div className="mt-4 p-3 bg-primary/10 rounded-lg border border-primary/30">
+              <div className="mt-4 p-3 bg-primary/10 rounded-lg border border-primary/30 space-y-2">
                 <h3 className="font-semibold text-lg mb-1 flex items-center text-primary">
                   <selectedArTool.icon className="mr-2 h-5 w-5"/> {selectedArTool.title} (Conceptual)
                 </h3>
                 <p className="text-xs text-primary/80 mb-1">{selectedArTool.description}</p>
                 {selectedArTool.detailedDescription && <p className="text-xs mt-1.5 text-muted-foreground prose prose-xs dark:prose-invert max-w-none">{selectedArTool.detailedDescription}</p>}
                 {selectedArTool.usageInstructions && <p className="text-xs mt-1.5 text-muted-foreground italic">Usage: {selectedArTool.usageInstructions}</p>}
+                
+                <div className="text-xs space-y-1 mt-2 text-muted-foreground border-t border-primary/20 pt-2">
+                    {selectedArTool.model_url && <p><strong>Model:</strong> <a href={selectedArTool.model_url} target="_blank" rel="noopener noreferrer" className="hover:underline text-accent">{selectedArTool.model_url.substring(0,30)}... <ExternalLink className="inline h-3 w-3"/></a></p>}
+                    {selectedArTool.voice_narration_url && <p><strong>Narration:</strong> {selectedArTool.voice_narration_url.substring(0,30)}...</p>}
+                    {selectedArTool.instructions && <p><strong>Instructions:</strong> {selectedArTool.instructions}</p>}
+                    {selectedArTool.fallback_to_3d_viewer !== undefined && <p><strong>Fallback to 3D:</strong> {selectedArTool.fallback_to_3d_viewer ? 'Yes' : 'No'}</p>}
+                    {selectedArTool.marker_based !== undefined && <p><strong>Marker-based:</strong> {selectedArTool.marker_based ? 'Yes' : 'No'}</p>}
+                    {selectedArTool.sdk_suggestion && <p><strong>Suggested SDK:</strong> {selectedArTool.sdk_suggestion}</p>}
+                    {selectedArTool.asset_bundle_url && <p><strong>Asset Bundle:</strong> {selectedArTool.asset_bundle_url.substring(0,30)}...</p>}
+                     {selectedArTool.qr_code_triggerable && <Badge variant="outline" className="mt-1 text-primary border-primary/50 bg-primary/5">QR Triggerable</Badge>}
+                </div>
                  <Alert variant="default" className="mt-2 border-accent/50 bg-accent/10 rounded-lg text-xs">
                     <Wand2 className="h-4 w-4 text-accent" />
                     <AlertTitleComponent className="text-accent font-semibold text-sm">Conceptual AR Mode</AlertTitleComponent>
@@ -385,7 +390,6 @@ export default function ARViewerPage() {
                 {isAnalyzingImage && selectedAnnotatedImage?.id.startsWith('custom-') && " (AI Analyzing...)"}
               </div>
             )}
-            {/* Capture button only if camera is active */}
             {hasCameraPermission && !isLoadingCamera && (
               <Button onClick={handleCaptureAndAnalyze} variant="secondary" size="lg" className="absolute bottom-6 left-1/2 transform -translate-x-1/2 rounded-full shadow-lg group h-14 w-14 p-0" disabled={isAnalyzingImage}>
                  <Camera className="h-6 w-6 text-secondary-foreground transition-transform duration-200 group-hover:scale-110" />
