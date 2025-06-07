@@ -108,9 +108,11 @@ const sampleApiDrugInfo: Record<string, SampleDrugInfo> = {
     commonUses: ["Pain relief (headaches, muscle aches, arthritis)", "Fever reduction", "Prevention of blood clots (low dose)"],
     generalAdvice: ["Take with food or milk to reduce stomach upset.", "Do not give to children or teenagers with flu-like symptoms (risk of Reye's syndrome).", "Consult your doctor if you have bleeding disorders or are taking anticoagulants."],
     importantInfo: [
-      { category: "How to Take", advice: ["Take with a full glass of water unless your doctor tells you otherwise.", "If for daily preventive use, take it exactly as prescribed by your doctor."] },
-      { category: "Precautions", advice: ["Inform your doctor about any history of ulcers or kidney disease.", "Stop taking aspirin and tell your doctor if you have ringing in your ears or severe stomach pain."] },
-      { category: "When to Call Your Doctor", advice: ["If you experience easy bruising or bleeding, black or tarry stools, or persistent stomach upset."] }
+      { category: "How to Take", advice: ["Take with a full glass of water unless your doctor tells you otherwise.", "If for daily preventive use, take it exactly as prescribed by your doctor.", "Do not crush or chew enteric-coated tablets."] },
+      { category: "Important Precautions", advice: ["Inform your doctor about any history of ulcers, kidney disease, or gout.", "Stop taking aspirin and tell your doctor if you have ringing in your ears or severe stomach pain.", "Avoid alcohol as it may increase the risk of stomach bleeding."] },
+      { category: "Activities to Avoid/Use Caution With", advice: ["Use caution with activities requiring alertness if you experience dizziness (rare)."] },
+      { category: "When to Call Your Doctor", advice: ["If you experience signs of an allergic reaction (rash, swelling, difficulty breathing).", "If you have easy bruising or bleeding, black or tarry stools, or persistent stomach upset."] },
+      { category: "General Good Practices", advice: ["Do not share your medication with others.", "Do not use expired medication."] }
     ]
   },
   "metformin": {
@@ -118,19 +120,21 @@ const sampleApiDrugInfo: Record<string, SampleDrugInfo> = {
     commonUses: ["Type 2 diabetes mellitus"],
     generalAdvice: ["Take with meals to reduce gastrointestinal side effects.", "Monitor kidney function regularly.", "Be aware of symptoms of lactic acidosis (rare but serious)."],
     importantInfo: [
-      { category: "How to Take", advice: ["Swallow the tablet whole with a main meal.", "Do not crush or chew extended-release tablets."] },
-      { category: "Precautions", advice: ["Temporarily stop taking metformin before any surgery or medical procedure requiring contrast dye.", "Avoid excessive alcohol consumption."] },
-      { category: "When to Call Your Doctor", advice: ["If you develop symptoms of lactic acidosis like unusual muscle pain, trouble breathing, or severe weakness."] }
+      { category: "How to Take", advice: ["Swallow the tablet whole with a main meal.", "Do not crush or chew extended-release tablets.", "Stay well hydrated by drinking plenty of fluids."] },
+      { category: "Important Precautions", advice: ["Temporarily stop taking metformin before any surgery or medical procedure requiring contrast dye (iodinated contrast agents).", "Inform your doctor if you have kidney, liver, or heart problems.", "Avoid excessive alcohol consumption as it increases the risk of lactic acidosis."] },
+      { category: "When to Call Your Doctor", advice: ["If you develop symptoms of lactic acidosis like unusual muscle pain, trouble breathing, severe weakness, or unexplained vomiting.", "If you experience symptoms of hypoglycemia (low blood sugar) if taking other diabetes medications."] },
+      { category: "General Good Practices", advice: ["Follow the diet and exercise plan recommended by your doctor.", "Regularly monitor your blood sugar levels as instructed."] }
     ]
   },
   "amoxicillin": {
     description: "Amoxicillin is an antibiotic in the penicillin group of drugs. It fights bacteria in your body.",
     commonUses: ["Bacterial infections (e.g., ear infections, pneumonia, bronchitis, urinary tract infections, skin infections)."],
-    generalAdvice: ["Take the full course of medication as prescribed, even if you feel better.", "Inform your doctor of any allergies to penicillin or other antibiotics.", "May decrease the effectiveness of oral contraceptives."],
+    generalAdvice: ["Take the full course of medication as prescribed, even if you feel better.", "Inform your doctor of any allergies to penicillin or other antibiotics.", "May decrease the effectiveness of oral contraceptives; consider backup contraception."],
     importantInfo: [
-      { category: "How to Take", advice: ["May be taken with or without food.", "If liquid form, shake well before measuring a dose."] },
-      { category: "Precautions", advice: ["Inform your doctor if you have a history of mononucleosis.", "This medication may cause diarrhea; contact your doctor if it's severe or watery."] },
-      { category: "When to Call Your Doctor", advice: ["If you experience signs of an allergic reaction (rash, hives, swelling, difficulty breathing)."] }
+      { category: "How to Take", advice: ["May be taken with or without food.", "If liquid form, shake well before measuring a dose with the provided measuring spoon/syringe.", "Complete the full prescribed course."] },
+      { category: "Important Precautions", advice: ["Inform your doctor if you have a history of mononucleosis, kidney disease, or severe allergies.", "This medication may cause diarrhea; contact your doctor if it's severe, watery, or contains blood."] },
+      { category: "When to Call Your Doctor", advice: ["If you experience signs of an allergic reaction (rash, hives, swelling, difficulty breathing, wheezing).", "If your symptoms do not improve within a few days, or if they get worse."] },
+      { category: "General Good Practices", advice: ["Do not share your medication with others.", "This medication treats only bacterial infections. It will not work for viral infections (e.g., common cold, flu)."] }
     ]
   }
 };
@@ -414,12 +418,12 @@ export default function MedicationManagementPage() {
 
                 {fetchedDrugInfo.importantInfo && fetchedDrugInfo.importantInfo.length > 0 && (
                   <div className="mt-3 pt-3 border-t">
-                    <h4 className="font-semibold text-foreground text-md mb-2">Important Information (Do's & Don'ts):</h4>
-                    <div className="space-y-2">
+                    <h3 className="font-semibold text-foreground text-md mb-2">Important Information (Do's & Don'ts):</h3>
+                    <div className="space-y-3">
                       {fetchedDrugInfo.importantInfo.map((infoCategory, index) => (
                         <div key={index}>
-                          <h5 className="font-medium text-foreground/90">{infoCategory.category}:</h5>
-                          <ul className="list-disc list-inside ml-4 text-muted-foreground text-xs">
+                          <h4 className="font-medium text-foreground/90">{infoCategory.category}:</h4>
+                          <ul className="list-disc list-inside ml-4 text-muted-foreground text-xs space-y-0.5">
                             {infoCategory.advice.map((point, pIndex) => <li key={pIndex}>{point}</li>)}
                           </ul>
                         </div>
