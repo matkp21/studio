@@ -2,12 +2,12 @@
 "use client";
 
 import type { InteractiveModel, AnnotationHotspot, ProcedureStep, ModelIconName } from '@/types/interactive-models';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import React, { useState, useEffect, Suspense } from 'react';
-import { ChevronLeft, ChevronRight, Info, Orbit, PackageOpen, ZoomIn, ZoomOut, Bone, Heart, Scissors, ShieldAlert } from 'lucide-react'; // Import all possible icons
+import { ChevronLeft, ChevronRight, Info, Orbit, PackageOpen, ZoomIn, ZoomOut, Bone, Heart, Scissors, ShieldAlert, Activity } from 'lucide-react';
 import Image from 'next/image';
 
 // Dynamically import model-viewer to avoid SSR issues
@@ -24,6 +24,7 @@ const iconMap: Record<ModelIconName, React.ElementType> = {
   Scissors,
   ShieldAlert,
   Orbit,
+  Activity, // Added Activity for generic procedures if needed
 };
 
 export function InteractiveModelViewer({ model, onAnnotationSelect }: InteractiveModelViewerProps) {
@@ -35,8 +36,8 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
 
   useEffect(() => {
     setIsClient(true);
-    setCurrentStepIndex(0);
-    setSelectedAnnotation(model.annotations && model.annotations.length > 0 ? model.annotations[0] : null);
+    setCurrentStepIndex(0); // Reset step index when model changes
+    setSelectedAnnotation(model.annotations && model.annotations.length > 0 ? model.annotations[0] : null); // Reset annotation
   }, [model]);
 
   const handleNextStep = () => {
@@ -64,7 +65,7 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
   const modelViewerElement = isClient ? (
     <Suspense fallback={<div className="w-full h-full flex items-center justify-center bg-muted rounded-lg"><Orbit className="h-12 w-12 text-primary animate-spin-slow" /></div>}>
         <ModelViewer
-        src={model.modelSrc}
+        src={model.glbPath} // Changed from model.modelSrc
         alt={model.title}
         poster={model.posterSrc}
         cameraControls
@@ -107,7 +108,7 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
         </div>
 
         <div className="md:col-span-1 p-4 md:p-0 h-full flex flex-col">
-          {model.type === 'anatomy' || model.type === 'pathology' ? (
+          {model.modelType === 'anatomy' || model.modelType === 'pathology' ? ( // Changed from model.type
             <Card className="flex-grow flex flex-col border-primary/20 bg-primary/5 shadow-inner">
               <CardHeader className="pb-2 pt-3 px-3">
                 <CardTitle className="text-lg text-primary">Annotations</CardTitle>
@@ -143,17 +144,17 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
                 </CardFooter>
               )}
             </Card>
-          ) : model.type === 'procedure' && model.procedureSteps ? (
+          ) : model.modelType === 'procedure' && model.procedureSteps ? ( // Changed from model.type
             <Card className="flex-grow flex flex-col border-primary/20 bg-primary/5 shadow-inner">
               <CardHeader className="pb-2 pt-3 px-3">
                 <CardTitle className="text-lg text-primary">Procedure Steps</CardTitle>
-                 {currentProcedureStep && <CardDescription className="text-xs">Step {currentStepIndex + 1} of {model.procedureSteps.length}</CardDescription>}
+                 {currentProcedureStep && <CardDescription className="text-xs">Step {currentStepIndex + 1} of {model.procedureSteps.length}: {currentProcedureStep.title}</CardDescription>}
               </CardHeader>
               <CardContent className="px-3 pb-3 flex-grow overflow-hidden">
                 {currentProcedureStep ? (
                   <ScrollArea className="h-full max-h-[45vh] md:max-h-none pr-2">
                     <div className="space-y-2">
-                      <h4 className="font-semibold text-md text-foreground">{currentProcedureStep.title}</h4>
+                      {/* Title is now in CardDescription, showing only description here */}
                       <p className="text-sm text-muted-foreground whitespace-pre-wrap">{currentProcedureStep.description}</p>
                       {currentProcedureStep.instrument && (
                         <p className="text-xs text-muted-foreground">

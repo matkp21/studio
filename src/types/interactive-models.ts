@@ -19,22 +19,21 @@ export interface ProcedureStep {
   instrument?: string;
   modelViewerCameraOrbit?: string; // Specific camera view for this step
   modelViewerCameraTarget?: string;
-  // Potentially add URL to a specific variant of the model showing this step, or animation name
 }
 
 export type InteractiveModelType = 'anatomy' | 'pathology' | 'procedure';
 
 // Define a union type for valid icon names if you want stricter typing
-export type ModelIconName = "Bone" | "Heart" | "Scissors" | "ShieldAlert" | "Orbit";
+export type ModelIconName = "Bone" | "Heart" | "Scissors" | "ShieldAlert" | "Orbit" | "Activity";
 
 
 export interface InteractiveModel {
   id: string;
   title: string;
   description: string;
-  type: InteractiveModelType;
-  iconName: ModelIconName; // Changed from icon: LucideIcon to iconName: string
-  modelSrc: string; // URL to the .glb or .usdz model
+  modelType: InteractiveModelType; // Changed from type
+  iconName: ModelIconName;
+  glbPath: string; // Changed from modelSrc
   posterSrc?: string; // Optional placeholder image for <model-viewer>
   annotations?: AnnotationHotspot[]; // For anatomy/pathology models
   procedureSteps?: ProcedureStep[]; // For surgical procedures
