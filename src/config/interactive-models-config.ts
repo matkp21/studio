@@ -1,6 +1,7 @@
 // src/config/interactive-models-config.ts
 import type { InteractiveModel } from '@/types/interactive-models';
-import { Orbit, Bone, ShieldAlert, Stethoscope, Scissors, Heart } from 'lucide-react';
+// Icons are no longer imported here directly for the config
+// They will be mapped in the components that render them.
 
 // Using modelviewer.dev astronaut as a placeholder for all models
 const PLACEHOLDER_MODEL_SRC = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
@@ -12,8 +13,8 @@ export const interactiveModelsList: InteractiveModel[] = [
     title: 'Human Skeleton Explorer',
     description: 'Explore the full human skeletal system with detailed annotations for major bones.',
     type: 'anatomy',
-    icon: Bone,
-    modelSrc: PLACEHOLDER_MODEL_SRC, // Replace with actual skeleton model
+    iconName: "Bone", // Changed from icon: Bone
+    modelSrc: PLACEHOLDER_MODEL_SRC,
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'skeleton anatomy',
     annotations: [
@@ -28,8 +29,8 @@ export const interactiveModelsList: InteractiveModel[] = [
     title: 'Heart Anatomy Explorer',
     description: 'Detailed view of the human heart, its chambers, valves, and major vessels.',
     type: 'anatomy',
-    icon: Heart,
-    modelSrc: PLACEHOLDER_MODEL_SRC, // Replace with actual heart model
+    iconName: "Heart", // Changed from icon: Heart
+    modelSrc: PLACEHOLDER_MODEL_SRC,
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'heart anatomy',
     annotations: [
@@ -43,8 +44,8 @@ export const interactiveModelsList: InteractiveModel[] = [
     title: 'Appendectomy Simulation',
     description: 'Step-by-step visual guide of an appendectomy procedure.',
     type: 'procedure',
-    icon: Scissors,
-    modelSrc: PLACEHOLDER_MODEL_SRC, // Replace with appendectomy specific model/stages
+    iconName: "Scissors", // Changed from icon: Scissors
+    modelSrc: PLACEHOLDER_MODEL_SRC,
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'appendectomy surgery',
     procedureSteps: [
@@ -59,8 +60,8 @@ export const interactiveModelsList: InteractiveModel[] = [
     title: 'Liver Cirrhosis Pathology',
     description: 'Compare a healthy liver with one affected by cirrhosis, noting key pathological changes.',
     type: 'pathology',
-    icon: ShieldAlert,
-    modelSrc: PLACEHOLDER_MODEL_SRC, // Replace with liver models
+    iconName: "ShieldAlert", // Changed from icon: ShieldAlert
+    modelSrc: PLACEHOLDER_MODEL_SRC,
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'liver cirrhosis',
     annotations: [
@@ -69,4 +70,18 @@ export const interactiveModelsList: InteractiveModel[] = [
         { id: 'portal-hypertension', name: 'Portal Hypertension Sign', title: 'Signs of Portal Hypertension', description: 'Associated with cirrhosis, may manifest as ascites, varices. (Visualized conceptually on model)' },
     ],
   },
+  // Example of how you might add a model that uses Orbit icon
+  // {
+  //   id: 'generic-model',
+  //   title: 'Generic 3D Model',
+  //   description: 'A generic model for testing the Orbit icon.',
+  //   type: 'anatomy',
+  //   iconName: "Orbit", // Using Orbit icon name
+  //   modelSrc: PLACEHOLDER_MODEL_SRC,
+  //   posterSrc: PLACEHOLDER_POSTER_SRC,
+  //   dataAiHint: '3d model orbit',
+  //   annotations: [
+  //     { id: 'anno1', name: 'Annotation 1', title: 'Detail 1', description: 'Description for detail 1.' },
+  //   ],
+  // }
 ];

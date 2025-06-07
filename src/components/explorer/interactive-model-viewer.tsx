@@ -1,13 +1,13 @@
 // src/components/explorer/interactive-model-viewer.tsx
 "use client";
 
-import type { InteractiveModel, AnnotationHotspot, ProcedureStep } from '@/types/interactive-models';
+import type { InteractiveModel, AnnotationHotspot, ProcedureStep, ModelIconName } from '@/types/interactive-models';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import React, { useState, useEffect, Suspense } from 'react';
-import { ChevronLeft, ChevronRight, Info, Orbit, PackageOpen, ZoomIn, ZoomOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Info, Orbit, PackageOpen, ZoomIn, ZoomOut, Bone, Heart, Scissors, ShieldAlert } from 'lucide-react'; // Import all possible icons
 import Image from 'next/image';
 
 // Dynamically import model-viewer to avoid SSR issues
@@ -15,8 +15,16 @@ const ModelViewer = React.lazy(() => import('./model-viewer-wrapper'));
 
 interface InteractiveModelViewerProps {
   model: InteractiveModel;
-  onAnnotationSelect?: (annotationId: string) => void; // For future hotspot interaction
+  onAnnotationSelect?: (annotationId: string) => void;
 }
+
+const iconMap: Record<ModelIconName, React.ElementType> = {
+  Bone,
+  Heart,
+  Scissors,
+  ShieldAlert,
+  Orbit,
+};
 
 export function InteractiveModelViewer({ model, onAnnotationSelect }: InteractiveModelViewerProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -27,7 +35,6 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
 
   useEffect(() => {
     setIsClient(true);
-    // Reset states when model changes
     setCurrentStepIndex(0);
     setSelectedAnnotation(model.annotations && model.annotations.length > 0 ? model.annotations[0] : null);
   }, [model]);
@@ -45,14 +52,13 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
   };
 
   const currentProcedureStep = model.procedureSteps?.[currentStepIndex];
+  const IconComponent = iconMap[model.iconName] || Orbit; // Fallback to Orbit
 
   const handleSelectAnnotation = (annotation: AnnotationHotspot) => {
     setSelectedAnnotation(annotation);
     if (onAnnotationSelect) {
       onAnnotationSelect(annotation.id);
     }
-    // Here you could also interact with the <model-viewer> component
-    // to change camera target or highlight hotspots if it's set up to receive such commands.
   };
   
   const modelViewerElement = isClient ? (
@@ -62,7 +68,7 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
         alt={model.title}
         poster={model.posterSrc}
         cameraControls
-        autoRotate={!currentProcedureStep && !selectedAnnotation} // Auto-rotate if no specific view is set
+        autoRotate={!currentProcedureStep && !selectedAnnotation}
         exposure="1"
         shadowIntensity="1"
         cameraTarget={currentProcedureStep?.modelViewerCameraTarget || selectedAnnotation?.cameraTarget}
@@ -82,7 +88,7 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
       <CardHeader className="border-b bg-muted/30">
         <div className="flex items-center gap-3">
             <div className="p-2.5 bg-primary/10 text-primary rounded-lg">
-                 <model.icon className="h-7 w-7" />
+                 <IconComponent className="h-7 w-7" />
             </div>
             <div>
                 <CardTitle className="text-2xl text-foreground">{model.title}</CardTitle>

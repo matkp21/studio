@@ -24,12 +24,16 @@ export interface ProcedureStep {
 
 export type InteractiveModelType = 'anatomy' | 'pathology' | 'procedure';
 
+// Define a union type for valid icon names if you want stricter typing
+export type ModelIconName = "Bone" | "Heart" | "Scissors" | "ShieldAlert" | "Orbit";
+
+
 export interface InteractiveModel {
   id: string;
   title: string;
   description: string;
   type: InteractiveModelType;
-  icon: LucideIcon;
+  iconName: ModelIconName; // Changed from icon: LucideIcon to iconName: string
   modelSrc: string; // URL to the .glb or .usdz model
   posterSrc?: string; // Optional placeholder image for <model-viewer>
   annotations?: AnnotationHotspot[]; // For anatomy/pathology models

@@ -1,25 +1,35 @@
 // src/components/explorer/model-selection-card.tsx
 "use client";
 
-import type { InteractiveModel } from '@/types/interactive-models';
+import type { InteractiveModel, ModelIconName } from '@/types/interactive-models';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Orbit, Bone, ShieldAlert, Scissors, Heart } from 'lucide-react'; // Import all possible icons
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import Image from 'next/image'; // Import NextImage
+import Image from 'next/image'; 
 
 interface ModelSelectionCardProps {
   model: InteractiveModel;
 }
 
+const iconMap: Record<ModelIconName, React.ElementType> = {
+  Bone,
+  Heart,
+  Scissors,
+  ShieldAlert,
+  Orbit,
+};
+
 export function ModelSelectionCard({ model }: ModelSelectionCardProps) {
+  const IconComponent = iconMap[model.iconName] || Orbit; // Fallback to Orbit if iconName is not found
+
   return (
     <Card className="shadow-lg rounded-xl overflow-hidden hover:shadow-primary/20 transition-all duration-300 ease-in-out group border-border/50 hover:border-primary/40 h-full flex flex-col">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-primary/10 text-primary rounded-lg group-hover:bg-primary/20 transition-colors">
-                <model.icon className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                <IconComponent className="h-6 w-6 group-hover:scale-110 transition-transform" />
             </div>
             <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">{model.title}</CardTitle>
         </div>
@@ -27,7 +37,6 @@ export function ModelSelectionCard({ model }: ModelSelectionCardProps) {
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-between">
         <div className="aspect-video bg-muted/50 rounded-md overflow-hidden mb-4 relative border">
-           {/* Using NextImage for placeholder */}
            <Image 
             src={model.posterSrc || "https://placehold.co/600x400.png"} 
             alt={`${model.title} preview`} 
