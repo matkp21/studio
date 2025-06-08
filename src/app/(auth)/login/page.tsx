@@ -1,70 +1,96 @@
+
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { HeartHandshake } from "lucide-react";
+import { motion } from "framer-motion";
+import { HeartHandshake, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { auth } from "@/lib/firebase"; // Import Firebase auth instance
+import { signInWithEmailAndPassword, FirebaseError } from "firebase/auth";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { toast } = useToast();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
-    // Simulate a login process
-    setTimeout(() => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({
+        title: "Login Successful!",
+        description: "Welcome back to MediAssistant.",
+      });
+      router.push("/"); // Redirect to homepage or dashboard
+    } catch (err) {
+      let errorMessage = "Failed to log in. Please check your credentials.";
+      if (err instanceof FirebaseError) {
+        switch (err.code) {
+          case "auth/user-not-found":
+          case "auth/wrong-password":
+          case "auth/invalid-credential":
+            errorMessage = "Invalid email or password.";
+            break;
+          case "auth/invalid-email":
+            errorMessage = "Please enter a valid email address.";
+            break;
+          default:
+            errorMessage = "An unexpected error occurred. Please try again.";
+            break;
+        }
+      }
+      console.error("Firebase login error:", err);
+      setError(errorMessage); // You could display this directly in the form
+      toast({
+        title: "Login Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-      setLoginSuccess(true);
-      // In a real application, you would verify credentials here
-      // If successful, redirect after the animation
-      setTimeout(() => {
-        router.push("/dashboard"); // Replace with your actual dashboard route
-      }, 1500); // Wait for the gradient animation
-    }, 1000);
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 relative overflow-hidden">
-      <AnimatePresence>
-        {loginSuccess && (
-          <motion.div
-            initial={{ opacity: 0, scaleY: 0 }}
-            animate={{ opacity: 1, scaleY: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 origin-bottom"
-          />
-        )}
-      </AnimatePresence>
-
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background relative overflow-hidden p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className={`bg-white p-8 rounded-lg shadow-md w-full max-w-sm z-10 ${
-          loginSuccess ? "hidden" : ""
-        }`}
+        className="bg-card p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-sm z-10 border"
       >
         <div className="flex flex-col items-center mb-6">
           <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-            className="text-blue-500 mb-2"
+            animate={{ scale: [1, 1.05, 1], rotate: [0, 5, -5, 0] }}
+            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+            className="text-primary mb-3 p-3 bg-primary/10 rounded-full"
           >
-            <HeartHandshake size={48} />
+            <HeartHandshake size={40} />
           </motion.div>
-          <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Welcome Back</h2>
+          <p className="text-sm text-muted-foreground mt-1">Log in to MediAssistant</p>
         </div>
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-destructive/10 text-destructive text-sm p-3 rounded-md mb-4 text-center"
+          >
+            {error}
+          </motion.div>
+        )}
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -73,9 +99,10 @@ const LoginPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="mt-1 rounded-lg"
             />
           </div>
-          <div className="mb-6">
+          <div>
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
@@ -84,17 +111,19 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="mt-1 rounded-lg"
             />
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full rounded-lg py-3 group" disabled={isLoading}>
             {isLoading ? "Logging In..." : "Login"}
+            {!isLoading && <LogIn className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />}
           </Button>
         </form>
-        <p className="text-center text-sm text-gray-600 mt-4">
+        <p className="text-center text-sm text-muted-foreground mt-6">
           Don't have an account?{" "}
-          <a href="/signup" className="text-blue-500 hover:underline">
+          <Link href="/signup" className="text-primary hover:underline font-medium">
             Sign Up
-          </a>
+          </Link>
         </p>
       </motion.div>
     </div>
