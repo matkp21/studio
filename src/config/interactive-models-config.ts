@@ -1,40 +1,45 @@
+
 // src/config/interactive-models-config.ts
 import type { InteractiveModel } from '@/types/interactive-models';
 
-// Using modelviewer.dev astronaut as a placeholder for all models
+// Using a specific anatomy model for some entries, and modelviewer.dev astronaut as a placeholder for others.
+const HUMAN_ANATOMY_MODEL_SRC = "/models/human-anatomy.glb"; // Path to your new model
 const PLACEHOLDER_MODEL_SRC = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const PLACEHOLDER_POSTER_SRC = "https://placehold.co/600x400.png"; // Generic placeholder
 
 export const interactiveModelsList: InteractiveModel[] = [
   {
-    id: 'human-skeleton',
-    title: 'Human Skeleton Explorer',
-    description: 'Explore the full human skeletal system with detailed annotations for major bones.',
+    id: 'human-skeleton', // Keeping original ID, but changing content to be a general explorer
+    title: 'Human Anatomy Explorer',
+    description: 'Explore the skeletal and organ systems of the human body in 3D.',
     modelType: 'anatomy',
-    iconName: "Bone",
-    glbPath: PLACEHOLDER_MODEL_SRC,
-    posterSrc: PLACEHOLDER_POSTER_SRC,
-    dataAiHint: 'skeleton anatomy',
+    iconName: "Stethoscope", // Changed icon as per suggestion
+    glbPath: HUMAN_ANATOMY_MODEL_SRC, // Using the new human anatomy model
+    posterSrc: PLACEHOLDER_POSTER_SRC, // You might want a specific poster for this
+    dataAiHint: 'human anatomy',
     annotations: [
-      { id: 'skull', name: 'Skull', title: 'Cranium (Skull)', description: 'Protects the brain and houses sensory organs. Composed of 22 bones.', cameraTarget: "0m 1.5m 0m", cameraOrbit: "0deg 75deg 105%" },
-      { id: 'ribcage', name: 'Rib Cage', title: 'Thoracic Cage (Ribs & Sternum)', description: 'Protects vital organs like the heart and lungs. Consists of 12 pairs of ribs, sternum, and thoracic vertebrae.', cameraTarget: "0m 1.2m 0m", cameraOrbit: "0deg 75deg 105%" },
-      { id: 'femur', name: 'Femur', title: 'Femur (Thigh Bone)', description: 'The longest and strongest bone in the human body, located in the thigh.', cameraTarget: "0m 0.5m 0m", cameraOrbit: "0deg 75deg 105%" },
-      { id: 'pelvis', name: 'Pelvis', title: 'Pelvic Girdle', description: 'Connects the trunk to the legs and supports abdominal organs.', cameraTarget: "0m 0.8m 0m", cameraOrbit: "0deg 75deg 105%" },
+      { id: 'skull', name: 'Skull', title: 'Cranium (Skull)', description: 'Protects the brain and houses sensory organs. Composed of 22 bones.', cameraTarget: "0m 1.7m 0m", cameraOrbit: "0deg 75deg 0.8m" }, // Adjusted camera for full body
+      { id: 'ribcage', name: 'Rib Cage', title: 'Thoracic Cage', description: 'Protects vital organs like the heart and lungs.', cameraTarget: "0m 1.4m 0m", cameraOrbit: "0deg 75deg 1m" },
+      { id: 'femur', name: 'Femur', title: 'Femur (Thigh Bone)', description: 'The longest and strongest bone in the human body.', cameraTarget: "0m 0.6m 0.1m", cameraOrbit: "0deg 75deg 1.2m" },
+      { id: 'pelvis', name: 'Pelvis', title: 'Pelvic Girdle', description: 'Connects the trunk to the legs and supports abdominal organs.', cameraTarget: "0m 0.9m 0m", cameraOrbit: "0deg 75deg 1.1m" },
+      { id: 'heart', name: 'Heart (General)', title: 'Heart', description: 'The heart is a muscular organ that pumps blood through the body.', cameraTarget: '0m 1.4m 0.1m', cameraOrbit: '0deg 75deg 0.9m' }, // Added from user example
+      { id: 'liver', name: 'Liver (General)', title: 'Liver', description: 'The liver filters blood and produces bile.', cameraTarget: '0.1m 1.25m 0m', cameraOrbit: '0deg 65deg 1m' }, // Added from user example
     ],
   },
   {
     id: 'heart-anatomy',
     title: 'Heart Anatomy Explorer',
-    description: 'Detailed view of the human heart, its chambers, valves, and major vessels.',
+    description: 'Detailed view of the human heart, its chambers, valves, and major vessels, within the context of the body.',
     modelType: 'anatomy',
     iconName: "Heart",
-    glbPath: PLACEHOLDER_MODEL_SRC,
+    glbPath: HUMAN_ANATOMY_MODEL_SRC, // Using the new human anatomy model, assumes heart is visible
     posterSrc: PLACEHOLDER_POSTER_SRC,
-    dataAiHint: 'heart anatomy',
+    dataAiHint: 'human heart anatomy',
     annotations: [
-      { id: 'la', name: 'Left Atrium', title: 'Left Atrium', description: 'Receives oxygenated blood from the lungs via the pulmonary veins.' },
-      { id: 'lv', name: 'Left Ventricle', title: 'Left Ventricle', description: 'Pumps oxygenated blood to the rest of the body via the aorta.' },
-      { id: 'aorta', name: 'Aorta', title: 'Aorta', description: 'The largest artery, carrying oxygenated blood from the left ventricle to the body.' },
+      // Assuming heart is roughly at Y=1.4m, X=0m, Z=0.1m (slightly anterior)
+      { id: 'la', name: 'Left Atrium', title: 'Left Atrium', description: 'Receives oxygenated blood from the lungs via the pulmonary veins.', cameraTarget: "0m 1.45m 0.05m", cameraOrbit: "0deg 75deg 0.5m" },
+      { id: 'lv', name: 'Left Ventricle', title: 'Left Ventricle', description: 'Pumps oxygenated blood to the rest of the body via the aorta.', cameraTarget: "0m 1.35m 0.05m", cameraOrbit: "0deg 75deg 0.5m"},
+      { id: 'aorta', name: 'Aorta (Arch)', title: 'Aorta', description: 'The largest artery, carrying oxygenated blood from the left ventricle to the body.', cameraTarget: "0m 1.5m 0.1m", cameraOrbit: "-30deg 60deg 0.6m" },
     ],
   },
   {
@@ -43,7 +48,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     description: 'Step-by-step visual guide of an appendectomy procedure.',
     modelType: 'procedure',
     iconName: "Scissors",
-    glbPath: PLACEHOLDER_MODEL_SRC, // Using placeholder
+    glbPath: PLACEHOLDER_MODEL_SRC, 
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'appendectomy surgery',
     procedureSteps: [
@@ -59,7 +64,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     description: 'Compare a healthy liver with one affected by cirrhosis, noting key pathological changes.',
     modelType: 'pathology',
     iconName: "ShieldAlert",
-    glbPath: PLACEHOLDER_MODEL_SRC, // Using placeholder
+    glbPath: PLACEHOLDER_MODEL_SRC, 
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'liver cirrhosis',
     annotations: [
@@ -72,7 +77,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     id: 'liver-resection',
     title: 'Liver Resection',
     description: 'Step-by-step 3D simulation of liver segmentectomy.',
-    glbPath: PLACEHOLDER_MODEL_SRC, // Actual: '/models/liver-resection.glb',
+    glbPath: PLACEHOLDER_MODEL_SRC,
     modelType: 'procedure',
     iconName: 'Scissors',
     posterSrc: PLACEHOLDER_POSTER_SRC,
@@ -88,7 +93,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     id: 'thyroidectomy',
     title: 'Thyroidectomy',
     description: 'Visual simulation of thyroid gland removal.',
-    glbPath: PLACEHOLDER_MODEL_SRC, // Actual: '/models/thyroidectomy.glb',
+    glbPath: PLACEHOLDER_MODEL_SRC,
     modelType: 'procedure',
     iconName: 'Scissors',
     posterSrc: PLACEHOLDER_POSTER_SRC,
@@ -104,7 +109,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     id: 'mastectomy',
     title: 'Mastectomy Simulation',
     description: '3D guide for simple or modified radical mastectomy.',
-    glbPath: PLACEHOLDER_MODEL_SRC, // Actual: '/models/mastectomy.glb',
+    glbPath: PLACEHOLDER_MODEL_SRC,
     modelType: 'procedure',
     iconName: 'Scissors',
     posterSrc: PLACEHOLDER_POSTER_SRC,
@@ -121,7 +126,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     id: 'colectomy',
     title: 'Colectomy (Colon Resection)',
     description: 'Simulation of segmental colon removal and anastomosis.',
-    glbPath: PLACEHOLDER_MODEL_SRC, // Actual: '/models/colectomy.glb',
+    glbPath: PLACEHOLDER_MODEL_SRC,
     modelType: 'procedure',
     iconName: 'Scissors',
     posterSrc: PLACEHOLDER_POSTER_SRC,
