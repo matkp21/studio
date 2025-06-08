@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import React, { useState, useEffect, Suspense } from 'react';
-import { ChevronLeft, ChevronRight, Info, Orbit, PackageOpen, ZoomIn, ZoomOut, Bone, Heart, Scissors, ShieldAlert, Activity } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Info, Orbit, PackageOpen, ZoomIn, ZoomOut, Bone, Heart, Scissors, ShieldAlert, Activity, Stethoscope } from 'lucide-react'; // Added Stethoscope
 import Image from 'next/image';
 
 // Dynamically import model-viewer to avoid SSR issues
@@ -24,7 +24,8 @@ const iconMap: Record<ModelIconName, React.ElementType> = {
   Scissors,
   ShieldAlert,
   Orbit,
-  Activity, // Added Activity for generic procedures if needed
+  Activity,
+  Stethoscope,
 };
 
 export function InteractiveModelViewer({ model, onAnnotationSelect }: InteractiveModelViewerProps) {
@@ -60,20 +61,23 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
     if (onAnnotationSelect) {
       onAnnotationSelect(annotation.id);
     }
+    // Conceptually, you might also want to update the <model-viewer> here
+    // to focus on the annotation's target if `model-viewer` supports it via props/methods.
+    // For now, cameraOrbit and cameraTarget are passed directly.
   };
   
   const modelViewerElement = isClient ? (
-    <Suspense fallback={<div className="w-full h-full flex items-center justify-center bg-muted rounded-lg"><Orbit className="h-12 w-12 text-primary animate-spin-slow" /></div>}>
+    <Suspense fallback={<div className="w-full h-full flex items-center justify-center bg-muted rounded-lg"><Orbit className="h-12 w-12 text-primary animate-spin" /></div>}>
         <ModelViewer
-        src={model.glbPath} // Changed from model.modelSrc
+        src={model.glbPath}
         alt={model.title}
         poster={model.posterSrc}
-        cameraControls
-        autoRotate={!currentProcedureStep && !selectedAnnotation}
+        camera-controls // Use kebab-case for attributes
+        auto-rotate={!currentProcedureStep && !selectedAnnotation}
         exposure="1"
-        shadowIntensity="1"
-        cameraTarget={currentProcedureStep?.modelViewerCameraTarget || selectedAnnotation?.cameraTarget}
-        cameraOrbit={currentProcedureStep?.modelViewerCameraOrbit || selectedAnnotation?.cameraOrbit}
+        shadow-intensity="1"
+        camera-target={currentProcedureStep?.modelViewerCameraTarget || selectedAnnotation?.cameraTarget}
+        camera-orbit={currentProcedureStep?.modelViewerCameraOrbit || selectedAnnotation?.cameraOrbit}
         className="w-full h-full min-h-[300px] md:min-h-[400px] border-none rounded-lg"
         />
     </Suspense>
@@ -108,7 +112,7 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
         </div>
 
         <div className="md:col-span-1 p-4 md:p-0 h-full flex flex-col">
-          {model.modelType === 'anatomy' || model.modelType === 'pathology' ? ( // Changed from model.type
+          {model.modelType === 'anatomy' || model.modelType === 'pathology' ? (
             <Card className="flex-grow flex flex-col border-primary/20 bg-primary/5 shadow-inner">
               <CardHeader className="pb-2 pt-3 px-3">
                 <CardTitle className="text-lg text-primary">Annotations</CardTitle>
@@ -144,7 +148,7 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
                 </CardFooter>
               )}
             </Card>
-          ) : model.modelType === 'procedure' && model.procedureSteps ? ( // Changed from model.type
+          ) : model.modelType === 'procedure' && model.procedureSteps ? (
             <Card className="flex-grow flex flex-col border-primary/20 bg-primary/5 shadow-inner">
               <CardHeader className="pb-2 pt-3 px-3">
                 <CardTitle className="text-lg text-primary">Procedure Steps</CardTitle>
@@ -154,7 +158,6 @@ export function InteractiveModelViewer({ model, onAnnotationSelect }: Interactiv
                 {currentProcedureStep ? (
                   <ScrollArea className="h-full max-h-[45vh] md:max-h-none pr-2">
                     <div className="space-y-2">
-                      {/* Title is now in CardDescription, showing only description here */}
                       <p className="text-sm text-muted-foreground whitespace-pre-wrap">{currentProcedureStep.description}</p>
                       {currentProcedureStep.instrument && (
                         <p className="text-xs text-muted-foreground">

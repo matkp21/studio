@@ -4,7 +4,7 @@
 import type { InteractiveModel, ModelIconName } from '@/types/interactive-models';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Orbit, Bone, ShieldAlert, Scissors, Heart } from 'lucide-react'; // Import all possible icons
+import { ArrowRight, Orbit, Bone, ShieldAlert, Scissors, Heart, Stethoscope, Activity } from 'lucide-react'; // Added Stethoscope and Activity
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import Image from 'next/image'; 
@@ -19,6 +19,8 @@ const iconMap: Record<ModelIconName, React.ElementType> = {
   Scissors,
   ShieldAlert,
   Orbit,
+  Stethoscope,
+  Activity,
 };
 
 export function ModelSelectionCard({ model }: ModelSelectionCardProps) {
@@ -40,10 +42,11 @@ export function ModelSelectionCard({ model }: ModelSelectionCardProps) {
            <Image 
             src={model.posterSrc || "https://placehold.co/600x400.png"} 
             alt={`${model.title} preview`} 
-            layout="fill" 
-            objectFit="cover" 
-            className="group-hover:scale-105 transition-transform duration-300"
+            fill // Changed from layout="fill" objectFit="cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Added sizes prop
+            className="object-cover group-hover:scale-105 transition-transform duration-300" // Ensure object-cover is used
             data-ai-hint={model.dataAiHint || "3d model preview"}
+            priority={false} // Set to true for LCP images, false otherwise
           />
         </div>
         <Button asChild variant="outline" size="sm" className="w-full rounded-lg group-hover:bg-primary group-hover:text-primary-foreground transition-colors">

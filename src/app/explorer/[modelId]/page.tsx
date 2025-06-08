@@ -1,9 +1,9 @@
 // src/app/explorer/[modelId]/page.tsx
-"use client"; // This page needs to be a client component due to hooks and dynamic rendering
+"use client"; 
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { PageWrapper } from '@/components/layout/page-wrapper';
+// PageWrapper removed for full-screen effect
 import { InteractiveModelViewer } from '@/components/explorer/interactive-model-viewer';
 import { interactiveModelsList } from '@/config/interactive-models-config';
 import type { InteractiveModel } from '@/types/interactive-models';
@@ -17,32 +17,37 @@ export default function InteractiveModelDetailPage() {
   const router = useRouter();
   const modelId = typeof params.modelId === 'string' ? params.modelId : undefined;
   
-  const [selectedModel, setSelectedModel] = useState<InteractiveModel | null | undefined>(undefined); // undefined for loading state
+  const [selectedModel, setSelectedModel] = useState<InteractiveModel | null | undefined>(undefined); 
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
     if (modelId) {
       const foundModel = interactiveModelsList.find(m => m.id === modelId);
-      setSelectedModel(foundModel || null); // null if not found
+      setSelectedModel(foundModel || null); 
+      if (foundModel) {
+        document.title = `${foundModel.title} - MediAssistant 3D Explorer`;
+      } else {
+        document.title = "Model Not Found - MediAssistant";
+      }
     } else {
-      setSelectedModel(null); // No modelId means nothing to load
+      setSelectedModel(null); 
+      document.title = "Interactive Explorer - MediAssistant";
     }
   }, [modelId]);
 
+  // Loading state before client-side hydration or while model data is being determined
   if (!isClient || selectedModel === undefined) {
     return (
-      <PageWrapper title="Loading Interactive Model...">
-        <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
-          <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        </div>
-      </PageWrapper>
+      <div className="flex justify-center items-center min-h-screen bg-background">
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+      </div>
     );
   }
 
   if (selectedModel === null) {
     return (
-      <PageWrapper title="Model Not Found">
+      <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-screen">
         <Alert variant="destructive" className="max-w-md mx-auto">
           <Orbit className="h-5 w-5" />
           <AlertTitle>Error: Model Not Found</AlertTitle>
@@ -57,13 +62,12 @@ export default function InteractiveModelDetailPage() {
             </Link>
           </Button>
         </div>
-      </PageWrapper>
+      </div>
     );
   }
 
   return (
-    // No PageWrapper here, as InteractiveModelViewer is designed to be more full-screen like
-    <div className="container mx-auto px-2 sm:px-4 py-4 flex flex-col min-h-screen">
+    <div className="container mx-auto px-2 sm:px-4 py-4 flex flex-col min-h-screen bg-background"> {/* Ensured background color */}
         <div className="mb-4">
             <Button asChild variant="outline" size="sm">
             <Link href="/explorer">
@@ -71,7 +75,7 @@ export default function InteractiveModelDetailPage() {
             </Link>
             </Button>
         </div>
-        <div className="flex-grow">
+        <div className="flex-grow flex"> {/* Added flex here */}
             <InteractiveModelViewer model={selectedModel} />
         </div>
     </div>
