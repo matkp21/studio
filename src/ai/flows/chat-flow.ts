@@ -12,6 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { symptomAnalyzerTool } from '@/ai/tools/symptom-analyzer-tool';
+import { callGeminiApiDirectly } from '@/ai/utils/direct-gemini-call';
 
 // Define input schema for a chat message
 const ChatMessageInputSchema = z.object({
@@ -28,7 +29,24 @@ export type ChatMessageOutput = z.infer<typeof ChatMessageOutputSchema>;
 
 
 export async function processChatMessage(input: ChatMessageInput): Promise<ChatMessageOutput> {
-  return chatFlow(input);
+  try {
+    // Try Genkit flow first
+    const genkitResponse = await chatFlow(input);
+    return genkitResponse;
+  } catch (genkitError: any) {
+    console.warn("Genkit chatFlow failed, attempting direct Gemini API call as fallback:", genkitError.message || genkitError);
+    try {
+      // Construct a simplified prompt for the direct call.
+      // This fallback will NOT use tools like symptomAnalyzerTool or the full context of the original chatPrompt.
+      const directPrompt = `You are MediAssistant, a helpful and friendly AI medical assistant. The user says: "${input.message}". Respond conversationally and helpfully.`;
+      const fallbackResponseText = await callGeminiApiDirectly(directPrompt);
+      return { response: fallbackResponseText };
+    } catch (fallbackError: any) {
+      console.error("Direct Gemini API call (fallback) also failed:", fallbackError.message || fallbackError);
+      // Return a generic error if both fail
+      return { response: "I'm currently experiencing technical difficulties and cannot process your request. Please try again later." };
+    }
+  }
 }
 
 const chatPrompt = ai.definePrompt({
@@ -70,11 +88,14 @@ const chatFlow = ai.defineFlow(
       // Check if the last history entry indicates an error or no response.
       const lastMessage = history[history.length -1];
       if (lastMessage?.role === 'model' && lastMessage.content.length === 0) {
-        return { response: "I'm sorry, I encountered an issue trying to process that. Could you please try rephrasing?" };
+        // This specific error could be a reason to trigger the fallback if we refine error detection
+        throw new Error("Genkit model returned empty content.");
       }
-      return { response: "I'm not sure how to respond to that. Could you please clarify?" };
+      // General error if no output and not handled above
+      throw new Error("Genkit flow did not produce an output.");
     }
     
     return output;
   }
 );
+
