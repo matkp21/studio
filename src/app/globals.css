@@ -253,7 +253,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 }
 
 .simple-welcome-screen .welcome-logo-container .logo-icon-container svg {
-    width: 60%; 
+    width: 60%;
     height: 60%;
 }
 
@@ -1130,7 +1130,51 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 /* --- End of Apple Event Poster Splash Screen Styles --- */
 
 
+/* --- Chat Interface Loading Animation Background --- */
+@keyframes chatLoadingBgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.chat-loading-bg-animated {
+  background-size: 180% 180%; /* Larger size for smoother gradient animation */
+  animation: chatLoadingBgShift 25s ease infinite;
+}
+
+/* --- HeroWidgets Underglow Effect --- */
+@keyframes underglow-opacity-pulse {
+  0%, 100% { opacity: 0.5; transform: scaleY(0.8); }
+  50% { opacity: 0.8; transform: scaleY(1); }
+}
+
+.hero-widget-underglow {
+  @apply absolute bottom-[-10px] left-[5%] w-[90%] h-[12px];
+  @apply rounded-full filter blur-lg z-[-1];
+  background: linear-gradient(
+    90deg,
+    hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.7),
+    hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.7),
+    hsl(var(--firebase-color-2-light-h) var(--firebase-color-2-light-s) var(--firebase-color-2-light-l) / 0.7),
+    hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.7)
+  );
+  background-size: 300% 100%;
+  animation: animated-gradient-background 6s ease-in-out infinite, underglow-opacity-pulse 3s ease-in-out infinite;
+}
+
+.dark .hero-widget-underglow {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) + 10%) / 0.8),
+    hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 10%) / 0.8),
+    hsl(var(--firebase-color-2-dark-h) var(--firebase-color-2-dark-s) var(--firebase-color-2-dark-l) / 0.8),
+    hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) + 10%) / 0.8)
+  );
+  background-size: 300% 100%; /* Ensure this is repeated for dark mode */
+}
+
+
 /* Final check for valid CSS */
 .ensure-css-parsing-ends-correctly { color: initial; }
+
 
     

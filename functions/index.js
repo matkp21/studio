@@ -3,21 +3,21 @@ const axios = require('axios');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
+// Import Vertex AI
+const { PredictionServiceClient } = require('@google-cloud/aiplatform').v1;
+const { GoogleAuth } = require('google-auth-library');
+
 
 // Helper to ensure consistent response format for errors from external APIs
 const handleApiError = (error, apiName) => {
   console.error(`Error calling ${apiName} API:`, error.response ? error.response.data : error.message);
   if (error.response) {
-    // The request was made and the server responded with a status code
-    // that falls out of the range of 2xx
-    return { 
-      error: `API Error from ${apiName}: ${error.response.status} - ${JSON.stringify(error.response.data).substring(0,100)}` 
+    return {
+      error: `API Error from ${apiName}: ${error.response.status} - ${JSON.stringify(error.response.data).substring(0,100)}`
     };
   } else if (error.request) {
-    // The request was made but no response was received
     return { error: `No response from ${apiName} API.` };
   } else {
-    // Something happened in setting up the request that triggered an Error
     return { error: `Error setting up ${apiName} API request: ${error.message}` };
   }
 };
@@ -30,12 +30,8 @@ exports.searchDrug = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('invalid-argument', 'Drug name is required.');
   }
   try {
-    // OpenFDA search is often more effective with "openfda.brand_name" or "openfda.generic_name"
-    // Using a general search here, but specific field searches can be more precise.
-    // Example: search=openfda.brand_name:"${drugName}"
     const response = await axios.get(`https://api.fda.gov/drug/label.json?search=${encodeURIComponent(drugName)}&limit=1`);
     if (response.data && response.data.results && response.data.results.length > 0) {
-      // Returning the first result, which contains the label information
       return response.data.results[0];
     } else {
       return { message: 'No drug data found for the specified name on OpenFDA.' };
@@ -46,28 +42,20 @@ exports.searchDrug = functions.https.onCall(async (data, context) => {
 });
 
 // Search Gene via MedlinePlus Genetics
-// Note: The MedlinePlus Connect API is more for linking to their pages than raw data.
-// The response is XML, so parsing is needed. For simplicity, this example might not fully parse.
-// A better approach for structured data might involve other genetic databases if available.
 exports.searchGene = functions.https.onCall(async (data, context) => {
   const geneName = data.geneName;
   if (!geneName) {
     throw new functions.https.HttpsError('invalid-argument', 'Gene name is required.');
   }
   try {
-    // This MedlinePlus Connect URL typically returns an XML feed.
-    // For robust parsing, an XML parsing library (e.g., xml2js) would be needed.
-    // Axios will return the XML as a string in response.data.
     const response = await axios.get(
-      `https://connect.medlineplus.gov/service?mainSearchCriteria.v.cs=2.16.840.1.113883.6.1&mainSearchCriteria.v.c=${encodeURIComponent(geneName)}&knowledgeResponseType=application/json` // Requesting JSON
+      `https://connect.medlineplus.gov/service?mainSearchCriteria.v.cs=2.16.840.1.113883.6.1&mainSearchCriteria.v.c=${encodeURIComponent(geneName)}&knowledgeResponseType=application/json`
     );
-    
-    // Check if response.data.feed.entry exists and has items for JSON
     if (response.data && response.data.feed && response.data.feed.entry && response.data.feed.entry.length > 0) {
       const entry = response.data.feed.entry[0];
       return {
         title: entry.title && entry.title._value ? entry.title._value : 'No title found',
-        summary: entry.summary && entry.summary._value ? entry.summary._value.substring(0,500) + '...' : 'No summary found', // Truncate for brevity
+        summary: entry.summary && entry.summary._value ? entry.summary._value.substring(0,500) + '...' : 'No summary found',
         link: entry.link && entry.link[0] && entry.link[0].href ? entry.link[0].href : null
       };
     } else {
@@ -80,10 +68,9 @@ exports.searchGene = functions.https.onCall(async (data, context) => {
 
 
 // Example for HIPAASpace ICD-10 (Requires API Token)
-// Make sure to replace YOUR_API_TOKEN with your actual token.
 exports.searchICD10 = functions.https.onCall(async (data, context) => {
   const diseaseName = data.diseaseName;
-  const apiToken = functions.config().hipaaspace ? functions.config().hipaaspace.key : null; // For storing API key securely
+  const apiToken = functions.config().hipaaspace ? functions.config().hipaaspace.key : null;
 
   if (!apiToken) {
       console.error("HIPAASpace API key not configured in Firebase Functions config.");
@@ -97,18 +84,13 @@ exports.searchICD10 = functions.https.onCall(async (data, context) => {
     const response = await axios.get(
       `https://www.hipaaspace.com/api/icd10/search?q=${encodeURIComponent(diseaseName)}&token=${apiToken}`
     );
-    // The HIPAASpace API response structure needs to be checked.
-    // Assuming it returns an array and the first item is the most relevant.
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-      // Adjust according to actual response structure
-      const firstResult = response.data[0]; 
-      // Example: { Code: "E11.9", Description: "Type 2 diabetes mellitus without complications" }
-      // You need to confirm the actual field names from HIPAASpace documentation.
+      const firstResult = response.data[0];
       return {
-        name: firstResult.Description || firstResult.description || 'N/A', // Adjust field names
-        code: firstResult.Code || firstResult.code || 'N/A'         // Adjust field names
+        name: firstResult.Description || firstResult.description || 'N/A',
+        code: firstResult.Code || firstResult.code || 'N/A'
       };
-    } else if (response.data && response.data["no results"]){ // Check specific error message from API
+    } else if (response.data && response.data["no results"]){
         return { message: `No ICD-10 codes found for "${diseaseName}" on HIPAASpace.` };
     }
      else {
@@ -124,4 +106,110 @@ exports.healthCheck = functions.https.onCall(async (data, context) => {
   console.log("Health check function called. Data:", data, "Context Auth:", context.auth ? "Authenticated" : "Unauthenticated");
   return { status: "ok", timestamp: new Date().toISOString(), message: "Backend API is responsive." };
 });
-    
+
+
+// Invoke MedGemma model deployed on Vertex AI
+exports.invokeMedGemma = functions.runWith({
+  timeoutSeconds: 300, // Increased timeout for potentially longer LLM responses
+  memory: '1GB' // Adjust memory as needed
+}).https.onCall(async (data, context) => {
+  // Ensure the user is authenticated if necessary for your app logic
+  // if (!context.auth) {
+  //   throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+  // }
+
+  const promptText = data.prompt;
+  if (!promptText || typeof promptText !== 'string' || promptText.trim() === '') {
+    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with a valid "prompt" argument.');
+  }
+
+  const medGemmaConfig = functions.config().medgemma;
+  if (!medGemmaConfig || !medGemmaConfig.project_id || !medGemmaConfig.location_id || !medGemmaConfig.endpoint_id) {
+    console.error("MedGemma configuration (project_id, location_id, endpoint_id) not set in Firebase Functions config.");
+    throw new functions.https.HttpsError('failed-precondition', 'MedGemma service is not configured. Please contact the administrator.');
+  }
+
+  const projectId = medGemmaConfig.project_id;
+  const location = medGemmaConfig.location_id;
+  const endpointId = medGemmaConfig.endpoint_id;
+
+  const clientOptions = {
+    apiEndpoint: `${location}-aiplatform.googleapis.com`,
+    auth: new GoogleAuth({
+        scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+    }), // Ensure the Cloud Function service account has 'Vertex AI User' role or similar
+  };
+
+  const client = new PredictionServiceClient(clientOptions);
+
+  const endpoint = `projects/${projectId}/locations/${location}/endpoints/${endpointId}`;
+
+  const instances = [{
+    prompt: promptText,
+    // Add other parameters expected by your VLLM serving container if needed
+    // e.g., max_tokens: 1024, temperature: 0.7
+  }];
+  const parameters = { // Example parameters, adjust as needed for MedGemma/VLLM
+    temperature: 0.2,
+    maxOutputTokens: 1024, // Adjust as needed
+    topP: 0.8,
+    topK: 40,
+  };
+
+  const request = {
+    endpoint,
+    instances: instances.map(instance => ({
+      structValue: { // VLLM often expects a structValue
+        fields: {
+          prompt: { stringValue: instance.prompt },
+          // If your VLLM container expects parameters per instance:
+          // max_tokens: { numberValue: instance.max_tokens || 1024 },
+          // temperature: { numberValue: instance.temperature || 0.2 }
+        }
+      }
+    })),
+    parameters: { // Parameters might be at the top level or per instance depending on container
+        structValue: {
+            fields: {
+                temperature: { numberValue: parameters.temperature },
+                maxOutputTokens: { numberValue: parameters.maxOutputTokens },
+                topP: { numberValue: parameters.topP },
+                topK: { numberValue: parameters.topK },
+            }
+        }
+    }
+  };
+
+  try {
+    console.log(`Sending request to MedGemma endpoint: ${endpoint} with prompt: "${promptText.substring(0,100)}..."`);
+    const [response] = await client.predict(request);
+
+    if (!response.predictions || response.predictions.length === 0) {
+      console.error("MedGemma returned no predictions.");
+      throw new functions.https.HttpsError('internal', 'MedGemma model returned no predictions.');
+    }
+
+    // Assuming VLLM output structure like: { "predictions": [ { "generated_text": "..." } ] }
+    // Or it might be a simple string prediction if the container is configured differently
+    // You might need to inspect the exact structure of `response.predictions[0]`
+    const prediction = response.predictions[0];
+    let generatedText = '';
+
+    if (prediction.structValue && prediction.structValue.fields && prediction.structValue.fields.generated_text) {
+        generatedText = prediction.structValue.fields.generated_text.stringValue;
+    } else if (prediction.stringValue) { // Simpler case if it's just a string value
+        generatedText = prediction.stringValue;
+    } else {
+        console.warn("Could not extract 'generated_text' or stringValue from MedGemma prediction:", JSON.stringify(prediction));
+        // Fallback: try to stringify the whole prediction if text extraction fails
+        generatedText = JSON.stringify(prediction);
+    }
+
+    console.log("MedGemma response received.");
+    return { responseText: generatedText };
+
+  } catch (error) {
+    console.error('Error calling MedGemma Vertex AI endpoint:', error.details || error.message || error);
+    throw new functions.https.HttpsError('internal', 'Failed to invoke MedGemma model.', error.message);
+  }
+});

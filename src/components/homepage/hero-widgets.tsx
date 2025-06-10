@@ -1,3 +1,4 @@
+
 // src/components/homepage/hero-widgets.tsx
 "use client";
 
@@ -43,11 +44,14 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
   return (
     <div 
       className={cn(
-        "mt-4 flex w-full max-w-md mx-auto items-center justify-between gap-2 md:gap-4 py-2 px-3 rounded-xl shadow-lg",
-        "bg-card border border-border/60" // Apple-like panel style
+        "relative mt-4 flex w-full max-w-md mx-auto items-center justify-between gap-2 md:gap-4 py-2 px-3 rounded-xl shadow-lg", // Added relative
+        "bg-card border border-border/60" 
       )}
       aria-label="Date and Time Information Panel"
     >
+       {/* Underglow Element */}
+      <div className="hero-widget-underglow" aria-hidden="true" />
+
       {/* Left Side: Compact Functional Calendar - Apple Theme */}
       <Popover open={isCalendarPopoverOpen} onOpenChange={setIsCalendarPopoverOpen}>
         <PopoverTrigger asChild>
@@ -144,3 +148,4 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
     </div>
   );
 };
+

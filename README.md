@@ -42,7 +42,7 @@ The app embraces a clean, modern, professional, and highly aesthetic design lang
 
 *   **Frontend:** Next.js (App Router), React, TypeScript
 *   **Styling:** Tailwind CSS, ShadCN UI Components
-*   **AI Integration:** Genkit (with Google AI/Gemini models)
+*   **AI Integration:** Genkit (with Google AI/Gemini models), Custom MedGemma endpoint via Firebase Cloud Functions.
 *   **Backend & Database:** Firebase (Authentication, Firestore, Cloud Functions, Cloud Storage, Hosting, FCM)
 *   **External APIs (Conceptual/Implemented):** OpenFDA, MedlinePlus Genetics, WHO ICD-10, Hugging Face (for specialized models via Cloud Functions).
 
@@ -72,44 +72,58 @@ This project is set up to run in Firebase Studio.
         GOOGLE_API_KEY=your_google_ai_api_key
         # or specific Genkit environment variables as needed
 
+        # Optional: Direct Gemini API endpoint (for fallback in chat)
+        # NEXT_PUBLIC_GEMINI_API_ENDPOINT="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+
         # Other API Keys (if you implement them)
         # HUGGING_FACE_API_KEY=your_hugging_face_api_key (for functions config, not .env)
         # HIPAASPACE_API_KEY=your_hipaaspace_api_key (for functions config, not .env)
         ```
-    *   **Important:** For API keys used in Firebase Cloud Functions (like `HUGGING_FACE_API_KEY` or `HIPAASPACE_API_KEY`), set them using Firebase Functions configuration for security:
+    *   **Important:** For API keys used in Firebase Cloud Functions (like `HUGGING_FACE_API_KEY`, `HIPAASPACE_API_KEY`, or MedGemma configuration), set them using Firebase Functions configuration for security:
         ```bash
         firebase functions:config:set yourservice.api_key="YOUR_ACTUAL_KEY"
         # e.g., firebase functions:config:set huggingface.api_key="hf_..."
+        # e.g., firebase functions:config:set hipaaspace.key="YOUR_HIPAASPACE_TOKEN"
+
+        # For MedGemma integration (see "Using MedGemma Model" section below):
+        firebase functions:config:set medgemma.project_id="YOUR_MEDGEMMA_PROJECT_ID"
+        firebase functions:config:set medgemma.location_id="YOUR_MEDGEMMA_LOCATION_ID"
+        firebase functions:config:set medgemma.endpoint_id="YOUR_MEDGEMMA_ENDPOINT_ID"
         ```
 
 3.  **Install Dependencies:**
-    ```bash
-    npm install
-    # If you have a functions directory, also:
-    # cd functions && npm install && cd ..
-    ```
+    *   Next.js app: `npm install`
+    *   Firebase Functions: `cd functions && npm install && cd ..`
 
 4.  **Run the Development Server:**
-    *   For the Next.js app:
-        ```bash
-        npm run dev
-        ```
-    *   For Genkit (if running flows locally for testing):
-        ```bash
-        npm run genkit:dev
-        ```
-        (Ensure your `src/ai/dev.ts` is configured correctly).
+    *   For the Next.js app: `npm run dev`
+    *   For Genkit (if running flows locally for testing): `npm run genkit:dev`
+    *   For Firebase Emulators (including functions): `firebase emulators:start`
 
 5.  **Build and Deploy:**
-    *   Build the Next.js app:
+    *   Build the Next.js app: `npm run build`
+    *   Deploy to Firebase: `firebase deploy` (This will typically deploy Hosting, Functions, Firestore rules, etc., based on your `firebase.json` configuration).
+
+## Using MedGemma Model
+
+This application can be configured to use a custom-deployed MedGemma model on Vertex AI for specific tasks.
+
+1.  **Deploy MedGemma on Vertex AI:**
+    *   Use the Google Cloud Console or a Python script (as previously discussed) to deploy the `google/medgemma@medgemma-4b-it` model (or your preferred MedGemma version) from the Model Garden to a Vertex AI Endpoint.
+    *   **Note your Project ID, Location ID (e.g., `us-central1`), and the Endpoint ID of your deployed MedGemma model.** You can find the Endpoint ID in the Vertex AI > Endpoints section of the Google Cloud Console after deployment.
+
+2.  **Configure Firebase Cloud Functions:**
+    *   Set the following environment configuration variables for your Firebase project, replacing the placeholder values with your actual MedGemma deployment details:
         ```bash
-        npm run build
+        firebase functions:config:set medgemma.project_id="YOUR_GOOGLE_CLOUD_PROJECT_ID_HOSTING_MEDGEMMA"
+        firebase functions:config:set medgemma.location_id="YOUR_MEDGEMMA_ENDPOINT_LOCATION_ID" # e.g., us-central1
+        firebase functions:config:set medgemma.endpoint_id="YOUR_MEDGEMMA_VERTEX_AI_ENDPOINT_ID"
         ```
-    *   Deploy to Firebase:
-        ```bash
-        firebase deploy
-        ```
-        (This will typically deploy Hosting, Functions, Firestore rules, etc., based on your `firebase.json` configuration).
+    *   After setting these, redeploy your functions: `firebase deploy --only functions`
+
+3.  **Integration:**
+    *   The application includes a Firebase Cloud Function (`invokeMedGemma`) that uses the Node.js Vertex AI SDK to call your configured MedGemma endpoint.
+    *   Future development can involve creating Genkit tools or modifying existing flows to call this `invokeMedGemma` function for specific medical AI tasks, allowing targeted use of MedGemma's capabilities.
 
 ## Troubleshooting Common Issues
 
@@ -117,7 +131,7 @@ This project is set up to run in Firebase Studio.
 
 If you encounter errors like `[GoogleGenerativeAI Error]: Error fetching from ... [403 Forbidden] Requests to this API generativelanguage.googleapis.com ... are blocked` or similar:
 
-This usually means there's an issue with your Google Cloud Project configuration for the API key being used. The error message often includes your project ID (e.g., `consumer":"projects/YOUR_PROJECT_ID"`).
+This usually means there's an issue with your Google Cloud Project configuration for the API key (`GOOGLE_API_KEY` in `.env`) being used by Genkit for the Generative Language API (Gemini models). The error message often includes your project ID (e.g., `consumer":"projects/YOUR_PROJECT_ID"`).
 
 **Action Required in Google Cloud Console for project `YOUR_PROJECT_ID`:**
 
@@ -133,16 +147,37 @@ This usually means there's an issue with your Google Cloud Project configuration
     *   Most Google Cloud APIs, including generative AI services, require a billing account to be linked to your project and billing to be enabled.
     *   Navigate to "Billing" in the Google Cloud Console and verify that your project is associated with an active billing account.
 
-3.  **Check API Key Restrictions:**
-    *   If you've set restrictions on your API key (e.g., API restrictions, application restrictions), ensure it's allowed to access the "Generative Language API".
-    *   Navigate to "APIs & Services" > "Credentials".
-    *   Select your API key.
-    *   Review and adjust "API restrictions" and "Application restrictions" as needed. For initial testing, you might temporarily set API restrictions to "Don't restrict key" and then tighten them later.
+3.  **Regenerating or Restricting Your API Key:**
+    *   If you suspect your API key is compromised or misconfigured, you can regenerate it:
+        *   Go to [APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials) in the Google Cloud Console.
+        *   Click on “+ CREATE CREDENTIALS” → “API Key”.
+        *   Copy the new key and update it in your `.env` file.
+    *   **Restrict your API Key (Recommended):**
+        *   On the Credentials page, click the name of your API key.
+        *   Under "API restrictions," select "Restrict key" and choose "Generative Language API" (and any other APIs you need for this key).
+        *   Under "Application restrictions," you can set HTTP referrers (for web clients), IP addresses (for servers), or other appropriate restrictions. For server-side use (like Genkit), IP restrictions might be relevant if your server has a static IP.
 
 4.  **Valid API Key:**
     *   Double-check that the `GOOGLE_API_KEY` in your `.env` file (for local development) or your environment configuration (for deployed environments) is correct and has not expired or been revoked.
 
 After making any necessary changes in the Google Cloud Console, it might take a few minutes for them to propagate. Then, try running your application again.
+
+### Vertex AI / MedGemma Endpoint Errors
+
+If you encounter errors when trying to invoke the MedGemma model via the `invokeMedGemma` Cloud Function:
+
+1.  **Check Firebase Functions Logs:** Use `firebase functions:log` or the Firebase console to see detailed error messages from the `invokeMedGemma` function.
+2.  **Verify MedGemma Configuration:**
+    *   Ensure `medgemma.project_id`, `medgemma.location_id`, and `medgemma.endpoint_id` are correctly set in your Firebase Functions environment configuration (see "Using MedGemma Model" section).
+    *   Double-check the Endpoint ID in the Vertex AI > Endpoints section of your Google Cloud Console.
+3.  **Cloud Function Permissions:**
+    *   The service account used by your Firebase Cloud Function (usually `PROJECT_ID@appspot.gserviceaccount.com`) needs permissions to interact with Vertex AI. The **"Vertex AI User"** role (or a custom role with `aiplatform.endpoints.predict` permission) on the project hosting MedGemma is typically required.
+    *   If your MedGemma endpoint is in a *different* Google Cloud project than your Firebase project, ensure cross-project permissions are correctly configured.
+4.  **Vertex AI Endpoint Status:**
+    *   In the Google Cloud Console, navigate to Vertex AI > Endpoints.
+    *   Check the status of your MedGemma endpoint. Ensure it's active and healthy. View its logs for any deployment or serving issues.
+5.  **Input/Output Format:**
+    *   The MedGemma model deployed via a VLLM container expects a specific JSON input format (usually `{"instances": [{"prompt": "..."}]}`) and produces a specific JSON output format. The `invokeMedGemma` function attempts to handle a common structure, but if your serving container has a different expectation, the function might need adjustment.
 
 ## Project Structure (Simplified Overview)
 
@@ -171,11 +206,11 @@ After making any necessary changes in the Google Cloud Console, it might take a 
     *   `tools/`: Genkit tool definitions (e.g., symptom analyzer tool for chat).
 *   `src/contexts/`: React context providers (e.g., `ProModeContext`, `ThemeProvider`).
 *   `src/hooks/`: Custom React hooks (e.g., `useToast`, `useMobile`).
-*   `src/lib/`: Utility functions (e.g., `cn`).
+*   `src/lib/`: Utility functions (e.g., `cn`, `firebase.ts`).
 *   `src/types/`: TypeScript type definitions (e.g., `medication.ts`, `notifications.ts`, `ar-tools.ts`).
 *   `src/config/`: Application-specific configurations (e.g., `ar-tools-config.ts`).
 *   `public/`: Static assets (images, manifest.json, sw.js).
-*   `functions/`: Firebase Cloud Functions (e.g., `searchDrug`, `searchGene`, `searchICD10`, `healthCheck`).
+*   `functions/`: Firebase Cloud Functions (e.g., `searchDrug`, `searchGene`, `searchICD10`, `healthCheck`, `invokeMedGemma`).
 
 ## Contributing
 
