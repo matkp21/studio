@@ -213,7 +213,7 @@
 }
 
 /* Allow scroll only if specific welcome/animation screens are NOT present */
-body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)) {
+body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has(.event-poster-splash-screen)):not(:has(.pro-suite-animation)):not(:has(.medico-hub-animation)):not(:has(.chat-interface-animation)):not(:has(.explorer-model-loading-animation)):not(:has(.ar-viewer-loading-animation)) {
   overflow: auto;
 }
 
@@ -1152,10 +1152,10 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   @apply rounded-full filter blur-lg z-[-1];
   background: linear-gradient(
     90deg,
-    hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.7),
-    hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.7),
-    hsl(var(--firebase-color-2-light-h) var(--firebase-color-2-light-s) var(--firebase-color-2-light-l) / 0.7),
-    hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.7)
+    hsla(275, 75%, 60%, 0.7), /* Purple */
+    hsla(310, 80%, 65%, 0.8), /* Magenta */
+    hsla(335, 90%, 70%, 0.7), /* Pink */
+    hsla(335, 90%, 70%, 0)   /* Fading Pink */
   );
   background-size: 300% 100%;
   animation: animated-gradient-background 6s ease-in-out infinite, underglow-opacity-pulse 3s ease-in-out infinite;
@@ -1164,12 +1164,12 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 .dark .hero-widget-underglow {
   background: linear-gradient(
     90deg,
-    hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) + 10%) / 0.8),
-    hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 10%) / 0.8),
-    hsl(var(--firebase-color-2-dark-h) var(--firebase-color-2-dark-s) var(--firebase-color-2-dark-l) / 0.8),
-    hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) + 10%) / 0.8)
+    hsla(275, 80%, 65%, 0.8), /* Brighter Purple for dark */
+    hsla(310, 85%, 70%, 0.9), /* Brighter Magenta for dark */
+    hsla(335, 95%, 75%, 0.8), /* Brighter Pink for dark */
+    hsla(335, 95%, 75%, 0)    /* Fading Pink */
   );
-  background-size: 300% 100%; /* Ensure this is repeated for dark mode */
+  background-size: 300% 100%;
 }
 
 
