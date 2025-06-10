@@ -1143,33 +1143,36 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 
 /* --- HeroWidgets Underglow Effect --- */
 @keyframes underglow-opacity-pulse {
-  0%, 100% { opacity: 0.5; transform: scaleY(0.8); }
-  50% { opacity: 0.8; transform: scaleY(1); }
+  0%, 100% { opacity: 0.6; transform: scaleY(0.9); } /* Adjusted opacity and scale for more dynamism */
+  50% { opacity: 1.0; transform: scaleY(1.05); }
 }
 
 .hero-widget-underglow {
-  @apply absolute bottom-[-10px] left-[5%] w-[90%] h-[12px];
-  @apply rounded-full filter blur-lg z-[-1];
+  @apply absolute bottom-[-14px] left-[5%] w-[90%] h-[16px];
+  @apply rounded-full filter blur-md z-[-1]; /* Maintained blur-md, adjust if too blurry for new colors */
   background: linear-gradient(
     90deg,
-    hsla(275, 75%, 60%, 0.7), /* Purple */
-    hsla(310, 80%, 65%, 0.8), /* Magenta */
-    hsla(335, 90%, 70%, 0.7), /* Pink */
-    hsla(335, 90%, 70%, 0)   /* Fading Pink */
+    hsla(275, 75%, 60%, 0.7) 0%,   /* Purple */
+    hsla(300, 80%, 65%, 0.8) 25%,  /* Deep Magenta */
+    hsla(325, 85%, 70%, 0.9) 50%,  /* Bright Pink */
+    hsla(350, 90%, 70%, 0.8) 75%,  /* Reddish Pink */
+    hsla(275, 75%, 60%, 0.7) 100%  /* Back to Purple (for seamless loop of the gradient pattern) */
   );
-  background-size: 300% 100%;
+  background-size: 400% 100%; /* Increased from 300% for a more sweeping wave */
   animation: animated-gradient-background 6s ease-in-out infinite, underglow-opacity-pulse 3s ease-in-out infinite;
 }
 
 .dark .hero-widget-underglow {
   background: linear-gradient(
     90deg,
-    hsla(275, 80%, 65%, 0.8), /* Brighter Purple for dark */
-    hsla(310, 85%, 70%, 0.9), /* Brighter Magenta for dark */
-    hsla(335, 95%, 75%, 0.8), /* Brighter Pink for dark */
-    hsla(335, 95%, 75%, 0)    /* Fading Pink */
+    hsla(275, 80%, 65%, 0.8) 0%,   /* Brighter Purple */
+    hsla(300, 85%, 70%, 0.9) 25%,  /* Brighter Deep Magenta */
+    hsla(325, 90%, 75%, 1.0) 50%,  /* Brighter Bright Pink (max opacity) */
+    hsla(350, 95%, 75%, 0.9) 75%,  /* Brighter Reddish Pink */
+    hsla(275, 80%, 65%, 0.8) 100%  /* Back to Brighter Purple */
   );
-  background-size: 300% 100%;
+  background-size: 400% 100%; /* Consistent increased size */
+  /* Animation remains the same as defined in the light mode for .hero-widget-underglow */
 }
 
 
@@ -1178,3 +1181,4 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 
 
     
+
