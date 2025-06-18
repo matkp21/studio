@@ -1176,9 +1176,49 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 }
 
 
+/* Chat Interface Underglow Effect */
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(360deg) scale(1.05);
+  }
+}
+
+.chat-glow-container {
+  position: relative;
+  z-index: 1; /* Or an appropriate value if you have other z-indexed elements */
+}
+
+.chat-glow-container::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    #818cf8 0deg,    /* Indigo */
+    #f472b6 90deg,   /* Pink */
+    #60a5fa 180deg,  /* Blue */
+    #34d399 270deg,  /* Emerald */
+    #818cf8 360deg   /* Back to Indigo */
+  );
+  z-index: -1;
+  animation: rotate 6s linear infinite;
+  transform: scale(1.05);
+  filter: blur(40px); /* Corresponds to blur-3xl */
+  opacity: 0.8; /* Corresponds to opacity-80 */
+  border-radius: inherit; /* Inherits border-radius from the parent Card */
+}
+
+
 /* Final check for valid CSS */
 .ensure-css-parsing-ends-correctly { color: initial; }
 
 
     
+
 

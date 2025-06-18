@@ -318,7 +318,7 @@ export function ChatInterface() {
 
 
   return (
-    <Card className="flex-1 flex flex-col shadow-lg rounded-lg overflow-hidden h-full relative bg-gradient-to-br from-card via-card to-secondary/10 dark:from-card dark:via-card dark:to-secondary/5">
+    <Card className="chat-glow-container flex-1 flex flex-col shadow-lg rounded-xl h-full relative bg-gradient-to-br from-card via-card to-secondary/10 dark:from-card dark:via-card dark:to-secondary/5">
       <CardContent className="flex-1 p-0 flex flex-col overflow-hidden">
         <ScrollArea className="flex-grow p-4" viewportRef={viewportRef} ref={scrollAreaRef}>
           <div className="space-y-4">
@@ -472,3 +472,4 @@ export function ChatInterface() {
     </Card>
   );
 }
+
