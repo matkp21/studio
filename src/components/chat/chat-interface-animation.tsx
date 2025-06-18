@@ -5,7 +5,7 @@
 import type { CSSProperties } from 'react';
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquareHeart, Star, HeartPulse } from 'lucide-react';
+import { MessageSquareHeart, HeartPulse } from 'lucide-react';
 
 interface ChatInterfaceAnimationProps {
   onAnimationComplete: () => void;
@@ -60,29 +60,10 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
         opacity: [0, 1, 0.9],
         x: [25, -5, 0],
         y: [25, -10, 5],
-        rotate: [-30, 20, 15, 0], // Added more rotation steps for smoothness
+        rotate: [-30, 20, 15, 0], 
         transition: { duration: 1.0, ease: "circOut", delay: 0.6 }
     }
   };
-
-  const starVariants = (i: number) => ({
-    initial: { opacity: 0, scale: 0 },
-    animate: {
-      opacity: [0, 0.7, 0],
-      scale: [0, 1.1, 0],
-      x: Math.random() * 50 - 25,
-      y: Math.random() * 50 - 25,
-      rotate: Math.random() * 360,
-      transition: {
-        delay: 1.0 + i * 0.1,
-        duration: 1.6,
-        repeat: Infinity,
-        repeatType: "loop" as const,
-        repeatDelay: 1.5,
-        ease: "easeInOut" as const
-      }
-    }
-  });
 
   const titleTextVariants = {
     hidden: { opacity: 0, y: 30, scale: 0.9 },
@@ -135,40 +116,25 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
         </motion.div>
          <motion.div variants={heartIconVariants} initial="initial" animate="animate" className="absolute -bottom-3 -right-4">
             <MessageSquareHeart
-                className="h-12 w-12 text-teal-300 opacity-90 transform" // Removed initial rotate-[15deg] as it's in variant now
+                className="h-12 w-12 text-teal-300 opacity-90 transform" 
                  style={{
                     filter: 'drop-shadow(0 0 10px hsl(var(--accent)/0.5))'
                 } as CSSProperties}
             />
         </motion.div>
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={`star-${i}`}
-            variants={starVariants(i)}
-            initial="initial"
-            animate="animate"
-            className="absolute"
-            style={{
-              left: `${40 + Math.random() * 20}%`,
-              top: `${40 + Math.random() * 20}%`,
-            }}
-          >
-            <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-300 opacity-70" />
-          </motion.div>
-        ))}
       </motion.div>
 
       <motion.h1
         className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-sky-200 via-teal-300 to-cyan-200"
-        variants={titleTextVariants} // Use new title variant
-        style={{ filter: 'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.3))' }}
+        variants={titleTextVariants} 
+        style={{ filter: 'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.3)) drop-shadow(0 0 10px rgba(100, 230, 250, 0.2))' }}
       >
         MediAssistant Chat
       </motion.h1>
 
       <motion.p
         className="text-md sm:text-lg md:text-xl text-sky-100/80 text-center mb-10"
-        variants={subtitleTextVariants} // Use new subtitle variant
+        variants={subtitleTextVariants} 
       >
         Connecting to your AI medical partner...
       </motion.p>
