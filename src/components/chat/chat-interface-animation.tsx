@@ -5,7 +5,7 @@
 import type { CSSProperties } from 'react';
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquareHeart, Star, HeartPulse } from 'lucide-react'; 
+import { MessageSquareHeart, Star, HeartPulse } from 'lucide-react';
 
 interface ChatInterfaceAnimationProps {
   onAnimationComplete: () => void;
@@ -15,7 +15,7 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
   useEffect(() => {
     const timer = setTimeout(() => {
       onAnimationComplete();
-    }, 3800); 
+    }, 3800);
 
     return () => clearTimeout(timer);
   }, [onAnimationComplete]);
@@ -35,64 +35,74 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
   };
 
   const iconContainerVariants = {
-    hidden: { opacity: 0, y: -30, scale: 0.8, rotate: -5 },
+    hidden: { opacity: 0, y: -30, scale: 0.7 },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
-      rotate: 0,
-      transition: { delay: 0.3, duration: 0.9, type: "spring", stiffness: 120, damping: 10 }
+      transition: { delay: 0.2, duration: 0.8, type: "spring", stiffness: 100, damping: 12 }
     },
   };
 
-  const botIconVariants = { 
+  const botIconVariants = {
     initial: { scale: 0.8, rotate: -10 },
-    animate: { 
-      scale: [0.8, 1.1, 1], 
+    animate: {
+      scale: [0.8, 1.1, 1],
       rotate: [-10, 10, 0],
-      transition: { duration: 1, ease: "easeInOut", delay: 0.5 } 
+      transition: { duration: 1, ease: "easeInOut", delay: 0.5 }
     },
   };
-  
-  const heartIconVariants = { 
-    initial: { scale: 0, opacity: 0, x: 10, y:10 },
+
+  const heartIconVariants = {
+    initial: { scale: 0, opacity: 0, x: 25, y: 25, rotate: -30 },
     animate: {
         scale: [0, 1.2, 1],
         opacity: [0, 1, 0.9],
-        x: [10, 0, 5],
-        y: [10, -5, 0],
-        transition: { duration: 0.9, ease: "easeOut", delay: 0.8 }
+        x: [25, -5, 0],
+        y: [25, -10, 5],
+        rotate: [-30, 20, 15, 0], // Added more rotation steps for smoothness
+        transition: { duration: 1.0, ease: "circOut", delay: 0.6 }
     }
   };
 
   const starVariants = (i: number) => ({
     initial: { opacity: 0, scale: 0 },
     animate: {
-      opacity: [0, 0.8, 0], 
-      scale: [0, 1.2, 0], // Slightly increased scale for more pop
-      x: Math.random() * 70 - 35, // Increased movement range
-      y: Math.random() * 70 - 35,
+      opacity: [0, 0.7, 0],
+      scale: [0, 1.1, 0],
+      x: Math.random() * 50 - 25,
+      y: Math.random() * 50 - 25,
       rotate: Math.random() * 360,
       transition: {
-        delay: 1.2 + i * 0.12, // Slightly adjusted stagger
-        duration: 1.3, // Slightly longer duration for a smoother feel
+        delay: 1.0 + i * 0.1,
+        duration: 1.6,
         repeat: Infinity,
-        repeatDelay: 1.8, // Slightly adjusted repeat delay
-        ease: "circOut"
+        repeatType: "loop" as const,
+        repeatDelay: 1.5,
+        ease: "easeInOut" as const
       }
     }
   });
 
-
-  const textVariants = (delay: number) => ({
-    hidden: { opacity: 0, y: 20 },
+  const titleTextVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.9 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { delay: delay, duration: 0.9, ease: "circOut" }
+      scale: 1,
+      transition: { delay: 0.7, duration: 0.8, type: "spring", stiffness: 100, damping: 15 }
     },
-  });
-  
+  };
+
+  const subtitleTextVariants = {
+    hidden: { opacity: 0, y: 25 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { delay: 0.9, duration: 0.7, ease: "circOut" }
+    },
+  };
+
   const bubbleVariants = (delay: number, fromRight: boolean = false) => ({
     hidden: { opacity: 0, scale: 0.8, x: fromRight ? 30 : -30 },
     visible: {
@@ -114,18 +124,18 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
     >
       <motion.div variants={iconContainerVariants} className="relative mb-8">
         <motion.div variants={botIconVariants} initial="initial" animate="animate">
-            <HeartPulse 
+            <HeartPulse
                 className="h-24 w-24 sm:h-28 sm:w-28 text-sky-300 opacity-90 animate-pulse-medical"
                 style={{
                     filter: 'drop-shadow(0 0 12px hsl(var(--primary)/0.6))',
-                    "--medical-pulse-scale-peak": "1.1", 
+                    "--medical-pulse-scale-peak": "1.1",
                     "--medical-pulse-opacity-peak": "0.7"
                 } as CSSProperties}
             />
         </motion.div>
          <motion.div variants={heartIconVariants} initial="initial" animate="animate" className="absolute -bottom-3 -right-4">
             <MessageSquareHeart
-                className="h-12 w-12 text-teal-300 opacity-90 transform rotate-[15deg]"
+                className="h-12 w-12 text-teal-300 opacity-90 transform" // Removed initial rotate-[15deg] as it's in variant now
                  style={{
                     filter: 'drop-shadow(0 0 10px hsl(var(--accent)/0.5))'
                 } as CSSProperties}
@@ -139,7 +149,7 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
             animate="animate"
             className="absolute"
             style={{
-              left: `${40 + Math.random() * 20}%`, 
+              left: `${40 + Math.random() * 20}%`,
               top: `${40 + Math.random() * 20}%`,
             }}
           >
@@ -150,15 +160,15 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
 
       <motion.h1
         className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-sky-200 via-teal-300 to-cyan-200"
-        variants={textVariants(0.8)}
-        style={{ filter: 'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.3))' }} 
+        variants={titleTextVariants} // Use new title variant
+        style={{ filter: 'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.3))' }}
       >
         MediAssistant Chat
       </motion.h1>
 
       <motion.p
         className="text-md sm:text-lg md:text-xl text-sky-100/80 text-center mb-10"
-        variants={textVariants(1.0)}
+        variants={subtitleTextVariants} // Use new subtitle variant
       >
         Connecting to your AI medical partner...
       </motion.p>
@@ -171,7 +181,7 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
             Hello! I&apos;m ready to assist you.
           </motion.div>
           <motion.div
-            variants={bubbleVariants(0.3, true)} 
+            variants={bubbleVariants(0.3, true)}
             className="self-end bg-teal-700/80 text-teal-50 p-3 rounded-xl rounded-br-sm shadow-lg text-sm max-w-[75%]"
           >
             Great! I have a question about my symptoms...
@@ -187,10 +197,10 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
             </span>
           </motion.div>
       </div>
-      
+
       <style jsx global>{`
         /* Ensure these are not duplicated if already in globals.css, but safe to include here for component-specific styling */
-        @keyframes pulseDotLight { 
+        @keyframes pulseDotLight {
           0%, 100% { opacity: 0.4; }
           50% { opacity: 1; }
         }
