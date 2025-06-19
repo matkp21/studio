@@ -1,3 +1,4 @@
+
 {
   "name": "nextn",
   "version": "0.1.0",
@@ -40,7 +41,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
-    "firebase": "11.7.1",
+    "firebase": "^11.7.1",
     "framer-motion": "11.5.1",
     "genkit": "1.8.0",
     "lucide-react": "0.490.0",
@@ -50,7 +51,7 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "18.3.1",
     "recharts": "^2.12.7",
-    "tailwind-merge": "^3.1.0",
+    "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "3.25.1"
   },
