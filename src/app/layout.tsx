@@ -10,7 +10,7 @@ import './globals.css';
 import { ClientLayoutWrapper } from '@/components/layout/client-layout-wrapper';
 
 const poppins = Poppins({
-  subsets: ['latin'],
+  subsets: ['latin', 'devanagari', 'malayalam'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-poppins',
 });
