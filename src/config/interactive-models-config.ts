@@ -71,10 +71,10 @@ export const interactiveModelsList: InteractiveModel[] = [
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'appendectomy surgery',
     procedureSteps: [
-      { stepId: 'inc', title: 'Step 1: Incision & Access', description: 'A small incision (e.g., McBurney or laparoscopic port) is made in the right lower quadrant.', instrument: 'Scalpel, Trocar', cameraTarget: "0m 0.1m 0m", cameraOrbit: "0deg 75deg 1.5m" },
-      { stepId: 'exp', title: 'Step 2: Exposure of Appendix', description: 'The cecum is identified, and the appendix is located and exposed.', instrument: 'Grasper, Retractor', cameraTarget: "0m 0m 0m", cameraOrbit: "15deg 70deg 1.2m" },
-      { stepId: 'lig', title: 'Step 3: Ligation & Resection', description: 'The mesoappendix (containing appendiceal artery) is ligated, and the base of the appendix is ligated and then resected.', instrument: 'Ligatures/Stapler, Scalpel/Scissors', cameraTarget: "0.1m 0m 0.1m", cameraOrbit: "30deg 80deg 1m" },
-      { stepId: 'cls', title: 'Step 4: Closure', description: 'The appendiceal stump may be inverted or simply ligated. The incision is closed in layers.', instrument: 'Sutures', cameraTarget: "0m 0.1m 0m", cameraOrbit: "0deg 75deg 1.5m" },
+      { stepId: 'inc', title: 'Step 1: Incision & Access', description: 'A small incision (e.g., McBurney or laparoscopic port) is made in the right lower quadrant.', instrument: 'Scalpel, Trocar', modelViewerCameraTarget: "0m 0.1m 0m", modelViewerCameraOrbit: "0deg 75deg 1.5m" },
+      { stepId: 'exp', title: 'Step 2: Exposure of Appendix', description: 'The cecum is identified, and the appendix is located and exposed.', instrument: 'Grasper, Retractor', modelViewerCameraTarget: "0m 0m 0m", modelViewerCameraOrbit: "15deg 70deg 1.2m" },
+      { stepId: 'lig', title: 'Step 3: Ligation & Resection', description: 'The mesoappendix (containing appendiceal artery) is ligated, and the base of the appendix is ligated and then resected.', instrument: 'Ligatures/Stapler, Scalpel/Scissors', modelViewerCameraTarget: "0.1m 0m 0.1m", modelViewerCameraOrbit: "30deg 80deg 1m" },
+      { stepId: 'cls', title: 'Step 4: Closure', description: 'The appendiceal stump may be inverted or simply ligated. The incision is closed in layers.', instrument: 'Sutures', modelViewerCameraTarget: "0m 0.1m 0m", modelViewerCameraOrbit: "0deg 75deg 1.5m" },
     ],
   },
   {

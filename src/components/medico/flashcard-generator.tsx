@@ -13,7 +13,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Layers, Wand2, ArrowLeftRight, CheckCircle, XCircle } from 'lucide-react';
-import { generateFlashcards, type MedicoFlashcardGeneratorInput, type MedicoFlashcardGeneratorOutput, type MedicoFlashcard } from '@/ai/flows/medico/flashcard-generator-flow';
+import { generateFlashcards, type MedicoFlashcardGeneratorInput, type MedicoFlashcardGeneratorOutput } from '@/ai/flows/medico/flashcard-generator-flow';
+import type { MedicoFlashcard } from '@/ai/schemas/medico-tools-schemas';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 

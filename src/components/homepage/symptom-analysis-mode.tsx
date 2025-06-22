@@ -7,7 +7,8 @@ import { SymptomForm } from '@/components/symptom-analyzer/symptom-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, ListChecks, Sparkles, Brain, PencilRuler, CheckCircle, AlertTriangle, Info, Microscope } from 'lucide-react'; // Added Microscope
-import type { SymptomAnalyzerOutput, DiagnosisItem, InvestigationItem } from '@/ai/flows/symptom-analyzer-flow'; // Updated import
+import type { SymptomAnalyzerOutput } from '@/ai/flows/symptom-analyzer-flow'; // Updated import
+import type { DiagnosisItem, InvestigationItem } from '@/ai/schemas/symptom-analyzer-schemas';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { cn } from '@/lib/utils';
 

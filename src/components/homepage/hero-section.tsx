@@ -10,7 +10,7 @@ import { HeartPulse, BookHeart, BriefcaseMedical, Sparkles } from "lucide-react"
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProMode } from '@/contexts/pro-mode-context';
-import { HeroWidgets } from './hero-widgets';
+import { HeroWidgets, type HeroTask } from './hero-widgets';
 
 const greetings = [
   { lang: "en", text: "Hello," },

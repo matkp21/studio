@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { HeartHandshake, LogIn } from "lucide-react";
@@ -10,7 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { auth } from "@/lib/firebase"; // Import Firebase auth instance
-import { signInWithEmailAndPassword, FirebaseError } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
