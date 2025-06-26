@@ -203,4 +203,37 @@ export const MedicoDrugDosageOutputSchema = z.object({
 });
 export type MedicoDrugDosageOutput = z.infer<typeof MedicoDrugDosageOutputSchema>;
 
+
+// Schema for Flowchart Creator
+export const MedicoFlowchartCreatorInputSchema = z.object({
+  topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).describe('The medical topic or process to create a flowchart for (e.g., "Management of Acute Asthma", "Glycolysis Pathway").'),
+});
+export type MedicoFlowchartCreatorInput = z.infer<typeof MedicoFlowchartCreatorInputSchema>;
+
+export const MedicoFlowchartCreatorOutputSchema = z.object({
+  flowchartData: z.string().describe('A flowchart representation in Mermaid Markdown syntax.'),
+  topicGenerated: z.string().describe('The topic for which the flowchart was generated.'),
+});
+export type MedicoFlowchartCreatorOutput = z.infer<typeof MedicoFlowchartCreatorOutputSchema>;
+
+
+// Schema for Progress Tracker
+export const MedicoProgressTrackerInputSchema = z.object({
+  activityType: z.enum(['mcq_session', 'notes_review', 'case_sim_completed']).describe("The type of activity completed by the user."),
+  topic: z.string().describe("The topic of the completed activity."),
+  score: z.number().optional().describe("The user's score (e.g., percentage on an MCQ test)."),
+  // In a real app, this would also include userId from context
+});
+export type MedicoProgressTrackerInput = z.infer<typeof MedicoProgressTrackerInputSchema>;
+
+export const MedicoProgressTrackerOutputSchema = z.object({
+  progressUpdateMessage: z.string().describe("A message summarizing the progress and any rewards."),
+  newAchievements: z.array(z.string()).optional().describe("A list of any new achievements or badges unlocked."),
+  updatedTopicProgress: z.object({
+    topic: z.string(),
+    newProgressPercentage: z.number(),
+  }).optional().describe("The updated progress percentage for the specific topic."),
+});
+export type MedicoProgressTrackerOutput = z.infer<typeof MedicoProgressTrackerOutputSchema>;
+
 // ... Potentially other schemas as features expand

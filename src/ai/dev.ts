@@ -21,6 +21,8 @@ import '@/ai/agents/medico/DifferentialDiagnosisTrainerAgent.ts';
 import '@/ai/agents/medico/VirtualPatientRoundsAgent.ts';
 import '@/ai/agents/medico/HighYieldTopicPredictorAgent.ts';
 import '@/ai/agents/medico/DrugDosageCalculatorAgent.ts';
+import '@/ai/agents/medico/FlowchartCreatorAgent.ts';
+import '@/ai/agents/medico/ProgressTrackerAgent.ts';
 
 // Professional tools
 import '@/ai/agents/pro/DischargeSummaryGeneratorAgent.ts';
