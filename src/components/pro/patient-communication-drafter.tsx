@@ -96,11 +96,11 @@ export function PatientCommunicationDrafter() {
               </Select>
             </div>
           </div>
-          <div>
-            <Label htmlFor="key-points">Key Points / Information to Convey</Label>
-            <Textarea id="key-points" value={keyPoints} onChange={e => setKeyPoints(e.target.value)} placeholder="e.g., Diagnosis is Type 2 Diabetes; Start Metformin 500mg BD; Follow up in 3 months." className="min-h-[100px] mt-1 rounded-lg"/>
-          </div>
-          <div>
+           <div>
+              <Label htmlFor="key-points">Key Points / Information to Convey</Label>
+              <Textarea id="key-points" value={keyPoints} onChange={e => setKeyPoints(e.target.value)} placeholder="e.g., Diagnosis is Type 2 Diabetes; Start Metformin 500mg BD; Follow up in 3 months." className="min-h-[100px] mt-1 rounded-lg"/>
+           </div>
+            <div>
             <Label htmlFor="comm-tone">Desired Tone</Label>
              <Select value={tone} onValueChange={setTone}>
                 <SelectTrigger id="comm-tone" className="w-full mt-1 rounded-lg">
@@ -124,7 +124,7 @@ export function PatientCommunicationDrafter() {
         <Card className="mt-6 shadow-lg rounded-xl">
           <CardHeader>
             <CardTitle className="text-lg">Drafted Communication</CardTitle>
-            <CardDescription>Review and edit the AI-generated draft.</CardDescription>
+            <CardDescription>Review and edit the generated draft below.</CardDescription>
           </CardHeader>
           <CardContent>
             <Textarea value={draftedCommunication} readOnly className="min-h-[250px] bg-muted/30 rounded-md font-sans text-sm p-4"/>

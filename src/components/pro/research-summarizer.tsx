@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Library, Lightbulb, Search, Loader2, FileText, BookOpen } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 
 interface SummarizedArticle {
   title: string;

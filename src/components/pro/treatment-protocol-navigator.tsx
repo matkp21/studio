@@ -1,4 +1,3 @@
-
 // src/components/pro/treatment-protocol-navigator.tsx
 "use client";
 
