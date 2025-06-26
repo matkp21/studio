@@ -1,7 +1,7 @@
 // src/app/layout.tsx
 // Remove "use client" - this is now a Server Component
 import type { Metadata } from 'next';
-import { Poppins } from 'next/font/google';
+import { Noto_Sans } from 'next/font/google'; // Changed from Poppins
 import './globals.css';
 // Toaster will be rendered by ClientLayoutWrapper
 // ProModeProvider will be rendered by ClientLayoutWrapper
@@ -9,10 +9,10 @@ import './globals.css';
 // useEffect for SW registration will be in ClientLayoutWrapper
 import { ClientLayoutWrapper } from '@/components/layout/client-layout-wrapper';
 
-const poppins = Poppins({
+const noto_sans = Noto_Sans({ // Changed from Poppins
   subsets: ['latin', 'devanagari', 'malayalam'],
   weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-poppins',
+  // No variable needed, will apply classname directly
 });
 
 // metadata can be exported from a Server Component
@@ -61,7 +61,7 @@ export default function RootLayout({
         {/* Script for <model-viewer> web component */}
         <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js" async></script>
       </head>
-      <body className={`${poppins.variable} antialiased`}>
+      <body className={`${noto_sans.className} antialiased`}>
         <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
       </body>
     </html>

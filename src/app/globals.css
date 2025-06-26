@@ -231,12 +231,10 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   background-color: hsl(var(--background)); /* Clean, static background from theme */
   color: hsl(var(--foreground));
   cursor: pointer; /* Indicate it's clickable to dismiss */
-  font-family: var(--font-ubuntu-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji");
 }
 
 .simple-welcome-tagline { /* Styles for the AnimatedTagline component's container */
   text-align: center;
-  font-family: var(--font-poppins);
   font-weight: 300; /* Poppins Light */
   letter-spacing: 0.025em;
   font-size: clamp(1.1rem, 3vw, 1.5rem); /* Adjusted for prominence */
@@ -288,7 +286,6 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   overflow: hidden;
   color: hsl(var(--foreground)); /* Default text color */
   cursor: pointer;
-  font-family: var(--font-ubuntu-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji");
 
   background: linear-gradient(
     135deg,
@@ -1025,7 +1022,6 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   justify-content: center; /* Vertically centers icon container */
   overflow: hidden;
   cursor: pointer; /* Click anywhere to continue */
-  font-family: var(--font-ubuntu-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
 
   /* Using the static background image */
   background-image: url('/images/mediassistant-splash-background.png'); /* Ensure this path is correct */
@@ -1220,5 +1216,6 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 
 
     
+
 
 
