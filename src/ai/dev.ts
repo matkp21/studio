@@ -9,6 +9,7 @@ import '@/ai/flows/symptom-analyzer-flow.ts';
 import '@/ai/flows/chat-flow.ts';
 import '@/ai/flows/medico/study-notes-flow.ts'; 
 import '@/ai/flows/medico/mcq-generator-flow.ts'; 
+import '@/ai/flows/medico/exam-paper-flow.ts'; // Added new agent/flow
 
 // New Medico tool imports:
 import '@/ai/flows/medico/study-timetable-creator-flow.ts';

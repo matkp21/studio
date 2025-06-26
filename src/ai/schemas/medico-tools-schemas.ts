@@ -44,6 +44,27 @@ export const MedicoMCQGeneratorOutputSchema = z.object({
 });
 export type MedicoMCQGeneratorOutput = z.infer<typeof MedicoMCQGeneratorOutputSchema>;
 
+// Schema for Exam Paper Generator
+export const MedicoExamPaperInputSchema = z.object({
+  examType: z.string().min(3, { message: "Exam type must be at least 3 characters." }).describe('The name of the examination (e.g., "USMLE Step 1", "Final MBBS Prof").'),
+  year: z.string().optional().describe('Optional focus year for pattern analysis (e.g., "2023").'),
+  count: z.number().int().min(1).max(20).default(10).describe('The number of MCQs to generate (1-20). Default is 10.'),
+});
+export type MedicoExamPaperInput = z.infer<typeof MedicoExamPaperInputSchema>;
+
+export const EssayQuestionSchema = z.object({
+  question: z.string().describe('The essay question.'),
+  answer_outline: z.string().describe('A brief outline of the key points for the answer.'),
+});
+
+export const MedicoExamPaperOutputSchema = z.object({
+  mcqs: z.array(MCQSchema).optional().describe('An array of generated MCQs for the exam.'),
+  essays: z.array(EssayQuestionSchema).optional().describe('An array of generated essay questions.'),
+  topicGenerated: z.string().describe('The exam type for which this paper was generated.'),
+});
+export type MedicoExamPaperOutput = z.infer<typeof MedicoExamPaperOutputSchema>;
+
+
 // Schema for Study Timetable Creator
 export const MedicoStudyTimetableInputSchema = z.object({
   examName: z.string().min(3, { message: "Exam name must be at least 3 characters." }).describe('Name of the examination (e.g., "Final MBBS Prof").'),
@@ -183,6 +204,3 @@ export const MedicoDrugDosageOutputSchema = z.object({
 export type MedicoDrugDosageOutput = z.infer<typeof MedicoDrugDosageOutputSchema>;
 
 // ... Potentially other schemas as features expand
-
-
-    
