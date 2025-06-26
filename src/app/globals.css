@@ -872,6 +872,17 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 .delay-300 { animation-delay: 0.3s; }
 
 
+/* --- Chat Interface Loading Animation Background --- */
+@keyframes chatLoadingBgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.chat-loading-bg-animated {
+  background-size: 180% 180%; /* Larger size for smoother gradient animation */
+  animation: chatLoadingBgShift 25s ease infinite;
+}
+
 /* Sidebar Notification Badge Styles */
 .sidebar-notification-badge {
   @apply bg-primary text-primary-foreground text-xs font-medium;
@@ -1137,6 +1148,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   animation: chatLoadingBgShift 25s ease infinite;
 }
 
+
 /* --- HeroWidgets Underglow Effect --- */
 @keyframes underglow-opacity-pulse {
   0%, 100% { opacity: 0.6; transform: scaleY(0.9); } /* Adjusted opacity and scale for more dynamism */
@@ -1216,6 +1228,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 
 
     
+
 
 
 

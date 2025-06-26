@@ -1,4 +1,3 @@
-
 // src/components/chat/chat-interface-animation.tsx
 "use client";
 
@@ -94,7 +93,7 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
 
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-gradient-to-br from-blue-800 via-teal-800 to-sky-900 text-white overflow-hidden p-4 chat-loading-bg-animated"
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-gradient-to-br from-blue-800 via-teal-800 to-sky-900 text-white overflow-hidden p-4 chat-loading-bg-animated chat-interface-animation"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -114,7 +113,7 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
       <motion.h1
         className="text-4xl sm:text-5xl md:text-6xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-sky-200 via-teal-300 to-cyan-200 mb-1"
         variants={mainTitleContainerVariants}
-        style={{ filter: 'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.3)) drop-shadow(0 0 10px rgba(100, 230, 250, 0.2))' }}
+        style={{ filter: 'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.2)) drop-shadow(0 0 10px rgba(100, 230, 250, 0.2))' }}
       >
         {mainTitleText.split("").map((char, index) => (
           <motion.span key={index} variants={mainTitleLetterVariants} className="inline-block">
@@ -142,32 +141,6 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
         </span>
       </motion.div>
 
-      {/* Global styles for animations that might not be in globals.css or are specific here */}
-      <style jsx global>{`
-        @keyframes pulseDotLight {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 1; }
-        }
-        .animate-pulse-dot-light {
-          animation: pulseDotLight 1.2s infinite ease-in-out;
-        }
-        .delay-0 { animation-delay: 0s; }
-        .delay-150 { animation-delay: 0.15s; }
-        .delay-300 { animation-delay: 0.3s; }
-
-        /* Ensure background animation is defined if not already in globals.css */
-        @keyframes chatLoadingBgShift {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .chat-loading-bg-animated {
-          background-size: 180% 180%;
-          animation: chatLoadingBgShift 25s ease infinite;
-        }
-      `}</style>
-
     </motion.div>
   );
 }
-
