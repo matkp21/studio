@@ -128,7 +128,7 @@ export function DischargeSummaryGenerator() {
             </div>
           ))
         ) : (
-          <p className="text-xs text-muted-foreground mt-1">No items for {label.toLowerCase()} yet. Add one if needed.</p>
+          <p className="text-xs text-muted-foreground mt-1">No items for ${label.toLowerCase()} yet. Add one if needed.</p>
         )}
       </div>
     );

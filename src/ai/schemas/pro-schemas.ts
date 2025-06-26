@@ -26,4 +26,3 @@ export const DischargeSummaryOutputSchema = z.object({
 export type DischargeSummaryOutput = z.infer<typeof DischargeSummaryOutputSchema>;
 
 // Add other Professional Mode tool schemas here as they are developed.
-
