@@ -111,9 +111,17 @@ export function ChatInterfaceAnimation({ onAnimationComplete }: ChatInterfaceAni
       </motion.div>
 
       <motion.h1
-        className="text-4xl sm:text-5xl md:text-6xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-sky-200 via-teal-300 to-cyan-200 mb-1"
+        className="text-4xl sm:text-5xl md:text-6xl font-bold text-center mb-1"
         variants={mainTitleContainerVariants}
-        style={{ filter: 'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.2)) drop-shadow(0 0 10px rgba(100, 230, 250, 0.2))' }}
+        style={{
+          filter: 'drop-shadow(0 2px 8px rgba(125, 211, 252, 0.2)) drop-shadow(0 0 10px rgba(100, 230, 250, 0.2))',
+          backgroundImage: 'linear-gradient(120deg, #00ffff, #3be9d8, #00ffff)',
+          backgroundSize: '200% auto',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          color: 'transparent',
+          animation: 'ribbon-slide 3s ease-in-out forwards',
+        }}
       >
         {mainTitleText.split("").map((char, index) => (
           <motion.span key={index} variants={mainTitleLetterVariants} className="inline-block">

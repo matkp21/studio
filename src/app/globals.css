@@ -883,6 +883,16 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
   animation: chatLoadingBgShift 25s ease infinite;
 }
 
+/* --- Ribbon Slide Animation for Chat --- */
+@keyframes ribbon-slide {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
+}
+
 /* Sidebar Notification Badge Styles */
 .sidebar-notification-badge {
   @apply bg-primary text-primary-foreground text-xs font-medium;
@@ -1228,6 +1238,7 @@ body:not(:has(.simple-welcome-screen)):not(:has(.spark-welcome-screen)):not(:has
 
 
     
+
 
 
 
