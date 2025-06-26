@@ -1,4 +1,3 @@
-
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
@@ -89,9 +88,8 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
         whileHover={!isEditMode ? { y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.1)" } : {}}
         transition={{ type: "spring", stiffness: 300, damping: 15 }}
         className={cn(
-          "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border",
-          !isEditMode && "hover:shadow-xl cursor-pointer hover:border-primary/30",
-          isFrequentlyUsed && !isEditMode && "border-primary/20", // Subtle border for frequently used
+          "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
+          !isEditMode && "hover:shadow-xl cursor-pointer tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
           tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
           isEditMode && "cursor-grab border-dashed border-muted-foreground/50"
         )}
@@ -239,4 +237,3 @@ export function MedicoDashboard() {
     </div>
   );
 }
-
