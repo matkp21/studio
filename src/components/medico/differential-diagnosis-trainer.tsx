@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Brain, Wand2, ListChecks } from 'lucide-react';
-import { trainDifferentialDiagnosis, type MedicoDDTrainerInput, type MedicoDDTrainerOutput } from '@/ai/flows/medico/differential-diagnosis-trainer-flow';
+import { trainDifferentialDiagnosis, type MedicoDDTrainerInput, type MedicoDDTrainerOutput } from '@/ai/agents/medico/DifferentialDiagnosisTrainerAgent';
 import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
@@ -149,4 +149,3 @@ export function DifferentialDiagnosisTrainer() {
     </div>
   );
 }
-

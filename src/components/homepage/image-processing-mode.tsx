@@ -8,7 +8,7 @@ import { ImageUploader } from '@/components/image-analyzer/image-uploader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, ImageOff, ScanEye, Sparkles, TestTubeDiagonal, PencilRuler } from 'lucide-react';
-import type { AnalyzeImageOutput, Annotation } from '@/ai/flows/image-analyzer'; // Updated import for Annotation
+import type { AnalyzeImageOutput, Annotation } from '@/ai/agents/ImageAnalyzerAgent'; // Updated import for Annotation
 import { useProMode } from '@/contexts/pro-mode-context';
 
 export function ImageProcessingMode() {

@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, Users, Send, FilePlus, RotateCcw, UserCheck } from 'lucide-react';
-import { conductVirtualRound, type MedicoVirtualRoundsInput, type MedicoVirtualRoundsOutput } from '@/ai/flows/medico/virtual-patient-rounds-flow';
+import { conductVirtualRound, type MedicoVirtualRoundsInput, type MedicoVirtualRoundsOutput } from '@/ai/agents/medico/VirtualPatientRoundsAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -195,4 +195,3 @@ export function VirtualPatientRounds() {
     </div>
   );
 }
-

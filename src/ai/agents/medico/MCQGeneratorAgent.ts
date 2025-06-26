@@ -84,4 +84,3 @@ const mcqGeneratorFlow = ai.defineFlow(
     return {...output, topicGenerated: input.topic };
   }
 );
-

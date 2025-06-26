@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ClipboardCheck, Search, BookOpen, Lightbulb, ChevronRight, ArrowLeft } from 'lucide-react';
-import { retrieveGuidelines, type GuidelineRetrievalInput, type GuidelineRetrievalOutput, type GuidelineItem } from '@/ai/flows/guideline-retrieval';
+import { retrieveGuidelines, type GuidelineRetrievalInput, type GuidelineRetrievalOutput, type GuidelineItem } from '@/ai/agents/GuidelineRetrievalAgent';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';

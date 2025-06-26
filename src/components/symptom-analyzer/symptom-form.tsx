@@ -1,3 +1,4 @@
+
 // src/components/symptom-analyzer/symptom-form.tsx
 "use client";
 
@@ -7,7 +8,7 @@ import { z } from 'zod';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { analyzeSymptoms, type SymptomAnalyzerInput, type SymptomAnalyzerOutput } from '@/ai/flows/symptom-analyzer';
+import { analyzeSymptoms, type SymptomAnalyzerInput, type SymptomAnalyzerOutput } from '@/ai/agents/SymptomAnalyzerAgent';
 import { useToast } from '@/hooks/use-toast';
 import { Send } from 'lucide-react';
 
@@ -90,4 +91,3 @@ export function SymptomForm({ onAnalysisComplete, setIsLoading, isLoading = fals
     </Form>
   );
 }
-

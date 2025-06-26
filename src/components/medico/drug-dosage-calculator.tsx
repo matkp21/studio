@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, CalculatorIcon, Wand2, Info } from 'lucide-react';
-import { calculateDrugDosage, type MedicoDrugDosageInput, type MedicoDrugDosageOutput } from '@/ai/flows/medico/drug-dosage-calculator-flow';
+import { calculateDrugDosage, type MedicoDrugDosageInput, type MedicoDrugDosageOutput } from '@/ai/agents/medico/DrugDosageCalculatorAgent';
 import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({

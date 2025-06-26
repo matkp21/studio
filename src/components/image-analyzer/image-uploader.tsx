@@ -1,3 +1,4 @@
+
 // src/components/image-analyzer/image-uploader.tsx
 "use client";
 
@@ -6,7 +7,7 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { analyzeImage, type AnalyzeImageInput, type AnalyzeImageOutput } from '@/ai/flows/image-analyzer';
+import { analyzeImage, type AnalyzeImageInput, type AnalyzeImageOutput } from '@/ai/agents/ImageAnalyzerAgent';
 import { useToast } from '@/hooks/use-toast';
 import { UploadCloud, X, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';

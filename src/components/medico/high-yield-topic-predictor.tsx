@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, TrendingUp, Wand2, ListChecks } from 'lucide-react';
-import { predictHighYieldTopics, type MedicoTopicPredictorInput, type MedicoTopicPredictorOutput } from '@/ai/flows/medico/high-yield-topic-predictor-flow';
+import { predictHighYieldTopics, type MedicoTopicPredictorInput, type MedicoTopicPredictorOutput } from '@/ai/agents/medico/HighYieldTopicPredictorAgent';
 import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({

@@ -1,3 +1,4 @@
+
 // src/components/guideline-retrieval/guideline-query-form.tsx
 "use client";
 
@@ -7,7 +8,7 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { retrieveGuidelines, type GuidelineRetrievalInput, type GuidelineRetrievalOutput } from '@/ai/flows/guideline-retrieval';
+import { retrieveGuidelines, type GuidelineRetrievalInput, type GuidelineRetrievalOutput } from '@/ai/agents/GuidelineRetrievalAgent';
 import { useToast } from '@/hooks/use-toast';
 import { Search, Send } from 'lucide-react';
 

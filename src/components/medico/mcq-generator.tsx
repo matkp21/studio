@@ -1,3 +1,4 @@
+
 // src/components/medico/mcq-generator.tsx
 "use client";
 
@@ -12,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, HelpCircle, Wand2 } from 'lucide-react';
-import { generateMCQs, type MedicoMCQGeneratorInput, type MedicoMCQGeneratorOutput, type MCQSchema } from '@/ai/flows/medico/mcq-generator-flow';
+import { generateMCQs, type MedicoMCQGeneratorInput, type MedicoMCQGeneratorOutput, type MCQSchema } from '@/ai/agents/medico/MCQGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 

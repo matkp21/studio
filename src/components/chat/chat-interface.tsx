@@ -9,9 +9,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { SendHorizonal, HeartPulse, Mic, MicOff, Volume2, VolumeX, ArrowDownCircle, BookCopy, FileQuestion } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { processChatMessage, type ChatMessageInput } from '@/ai/flows/chat-flow';
-import { generateStudyNotes, type MedicoStudyNotesInput, type MedicoStudyNotesOutput } from '@/ai/flows/medico/study-notes-flow';
-import { generateMCQs, type MedicoMCQGeneratorInput, type MedicoMCQGeneratorOutput, type MCQSchema as SingleMCQ } from '@/ai/flows/medico/mcq-generator-flow';
+import { processChatMessage, type ChatMessageInput } from '@/ai/agents/ChatAgent';
+import { generateStudyNotes, type MedicoStudyNotesInput, type MedicoStudyNotesOutput } from '@/ai/agents/medico/StudyNotesAgent';
+import { generateMCQs, type MedicoMCQGeneratorInput, type MedicoMCQGeneratorOutput, type MCQSchema as SingleMCQ } from '@/ai/agents/medico/MCQGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { TypewriterText } from './typewriter-text';
@@ -472,4 +472,3 @@ export function ChatInterface() {
     </Card>
   );
 }
-

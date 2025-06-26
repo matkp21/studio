@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Lightbulb, Wand2 } from 'lucide-react';
-import { generateMnemonic, type MedicoMnemonicsGeneratorInput, type MedicoMnemonicsGeneratorOutput } from '@/ai/flows/medico/mnemonics-generator-flow';
+import { generateMnemonic, type MedicoMnemonicsGeneratorInput, type MedicoMnemonicsGeneratorOutput } from '@/ai/agents/medico/MnemonicsGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
@@ -136,4 +136,3 @@ export function MnemonicsGenerator() {
     </div>
   );
 }
-

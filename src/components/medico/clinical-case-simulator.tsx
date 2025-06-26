@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, CaseUpper, Send, FilePlus, RotateCcw } from 'lucide-react';
-import { simulateClinicalCase, type MedicoClinicalCaseInput, type MedicoClinicalCaseOutput } from '@/ai/flows/medico/clinical-case-simulation-flow';
+import { simulateClinicalCase, type MedicoClinicalCaseInput, type MedicoClinicalCaseOutput } from '@/ai/agents/medico/ClinicalCaseSimulatorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 

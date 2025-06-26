@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Tool for analyzing symptoms using the symptomAnalyzerFlow.
@@ -7,7 +8,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { analyzeSymptoms as analyzeSymptomsFlow } from '@/ai/flows/symptom-analyzer';
+import { analyzeSymptoms as analyzeSymptomsFlow } from '@/ai/agents/SymptomAnalyzerAgent';
 import { SymptomAnalyzerInputSchema, SymptomAnalyzerOutputSchema } from '@/ai/schemas/symptom-analyzer-schemas';
 
 export const symptomAnalyzerTool = ai.defineTool(

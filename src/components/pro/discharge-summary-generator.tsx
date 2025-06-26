@@ -15,7 +15,7 @@ import { FilePlus, Lightbulb, Loader2, Download, Share2, Edit3, Trash2, PlusCirc
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '../ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { generateDischargeSummary, type DischargeSummaryInput, type DischargeSummaryOutput } from '@/ai/flows/pro/discharge-summary-generator-flow';
+import { generateDischargeSummary, type DischargeSummaryInput, type DischargeSummaryOutput } from '@/ai/agents/pro/DischargeSummaryGeneratorAgent';
 import { DischargeSummaryInputSchema } from '@/ai/schemas/pro-schemas'; // Updated import path
 
 type DischargeSummaryFormValues = DischargeSummaryInput;

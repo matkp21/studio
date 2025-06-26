@@ -1,3 +1,4 @@
+
 // src/components/pro/differential-diagnosis-assistant.tsx
 "use client";
 
@@ -7,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Brain, Lightbulb, Loader2, CheckSquare, PlusCircle, AlertTriangle } from 'lucide-react';
-import { SymptomAnalyzerInput, SymptomAnalyzerOutput, analyzeSymptoms } from '@/ai/flows/symptom-analyzer-flow';
+import { SymptomAnalyzerInput, SymptomAnalyzerOutput, analyzeSymptoms } from '@/ai/agents/SymptomAnalyzerAgent';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '../ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
@@ -154,7 +155,7 @@ export function DifferentialDiagnosisAssistant() {
               <h3 className="text-lg font-semibold mb-2 text-indigo-700 dark:text-indigo-400">Potential Diagnoses:</h3>
               {analysisResult.diagnoses.length > 0 ? (
                 <ul className="list-disc list-inside pl-5 space-y-1 text-sm bg-muted/50 p-3 rounded-md">
-                  {analysisResult.diagnoses.map((dx, index) => <li key={index}>{dx}</li>)}
+                  {analysisResult.diagnoses.map((dx, index) => <li key={index}>{dx.name}</li>)}
                 </ul>
               ) : <p className="text-muted-foreground text-sm">No specific diagnoses suggested.</p>}
             </div>

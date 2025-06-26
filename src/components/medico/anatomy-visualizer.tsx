@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Eye, Wand2, Bone, Brain } from 'lucide-react';
-import { getAnatomyDescription, type MedicoAnatomyVisualizerInput, type MedicoAnatomyVisualizerOutput } from '@/ai/flows/medico/anatomy-visualizer-flow';
+import { getAnatomyDescription, type MedicoAnatomyVisualizerInput, type MedicoAnatomyVisualizerOutput } from '@/ai/agents/medico/AnatomyVisualizerAgent';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 

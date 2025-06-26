@@ -1,3 +1,4 @@
+
 // src/components/medico/solved-question-papers-viewer.tsx
 "use client";
 
@@ -13,7 +14,7 @@ import { BookCopy, FileText, Wand2, Loader2, FileQuestion, Pilcrow } from 'lucid
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { generateExamPaper, type MedicoExamPaperInput, type MedicoExamPaperOutput } from '@/ai/flows/medico/exam-paper-flow';
+import { generateExamPaper, type MedicoExamPaperInput, type MedicoExamPaperOutput } from '@/ai/agents/medico/ExamPaperAgent';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
