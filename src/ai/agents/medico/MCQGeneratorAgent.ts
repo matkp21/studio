@@ -18,8 +18,24 @@ export type MedicoMCQGeneratorInput = z.infer<typeof MedicoMCQGeneratorInputSche
 export type MedicoMCQGeneratorOutput = z.infer<typeof MedicoMCQGeneratorOutputSchema>;
 export type MCQSchema = z.infer<typeof SingleMCQSchema>; // For easier usage in chat component
 
+// Simple in-memory cache
+const mcqCache = new Map<string, MedicoMCQGeneratorOutput>();
+
 export async function generateMCQs(input: MedicoMCQGeneratorInput): Promise<MedicoMCQGeneratorOutput> {
-  return mcqGeneratorFlow(input);
+  const cacheKey = JSON.stringify(input);
+  if (mcqCache.has(cacheKey)) {
+    console.log(`[Cache HIT] Serving cached MCQs for: ${input.topic}`);
+    return mcqCache.get(cacheKey)!;
+  }
+
+  console.log(`[Cache MISS] Generating new MCQs for: ${input.topic}`);
+  const result = await mcqGeneratorFlow(input);
+  
+  if (result) {
+    mcqCache.set(cacheKey, result);
+  }
+
+  return result;
 }
 
 const mcqGeneratorPrompt = ai.definePrompt({

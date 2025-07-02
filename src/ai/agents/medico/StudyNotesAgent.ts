@@ -17,8 +17,25 @@ import type { z } from 'zod';
 export type MedicoStudyNotesInput = z.infer<typeof MedicoStudyNotesInputSchema>;
 export type MedicoStudyNotesOutput = z.infer<typeof MedicoStudyNotesOutputSchema>;
 
+// Simple in-memory cache
+const studyNotesCache = new Map<string, MedicoStudyNotesOutput>();
+
 export async function generateStudyNotes(input: MedicoStudyNotesInput): Promise<MedicoStudyNotesOutput> {
-  return studyNotesFlow(input);
+  const cacheKey = JSON.stringify(input);
+  if (studyNotesCache.has(cacheKey)) {
+    console.log(`[Cache HIT] Serving cached study notes for: ${input.topic}`);
+    return studyNotesCache.get(cacheKey)!;
+  }
+  
+  console.log(`[Cache MISS] Generating new study notes for: ${input.topic}`);
+  const result = await studyNotesFlow(input);
+  
+  // Cache the successful result
+  if (result) {
+    studyNotesCache.set(cacheKey, result);
+  }
+  
+  return result;
 }
 
 const studyNotesPrompt = ai.definePrompt({
