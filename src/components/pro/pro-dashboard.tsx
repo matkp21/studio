@@ -1,4 +1,3 @@
-
 // src/components/pro/pro-dashboard.tsx
 "use client";
 
@@ -86,9 +85,9 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
         transition={{ type: "spring", stiffness: 300 }}
         className={cn(
           "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
-          !isEditMode && "hover:shadow-lg cursor-pointer tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow", // Apply to all cards on hover when not in edit mode
+          !isEditMode && "hover:shadow-lg cursor-pointer tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
           tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
-          isEditMode && "cursor-grab" // Indicate draggable in edit mode
+          isEditMode && "cursor-grab border-dashed border-muted-foreground/50"
         )}
         onClick={() => !isEditMode && !tool.comingSoon && onLaunch(tool.id)}
         role="button"
@@ -100,7 +99,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
         {isEditMode && (
           <GripVertical className="absolute top-2 left-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder (conceptual)" />
         )}
-        {isFrequentlyUsed && !isEditMode && ( // Keep star only for actual frequently used ones
+        {isFrequentlyUsed && !isEditMode && (
           <Star className="absolute top-2 right-2 h-5 w-5 text-yellow-400 fill-yellow-400 z-10" />
         )}
         <CardHeader className="pb-3 pt-4 px-4">
@@ -112,7 +111,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
                 <tool.icon className={cn(
                     "h-7 w-7 transition-transform duration-300",
                     !isEditMode && "group-hover:scale-110",
-                    !isEditMode && "group-hover:text-purple-500" // Generic hover icon color
+                    !isEditMode && "group-hover:text-purple-500"
                 )} />
             </div>
             <CardTitle className={cn(
