@@ -1,4 +1,3 @@
-
 // src/components/pro/smart-dictation.tsx
 "use client";
 
