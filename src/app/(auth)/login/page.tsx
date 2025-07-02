@@ -1,15 +1,16 @@
-
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { HeartHandshake, LogIn } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { auth } from "@/lib/firebase"; // Import Firebase auth instance
+import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword, FirebaseError } from "firebase/auth";
 
 const LoginPage = () => {
@@ -50,7 +51,7 @@ const LoginPage = () => {
         }
       }
       console.error("Firebase login error:", err);
-      setError(errorMessage); // You could display this directly in the form
+      setError(errorMessage);
       toast({
         title: "Login Failed",
         description: errorMessage,
@@ -100,6 +101,7 @@ const LoginPage = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="mt-1 rounded-lg"
+              disabled={isLoading}
             />
           </div>
           <div>
@@ -112,6 +114,7 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="mt-1 rounded-lg"
+              disabled={isLoading}
             />
           </div>
           <Button type="submit" className="w-full rounded-lg py-3 group" disabled={isLoading}>
