@@ -1,4 +1,3 @@
-
 // src/components/medico/study-timetable-creator.tsx
 "use client";
 

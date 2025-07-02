@@ -1,4 +1,3 @@
-
 // src/components/medico/clinical-case-simulator.tsx
 "use client";
 
