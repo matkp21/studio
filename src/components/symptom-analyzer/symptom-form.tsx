@@ -1,3 +1,4 @@
+
 // src/components/symptom-analyzer/symptom-form.tsx
 "use client";
 
@@ -42,7 +43,7 @@ export function SymptomForm({ onAnalysisComplete, setIsLoading, isLoading = fals
 
   const onSubmit: SubmitHandler<SymptomFormValues> = async (data) => {
     setIsLoading(true);
-    onAnalysisComplete(null); 
+    onAnalysisComplete(null, undefined, data as SymptomAnalyzerInput); 
 
     const agentInput: SymptomAnalyzerInput = {
         symptoms: data.symptoms,
@@ -54,6 +55,8 @@ export function SymptomForm({ onAnalysisComplete, setIsLoading, isLoading = fals
     };
 
     try {
+      // In a simple component, we call the direct agent.
+      // In a coordinator component, the parent will handle calling the coordinator flow.
       const result = await analyzeSymptoms(agentInput);
       onAnalysisComplete(result, undefined, agentInput);
       toast({
@@ -107,7 +110,7 @@ export function SymptomForm({ onAnalysisComplete, setIsLoading, isLoading = fals
         <FormField control={form.control} name="history" render={({ field }) => ( <FormItem><FormLabel>Brief History (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., Smoker, Hypertensive..." className="rounded-lg min-h-[60px]" {...field} value={field.value ?? ''} /></FormControl></FormItem>)}/>
 
         <Button type="submit" className="w-full rounded-lg py-3 text-base group" disabled={form.formState.isSubmitting || isLoading} aria-label="Submit symptoms for analysis">
-          {isLoading ? 'Analyzing...' : 'Diagnose'}
+          {isLoading ? 'Analyzing...' : 'Analyze'}
           {!isLoading && <Send className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />}
         </Button>
       </form>

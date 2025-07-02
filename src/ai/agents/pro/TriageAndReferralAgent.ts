@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An orchestrator agent that chains multiple agents together.
@@ -19,18 +20,15 @@ import {
 } from '@/ai/schemas/pro-schemas';
 import { analyzeSymptoms } from '@/ai/agents/SymptomAnalyzerAgent';
 import { generateDischargeSummary } from '@/ai/agents/pro/DischargeSummaryGeneratorAgent';
+import { TriageAndReferralOutputSchema } from '@/ai/schemas/pro-schemas';
+import type { SymptomAnalyzerInput } from '@/ai/schemas/symptom-analyzer-schemas';
 
-// The combined output schema for this orchestrator flow
-export const TriageAndReferralOutputSchema = z.object({
-  analysis: SymptomAnalyzerOutputSchema.describe("The initial symptom analysis result."),
-  referralDraft: DischargeSummaryOutputSchema.optional().describe("The drafted referral summary, generated only if a high-confidence diagnosis was found."),
-});
 export type TriageAndReferralOutput = z.infer<
   typeof TriageAndReferralOutputSchema
 >;
 
 export async function triageAndReferral(
-  input: z.infer<typeof SymptomAnalyzerInputSchema>
+  input: SymptomAnalyzerInput
 ): Promise<TriageAndReferralOutput> {
   return triageAndReferralFlow(input);
 }
@@ -44,6 +42,7 @@ const triageAndReferralFlow = ai.defineFlow(
   },
   async (input) => {
     // Step 1: Call the Symptom Analyzer Agent
+    console.log("Starting triage analysis for:", input.symptoms);
     const analysisResult = await analyzeSymptoms(input);
 
     // Step 2: Check the result for a high-confidence diagnosis
@@ -53,13 +52,14 @@ const triageAndReferralFlow = ai.defineFlow(
     
     let referralDraftResult: z.infer<typeof DischargeSummaryOutputSchema> | undefined = undefined;
 
-    // Step 3: If a high-confidence diagnosis exists, call the Discharge Summary Agent
+    // Step 3: If a high-confidence diagnosis exists, call the Discharge Summary Agent to draft a referral
     if (highConfidenceDiagnosis) {
+        console.log(`High-confidence diagnosis found: ${highConfidenceDiagnosis.name}. Generating referral draft.`);
         // Construct a new input for the summary generator based on the analysis
         const summaryInput = {
             primaryDiagnosis: highConfidenceDiagnosis.name,
             keySymptomsOrProcedure: input.symptoms,
-            additionalContext: `Patient Age: ${input.patientContext?.age}, Sex: ${input.patientContext?.sex}. Rationale for referral: ${highConfidenceDiagnosis.rationale}`,
+            additionalContext: `Patient Age: ${input.patientContext?.age || 'N/A'}, Sex: ${input.patientContext?.sex || 'N/A'}. Rationale for referral: ${highConfidenceDiagnosis.rationale || 'High confidence on initial analysis.'}`,
             // These fields are required by the schema but can be empty for a referral draft
             patientName: "Patient", 
             admissionNumber: "N/A"
@@ -67,6 +67,8 @@ const triageAndReferralFlow = ai.defineFlow(
         
         // This simulates generating a referral letter by using the discharge summary agent's capabilities
         referralDraftResult = await generateDischargeSummary(summaryInput);
+    } else {
+        console.log("No high-confidence diagnosis found. Skipping referral draft.");
     }
 
     // Step 4: Return the combined output

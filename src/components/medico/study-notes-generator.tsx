@@ -2,7 +2,6 @@
 // src/components/medico/study-notes-generator.tsx
 "use client";
 
-import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -15,6 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, BookOpen, Wand2 } from 'lucide-react';
 import { generateStudyNotes, type MedicoStudyNotesInput, type MedicoStudyNotesOutput } from '@/ai/agents/medico/StudyNotesAgent';
 import { useToast } from '@/hooks/use-toast';
+import { useAiAgent } from '@/hooks/use-ai-agent';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
@@ -23,10 +23,16 @@ const formSchema = z.object({
 type StudyNotesFormValues = z.infer<typeof formSchema>;
 
 export function StudyNotesGenerator() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [generatedNotes, setGeneratedNotes] = useState<MedicoStudyNotesOutput | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { execute: runGenerateNotes, data: generatedNotes, isLoading, error, reset } = useAiAgent(generateStudyNotes, {
+    onSuccess: (data) => {
+        toast({
+            title: "Study Notes Generated!",
+            description: `Notes for the topic are ready.`
+        });
+    }
+  });
+
 
   const form = useForm<StudyNotesFormValues>({
     resolver: zodResolver(formSchema),
@@ -34,31 +40,15 @@ export function StudyNotesGenerator() {
       topic: "",
     },
   });
+  
+  // When form is reset, also reset the AI agent's state
+  const handleReset = () => {
+    form.reset();
+    reset();
+  }
 
   const onSubmit: SubmitHandler<StudyNotesFormValues> = async (data) => {
-    setIsLoading(true);
-    setGeneratedNotes(null);
-    setError(null);
-
-    try {
-      const result = await generateStudyNotes(data as MedicoStudyNotesInput);
-      setGeneratedNotes(result);
-      toast({
-        title: "Study Notes Generated!",
-        description: `Notes for "${data.topic}" are ready.`,
-      });
-    } catch (err) {
-      console.error("Study notes generation error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-      setError(errorMessage);
-      toast({
-        title: "Generation Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await runGenerateNotes(data);
   };
 
   return (
@@ -83,19 +73,26 @@ export function StudyNotesGenerator() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-                Generate Notes
-              </>
+          <div className="flex gap-2">
+            <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
+                {isLoading ? (
+                <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                </>
+                ) : (
+                <>
+                    <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                    Generate Notes
+                </>
+                )}
+            </Button>
+             {generatedNotes && (
+                <Button type="button" variant="outline" onClick={handleReset} className="rounded-lg">
+                    Clear
+                </Button>
             )}
-          </Button>
+          </div>
         </form>
       </Form>
 
@@ -106,7 +103,7 @@ export function StudyNotesGenerator() {
         </Alert>
       )}
 
-      {generatedNotes && (
+      {generatedNotes && !isLoading && (
         <Card className="shadow-md rounded-xl mt-6 border-primary/30 bg-gradient-to-br from-card via-card to-primary/5">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">

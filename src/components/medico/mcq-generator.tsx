@@ -2,7 +2,6 @@
 // src/components/medico/mcq-generator.tsx
 "use client";
 
-import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,9 +12,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, HelpCircle, Wand2 } from 'lucide-react';
-import { generateMCQs, type MedicoMCQGeneratorInput, type MedicoMCQGeneratorOutput, type MCQSchema } from '@/ai/agents/medico/MCQGeneratorAgent';
+import { generateMCQs, type MedicoMCQGeneratorInput, type MedicoMCQGeneratorOutput } from '@/ai/agents/medico/MCQGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useAiAgent } from '@/hooks/use-ai-agent';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
@@ -25,10 +25,15 @@ const formSchema = z.object({
 type McqFormValues = z.infer<typeof formSchema>;
 
 export function McqGenerator() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [generatedMcqs, setGeneratedMcqs] = useState<MedicoMCQGeneratorOutput | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { execute: runGenerateMcqs, data: generatedMcqs, isLoading, error, reset } = useAiAgent(generateMCQs, {
+     onSuccess: (data) => {
+      toast({
+        title: "MCQs Generated!",
+        description: `${data.mcqs.length} MCQs for "${data.topicGenerated}" are ready.`,
+      });
+    }
+  });
 
   const form = useForm<McqFormValues>({
     resolver: zodResolver(formSchema),
@@ -37,31 +42,14 @@ export function McqGenerator() {
       count: 5,
     },
   });
+  
+  const handleReset = () => {
+    form.reset();
+    reset();
+  }
 
   const onSubmit: SubmitHandler<McqFormValues> = async (data) => {
-    setIsLoading(true);
-    setGeneratedMcqs(null);
-    setError(null);
-
-    try {
-      const result = await generateMCQs(data as MedicoMCQGeneratorInput);
-      setGeneratedMcqs(result);
-      toast({
-        title: "MCQs Generated!",
-        description: `${result.mcqs.length} MCQs for "${data.topic}" are ready.`,
-      });
-    } catch (err) {
-      console.error("MCQ generation error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-      setError(errorMessage);
-      toast({
-        title: "Generation Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await runGenerateMcqs(data);
   };
 
   return (
@@ -108,19 +96,26 @@ export function McqGenerator() {
               )}
             />
           </div>
-          <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
-                Generate MCQs
-              </>
+          <div className="flex gap-2">
+            <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
+                {isLoading ? (
+                <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                </>
+                ) : (
+                <>
+                    <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                    Generate MCQs
+                </>
+                )}
+            </Button>
+             {generatedMcqs && (
+                <Button type="button" variant="outline" onClick={handleReset} className="rounded-lg">
+                    Clear
+                </Button>
             )}
-          </Button>
+          </div>
         </form>
       </Form>
 
@@ -131,7 +126,7 @@ export function McqGenerator() {
         </Alert>
       )}
 
-      {generatedMcqs && (
+      {generatedMcqs && !isLoading && (
         <Card className="shadow-md rounded-xl mt-6 border-accent/30 bg-gradient-to-br from-card via-card to-accent/5">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">

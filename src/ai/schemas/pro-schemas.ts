@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview Defines Zod schemas for Professional Mode specific tools.
  */

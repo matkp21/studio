@@ -1,3 +1,4 @@
+
 // src/components/pro/triage-and-referral.tsx
 "use client";
 
@@ -31,9 +32,10 @@ export function TriageAndReferral() {
   const { toast } = useToast();
 
   const handleAnalysisComplete = async (result: SymptomAnalyzerOutput | null, err?: string, rawInput?: SymptomAnalyzerInput) => {
+    // This handler is now responsible for triggering the orchestrator
     if (err) {
         setError(err);
-        setIsLoading(false);
+        setIsLoading(false); // Stop loading if initial analysis fails
         return;
     }
     if (rawInput) {
@@ -52,6 +54,29 @@ export function TriageAndReferral() {
     }
     setIsLoading(false);
   };
+  
+  const handleSymptomFormSubmit = async (rawInput: SymptomAnalyzerInput) => {
+    setIsLoading(true);
+    setAnalysisResult(null);
+    setError(null);
+    
+    // The parent now directly calls the orchestrator
+    try {
+        const triageResult = await triageAndReferral(rawInput);
+        setAnalysisResult(triageResult);
+        toast({
+            title: "Triage & Referral Draft Complete",
+            description: `Analysis complete. A referral draft was ${triageResult.referralDraft ? 'generated' : 'not required'}.`,
+        });
+    } catch (triageError) {
+        const errorMessage = triageError instanceof Error ? triageError.message : "An unknown error occurred during triage.";
+        setError(errorMessage);
+        toast({ title: "Orchestration Failed", description: errorMessage, variant: "destructive" });
+    } finally {
+        setIsLoading(false);
+    }
+  }
+
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
@@ -63,8 +88,13 @@ export function TriageAndReferral() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+            {/* The SymptomForm's onAnalysisComplete is repurposed to just trigger the orchestrator */}
             <SymptomForm 
-                onAnalysisComplete={handleAnalysisComplete}
+                onAnalysisComplete={(_, __, rawInput) => {
+                    if (rawInput) {
+                        handleSymptomFormSubmit(rawInput);
+                    }
+                }}
                 setIsLoading={setIsLoading} 
                 isLoading={isLoading}
             />
@@ -107,7 +137,7 @@ export function TriageAndReferral() {
           </CardContent>
         </Card>
 
-        {analysisResult?.referralDraft && (
+        {analysisResult?.referralDraft && !isLoading && (
              <Card className="shadow-lg border-green-500/50 rounded-xl animate-fade-in">
                 <CardHeader>
                     <CardTitle className="text-xl flex items-center gap-2 text-green-600"><FileText/>AI-Drafted Referral</CardTitle>
