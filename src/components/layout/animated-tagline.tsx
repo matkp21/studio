@@ -1,3 +1,4 @@
+
 // src/components/layout/animated-tagline.tsx
 "use client";
 
