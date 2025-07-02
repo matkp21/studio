@@ -26,7 +26,7 @@ import {
 import { ScrollArea } from '../ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, Reorder } from 'framer-motion';
 
 type ActiveToolId =
   | 'papers'
@@ -101,7 +101,7 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
         aria-label={`Launch ${tool.title}`}
       >
         {isEditMode && (
-          <GripVertical className="absolute top-2 right-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder (conceptual)" />
+          <GripVertical className="absolute top-2 right-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder" />
         )}
         {isFrequentlyUsed && !isEditMode && (
           <Star className="absolute top-2 right-2 h-5 w-5 text-yellow-400 fill-yellow-400 z-10" />
@@ -149,7 +149,7 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
 export function MedicoDashboard() {
   const [activeDialog, setActiveDialog] = useState<ActiveToolId>(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [displayedTools] = useState<MedicoTool[]>(medicoToolsList);
+  const [displayedTools, setDisplayedTools] = useState<MedicoTool[]>(medicoToolsList);
 
   const currentTool = displayedTools.find(tool => tool.id === activeDialog);
 
@@ -171,69 +171,107 @@ export function MedicoDashboard() {
         </Button>
       </div>
 
-      {isEditMode && (
-        <div className="p-4 mb-6 border border-dashed border-primary/50 rounded-lg bg-primary/5 text-center animate-pulse-medical" style={{"--medical-pulse-opacity-base": "1", "--medical-pulse-opacity-peak": "0.9", "--medical-pulse-scale-peak": "1.01"} as React.CSSProperties}>
-            <p className="text-sm text-primary">
-                Dashboard customization mode is active. Drag tool cards to reorder. (Drag functionality is conceptual for future versions).
-            </p>
-        </div>
-      )}
-
-      {frequentlyUsedTools.length > 0 && (
-        <section className="mb-10">
-          <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
-            <Star className="mr-2 h-6 w-6 text-yellow-400 fill-yellow-400"/> Frequently Used
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {frequentlyUsedTools.map((tool) => (
-              <Dialog key={`${tool.id}-freq`} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
-                <MedicoToolCard tool={tool} onLaunch={setActiveDialog} isFrequentlyUsed isEditMode={isEditMode} />
-                {!tool.comingSoon && tool.component && activeDialog === tool.id && (
-                    <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
-                        <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
-                        <DialogTitle className="text-2xl flex items-center gap-2">
-                            <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
-                        </DialogTitle>
-                        <DialogDescription>{tool.description}</DialogDescription>
-                        </DialogHeader>
-                        <ScrollArea className="flex-grow overflow-y-auto">
-                        <div className="p-6 pt-2">
-                            <tool.component />
-                        </div>
-                        </ScrollArea>
-                    </DialogContent>
-                )}
-              </Dialog>
-            ))}
+      {isEditMode ? (
+        <>
+          <div className="p-4 mb-6 border border-dashed border-primary/50 rounded-lg bg-primary/5 text-center">
+              <p className="text-sm text-primary">
+                  Customize Dashboard: Drag and drop the tool cards below to reorder your dashboard.
+              </p>
           </div>
-        </section>
-      )}
+          <Reorder.Group
+            as="div"
+            values={displayedTools}
+            onReorder={setDisplayedTools}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+          >
+            {displayedTools.map((tool) => (
+              <Reorder.Item key={tool.id} value={tool} layout>
+                <Dialog open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
+                  <MedicoToolCard 
+                    tool={tool} 
+                    onLaunch={setActiveDialog} 
+                    isFrequentlyUsed={frequentlyUsedMedicoToolIds.includes(tool.id)} 
+                    isEditMode={isEditMode} 
+                  />
+                  {!tool.comingSoon && tool.component && activeDialog === tool.id && (
+                      <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
+                          <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
+                          <DialogTitle className="text-2xl flex items-center gap-2">
+                              <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
+                          </DialogTitle>
+                          <DialogDescription>{tool.description}</DialogDescription>
+                          </DialogHeader>
+                          <ScrollArea className="flex-grow overflow-y-auto">
+                          <div className="p-6 pt-2">
+                              <tool.component />
+                          </div>
+                          </ScrollArea>
+                      </DialogContent>
+                  )}
+                </Dialog>
+              </Reorder.Item>
+            ))}
+          </Reorder.Group>
+        </>
+      ) : (
+        <>
+          {frequentlyUsedTools.length > 0 && (
+            <section className="mb-10">
+              <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
+                <Star className="mr-2 h-6 w-6 text-yellow-400 fill-yellow-400"/> Frequently Used
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {frequentlyUsedTools.map((tool) => (
+                  <Dialog key={`${tool.id}-freq`} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
+                    <MedicoToolCard tool={tool} onLaunch={setActiveDialog} isFrequentlyUsed isEditMode={isEditMode} />
+                    {!tool.comingSoon && tool.component && activeDialog === tool.id && (
+                        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
+                            <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
+                            <DialogTitle className="text-2xl flex items-center gap-2">
+                                <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
+                            </DialogTitle>
+                            <DialogDescription>{tool.description}</DialogDescription>
+                            </DialogHeader>
+                            <ScrollArea className="flex-grow overflow-y-auto">
+                            <div className="p-6 pt-2">
+                                <tool.component />
+                            </div>
+                            </ScrollArea>
+                        </DialogContent>
+                    )}
+                  </Dialog>
+                ))}
+              </div>
+            </section>
+          )}
 
-      <section>
-        <h2 className="text-2xl font-semibold text-foreground mb-5">All Medico Tools</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {otherTools.map((tool) => (
-            <Dialog key={tool.id} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
-                <MedicoToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
-                {!tool.comingSoon && tool.component && activeDialog === tool.id && (
-                     <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
-                        <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
-                        <DialogTitle className="text-2xl flex items-center gap-2">
-                            <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
-                        </DialogTitle>
-                        <DialogDescription>{tool.description}</DialogDescription>
-                        </DialogHeader>
-                        <ScrollArea className="flex-grow overflow-y-auto">
-                        <div className="p-6 pt-2">
-                            <tool.component />
-                        </div>
-                        </ScrollArea>
-                    </DialogContent>
-                )}
-            </Dialog>
-          ))}
-        </div>
-      </section>
+          <section>
+            <h2 className="text-2xl font-semibold text-foreground mb-5">All Medico Tools</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {otherTools.map((tool) => (
+                <Dialog key={tool.id} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
+                    <MedicoToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
+                    {!tool.comingSoon && tool.component && activeDialog === tool.id && (
+                         <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
+                            <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
+                            <DialogTitle className="text-2xl flex items-center gap-2">
+                                <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
+                            </DialogTitle>
+                            <DialogDescription>{tool.description}</DialogDescription>
+                            </DialogHeader>
+                            <ScrollArea className="flex-grow overflow-y-auto">
+                            <div className="p-6 pt-2">
+                                <tool.component />
+                            </div>
+                            </ScrollArea>
+                        </DialogContent>
+                    )}
+                </Dialog>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
     </div>
   );
 }
