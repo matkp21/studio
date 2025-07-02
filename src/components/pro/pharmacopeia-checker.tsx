@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,7 @@ import { Pill, AlertTriangle, Search, Loader2, Info, BookText } from 'lucide-rea
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { cn } from '@/lib/utils';
 
 interface DrugInfo {
   name: string;
@@ -59,6 +60,17 @@ const sampleDrugDatabase: Record<string, DrugInfo> = {
     interactions: [
       { drugName: "cimetidine", severity: "Moderate", description: "May increase metformin levels." }
     ]
+  },
+  "warfarin": {
+    name: "Warfarin",
+    dosageForms: ["Tablet 1mg", "Tablet 2mg", "Tablet 5mg"],
+    indications: ["Prevention and treatment of thromboembolic disorders"],
+    contraindications: ["Hemorrhagic tendencies", "Recent surgery", "Pregnancy"],
+    sideEffects: ["Bleeding", "Skin necrosis (rare)"],
+    interactions: [
+      { drugName: "aspirin", severity: "High", description: "Increased risk of bleeding." },
+      { drugName: "amiodarone", severity: "High", description: "Amiodarone increases warfarin effect." }
+    ]
   }
 };
 
@@ -68,6 +80,7 @@ export function PharmacopeiaChecker() {
   const [drugInfo, setDrugInfo] = useState<DrugInfo | null>(null);
   const [interactionResult, setInteractionResult] = useState<InteractionInfo[] | string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchType, setSearchType] = useState<'info' | 'interaction' | null>(null);
   const { toast } = useToast();
 
   const handleSearchDrug = async () => {
@@ -76,6 +89,7 @@ export function PharmacopeiaChecker() {
       return;
     }
     setIsLoading(true);
+    setSearchType('info');
     setDrugInfo(null);
     setInteractionResult(null); 
 
@@ -91,6 +105,7 @@ export function PharmacopeiaChecker() {
       toast({ title: "Drug Not Found", description: `No information found for "${drugName1}".`, variant: "default" });
     }
     setIsLoading(false);
+    setSearchType(null);
   };
 
   const handleCheckInteraction = async () => {
@@ -103,6 +118,7 @@ export function PharmacopeiaChecker() {
         return;
     }
     setIsLoading(true);
+    setSearchType('interaction');
     setInteractionResult(null);
     setDrugInfo(null); // Clear single drug info when checking interactions
 
@@ -113,13 +129,12 @@ export function PharmacopeiaChecker() {
     const drug2Data = sampleDrugDatabase[drugName2.trim().toLowerCase()];
 
     if (drug1Data && drug2Data) {
-      const interaction1to2 = drug1Data.interactions?.find(inter => inter.drugName.toLowerCase() === drugName2.trim().toLowerCase());
-      const interaction2to1 = drug2Data.interactions?.find(inter => inter.drugName.toLowerCase() === drugName1.trim().toLowerCase());
-      
       const results: InteractionInfo[] = [];
-      if (interaction1to2) results.push({ ...interaction1to2, drugName: `${drug1Data.name} with ${drug2Data.name}`});
-      // Avoid duplicate if interaction is symmetric and defined in both
-      if (interaction2to1 && !results.some(r => r.description === interaction2to1.description)) {
+      const interaction1to2 = drug1Data.interactions?.find(inter => inter.drugName.toLowerCase() === drugName2.trim().toLowerCase());
+      if (interaction1to2) results.push({ ...interaction1to2, drugName: `${drug1Data.name} with ${drug2Data.name}` });
+
+      const interaction2to1 = drug2Data.interactions?.find(inter => inter.drugName.toLowerCase() === drugName1.trim().toLowerCase());
+      if (interaction2to1 && !results.some(r => r.drugName.includes(drug2Data.name))) {
          results.push({ ...interaction2to1, drugName: `${drug2Data.name} with ${drug1Data.name}`});
       }
 
@@ -138,6 +153,7 @@ export function PharmacopeiaChecker() {
       toast({ title: "Drug(s) Not Found", description: notFoundMessage, variant: "default" });
     }
     setIsLoading(false);
+    setSearchType(null);
   };
 
   return (
@@ -165,7 +181,7 @@ export function PharmacopeiaChecker() {
               <Input id="drug-name1" value={drugName1} onChange={e => setDrugName1(e.target.value)} placeholder="e.g., Aspirin" className="mt-1 rounded-lg"/>
             </div>
             <Button onClick={handleSearchDrug} disabled={isLoading || !drugName1.trim()} className="w-full md:w-auto rounded-lg group">
-              {isLoading && drugInfo===null && interactionResult===null ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
+              {isLoading && searchType === 'info' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
               Search Drug Info
             </Button>
           </div>
@@ -175,14 +191,14 @@ export function PharmacopeiaChecker() {
               <Input id="drug-name2" value={drugName2} onChange={e => setDrugName2(e.target.value)} placeholder="e.g., Warfarin" className="mt-1 rounded-lg"/>
             </div>
             <Button onClick={handleCheckInteraction} disabled={isLoading || !drugName1.trim() || !drugName2.trim()} className="w-full md:w-auto rounded-lg group">
-              {isLoading && (drugInfo !== null || interactionResult !==null) ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <AlertTriangle className="mr-2 h-4 w-4" />}
+              {isLoading && searchType === 'interaction' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <AlertTriangle className="mr-2 h-4 w-4" />}
               Check Interactions
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {isLoading && !drugInfo && !interactionResult && (
+      {isLoading && (
          <div className="flex justify-center items-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="ml-2 text-muted-foreground">Loading data...</p>
@@ -212,7 +228,7 @@ export function PharmacopeiaChecker() {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              Interaction Results for {drugName1} & {drugName2}
+              Interaction Results for {drugName1} &amp; {drugName2}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -226,10 +242,14 @@ export function PharmacopeiaChecker() {
               <ScrollArea className="h-[200px] p-1">
                 <div className="space-y-3 p-2">
                   {interactionResult.map((interaction, index) => (
-                    <div key={index} className="p-3 border rounded-md bg-muted/50">
-                      <p className="font-semibold text-destructive">{interaction.drugName}</p>
+                    <div key={index} className={cn("p-3 border rounded-md", 
+                        interaction.severity === 'High' ? 'border-destructive/50 bg-destructive/10' :
+                        interaction.severity === 'Moderate' ? 'border-orange-500/50 bg-orange-500/10' :
+                        'border-border'
+                    )}>
+                      <p className="font-semibold text-foreground">{interaction.drugName}</p>
                       <p><Label>Severity:</Label> <span className={`font-medium ${interaction.severity === 'High' ? 'text-red-600' : interaction.severity === 'Moderate' ? 'text-orange-500' : 'text-green-600'}`}>{interaction.severity}</span></p>
-                      <p><Label>Description:</Label> {interaction.description}</p>
+                      <p className="text-sm"><Label>Description:</Label> {interaction.description}</p>
                     </div>
                   ))}
                 </div>
