@@ -1,3 +1,4 @@
+
 // src/components/pro/on-call-handover-assistant.tsx
 "use client";
 
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Users, Lightbulb, Edit3, ClipboardCopy, SendHorizonal, AlertTriangle, ShieldCheck, UserPlus } from 'lucide-react'; // Added UserPlus
+import { Users, Lightbulb, Edit3, ClipboardCopy, SendHorizonal, AlertTriangle, ShieldCheck, UserPlus } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Checkbox } from '@/components/ui/checkbox';
 
