@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { auth } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, FirebaseError } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
@@ -38,9 +38,9 @@ const SignUpPage = () => {
         description: "Welcome to MediAssistant. Please log in.",
       });
       router.push("/login"); // Redirect to login page after successful signup
-    } catch (err) {
+    } catch (err: any) {
       let errorMessage = "Failed to create an account.";
-      if (err instanceof FirebaseError) {
+      if (err && err.code) {
         switch (err.code) {
           case 'auth/email-already-in-use':
             errorMessage = "This email address is already in use.";

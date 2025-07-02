@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword, FirebaseError } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -33,9 +33,9 @@ const LoginPage = () => {
         description: "Welcome back to MediAssistant.",
       });
       router.push("/"); // Redirect to homepage or dashboard
-    } catch (err) {
+    } catch (err: any) {
       let errorMessage = "Failed to log in. Please check your credentials.";
-      if (err instanceof FirebaseError) {
+      if (err && err.code) {
         switch (err.code) {
           case "auth/user-not-found":
           case "auth/wrong-password":
