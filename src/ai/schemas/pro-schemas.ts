@@ -1,8 +1,8 @@
-
 /**
  * @fileOverview Defines Zod schemas for Professional Mode specific tools.
  */
 import { z } from 'zod'; // Use z from zod directly for schema definitions
+import { SymptomAnalyzerOutputSchema } from './symptom-analyzer-schemas';
 
 // Schema for Discharge Summary Generator
 export const DischargeSummaryInputSchema = z.object({
@@ -24,5 +24,12 @@ export const DischargeSummaryOutputSchema = z.object({
   notesForDoctor: z.string().optional().describe("Any specific notes, suggestions, or reminders from the AI for the reviewing doctor. This is for the AI to provide meta-comments to the clinician, e.g., 'Consider checking renal function before starting Drug X if not already done.'")
 });
 export type DischargeSummaryOutput = z.infer<typeof DischargeSummaryOutputSchema>;
+
+
+// Schema for the Triage and Referral Coordinator Agent
+export const TriageAndReferralOutputSchema = z.object({
+  analysis: SymptomAnalyzerOutputSchema.describe("The initial symptom analysis result."),
+  referralDraft: DischargeSummaryOutputSchema.optional().describe("The drafted referral summary, generated only if a high-confidence diagnosis was found."),
+});
 
 // Add other Professional Mode tool schemas here as they are developed.

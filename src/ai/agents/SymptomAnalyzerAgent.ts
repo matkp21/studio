@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent that analyzes symptoms and provides potential diagnoses,
@@ -15,6 +14,7 @@ import { SymptomAnalyzerInputSchema, SymptomAnalyzerOutputSchema } from '@/ai/sc
 
 export type SymptomAnalyzerInput = z.infer<typeof SymptomAnalyzerInputSchema>;
 export type SymptomAnalyzerOutput = z.infer<typeof SymptomAnalyzerOutputSchema>;
+export type { DiagnosisItem, InvestigationItem } from '@/ai/schemas/symptom-analyzer-schemas';
 
 export async function analyzeSymptoms(input: SymptomAnalyzerInput): Promise<SymptomAnalyzerOutput> {
   return symptomAnalyzerFlow(input);

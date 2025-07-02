@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { cn } from '@/lib/utils';
 import {
   Brain, ClipboardCheck, Users, Mic, BarChart3, BriefcaseMedical,
-  FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, ArrowRight, Settings, Star, GripVertical, CheckSquare
+  FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, ArrowRight, Settings, Star, GripVertical, CheckSquare, ArrowRightLeft
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -26,6 +26,7 @@ import { ReferralStreamliner } from './referral-streamliner';
 import { PatientCommunicationDrafter } from './patient-communication-drafter';
 import { OnCallHandoverAssistant } from './on-call-handover-assistant';
 import { ResearchSummarizer } from './research-summarizer';
+import { TriageAndReferral } from './triage-and-referral'; // Import the new component
 
 type ActiveToolId =
   | 'diffDx'
@@ -39,6 +40,7 @@ type ActiveToolId =
   | 'onCallHandover'
   | 'research'
   | 'discharge'
+  | 'smartTriage' // New tool ID for the coordinator
   | null;
 
 interface ProTool {
@@ -51,7 +53,8 @@ interface ProTool {
 }
 
 const allProToolsList: ProTool[] = [
-  { id: 'diffDx', title: 'Differential Diagnosis Assistant', description: 'AI-powered suggestions (inspired by the reasoning of MedGemma/MedLM), investigations, and initial management steps.', icon: Brain, component: DifferentialDiagnosisAssistant, comingSoon: false },
+  { id: 'smartTriage', title: 'Smart Triage & Referral', description: 'AI coordinator analyzes symptoms and drafts a referral if needed.', icon: ArrowRightLeft, component: TriageAndReferral, comingSoon: false },
+  { id: 'diffDx', title: 'Differential Diagnosis Assistant', description: 'AI-powered suggestions, investigations, and initial management steps.', icon: Brain, component: DifferentialDiagnosisAssistant, comingSoon: false },
   { id: 'discharge', title: 'Discharge Summary Generator', description: 'Ultra-streamlined, predictive discharge summary creation.', icon: FilePlus, component: DischargeSummaryGenerator, comingSoon: false },
   { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator, comingSoon: false },
   { id: 'rounds', title: 'Patient Rounds Tool', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool, comingSoon: false },
@@ -65,7 +68,7 @@ const allProToolsList: ProTool[] = [
 ];
 
 // Simulate frequently used tools - in a real app, this would be dynamic
-const frequentlyUsedToolIds: ActiveToolId[] = ['diffDx', 'discharge', 'rounds', 'pharmacopeia'];
+const frequentlyUsedToolIds: ActiveToolId[] = ['smartTriage', 'discharge', 'rounds', 'pharmacopeia'];
 
 interface ToolCardProps {
   tool: ProTool;
@@ -112,8 +115,8 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
                 )} />
             </div>
             <CardTitle className={cn(
-                "text-lg leading-tight",
-                !isEditMode && "group-hover:text-foreground"
+                "text-lg leading-tight text-foreground",
+                 !isEditMode && "group-hover:text-primary"
             )}>{tool.title}</CardTitle>
           </div>
           <CardDescription className="text-xs leading-relaxed line-clamp-2 min-h-[2.5em]">{tool.description}</CardDescription>
