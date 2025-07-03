@@ -1,15 +1,13 @@
 // src/app/medico/library/page.tsx
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { firestore } from '@/lib/firebase';
-import { collection, query, where, getDocs, orderBy, Timestamp, addDoc, serverTimestamp } from 'firebase/firestore';
-import { PageWrapper } from '@/components/layout/page-wrapper';
-import { Loader2, Library, BookOpen, FileQuestion, StickyNote, Users, UploadCloud } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { collection, query, where, getDocs, orderBy, Timestamp, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { Loader2, Library, BookOpen, FileQuestion, Users, UploadCloud, Bookmark, BookmarkCheck, BookmarkX } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { MCQSchema } from '@/ai/schemas/medico-tools-schemas';
@@ -20,33 +18,82 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Define types for library items
-interface MyLibraryItem {
+type LibraryItemType = 'notes' | 'mcqs' | 'summary' | 'mnemonic' | 'communityNote' | 'communityMnemonic';
+
+interface BaseLibraryItem {
   id: string;
-  type: 'notes' | 'mcqs';
+  type: LibraryItemType;
   topic: string;
   createdAt: Timestamp;
-  // notes-specific fields
+  userId?: string;
+}
+
+interface MyLibraryItem extends BaseLibraryItem {
   notes?: string;
   summaryPoints?: string[];
-  // mcqs-specific fields
   mcqs?: MCQSchema[];
   difficulty?: 'easy' | 'medium' | 'hard';
   examType?: 'university' | 'neet-pg' | 'usmle';
+  summary?: string;
+  originalFileName?: string;
 }
 
-interface CommunityLibraryItem {
-  id: string;
-  type: 'Note' | 'Mnemonic';
-  topic: string;
+interface CommunityLibraryItem extends BaseLibraryItem {
   content: string;
   authorId: string;
   authorName: string;
-  createdAt: Timestamp;
   status: 'pending' | 'approved' | 'rejected';
 }
+
+type CombinedLibraryItem = MyLibraryItem | CommunityLibraryItem;
+
+// LibraryCard component
+interface LibraryCardProps {
+    item: CombinedLibraryItem;
+    isBookmarked: boolean;
+    onToggleBookmark: (itemId: string, itemType: LibraryItemType) => void;
+    onViewItem: (item: CombinedLibraryItem) => void;
+}
+
+const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: LibraryCardProps) => {
+    const getIcon = (type: LibraryItemType) => {
+        switch (type) {
+            case 'mcqs': return FileQuestion;
+            case 'notes':
+            case 'summary':
+            case 'communityNote':
+                return BookOpen;
+            default: return Library;
+        }
+    };
+    const Icon = getIcon(item.type);
+
+    return (
+        <Card className="shadow-md rounded-xl overflow-hidden hover:shadow-primary/20 transition-all duration-300 group flex flex-col">
+            <CardHeader className="p-4 pb-2">
+                <div className="flex justify-between items-start">
+                    <Icon className="h-6 w-6 text-primary mb-2 flex-shrink-0"/>
+                    <Button variant="ghost" size="iconSm" onClick={(e) => { e.stopPropagation(); onToggleBookmark(item.id, item.type); }} className="text-muted-foreground hover:text-primary">
+                        {isBookmarked ? <BookmarkCheck className="h-5 w-5 text-primary"/> : <Bookmark className="h-5 w-5"/>}
+                    </Button>
+                </div>
+                <CardTitle className="text-md line-clamp-2 font-semibold h-12">{item.topic}</CardTitle>
+                <CardDescription className="text-xs">
+                    Type: <span className="capitalize">{item.type.replace('community', '')}</span> | {format(item.createdAt.toDate(), 'dd MMM yyyy')}
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 pt-2 flex-grow flex items-end">
+                <Button variant="outline" size="sm" className="w-full text-xs" onClick={() => onViewItem(item)}>
+                    View Details
+                </Button>
+            </CardContent>
+        </Card>
+    );
+};
+
 
 export default function StudyLibraryPage() {
   const { user, loading: authLoading } = useProMode();
@@ -54,70 +101,82 @@ export default function StudyLibraryPage() {
   
   const [myLibraryItems, setMyLibraryItems] = useState<MyLibraryItem[]>([]);
   const [communityItems, setCommunityItems] = useState<CommunityLibraryItem[]>([]);
+  const [bookmarkedItemIds, setBookmarkedItemIds] = useState<string[]>([]);
+  const [activeItem, setActiveItem] = useState<CombinedLibraryItem | null>(null);
   
-  const [isLoadingMyLibrary, setIsLoadingMyLibrary] = useState(true);
-  const [isLoadingCommunity, setIsLoadingCommunity] = useState(true);
-
+  const [isLoading, setIsLoading] = useState(true);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [uploadTopic, setUploadTopic] = useState('');
-  const [uploadType, setUploadType] = useState<'Note' | 'Mnemonic'>('Note');
+  const [uploadType, setUploadType] = useState<'communityNote' | 'communityMnemonic'>('communityNote');
   const [uploadContent, setUploadContent] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
+  const fetchUserData = useCallback(async () => {
+    if (!user) {
+      if (!authLoading) setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      // Fetch personal library
+      const libraryQuery = query(collection(firestore, `users/${user.uid}/studyLibrary`), orderBy('createdAt', 'desc'));
+      const librarySnapshot = await getDocs(libraryQuery);
+      const personalItems = librarySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MyLibraryItem));
+      setMyLibraryItems(personalItems);
+
+      // Fetch community items
+      const communityQuery = query(collection(firestore, 'communityLibrary'), where('status', '==', 'approved'), orderBy('createdAt', 'desc'));
+      const communitySnapshot = await getDocs(communityQuery);
+      const approvedCommunityItems = communitySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as CommunityLibraryItem));
+      setCommunityItems(approvedCommunityItems);
+      
+      // Fetch bookmarks
+      const userDocRef = doc(firestore, `users/${user.uid}`);
+      const userDoc = await getDocs(query(collection(firestore, `users`), where('__name__', '==', user.uid))); // Using a query to get a single doc
+      if (!userDoc.empty) {
+        setBookmarkedItemIds(userDoc.docs[0].data().bookmarkedItems || []);
+      }
+    } catch (error) {
+      console.error("Error fetching library data:", error);
+      toast({ title: "Error", description: "Could not fetch library content.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user, authLoading, toast]);
+
 
   useEffect(() => {
-    const fetchMyLibraryContent = async () => {
-      if (!user) {
-        if (!authLoading) setIsLoadingMyLibrary(false);
-        return;
-      }
-      setIsLoadingMyLibrary(true);
-      try {
-        const libraryQuery = query(
-          collection(firestore, `users/${user.uid}/studyLibrary`),
-          orderBy('createdAt', 'desc')
-        );
-        const querySnapshot = await getDocs(libraryQuery);
-        const items = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        } as MyLibraryItem));
-        setMyLibraryItems(items);
-      } catch (error) {
-        console.error("Error fetching study library:", error);
-      } finally {
-        setIsLoadingMyLibrary(false);
-      }
-    };
+    fetchUserData();
+  }, [fetchUserData]);
 
-    fetchMyLibraryContent();
-  }, [user, authLoading]);
-  
-  useEffect(() => {
-    const fetchCommunityLibrary = async () => {
-        setIsLoadingCommunity(true);
-        try {
-            const communityQuery = query(
-                collection(firestore, `communityLibrary`),
-                where('status', '==', 'approved'),
-                orderBy('createdAt', 'desc')
-            );
-            const querySnapshot = await getDocs(communityQuery);
-            const items = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            } as CommunityLibraryItem));
-            setCommunityItems(items);
-        } catch (error) {
-            console.error("Error fetching community library:", error);
-        } finally {
-            setIsLoadingCommunity(false);
-        }
-    };
-    fetchCommunityLibrary();
-  }, []);
+  const handleToggleBookmark = async (itemId: string) => {
+    if (!user) return;
+    const userDocRef = doc(firestore, `users/${user.uid}`);
+    const isCurrentlyBookmarked = bookmarkedItemIds.includes(itemId);
+
+    try {
+      if (isCurrentlyBookmarked) {
+        await updateDoc(userDocRef, { bookmarkedItems: arrayRemove(itemId) });
+        setBookmarkedItemIds(prev => prev.filter(id => id !== itemId));
+        toast({ title: "Bookmark Removed" });
+      } else {
+        await updateDoc(userDocRef, { bookmarkedItems: arrayUnion(itemId) });
+        setBookmarkedItemIds(prev => [...prev, itemId]);
+        toast({ title: "Bookmarked!" });
+      }
+    } catch (error) {
+      console.error("Error updating bookmarks:", error);
+      toast({ title: "Error", description: "Could not update bookmark.", variant: "destructive" });
+    }
+  };
+
+  const bookmarkedItems = useMemo(() => {
+    const allItems = [...myLibraryItems, ...communityItems];
+    return allItems.filter(item => bookmarkedItemIds.includes(item.id));
+  }, [myLibraryItems, communityItems, bookmarkedItemIds]);
 
   const handleUploadSubmit = async () => {
+    // ... (rest of the upload logic is the same)
     if (!uploadTopic.trim() || !uploadContent.trim()) {
         toast({ title: "Missing Information", description: "Please provide a topic and content to upload.", variant: "destructive" });
         return;
@@ -133,14 +192,14 @@ export default function StudyLibraryPage() {
             topic: uploadTopic,
             content: uploadContent,
             authorId: user.uid,
-            authorName: user.displayName || "Anonymous Medico",
+            authorName: user.displayName || user.email || "Anonymous Medico",
             status: 'pending', // All uploads start as pending for moderation
             createdAt: serverTimestamp(),
         });
         toast({ title: "Upload Successful!", description: "Your content has been submitted for review. Thank you for contributing!" });
         setIsUploadDialogOpen(false);
         setUploadTopic('');
-        setUploadType('Note');
+        setUploadType('communityNote');
         setUploadContent('');
     } catch (error) {
         console.error("Error uploading content:", error);
@@ -149,44 +208,93 @@ export default function StudyLibraryPage() {
         setIsUploading(false);
     }
   };
+  
+  const renderItemDetails = (item: CombinedLibraryItem) => {
+    const myItem = item as MyLibraryItem;
+    const commItem = item as CommunityLibraryItem;
 
-
-  if (authLoading) {
+    switch(item.type) {
+        case 'notes': case 'summary':
+            return (
+                <>
+                  {myItem.summaryPoints && myItem.summaryPoints.length > 0 && (
+                  <div className="mb-4">
+                      <h4 className="font-semibold text-md mb-2 text-primary">Key Points:</h4>
+                      <ul className="list-disc list-inside ml-4 space-y-1 text-sm bg-secondary/50 p-3 rounded-md">
+                          {myItem.summaryPoints.map((point, index) => <li key={index}>{point}</li>)}
+                      </ul>
+                  </div>
+                  )}
+                  <div className="whitespace-pre-wrap text-sm prose prose-sm dark:prose-invert max-w-none">{myItem.notes || myItem.summary}</div>
+                </>
+            );
+        case 'mcqs':
+            return (
+                <div className="space-y-4">
+                {myItem.mcqs?.map((mcq, index) => (
+                  <Card key={index} className="p-3 bg-card/80 shadow-sm rounded-lg">
+                    <p className="font-semibold mb-2 text-foreground text-sm">Q{index + 1}: {mcq.question}</p>
+                    <ul className="space-y-1.5 text-xs">
+                      {mcq.options.map((opt, optIndex) => (
+                        <li key={optIndex} className={cn("p-2 border rounded-md transition-colors", opt.isCorrect ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400 font-medium" : "border-border")}>
+                          {String.fromCharCode(65 + optIndex)}. {opt.text}
+                        </li>
+                      ))}
+                    </ul>
+                    {mcq.explanation && (
+                      <p className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
+                        <span className="font-semibold">Explanation:</span> {mcq.explanation}
+                      </p>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            );
+        case 'communityNote': case 'communityMnemonic':
+            return <div className="whitespace-pre-wrap text-sm">{commItem.content}</div>;
+        default: return <p>No details to display.</p>
+    }
+  }
+  
+  const renderTabContent = (items: CombinedLibraryItem[], tabName: string) => {
+    if (isLoading) {
+        return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+    }
+    if (items.length === 0) {
+        return <p className="text-center text-muted-foreground p-8">{tabName} is empty.</p>;
+    }
     return (
-      <PageWrapper title="Loading Study Library...">
-        <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
-          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {items.map(item => (
+                <LibraryCard 
+                    key={item.id} 
+                    item={item}
+                    isBookmarked={bookmarkedItemIds.includes(item.id)}
+                    onToggleBookmark={() => handleToggleBookmark(item.id)}
+                    onViewItem={setActiveItem}
+                />
+            ))}
         </div>
-      </PageWrapper>
     );
-  }
+  };
 
-  if (!user) {
-    return (
-      <PageWrapper title="Access Denied">
-        <p>You must be logged in to view your Study Library.</p>
-      </PageWrapper>
-    );
-  }
+
+  if (authLoading) return <div className="flex justify-center items-center min-h-[calc(100vh-200px)]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
+  if (!user) return <div className="text-center p-8">You must be logged in to view the study library.</div>;
 
   return (
-    <PageWrapper title="Study Library" className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto py-6">
       <Card className="shadow-lg rounded-xl border-border/50">
         <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-          <div>
-            <CardTitle className="text-2xl flex items-center gap-2">
-              <Library className="h-7 w-7 text-primary" />
-              Your Knowledge Hub
-            </CardTitle>
-            <CardDescription>
-              Access your saved study materials and explore content shared by the community.
-            </CardDescription>
-          </div>
-          <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+            <div>
+            <CardTitle className="text-2xl flex items-center gap-2 text-primary"><Library className="h-7 w-7" />Knowledge Hub</CardTitle>
+            <CardDescription>Your personal and community-driven study library.</CardDescription>
+            </div>
+             <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
             <DialogTrigger asChild>
                  <Button className="mt-4 sm:mt-0 rounded-lg group">
                     <UploadCloud className="mr-2 h-4 w-4 transition-transform group-hover:-translate-y-0.5"/>
-                    Upload to Community
+                    Contribute
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
@@ -197,115 +305,49 @@ export default function StudyLibraryPage() {
                 <div className="space-y-4 py-2">
                     <div><Label htmlFor="upload-topic">Topic</Label><Input id="upload-topic" value={uploadTopic} onChange={(e) => setUploadTopic(e.target.value)} placeholder="e.g., Brachial Plexus"/></div>
                     <div><Label htmlFor="upload-type">Content Type</Label>
-                        <Select value={uploadType} onValueChange={(v) => setUploadType(v as 'Note' | 'Mnemonic')}>
+                        <Select value={uploadType} onValueChange={(v) => setUploadType(v as 'communityNote' | 'communityMnemonic')}>
                             <SelectTrigger id="upload-type"><SelectValue /></SelectTrigger>
-                            <SelectContent><SelectItem value="Note">Note</SelectItem><SelectItem value="Mnemonic">Mnemonic</SelectItem></SelectContent>
+                            <SelectContent><SelectItem value="communityNote">Note</SelectItem><SelectItem value="communityMnemonic">Mnemonic</SelectItem></SelectContent>
                         </Select>
                     </div>
-                    <div><Label htmlFor="upload-content">Content</Label><Textarea id="upload-content" value={uploadContent} onChange={(e) => setUploadContent(e.target.value)} placeholder={`Enter your ${uploadType.toLowerCase()} here...`} className="min-h-[150px]"/></div>
+                    <div><Label htmlFor="upload-content">Content</Label><Textarea id="upload-content" value={uploadContent} onChange={(e) => setUploadContent(e.target.value)} placeholder={`Enter your content here...`} className="min-h-[150px]"/></div>
                 </div>
-                <CardFooter className="p-0 pt-4">
+                <CardContent className="p-0 pt-4">
                     <Button onClick={handleUploadSubmit} disabled={isUploading} className="w-full">
                         {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <UploadCloud className="mr-2 h-4 w-4"/>}
                         Submit for Review
                     </Button>
-                </CardFooter>
+                </CardContent>
             </DialogContent>
           </Dialog>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="my-library" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="my-library"><BookOpen className="mr-2 h-4 w-4"/>My Saved Library</TabsTrigger>
-              <TabsTrigger value="community-library"><Users className="mr-2 h-4 w-4"/>Community Library</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="my-library"><BookOpen className="mr-2 h-4 w-4"/>My Library</TabsTrigger>
+              <TabsTrigger value="community"><Users className="mr-2 h-4 w-4"/>Community</TabsTrigger>
+              <TabsTrigger value="bookmarked"><Bookmark className="mr-2 h-4 w-4"/>Bookmarked</TabsTrigger>
             </TabsList>
-
-            <TabsContent value="my-library" className="mt-4">
-              {isLoadingMyLibrary ? (
-                 <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
-              ) : myLibraryItems.length === 0 ? (
-                  <p className="text-center text-muted-foreground p-8">Your personal library is empty. AI-generated notes and MCQs will be saved here automatically.</p>
-              ) : (
-                <Accordion type="single" collapsible className="w-full">
-                    {myLibraryItems.map(item => (
-                        <AccordionItem value={item.id} key={item.id}>
-                            <AccordionTrigger className="p-3 bg-muted/50 rounded-lg hover:no-underline text-left">
-                                <div className="flex items-center gap-2">
-                                {item.type === 'notes' ? <StickyNote className="h-4 w-4 text-primary flex-shrink-0"/> : <FileQuestion className="h-4 w-4 text-primary flex-shrink-0"/>}
-                                <div>
-                                    <p className="font-semibold">{item.topic}</p>
-                                    <p className="text-xs text-muted-foreground">Type: {item.type} | Saved: {format(item.createdAt.toDate(), 'PPP')}</p>
-                                </div>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="p-4 border rounded-b-lg -mt-1">
-                                {item.type === 'notes' && item.notes && (
-                                    <>
-                                        {item.summaryPoints && item.summaryPoints.length > 0 && (
-                                        <div className="mb-4">
-                                            <h4 className="font-semibold text-md mb-2 text-primary flex items-center"><StickyNote className="mr-2 h-4 w-4"/>Key Points:</h4>
-                                            <ul className="list-disc list-inside ml-4 space-y-1 text-sm bg-secondary/50 p-3 rounded-md">
-                                                {item.summaryPoints.map((point, index) => <li key={index}>{point}</li>)}
-                                            </ul>
-                                        </div>
-                                        )}
-                                        <div className="whitespace-pre-wrap text-sm prose prose-sm dark:prose-invert max-w-none">{item.notes}</div>
-                                    </>
-                                )}
-                                {item.type === 'mcqs' && item.mcqs && (
-                                    <div className="space-y-4">
-                                    {item.mcqs.map((mcq, index) => (
-                                      <Card key={index} className="p-3 bg-card/80 shadow-sm rounded-lg">
-                                        <p className="font-semibold mb-2 text-foreground text-sm">Q{index + 1}: {mcq.question}</p>
-                                        <ul className="space-y-1.5 text-xs">
-                                          {mcq.options.map((opt, optIndex) => (
-                                            <li key={optIndex} className={cn("p-2 border rounded-md transition-colors", opt.isCorrect ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400 font-medium" : "border-border")}>
-                                              {String.fromCharCode(65 + optIndex)}. {opt.text}
-                                            </li>
-                                          ))}
-                                        </ul>
-                                        {mcq.explanation && (
-                                          <p className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
-                                            <span className="font-semibold">Explanation:</span> {mcq.explanation}
-                                          </p>
-                                        )}
-                                      </Card>
-                                    ))}
-                                  </div>
-                                )}
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-              )}
-            </TabsContent>
-
-            <TabsContent value="community-library" className="mt-4">
-                 {isLoadingCommunity ? (
-                    <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
-                 ) : communityItems.length === 0 ? (
-                    <p className="text-center text-muted-foreground p-8">The community library is just getting started. Be the first to contribute!</p>
-                 ) : (
-                    <Accordion type="single" collapsible className="w-full">
-                         {communityItems.map(item => (
-                             <AccordionItem value={item.id} key={item.id}>
-                                <AccordionTrigger className="p-3 bg-muted/50 rounded-lg hover:no-underline text-left">
-                                     <div>
-                                        <p className="font-semibold">{item.topic}</p>
-                                        <p className="text-xs text-muted-foreground">Type: {item.type} | By: {item.authorName}</p>
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="p-4 border rounded-b-lg -mt-1 whitespace-pre-wrap text-sm">
-                                    {item.content}
-                                </AccordionContent>
-                            </AccordionItem>
-                         ))}
-                    </Accordion>
-                 )}
-            </TabsContent>
+            <TabsContent value="my-library" className="mt-4">{renderTabContent(myLibraryItems, "Your personal library")}</TabsContent>
+            <TabsContent value="community" className="mt-4">{renderTabContent(communityItems, "The community library")}</TabsContent>
+            <TabsContent value="bookmarked" className="mt-4">{renderTabContent(bookmarkedItems, "Your bookmarked items")}</TabsContent>
           </Tabs>
         </CardContent>
       </Card>
-    </PageWrapper>
+
+      <Dialog open={!!activeItem} onOpenChange={(isOpen) => !isOpen && setActiveItem(null)}>
+        <DialogContent className="sm:max-w-2xl md:max-w-3xl max-h-[90vh] flex flex-col p-0">
+          {activeItem && (
+            <>
+              <DialogHeader className="p-6 pb-2">
+                <DialogTitle>{activeItem.topic}</DialogTitle>
+                <DialogDescription>Type: {activeItem.type}</DialogDescription>
+              </DialogHeader>
+              <ScrollArea className="flex-grow p-6 pt-0">{renderItemDetails(activeItem)}</ScrollArea>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

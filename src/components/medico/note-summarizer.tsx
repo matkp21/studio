@@ -11,14 +11,12 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, FileText, Wand2, FileDown } from 'lucide-react';
+import { Loader2, FileText, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { summarizeNoteText, type MedicoNoteSummarizerInput, type MedicoNoteSummarizerOutput } from '@/ai/agents/medico/NoteSummarizerAgent';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import { saveAs } from 'file-saver';
 import { firestore } from '@/lib/firebase';
 
 const getDocument = async (url: string) => {
@@ -69,51 +67,6 @@ export function NoteSummarizer() {
     throw new Error("Unsupported file type for text extraction");
   };
 
-  const exportToPDF = async (summaryText: string, format: string, topic: string) => {
-    try {
-      const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage();
-      const { width, height } = page.getSize();
-      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-      const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  
-      page.drawText(`Summary for: ${topic}`, {
-        x: 50,
-        y: height - 50,
-        font: boldFont,
-        size: 18,
-        color: rgb(0.1, 0.1, 0.1),
-      });
-
-      page.drawText(`Format: ${format}`, {
-        x: 50,
-        y: height - 70,
-        font: font,
-        size: 10,
-        color: rgb(0.4, 0.4, 0.4),
-      });
-  
-      page.drawText(summaryText, {
-        x: 50,
-        y: height - 100,
-        font,
-        size: 11,
-        lineHeight: 14,
-        maxWidth: width - 100,
-        color: rgb(0.2, 0.2, 0.2),
-      });
-  
-      const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      saveAs(blob, `summary-${topic.replace(/\s+/g, '-')}.pdf`);
-      toast({ title: "PDF Exported", description: "Your summary has been downloaded." });
-    } catch (exportError) {
-        console.error("PDF export error:", exportError);
-        toast({ title: "Export Failed", description: "Could not generate the PDF file.", variant: "destructive" });
-    }
-  };
-  
-
   const onSubmit: SubmitHandler<SummarizerFormValues> = async (data) => {
     setIsLoading(true);
     setSummaryResult(null);
@@ -154,11 +107,13 @@ export function NoteSummarizer() {
 
       if (user) {
         try {
-            await addDoc(collection(firestore, `users/${user.uid}/summaries`), {
+            await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+                type: 'summary',
                 summary: result.summary,
                 format: result.format,
                 originalFileName: data.file.name,
                 createdAt: serverTimestamp(),
+                topic: `Summary of ${data.file.name}`,
             });
             toast({ title: "Summary saved to your library." });
         } catch (firestoreError) {
@@ -259,7 +214,7 @@ export function NoteSummarizer() {
                     <FileText className="h-6 w-6 text-fuchsia-600" />
                     AI-Generated Summary
                 </CardTitle>
-                 <CardDescription>Format: <span className="font-semibold capitalize">{summaryResult.format}</span>. You can copy the content below or export as PDF.</CardDescription>
+                 <CardDescription>Format: <span className="font-semibold capitalize">{summaryResult.format}</span>. You can copy the content below.</CardDescription>
             </CardHeader>
              <CardContent>
                 <ScrollArea className="h-auto max-h-[400px] p-1 border bg-background rounded-lg">
@@ -268,12 +223,6 @@ export function NoteSummarizer() {
                     </pre>
                 </ScrollArea>
             </CardContent>
-             <CardFooter>
-                 <Button onClick={() => exportToPDF(summaryResult.summary, summaryResult.format, form.getValues("file").name)}>
-                    <FileDown className="mr-2 h-4 w-4"/>
-                    Export as PDF
-                 </Button>
-            </CardFooter>
         </Card>
       )}
 

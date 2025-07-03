@@ -25,9 +25,6 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "MediAssistant",
-    // startupImage: [ // TODO: Add startup images for various iOS devices
-    //   { url: '/splash/iphone5_splash.png', media: '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)' },
-    // ],
   },
   formatDetection: {
     telephone: false,
@@ -46,18 +43,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Standard PWA meta tags are handled by Next.js metadata object */}
+        {/* PWA meta tags are handled by the manifest and metadata object */}
         <meta name="theme-color" content="hsl(180, 100%, 25%)" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="hsl(216, 65%, 11%)" media="(prefers-color-scheme: dark)" />
         
-        {/* <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" /> */}
-        {/* Add more apple-touch-icon sizes if available */}
-        {/* <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" /> */}
-        {/* <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" /> */}
-        
-        {/* Other meta tags from previous state */}
-        {/* <meta name="msapplication-config" content="/icons/browserconfig.xml" /> */}
-
         {/* Script for <model-viewer> web component */}
         <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js" async></script>
       </head>
