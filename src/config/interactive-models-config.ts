@@ -89,7 +89,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     annotations: [
         { id: 'healthy-liver', name: 'Healthy Liver Tissue', title: 'Normal Liver Appearance', description: 'Smooth surface, uniform texture. Key functions include detoxification, protein synthesis, and bile production.' },
         { id: 'cirrhotic-liver', name: 'Cirrhotic Liver Tissue', title: 'Cirrhotic Liver Changes', description: 'Nodular surface, fibrosis, and altered architecture due to chronic liver damage. Leads to impaired liver function.' },
-        { id: 'portal-hypertension', name: 'Portal Hypertension Sign', title: 'Signs of Portal Hypertension', description: 'Associated with cirrhosis, may manifest as ascites, varices. (Visualized conceptually on model)' },
+        { id: 'portal-hypertension', name: 'Signs of Portal Hypertension', title: 'Signs of Portal Hypertension', description: 'Associated with cirrhosis, may manifest as ascites, varices. (Visualized conceptually on model)' },
     ],
   },
   {
@@ -151,8 +151,8 @@ export const interactiveModelsList: InteractiveModel[] = [
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'colon surgery',
     procedureSteps: [
-      { stepId: 'co_inc', title: 'Abdominal Incision & Exploration', description: 'Midline or transverse incision is made. Abdomen is explored, and the segment of colon for resection is identified.', instrument: 'Scalpel, Retractors', modelViewerCameraTarget: '0m 0.3m 0m', cameraOrbit: '10deg 70deg 1.8m' },
-      { stepId: 'co_mob', title: 'Mobilization & Vascular Ligation', description: 'The identified colon segment is mobilized by dividing its mesenteric attachments. Relevant blood vessels are ligated.', instrument: 'Diathermy, Ligasure, Vascular Clamps', modelViewerCameraTarget: '0m 0.1m 0m', cameraOrbit: '20deg 75deg 1.5m' },
+      { stepId: 'co_inc', title: 'Abdominal Incision & Exploration', description: 'Midline or transverse incision is made. Abdomen is explored, and the segment of colon for resection is identified.', instrument: 'Scalpel, Retractors', modelViewerCameraTarget: '0m 0.3m 0m', modelViewerCameraOrbit: '10deg 70deg 1.8m' },
+      { stepId: 'co_mob', title: 'Mobilization & Vascular Ligation', description: 'The identified colon segment is mobilized by dividing its mesenteric attachments. Relevant blood vessels are ligated.', instrument: 'Diathermy, Ligasure, Vascular Clamps', modelViewerCameraTarget: '0m 0.1m 0m', modelViewerCameraOrbit: '20deg 75deg 1.5m' },
       { stepId: 'co_res', title: 'Resection & Anastomosis', description: 'The diseased colon segment is resected. Bowel continuity is restored by creating an anastomosis (e.g., end-to-end).', instrument: 'Staplers, Sutures', modelViewerCameraTarget: '0m 0m 0.1m', cameraOrbit: '30deg 85deg 1.2m' },
       { stepId: 'co_cls', title: 'Closure', description: 'Mesenteric defect is closed (if applicable), abdomen is irrigated, and incision closed.', instrument: 'Sutures', modelViewerCameraTarget: '0m 0.3m 0m', cameraOrbit: '10deg 70deg 1.8m' },
     ],
