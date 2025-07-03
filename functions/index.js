@@ -213,3 +213,42 @@ exports.invokeMedGemma = functions.runWith({
     throw new functions.https.HttpsError('internal', 'Failed to invoke MedGemma model.', error.message);
   }
 });
+
+// New Function for YouTube Search
+exports.searchYouTubeVideos = functions.https.onCall(async (data, context) => {
+  const query = data.query;
+  const apiKey = functions.config().youtube ? functions.config().youtube.key : null;
+
+  if (!apiKey) {
+    console.error("YouTube API key not configured in Firebase Functions config.");
+    throw new functions.https.HttpsError('failed-precondition', 'API key for YouTube service not configured.');
+  }
+
+  if (!query) {
+    throw new functions.https.HttpsError('invalid-argument', 'Search query is required.');
+  }
+
+  try {
+    const response = await axios.get('https://www.googleapis.com/youtube/v3/search', {
+      params: {
+        part: 'snippet',
+        q: `${query} MBBS lecture`,
+        key: apiKey,
+        type: 'video',
+        maxResults: 12, // Fetch a few more for better layout
+      },
+    });
+
+    const videos = response.data.items.map(item => ({
+      id: item.id.videoId,
+      title: item.snippet.title,
+      thumbnail: item.snippet.thumbnails.high.url,
+      channel: item.snippet.channelTitle,
+    }));
+    
+    return { videos };
+
+  } catch (error) {
+    return handleApiError(error, 'YouTube Data API');
+  }
+});

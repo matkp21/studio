@@ -43,18 +43,18 @@ const mcqGeneratorPrompt = ai.definePrompt({
   input: { schema: MedicoMCQGeneratorInputSchema },
   output: { schema: MedicoMCQGeneratorOutputSchema },
   prompt: `You are an AI expert in medical education, tasked with creating Multiple Choice Questions (MCQs) for medical students preparing for exams.
-Given the topic: {{{topic}}}
+Generate a quiz based on the following criteria:
+Topic: {{{topic}}}
+Difficulty: {{{difficulty}}}
+Exam Style: {{{examType}}}
 Number of MCQs to generate: {{{count}}}
 
 For each MCQ:
-1.  Create a clear and unambiguous question based on the medical topic.
+1.  Create a clear and unambiguous question based on the medical topic, tailored to the specified difficulty and exam style.
 2.  Provide exactly four distinct options (A, B, C, D).
 3.  Ensure one option is clearly the correct answer.
 4.  The other three options should be plausible distractors, relevant to the topic but incorrect.
 5.  Provide a brief explanation for why the correct answer is correct and, if relevant, why common distractors are incorrect.
-
-Topic: {{{topic}}}
-Number of MCQs: {{{count}}}
 
 Format the output as JSON conforming to the MedicoMCQGeneratorOutput schema.
 The root output must be an object containing an 'mcqs' array and a 'topicGenerated' string.

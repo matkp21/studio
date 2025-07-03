@@ -11,9 +11,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Lightbulb, Wand2 } from 'lucide-react';
+import { Loader2, Lightbulb, Wand2, Image as ImageIcon } from 'lucide-react';
 import { generateMnemonic, type MedicoMnemonicsGeneratorInput, type MedicoMnemonicsGeneratorOutput } from '@/ai/agents/medico/MnemonicsGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).max(150, { message: "Topic too long."}),
@@ -115,20 +116,35 @@ export function MnemonicsGenerator() {
             <CardDescription>Here's a memory aid for your topic.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-auto max-h-[400px] p-1 border bg-background rounded-lg">
-                <div className="p-4 space-y-3">
-                    <div>
-                        <h4 className="font-semibold text-md mb-1 text-yellow-700 dark:text-yellow-400">Mnemonic:</h4>
-                        <p className="text-lg font-bold text-foreground whitespace-pre-wrap">{generatedMnemonic.mnemonic}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                  <div>
+                      <h4 className="font-semibold text-md mb-1 text-yellow-700 dark:text-yellow-400">Mnemonic:</h4>
+                      <p className="text-lg font-bold text-foreground whitespace-pre-wrap">{generatedMnemonic.mnemonic}</p>
+                  </div>
+                  {generatedMnemonic.explanation && (
+                  <div className="mt-3">
+                      <h4 className="font-semibold text-md mb-1 text-yellow-700 dark:text-yellow-400">Explanation:</h4>
+                      <ScrollArea className="h-48">
+                        <p className="text-sm whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none pr-3">{generatedMnemonic.explanation}</p>
+                      </ScrollArea>
+                  </div>
+                  )}
+              </div>
+              <div className="space-y-3">
+                 <h4 className="font-semibold text-md mb-1 text-yellow-700 dark:text-yellow-400">Visual Aid:</h4>
+                  {generatedMnemonic.imageUrl ? (
+                     <div className="relative aspect-square w-full border rounded-lg overflow-hidden bg-muted/30">
+                        <Image src={generatedMnemonic.imageUrl} alt={`Visual for ${generatedMnemonic.topicGenerated}`} layout="fill" objectFit="contain" data-ai-hint="medical mnemonic diagram"/>
                     </div>
-                    {generatedMnemonic.explanation && (
-                    <div className="mt-3">
-                        <h4 className="font-semibold text-md mb-1 text-yellow-700 dark:text-yellow-400">Explanation:</h4>
-                        <p className="text-sm whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">{generatedMnemonic.explanation}</p>
+                  ) : (
+                    <div className="aspect-square w-full border border-dashed rounded-lg flex flex-col items-center justify-center text-muted-foreground bg-muted/20">
+                        <ImageIcon className="h-10 w-10 opacity-50 mb-2"/>
+                        <p className="text-xs">No visual generated.</p>
                     </div>
-                    )}
-                </div>
-            </ScrollArea>
+                  )}
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}

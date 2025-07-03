@@ -15,10 +15,13 @@ import { generateMCQs, type MedicoMCQGeneratorInput, type MedicoMCQGeneratorOutp
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useAiAgent } from '@/hooks/use-ai-agent';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
   count: z.coerce.number().int().min(1, {message: "Minimum 1 MCQ."}).max(10, {message: "Maximum 10 MCQs."}).default(5),
+  difficulty: z.enum(['easy', 'medium', 'hard']).default('medium'),
+  examType: z.enum(['university', 'neet-pg', 'usmle']).default('university'),
 });
 
 type McqFormValues = z.infer<typeof formSchema>;
@@ -39,6 +42,8 @@ export function McqGenerator() {
     defaultValues: {
       topic: "",
       count: 5,
+      difficulty: 'medium',
+      examType: 'university',
     },
   });
   
@@ -55,31 +60,31 @@ export function McqGenerator() {
     <div className="space-y-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-1">
+          <FormField
+            control={form.control}
+            name="topic"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel htmlFor="topic-mcq" className="text-base">Medical Topic</FormLabel>
+                <FormControl>
+                  <Input
+                    id="topic-mcq"
+                    placeholder="e.g., Cardiology, Hypertension"
+                    className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <FormField
-              control={form.control}
-              name="topic"
-              render={({ field }) => (
-                <FormItem className="sm:col-span-2">
-                  <FormLabel htmlFor="topic-mcq" className="text-base">Medical Topic</FormLabel>
-                  <FormControl>
-                    <Input
-                      id="topic-mcq"
-                      placeholder="e.g., Cardiology, Hypertension"
-                      className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="count"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor="count-mcq" className="text-base">Number of MCQs</FormLabel>
+                  <FormLabel htmlFor="count-mcq" className="text-base">Number</FormLabel>
                   <FormControl>
                     <Input
                       id="count-mcq"
@@ -90,6 +95,50 @@ export function McqGenerator() {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="difficulty"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="difficulty-mcq" className="text-base">Difficulty</FormLabel>
+                   <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger id="difficulty-mcq" className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary">
+                        <SelectValue placeholder="Select difficulty"/>
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="easy">Easy</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="hard">Hard</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="examType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="exam-mcq" className="text-base">Exam Style</FormLabel>
+                   <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger id="exam-mcq" className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary">
+                        <SelectValue placeholder="Select exam style"/>
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="university">University</SelectItem>
+                      <SelectItem value="neet-pg">NEET-PG</SelectItem>
+                      <SelectItem value="usmle">USMLE</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

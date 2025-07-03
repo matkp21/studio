@@ -16,7 +16,7 @@
   "main": "index.js",
   "dependencies": {
     "@google-cloud/aiplatform": "^0.13.0",
-    "axios": "^1.6.8",
+    "axios": "^1.7.2",
     "firebase-admin": "^12.2.0",
     "firebase-functions": "^5.1.1"
   },

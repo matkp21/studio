@@ -21,6 +21,8 @@ export type MedicoStudyNotesOutput = z.infer<typeof MedicoStudyNotesOutputSchema
 export const MedicoMCQGeneratorInputSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).describe('The medical topic for which to generate MCQs (e.g., "Cardiology", "Hypertension").'),
   count: z.number().int().min(1).max(10).default(5).describe('The number of MCQs to generate (1-10). Default is 5.'),
+  difficulty: z.enum(['easy', 'medium', 'hard']).default('medium').describe('The difficulty level of the questions.'),
+  examType: z.enum(['university', 'neet-pg', 'usmle']).default('university').describe('The style of exam to pattern the questions after.'),
 });
 export type MedicoMCQGeneratorInput = z.infer<typeof MedicoMCQGeneratorInputSchema>;
 
@@ -138,6 +140,7 @@ export const MedicoMnemonicsGeneratorOutputSchema = z.object({
   mnemonic: z.string().describe('The generated mnemonic.'),
   explanation: z.string().optional().describe('Explanation of how the mnemonic works or what it represents.'),
   topicGenerated: z.string().describe('The topic for which the mnemonic was generated.'),
+  imageUrl: z.string().url().optional().describe('AI-generated visual to aid memory.'),
 });
 export type MedicoMnemonicsGeneratorOutput = z.infer<typeof MedicoMnemonicsGeneratorOutputSchema>;
 

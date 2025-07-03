@@ -32,6 +32,7 @@ Format the output as JSON conforming to the MedicoMnemonicsGeneratorOutputSchema
 The 'mnemonic' field should contain the mnemonic itself.
 The 'explanation' field should detail its components.
 The 'topicGenerated' field should reflect the input topic.
+The 'imageUrl' field should be left empty as it will be generated in a subsequent step.
 
 Example for topic "Cranial Nerves (Order)":
 Mnemonic: "Oh Oh Oh To Touch And Feel Very Good Velvet, Ah Heaven"
@@ -61,13 +62,36 @@ const mnemonicsGeneratorFlow = ai.defineFlow(
     outputSchema: MedicoMnemonicsGeneratorOutputSchema,
   },
   async (input) => {
-    const { output } = await mnemonicsGeneratorPrompt(input);
+    // Step 1: Generate the mnemonic text and explanation
+    const { output: textOutput } = await mnemonicsGeneratorPrompt(input);
 
-    if (!output || !output.mnemonic) {
+    if (!textOutput || !textOutput.mnemonic) {
       console.error('MedicoMnemonicsGeneratorPrompt did not return a valid mnemonic for topic:', input.topic);
       throw new Error('Failed to generate mnemonic. The AI model did not return the expected output.');
     }
-    // Firestore saving logic could go here
-    return { ...output, topicGenerated: input.topic };
+    
+    // Step 2: Generate an image based on the mnemonic
+    const imagePrompt = `A simple, clear, educational, and visually appealing diagram or icon representing the medical mnemonic: "${textOutput.mnemonic}" for the topic "${input.topic}".`;
+    
+    try {
+        const { media } = await ai.generate({
+            model: 'googleai/gemini-2.0-flash-preview-image-generation',
+            prompt: imagePrompt,
+            config: {
+                responseModalities: ['TEXT', 'IMAGE'],
+            },
+        });
+        
+        if (media && media.url) {
+          textOutput.imageUrl = media.url;
+        }
+
+    } catch (imageError) {
+        console.warn("Could not generate image for mnemonic:", imageError);
+        // We can proceed without an image, so we don't throw an error here.
+        textOutput.imageUrl = undefined;
+    }
+
+    return textOutput;
   }
 );

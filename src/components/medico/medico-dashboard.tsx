@@ -20,15 +20,16 @@ import { DrugDosageCalculator } from './drug-dosage-calculator';
 import { SolvedQuestionPapersViewer } from './solved-question-papers-viewer';
 import { FlowchartCreator } from './flowchart-creator';
 import { ProgressTracker } from './progress-tracker';
-import { NoteSummarizer } from './note-summarizer'; // New import
+import { NoteSummarizer } from './note-summarizer'; 
 import {
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
-  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText
+  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube
 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import { cn } from '@/lib/utils';
 import { motion, Reorder } from 'framer-motion';
+import Link from 'next/link'; // Import Link
 
 type ActiveToolId =
   | 'papers'
@@ -45,7 +46,8 @@ type ActiveToolId =
   | 'rounds'
   | 'dosage'
   | 'progress'
-  | 'summarizer' // New tool ID
+  | 'summarizer' 
+  | 'videos' // New tool ID for video library
   | null;
 
 interface MedicoTool {
@@ -53,29 +55,31 @@ interface MedicoTool {
   title: string;
   description: string;
   icon: React.ElementType;
-  component: React.ElementType;
+  component?: React.ElementType; // Make component optional for link-based tools
+  href?: string; // Add href for direct navigation
   comingSoon?: boolean;
 }
 
 const medicoToolsList: MedicoTool[] = [
-  { id: 'papers', title: 'Previous Question Papers', description: 'Access and solve past MBBS question papers (essays, short notes, MCQs).', icon: BookCopy, component: SolvedQuestionPapersViewer, comingSoon: false },
-  { id: 'notes', title: 'Study Notes Generator', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: StudyNotesGenerator, comingSoon: false },
-  { id: 'summarizer', title: 'Smart Note Summarizer', description: 'Upload notes (PDF/TXT) and get AI-powered summaries in various formats.', icon: FileText, component: NoteSummarizer, comingSoon: false },
-  { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study based on exam trends or user performance.', icon: TrendingUp, component: HighYieldTopicPredictor, comingSoon: false },
-  { id: 'flowcharts', title: 'Flowchart Creator', description: 'Generate flowcharts for medical topics to aid revision.', icon: Workflow, component: FlowchartCreator, comingSoon: false },
-  { id: 'flashcards', title: 'Flashcard Generator', description: 'Create digital flashcards for quick revision.', icon: Layers, component: FlashcardGenerator, comingSoon: false },
-  { id: 'mnemonics', title: 'Mnemonics Generator', description: 'Create memory aids for complex topics.', icon: Lightbulb, component: MnemonicsGenerator, comingSoon: false },
-  { id: 'timetable', title: 'Study Timetable Creator', description: 'Plan personalized study schedules.', icon: CalendarClock, component: StudyTimetableCreator, comingSoon: false },
-  { id: 'mcq', title: 'MCQ Generator', description: 'Create multiple-choice questions for exam practice.', icon: FileQuestion, component: McqGenerator, comingSoon: false },
-  { id: 'cases', title: 'Clinical Case Simulations', description: 'Practice with interactive patient scenarios.', icon: CaseUpper, component: ClinicalCaseSimulator, comingSoon: false },
-  { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'List diagnoses based on symptoms with feedback.', icon: Brain, component: DifferentialDiagnosisTrainer, comingSoon: false },
-  { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Explore anatomical structures.', icon: Eye, component: AnatomyVisualizer, comingSoon: false },
-  { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds, comingSoon: false },
-  { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator, comingSoon: false },
-  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
+  { id: 'papers', title: 'Previous Question Papers', description: 'Access and solve past MBBS question papers (essays, short notes, MCQs).', icon: BookCopy, component: SolvedQuestionPapersViewer },
+  { id: 'notes', title: 'Study Notes Generator', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: StudyNotesGenerator },
+  { id: 'summarizer', title: 'Smart Note Summarizer', description: 'Upload notes (PDF/TXT/JPEG) and get AI-powered summaries in various formats.', icon: FileText, component: NoteSummarizer },
+  { id: 'videos', title: 'Video Lecture Library', description: 'Search and find relevant medical video lectures from YouTube.', icon: Youtube, href: '/medico/videos' },
+  { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study based on exam trends or user performance.', icon: TrendingUp, component: HighYieldTopicPredictor },
+  { id: 'flowcharts', title: 'Flowchart Creator', description: 'Generate flowcharts for medical topics to aid revision.', icon: Workflow, component: FlowchartCreator },
+  { id: 'flashcards', title: 'Flashcard Generator', description: 'Create digital flashcards for quick revision.', icon: Layers, component: FlashcardGenerator },
+  { id: 'mnemonics', title: 'Mnemonic Generator', description: 'Create memory aids with AI-generated visuals.', icon: Lightbulb, component: MnemonicsGenerator },
+  { id: 'timetable', title: 'Study Timetable Creator', description: 'Plan personalized study schedules.', icon: CalendarClock, component: StudyTimetableCreator },
+  { id: 'mcq', title: 'MCQ Generator', description: 'Create multiple-choice questions for exam practice.', icon: FileQuestion, component: McqGenerator },
+  { id: 'cases', title: 'Clinical Case Simulations', description: 'Practice with interactive patient scenarios.', icon: CaseUpper, component: ClinicalCaseSimulator },
+  { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'List diagnoses based on symptoms with feedback.', icon: Brain, component: DifferentialDiagnosisTrainer },
+  { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Explore anatomical structures.', icon: Eye, component: AnatomyVisualizer },
+  { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds },
+  { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator },
+  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: true },
 ];
 
-const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['notes', 'mcq', 'papers', 'summarizer'];
+const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['notes', 'mcq', 'papers', 'videos'];
 
 
 interface MedicoToolCardProps {
@@ -86,65 +90,76 @@ interface MedicoToolCardProps {
 }
 
 const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, isEditMode }) => {
-  return (
-    <DialogTrigger asChild>
-      <motion.div
-        whileHover={!isEditMode ? { y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.1)" } : {}}
-        transition={{ type: "spring", stiffness: 300, damping: 15 }}
-        className={cn(
-          "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
-          !isEditMode && "hover:shadow-xl cursor-pointer tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
-          tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
-          isEditMode && "cursor-grab border-dashed border-muted-foreground/50"
-        )}
-        onClick={() => !isEditMode && !tool.comingSoon && onLaunch(tool.id)}
-        role="button"
-        tabIndex={tool.comingSoon || isEditMode ? -1 : 0}
-        onKeyDown={(e) => { if (!isEditMode && (e.key === 'Enter' || e.key === ' ') && !tool.comingSoon) onLaunch(tool.id); }}
-        aria-disabled={!!(tool.comingSoon || isEditMode)}
-        aria-label={`Launch ${tool.title}`}
-      >
-        {isEditMode && (
-          <GripVertical className="absolute top-2 right-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder" />
-        )}
-        {isFrequentlyUsed && !isEditMode && (
-          <Star className="absolute top-2 right-2 h-5 w-5 text-yellow-400 fill-yellow-400 z-10" />
-        )}
-        <CardHeader className="pb-3 pt-4 px-4">
-          <div className="flex items-center gap-3 mb-1.5">
-            <div className={cn(
-                "p-2 rounded-lg bg-primary/10 text-primary transition-colors duration-300",
-                !isEditMode && "group-hover:bg-primary/20"
-            )}>
-                <tool.icon className={cn(
-                    "h-7 w-7 transition-transform duration-300",
-                    !isEditMode && "group-hover:scale-110 text-primary"
-                )} />
-            </div>
-            <CardTitle className={cn(
-                "text-lg leading-tight text-foreground",
-                 !isEditMode && "group-hover:text-primary"
-            )}>{tool.title}</CardTitle>
+  const cardContent = (
+    <motion.div
+      whileHover={!isEditMode ? { y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.1)" } : {}}
+      transition={{ type: "spring", stiffness: 300, damping: 15 }}
+      className={cn(
+        "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
+        !isEditMode && "hover:shadow-xl cursor-pointer tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
+        tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
+        isEditMode && "cursor-grab border-dashed border-muted-foreground/50"
+      )}
+      role="button"
+      tabIndex={tool.comingSoon || isEditMode ? -1 : 0}
+      onKeyDown={(e) => { if (!isEditMode && (e.key === 'Enter' || e.key === ' ') && !tool.comingSoon) onLaunch(tool.id); }}
+      aria-disabled={!!(tool.comingSoon || isEditMode)}
+      aria-label={`Launch ${tool.title}`}
+    >
+      {isEditMode && (
+        <GripVertical className="absolute top-2 right-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder" />
+      )}
+      {isFrequentlyUsed && !isEditMode && (
+        <Star className="absolute top-2 right-2 h-5 w-5 text-yellow-400 fill-yellow-400 z-10" />
+      )}
+      <CardHeader className="pb-3 pt-4 px-4">
+        <div className="flex items-center gap-3 mb-1.5">
+          <div className={cn(
+              "p-2 rounded-lg bg-primary/10 text-primary transition-colors duration-300",
+              !isEditMode && "group-hover:bg-primary/20"
+          )}>
+              <tool.icon className={cn(
+                  "h-7 w-7 transition-transform duration-300",
+                  !isEditMode && "group-hover:scale-110 text-primary"
+              )} />
           </div>
-          <CardDescription className="text-xs leading-relaxed line-clamp-2 min-h-[2.5em]">{tool.description}</CardDescription>
-        </CardHeader>
-        <CardContent className="pt-2 px-4 pb-3 flex-grow flex items-end">
-          {tool.comingSoon ? (
-            <div className="text-center text-xs text-amber-700 dark:text-amber-500 font-semibold p-1.5 bg-amber-500/10 rounded-md w-full">
-              Coming Soon!
-            </div>
-          ) : (
-             <div className="w-full text-right">
-                <Button variant="link" size="sm" disabled={isEditMode} className={cn(
-                    "text-primary group-hover:underline p-0 h-auto text-xs",
-                     isEditMode && "text-muted-foreground cursor-default"
-                    )}>
-                   Open Tool <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
-                </Button>
-             </div>
-          )}
-        </CardContent>
-      </motion.div>
+          <CardTitle className={cn(
+              "text-lg leading-tight text-foreground",
+               !isEditMode && "group-hover:text-primary"
+          )}>{tool.title}</CardTitle>
+        </div>
+        <CardDescription className="text-xs leading-relaxed line-clamp-2 min-h-[2.5em]">{tool.description}</CardDescription>
+      </CardHeader>
+      <CardContent className="pt-2 px-4 pb-3 flex-grow flex items-end">
+        {tool.comingSoon ? (
+          <div className="text-center text-xs text-amber-700 dark:text-amber-500 font-semibold p-1.5 bg-amber-500/10 rounded-md w-full">
+            Coming Soon!
+          </div>
+        ) : (
+           <div className="w-full text-right">
+              <Button variant="link" size="sm" disabled={isEditMode} className={cn(
+                  "text-primary group-hover:underline p-0 h-auto text-xs",
+                   isEditMode && "text-muted-foreground cursor-default"
+                  )}>
+                 Open Tool <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
+              </Button>
+           </div>
+        )}
+      </CardContent>
+    </motion.div>
+  );
+
+  if (tool.href && !isEditMode) {
+    return (
+      <Link href={tool.href} className="no-underline">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return (
+    <DialogTrigger asChild onClick={() => !tool.href && onLaunch(tool.id)}>
+      {cardContent}
     </DialogTrigger>
   );
 };
