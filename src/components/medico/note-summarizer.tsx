@@ -1,4 +1,3 @@
-
 // src/components/medico/note-summarizer.tsx
 "use client";
 
@@ -27,7 +26,7 @@ const formSchema = z.object({
   file: z.instanceof(File, { message: "Please upload a file." })
     .refine(file => file.size > 0, "File cannot be empty.")
     .refine(file => file.size < 5 * 1024 * 1024, "File size must be less than 5MB.")
-    .refine(file => ["application/pdf", "text/plain"].includes(file.type), "Only .pdf and .txt files are supported."),
+    .refine(file => ["application/pdf", "text/plain", "image/jpeg"].includes(file.type), "Only .pdf, .txt, and .jpeg files are supported."),
   format: z.enum(['bullet', 'flowchart', 'table']).default('bullet'),
 });
 
@@ -62,7 +61,7 @@ export function NoteSummarizer() {
       }
       return fullText;
     }
-    throw new Error("Unsupported file type");
+    throw new Error("Unsupported file type for text extraction");
   };
 
   const onSubmit: SubmitHandler<SummarizerFormValues> = async (data) => {
@@ -72,23 +71,35 @@ export function NoteSummarizer() {
     setError(null);
 
     try {
-      const text = await extractTextFromFile(data.file);
-      setExtractedText(text);
+      let input: MedicoNoteSummarizerInput;
+      const fileType = data.file.type;
 
-      if (text.length < 100) {
-        throw new Error("Document content is too short to summarize effectively.");
+      if (fileType === 'application/pdf' || fileType === 'text/plain') {
+        const text = await extractTextFromFile(data.file);
+        setExtractedText(text);
+        if (text.length < 100) {
+          throw new Error("Document content is too short to summarize effectively.");
+        }
+        input = { text, format: data.format };
+      } else if (fileType === 'image/jpeg') {
+        const reader = new FileReader();
+        const dataUriPromise = new Promise<string>((resolve, reject) => {
+            reader.onerror = reject;
+            reader.onload = () => resolve(reader.result as string);
+            reader.readAsDataURL(data.file);
+        });
+        const imageDataUri = await dataUriPromise;
+        setExtractedText(null); // No text preview for images
+        input = { imageDataUri, format: data.format };
+      } else {
+        throw new Error("Unsupported file type.");
       }
-
-      const input: MedicoNoteSummarizerInput = {
-        text,
-        format: data.format,
-      };
 
       const result = await summarizeNoteText(input);
       setSummaryResult(result);
       toast({
         title: "Summary Generated!",
-        description: `Your notes have been summarized as a ${data.format}.`,
+        description: `Your document has been summarized as a ${data.format}.`,
       });
 
     } catch (err) {
@@ -120,12 +131,12 @@ export function NoteSummarizer() {
                     <Input
                       id="file-upload-summarizer"
                       type="file"
-                      accept=".pdf,.txt"
+                      accept=".pdf,.txt,.jpeg,.jpg"
                       onChange={(e) => field.onChange(e.target.files?.[0])}
                       className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary file:text-sm file:font-medium"
                     />
                   </FormControl>
-                  <FormDescription className="text-xs">Supports .pdf and .txt files up to 5MB.</FormDescription>
+                  <FormDescription className="text-xs">Supports .pdf, .txt, and .jpeg files up to 5MB.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

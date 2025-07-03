@@ -1,7 +1,6 @@
-
 'use server';
 /**
- * @fileOverview A Genkit flow for summarizing uploaded text content into various formats.
+ * @fileOverview A Genkit flow for summarizing uploaded text or image content into various formats.
  *
  * - summarizeNoteText - A function that handles the summarization process.
  * - MedicoNoteSummarizerInput - The input type.
@@ -24,15 +23,21 @@ const noteSummarizerPrompt = ai.definePrompt({
   input: { schema: MedicoNoteSummarizerInputSchema },
   output: { schema: MedicoNoteSummarizerOutputSchema },
   prompt: `You are an expert at summarizing medical notes for students.
-Summarize the following text into the requested format: {{{format}}}.
+Summarize the provided content into the requested format: {{{format}}}.
 
 The summary should be concise, accurate, and focus on the most high-yield information for a medical student.
 If the requested format is a 'flowchart', generate the summary using Mermaid.js syntax.
 If the requested format is a 'table', use Markdown table syntax.
 If the requested format is 'bullet', use standard bullet points.
 
+{{#if text}}
 Text to summarize:
 {{{text}}}
+{{/if}}
+{{#if imageDataUri}}
+Summarize the content from this image. This could be a picture of a textbook page, a diagram, or handwritten notes.
+Image to summarize: {{media url=imageDataUri}}
+{{/if}}
 `,
   config: {
     temperature: 0.2, // Factual and structured

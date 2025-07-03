@@ -1,4 +1,3 @@
-
 /**
  * @fileOverview Defines Zod schemas for Medico Mode specific tools,
  * including Study Notes Generator and MCQ Generator.
@@ -239,8 +238,11 @@ export type MedicoProgressTrackerOutput = z.infer<typeof MedicoProgressTrackerOu
 
 // Schema for Note Summarizer (NEW)
 export const MedicoNoteSummarizerInputSchema = z.object({
-  text: z.string().min(100, { message: "Text must be at least 100 characters to summarize." }).describe('The text content from a document (PDF/TXT) to be summarized.'),
+  text: z.string().optional().describe('The text content from a document (PDF/TXT) to be summarized.'),
+  imageDataUri: z.string().optional().describe("An image (e.g., JPEG of a note) as a data URI."),
   format: z.enum(['bullet', 'flowchart', 'table']).default('bullet').describe('The desired format for the summary.'),
+}).refine(data => !!data.text || !!data.imageDataUri, {
+    message: "Either text or an image must be provided for summarization.",
 });
 export type MedicoNoteSummarizerInput = z.infer<typeof MedicoNoteSummarizerInputSchema>;
 
