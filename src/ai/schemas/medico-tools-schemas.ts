@@ -236,4 +236,19 @@ export const MedicoProgressTrackerOutputSchema = z.object({
 });
 export type MedicoProgressTrackerOutput = z.infer<typeof MedicoProgressTrackerOutputSchema>;
 
+
+// Schema for Note Summarizer (NEW)
+export const MedicoNoteSummarizerInputSchema = z.object({
+  text: z.string().min(100, { message: "Text must be at least 100 characters to summarize." }).describe('The text content from a document (PDF/TXT) to be summarized.'),
+  format: z.enum(['bullet', 'flowchart', 'table']).default('bullet').describe('The desired format for the summary.'),
+});
+export type MedicoNoteSummarizerInput = z.infer<typeof MedicoNoteSummarizerInputSchema>;
+
+export const MedicoNoteSummarizerOutputSchema = z.object({
+  summary: z.string().describe('The AI-generated summary in the specified format.'),
+  format: z.enum(['bullet', 'flowchart', 'table']).describe('The format of the returned summary.'),
+});
+export type MedicoNoteSummarizerOutput = z.infer<typeof MedicoNoteSummarizerOutputSchema>;
+
+
 // ... Potentially other schemas as features expand
