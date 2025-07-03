@@ -1,7 +1,6 @@
 // src/components/medico/flowchart-creator.tsx
 "use client";
 
-import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,8 +11,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Workflow, Wand2, Lightbulb } from 'lucide-react';
-import { createFlowchart, type MedicoFlowchartCreatorInput, type MedicoFlowchartCreatorOutput } from '@/ai/agents/medico/FlowchartCreatorAgent';
+import { createFlowchart } from '@/ai/agents/medico/FlowchartCreatorAgent';
 import { useToast } from '@/hooks/use-toast';
+import { useAiAgent } from '@/hooks/use-ai-agent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).max(150, { message: "Topic too long."}),
@@ -22,43 +25,54 @@ const formSchema = z.object({
 type FlowchartFormValues = z.infer<typeof formSchema>;
 
 export function FlowchartCreator() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [generatedFlowchart, setGeneratedFlowchart] = useState<MedicoFlowchartCreatorOutput | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useProMode();
+
+  const { execute: runCreateFlowchart, data: generatedFlowchart, isLoading, error, reset } = useAiAgent(createFlowchart, {
+    onSuccess: async (data, input) => {
+      toast({
+        title: "Flowchart Generated!",
+        description: `Mermaid syntax for "${data.topicGenerated}" is ready.`,
+      });
+
+      if (user) {
+        try {
+          await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+            type: 'flowchart',
+            topic: data.topicGenerated,
+            userId: user.uid,
+            flowchartData: data.flowchartData,
+            createdAt: serverTimestamp(),
+          });
+          toast({
+            title: "Saved to Library",
+            description: "Your generated flowchart has been saved.",
+          });
+        } catch (firestoreError) {
+          console.error("Firestore save error:", firestoreError);
+          toast({
+            title: "Save Failed",
+            description: "Could not save flowchart to your library.",
+            variant: "destructive",
+          });
+        }
+      }
+    }
+  });
 
   const form = useForm<FlowchartFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      topic: "",
-    },
+    defaultValues: { topic: "" },
   });
 
   const onSubmit: SubmitHandler<FlowchartFormValues> = async (data) => {
-    setIsLoading(true);
-    setGeneratedFlowchart(null);
-    setError(null);
-
-    try {
-      const result = await createFlowchart(data as MedicoFlowchartCreatorInput);
-      setGeneratedFlowchart(result);
-      toast({
-        title: "Flowchart Generated!",
-        description: `Mermaid syntax for "${result.topicGenerated}" is ready.`,
-      });
-    } catch (err) {
-      console.error("Flowchart generation error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-      setError(errorMessage);
-      toast({
-        title: "Generation Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await runCreateFlowchart(data);
   };
+  
+  const handleReset = () => {
+    form.reset();
+    reset();
+  }
 
   return (
     <div className="space-y-6">
@@ -89,19 +103,26 @@ export function FlowchartCreator() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-                Generate Flowchart
-              </>
+          <div className="flex gap-2">
+            <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                  Generate Flowchart
+                </>
+              )}
+            </Button>
+            {generatedFlowchart && (
+              <Button type="button" variant="outline" onClick={handleReset} className="rounded-lg">
+                Clear
+              </Button>
             )}
-          </Button>
+          </div>
         </form>
       </Form>
 
@@ -112,7 +133,7 @@ export function FlowchartCreator() {
         </Alert>
       )}
 
-      {generatedFlowchart && (
+      {generatedFlowchart && !isLoading && (
         <Card className="shadow-md rounded-xl mt-6 border-teal-500/30 bg-gradient-to-br from-card via-card to-teal-500/5">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">

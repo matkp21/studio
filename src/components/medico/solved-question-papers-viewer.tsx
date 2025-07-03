@@ -1,7 +1,6 @@
 // src/components/medico/solved-question-papers-viewer.tsx
 "use client";
 
-import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,9 +12,13 @@ import { BookCopy, FileText, Wand2, Loader2, FileQuestion, Pilcrow } from 'lucid
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { generateExamPaper, type MedicoExamPaperInput, type MedicoExamPaperOutput } from '@/ai/agents/medico/ExamPaperAgent';
+import { generateExamPaper } from '@/ai/agents/medico/ExamPaperAgent';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { useAiAgent } from '@/hooks/use-ai-agent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
 
 const formSchema = z.object({
   examType: z.string().min(3, { message: "Exam type must be at least 3 characters long." }).max(100, { message: "Exam type too long." }),
@@ -26,10 +29,41 @@ const formSchema = z.object({
 type ExamPaperFormValues = z.infer<typeof formSchema>;
 
 export function SolvedQuestionPapersViewer() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [generatedPaper, setGeneratedPaper] = useState<MedicoExamPaperOutput | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useProMode();
+
+  const { execute: runGenerateExam, data: generatedPaper, isLoading, error, reset } = useAiAgent(generateExamPaper, {
+    onSuccess: async (data, input) => {
+      toast({
+        title: "Mock Paper Generated!",
+        description: `Exam paper for "${input.examType}" is ready.`,
+      });
+
+      if (user) {
+        try {
+          await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+            type: 'examPaper',
+            topic: data.topicGenerated,
+            userId: user.uid,
+            mcqs: data.mcqs || [],
+            essays: data.essays || [],
+            createdAt: serverTimestamp(),
+          });
+          toast({
+            title: "Saved to Library",
+            description: "Your generated exam paper has been saved.",
+          });
+        } catch (firestoreError) {
+          console.error("Firestore save error:", firestoreError);
+          toast({
+            title: "Save Failed",
+            description: "Could not save exam paper to your library.",
+            variant: "destructive",
+          });
+        }
+      }
+    }
+  });
 
   const form = useForm<ExamPaperFormValues>({
     resolver: zodResolver(formSchema),
@@ -37,29 +71,13 @@ export function SolvedQuestionPapersViewer() {
   });
 
   const onSubmit: SubmitHandler<ExamPaperFormValues> = async (data) => {
-    setIsLoading(true);
-    setGeneratedPaper(null);
-    setError(null);
-    try {
-      const result = await generateExamPaper(data as MedicoExamPaperInput);
-      setGeneratedPaper(result);
-      toast({
-        title: "Mock Paper Generated!",
-        description: `Exam paper for "${data.examType}" is ready.`,
-      });
-    } catch (err) {
-      console.error("Exam paper generation error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-      setError(errorMessage);
-      toast({
-        title: "Generation Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await runGenerateExam(data);
   };
+
+  const handleReset = () => {
+    form.reset();
+    reset();
+  }
 
   return (
     <div className="space-y-6">
@@ -97,9 +115,16 @@ export function SolvedQuestionPapersViewer() {
               )}
             />
           </div>
-          <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
-            {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating Paper...</> : <><Wand2 className="mr-2 h-4 w-4" /> Generate Mock Paper</>}
-          </Button>
+          <div className="flex gap-2">
+            <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
+              {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating Paper...</> : <><Wand2 className="mr-2 h-4 w-4" /> Generate Mock Paper</>}
+            </Button>
+            {generatedPaper && (
+              <Button type="button" variant="outline" onClick={handleReset} className="rounded-lg">
+                Clear
+              </Button>
+            )}
+          </div>
         </form>
       </Form>
 
@@ -110,7 +135,7 @@ export function SolvedQuestionPapersViewer() {
         </Alert>
       )}
 
-      {generatedPaper && (
+      {generatedPaper && !isLoading && (
         <Card className="shadow-md rounded-xl mt-6 border-indigo-500/30 bg-gradient-to-br from-card via-card to-indigo-500/5">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">

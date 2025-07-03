@@ -1,8 +1,6 @@
-
 // src/components/medico/flashcard-generator.tsx
 "use client";
 
-import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,6 +15,11 @@ import { generateFlashcards, type MedicoFlashcardGeneratorInput, type MedicoFlas
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { useAiAgent } from '@/hooks/use-ai-agent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
+import React, { useState } from 'react';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, { message: "Topic too long." }),
@@ -30,15 +33,55 @@ type FlashcardFormValues = z.infer<typeof formSchema>;
 interface FlashcardDisplay extends MedicoFlashcard {
   id: string;
   isFlipped: boolean;
-  status: 'new' | 'learning' | 'mastered'; // Status is now mandatory
+  status: 'new' | 'learning' | 'mastered';
 }
 
 export function FlashcardGenerator() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const { user } = useProMode();
   const [generatedFlashcards, setGeneratedFlashcards] = useState<FlashcardDisplay[] | null>(null);
   const [currentTopic, setCurrentTopic] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
+
+  const { execute: runGenerateFlashcards, isLoading, error, reset } = useAiAgent(generateFlashcards, {
+    onSuccess: async (data, input) => {
+      const displayFlashcards = data.flashcards.map((fc, index) => ({
+        ...fc,
+        id: `${input.topic}-${index}-${Date.now()}`,
+        isFlipped: false,
+        status: 'new' as const,
+      }));
+      setGeneratedFlashcards(displayFlashcards);
+      setCurrentTopic(data.topicGenerated);
+      toast({
+        title: "Flashcards Generated!",
+        description: `${data.flashcards.length} flashcards for "${data.topicGenerated}" are ready.`,
+      });
+
+      if (user) {
+        try {
+          await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+            type: 'flashcards',
+            topic: data.topicGenerated,
+            userId: user.uid,
+            flashcards: data.flashcards,
+            createdAt: serverTimestamp(),
+          });
+          toast({
+            title: "Saved to Library",
+            description: "Your generated flashcards have been saved.",
+          });
+        } catch (firestoreError) {
+          console.error("Firestore save error:", firestoreError);
+          toast({
+            title: "Save Failed",
+            description: "Could not save flashcards to your library.",
+            variant: "destructive",
+          });
+        }
+      }
+    },
+  });
+
 
   const form = useForm<FlashcardFormValues>({
     resolver: zodResolver(formSchema),
@@ -49,38 +92,18 @@ export function FlashcardGenerator() {
       examType: 'university',
     },
   });
+  
+  const handleReset = () => {
+    form.reset();
+    reset();
+    setGeneratedFlashcards(null);
+    setCurrentTopic(null);
+  }
 
   const onSubmit: SubmitHandler<FlashcardFormValues> = async (data) => {
-    setIsLoading(true);
     setGeneratedFlashcards(null);
-    setCurrentTopic(data.topic);
-    setError(null);
-
-    try {
-      const result: MedicoFlashcardGeneratorOutput = await generateFlashcards(data as MedicoFlashcardGeneratorInput);
-      const displayFlashcards = result.flashcards.map((fc, index) => ({
-        ...fc,
-        id: `${data.topic}-${index}-${Date.now()}`,
-        isFlipped: false,
-        status: 'new' as 'new', // Default status
-      }));
-      setGeneratedFlashcards(displayFlashcards);
-      toast({
-        title: "Flashcards Generated!",
-        description: `${result.flashcards.length} flashcards for "${data.topic}" are ready.`,
-      });
-    } catch (err) {
-      console.error("Flashcard generation error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-      setError(errorMessage);
-      toast({
-        title: "Generation Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    setCurrentTopic(null);
+    await runGenerateFlashcards(data);
   };
 
   const flipCard = (id: string) => {
@@ -94,7 +117,7 @@ export function FlashcardGenerator() {
   const markCardStatus = (id: string, status: 'learning' | 'mastered') => {
      setGeneratedFlashcards(prev =>
       prev?.map(card =>
-        card.id === id ? { ...card, status: status, isFlipped: false } : card // auto-flip back to front
+        card.id === id ? { ...card, status: status, isFlipped: false } : card
       ) || null
     );
   };
@@ -188,19 +211,26 @@ export function FlashcardGenerator() {
               )}
             />
           </div>
-          <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
-                Generate Flashcards
-              </>
+          <div className="flex gap-2">
+            <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                  Generate Flashcards
+                </>
+              )}
+            </Button>
+            {generatedFlashcards && (
+              <Button type="button" variant="outline" onClick={handleReset} className="rounded-lg">
+                Clear
+              </Button>
             )}
-          </Button>
+          </div>
         </form>
       </Form>
 
@@ -211,7 +241,7 @@ export function FlashcardGenerator() {
         </Alert>
       )}
 
-      {generatedFlashcards && currentTopic && (
+      {generatedFlashcards && !isLoading && (
         <Card className="shadow-md rounded-xl mt-6 border-blue-500/30 bg-gradient-to-br from-card via-card to-blue-500/5">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">

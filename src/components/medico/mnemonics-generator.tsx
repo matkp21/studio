@@ -1,8 +1,6 @@
-
 // src/components/medico/mnemonics-generator.tsx
 "use client";
 
-import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,9 +11,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Lightbulb, Wand2, Image as ImageIcon } from 'lucide-react';
-import { generateMnemonic, type MedicoMnemonicsGeneratorInput, type MedicoMnemonicsGeneratorOutput } from '@/ai/agents/medico/MnemonicsGeneratorAgent';
+import { generateMnemonic } from '@/ai/agents/medico/MnemonicsGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import { useAiAgent } from '@/hooks/use-ai-agent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).max(150, { message: "Topic too long."}),
@@ -24,43 +26,57 @@ const formSchema = z.object({
 type MnemonicFormValues = z.infer<typeof formSchema>;
 
 export function MnemonicsGenerator() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [generatedMnemonic, setGeneratedMnemonic] = useState<MedicoMnemonicsGeneratorOutput | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useProMode();
+
+  const { execute: runGenerateMnemonic, data: generatedMnemonic, isLoading, error, reset } = useAiAgent(generateMnemonic, {
+    onSuccess: async (data, input) => {
+      toast({
+        title: "Mnemonic Generated!",
+        description: `Mnemonic for "${data.topicGenerated}" is ready.`,
+      });
+
+      if (user) {
+        try {
+          await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+            type: 'mnemonic',
+            topic: data.topicGenerated,
+            userId: user.uid,
+            mnemonic: data.mnemonic,
+            explanation: data.explanation,
+            imageUrl: data.imageUrl,
+            createdAt: serverTimestamp(),
+          });
+          toast({
+            title: "Saved to Library",
+            description: "Your generated mnemonic has been saved.",
+          });
+        } catch (firestoreError) {
+          console.error("Firestore save error:", firestoreError);
+          toast({
+            title: "Save Failed",
+            description: "Could not save mnemonic to your library.",
+            variant: "destructive",
+          });
+        }
+      }
+    }
+  });
+
 
   const form = useForm<MnemonicFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      topic: "",
-    },
+    defaultValues: { topic: "" },
   });
 
   const onSubmit: SubmitHandler<MnemonicFormValues> = async (data) => {
-    setIsLoading(true);
-    setGeneratedMnemonic(null);
-    setError(null);
-
-    try {
-      const result = await generateMnemonic(data as MedicoMnemonicsGeneratorInput);
-      setGeneratedMnemonic(result);
-      toast({
-        title: "Mnemonic Generated!",
-        description: `Mnemonic for "${result.topicGenerated}" is ready.`,
-      });
-    } catch (err) {
-      console.error("Mnemonic generation error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-      setError(errorMessage);
-      toast({
-        title: "Generation Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await runGenerateMnemonic(data);
   };
+  
+  const handleReset = () => {
+    form.reset();
+    reset();
+  }
 
   return (
     <div className="space-y-6">
@@ -84,19 +100,26 @@ export function MnemonicsGenerator() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-                Generate Mnemonic
-              </>
+          <div className="flex gap-2">
+            <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                  Generate Mnemonic
+                </>
+              )}
+            </Button>
+            {generatedMnemonic && (
+              <Button type="button" variant="outline" onClick={handleReset} className="rounded-lg">
+                Clear
+              </Button>
             )}
-          </Button>
+          </div>
         </form>
       </Form>
 
@@ -107,7 +130,7 @@ export function MnemonicsGenerator() {
         </Alert>
       )}
 
-      {generatedMnemonic && (
+      {generatedMnemonic && !isLoading && (
         <Card className="shadow-md rounded-xl mt-6 border-yellow-500/30 bg-gradient-to-br from-card via-card to-yellow-500/5">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">

@@ -5,13 +5,13 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { firestore } from '@/lib/firebase';
-import { collection, query, where, getDocs, orderBy, Timestamp, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { Loader2, Library, BookOpen, FileQuestion, Users, UploadCloud, Bookmark, BookmarkCheck, BookmarkX, UserCircle } from 'lucide-react';
+import { collection, query, where, getDocs, orderBy, Timestamp, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
+import { Loader2, Library, BookOpen, FileQuestion, Users, UploadCloud, Bookmark, BookmarkCheck, BookmarkX, UserCircle, Lightbulb, Workflow, Layers } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import type { MCQSchema } from '@/ai/schemas/medico-tools-schemas';
+import type { MCQSchema, MedicoFlashcard, EssayQuestionSchema } from '@/ai/schemas/medico-tools-schemas';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,7 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Define types for library items
-type LibraryItemType = 'notes' | 'mcqs' | 'summary' | 'mnemonic' | 'communityNote' | 'communityMnemonic';
+type LibraryItemType = 'notes' | 'mcqs' | 'summary' | 'mnemonic' | 'communityNote' | 'communityMnemonic' | 'flowchart' | 'flashcards' | 'examPaper';
 
 interface BaseLibraryItem {
   id: string;
@@ -36,10 +36,16 @@ interface MyLibraryItem extends BaseLibraryItem {
   notes?: string;
   summaryPoints?: string[];
   mcqs?: MCQSchema[];
+  essays?: EssayQuestionSchema[];
   difficulty?: 'easy' | 'medium' | 'hard';
   examType?: 'university' | 'neet-pg' | 'usmle';
   summary?: string;
   originalFileName?: string;
+  mnemonic?: string;
+  explanation?: string;
+  imageUrl?: string;
+  flowchartData?: string;
+  flashcards?: MedicoFlashcard[];
 }
 
 interface CommunityLibraryItem extends BaseLibraryItem {
@@ -62,11 +68,11 @@ interface LibraryCardProps {
 const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: LibraryCardProps) => {
     const getIcon = (type: LibraryItemType) => {
         switch (type) {
-            case 'mcqs': return FileQuestion;
-            case 'notes':
-            case 'summary':
-            case 'communityNote':
-                return BookOpen;
+            case 'mcqs': case 'examPaper': return FileQuestion;
+            case 'notes': case 'summary': case 'communityNote': return BookOpen;
+            case 'mnemonic': case 'communityMnemonic': return Lightbulb;
+            case 'flowchart': return Workflow;
+            case 'flashcards': return Layers;
             default: return Library;
         }
     };
@@ -83,7 +89,7 @@ const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: Libra
                 </div>
                 <CardTitle className="text-md line-clamp-2 font-semibold h-12">{item.topic}</CardTitle>
                 <CardDescription className="text-xs">
-                    Type: <span className="capitalize">{item.type.replace('community', '')}</span> | {format(item.createdAt.toDate(), 'dd MMM yyyy')}
+                    Type: <span className="capitalize">{item.type.replace('community', '')}</span> | {item.createdAt ? format(item.createdAt.toDate(), 'dd MMM yyyy') : 'Date N/A'}
                 </CardDescription>
             </CardHeader>
             <CardContent className="p-4 pt-2 flex-grow flex items-end">
@@ -133,9 +139,9 @@ export default function StudyLibraryPage() {
       
       // Fetch bookmarks
       const userDocRef = doc(firestore, `users/${user.uid}`);
-      const userDoc = await getDocs(query(collection(firestore, `users`), where('__name__', '==', user.uid))); // Using a query to get a single doc
-      if (!userDoc.empty) {
-        setBookmarkedItemIds(userDoc.docs[0].data().bookmarkedItems || []);
+      const userDocSnap = await getDoc(userDocRef);
+      if (userDocSnap.exists()) {
+        setBookmarkedItemIds(userDocSnap.data().bookmarkedItems || []);
       }
     } catch (error) {
       console.error("Error fetching library data:", error);
@@ -177,7 +183,6 @@ export default function StudyLibraryPage() {
   }, [myLibraryItems, communityItems, bookmarkedItemIds]);
 
   const handleUploadSubmit = async () => {
-    // ... (rest of the upload logic is the same)
     if (!uploadTopic.trim() || !uploadContent.trim()) {
         toast({ title: "Missing Information", description: "Please provide a topic and content to upload.", variant: "destructive" });
         return;
@@ -230,6 +235,7 @@ export default function StudyLibraryPage() {
                 </>
             );
         case 'mcqs':
+        case 'examPaper':
             return (
                 <div className="space-y-4">
                 {myItem.mcqs?.map((mcq, index) => (
@@ -249,8 +255,39 @@ export default function StudyLibraryPage() {
                     )}
                   </Card>
                 ))}
+                {myItem.essays?.map((essay, index) => (
+                  <Card key={`essay-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
+                    <p className="font-semibold mb-2 text-foreground text-sm">Essay Q{index + 1}: {essay.question}</p>
+                    <p className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
+                      <span className="font-semibold">Answer Outline:</span> {essay.answer_outline}
+                    </p>
+                  </Card>
+                ))}
               </div>
             );
+        case 'mnemonic':
+            return (
+                 <div className="space-y-3">
+                    <p className="text-lg font-bold text-foreground whitespace-pre-wrap">{myItem.mnemonic}</p>
+                    {myItem.explanation && <p className="text-sm whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">{myItem.explanation}</p>}
+                    {myItem.imageUrl && <Image src={myItem.imageUrl} alt="Mnemonic visual" width={200} height={200} className="rounded-md border"/>}
+                </div>
+            )
+        case 'flowchart':
+            return <pre className="p-4 whitespace-pre-wrap text-sm bg-muted rounded-md"><code>{myItem.flowchartData}</code></pre>
+        case 'flashcards':
+             return (
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                     {myItem.flashcards?.map((fc, index) => (
+                         <Card key={index} className="p-3 bg-card/80 shadow-sm rounded-lg">
+                             <p className="font-semibold mb-1 text-primary">Front:</p>
+                             <p className="text-sm mb-2">{fc.front}</p>
+                             <p className="font-semibold mb-1 text-primary border-t pt-2">Back:</p>
+                             <p className="text-sm">{fc.back}</p>
+                         </Card>
+                     ))}
+                 </div>
+             )
         case 'communityNote': case 'communityMnemonic':
             return <div className="whitespace-pre-wrap text-sm">{commItem.content}</div>;
         default: return <p>No details to display.</p>
