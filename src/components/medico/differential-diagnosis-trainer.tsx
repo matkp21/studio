@@ -15,6 +15,7 @@ import { Loader2, Brain, Send, FilePlus, RotateCcw } from 'lucide-react';
 import { trainDifferentialDiagnosis, type MedicoDDTrainerInput, type MedicoDDTrainerOutput } from '@/ai/agents/medico/DifferentialDiagnosisTrainerAgent';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
 const newCaseFormSchema = z.object({
   symptoms: z.string().min(10, { message: "Symptoms description must be at least 10 characters." }).max(1000, { message: "Description too long."}),
@@ -74,6 +75,24 @@ export function DifferentialDiagnosisTrainer() {
       setCaseData(result);
       responseForm.reset(); // Clear response input
       toast({ title: "Response Submitted", description: "DDx training updated." });
+
+      if (result.isCompleted) {
+        try {
+            // The topic is the initial symptoms string.
+            const topic = result.updatedCaseSummary.split('\n')[0]; // A bit hacky, but should work.
+            const progressResult = await trackProgress({
+                activityType: 'case_sim_completed', // Treat it like a case
+                topic: topic || 'DDx Session'
+            });
+            toast({
+                title: "Session Completed & Progress Tracked!",
+                description: progressResult.progressUpdateMessage
+            });
+        } catch (progressError) {
+            console.warn("Could not track progress for DDx trainer:", progressError);
+        }
+      }
+
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit response.";
       setError(msg);

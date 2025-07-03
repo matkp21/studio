@@ -15,6 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, CalculatorIcon, Wand2, Info } from 'lucide-react';
 import { calculateDrugDosage, type MedicoDrugDosageInput, type MedicoDrugDosageOutput } from '@/ai/agents/medico/DrugDosageCalculatorAgent';
 import { useToast } from '@/hooks/use-toast';
+import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
 const formSchema = z.object({
   drugName: z.string().min(2, { message: "Drug name is required." }).max(100, { message: "Drug name too long."}),
@@ -62,6 +63,21 @@ export function DrugDosageCalculator() {
         title: "Calculation Complete!",
         description: `Dosage for "${data.drugName}" calculated.`,
       });
+
+      // Track progress
+      try {
+        const progressResult = await trackProgress({
+            activityType: 'notes_review', // Treat as a review/practice activity
+            topic: `Dosage: ${data.drugName}`
+        });
+        toast({
+            title: "Progress Tracked!",
+            description: progressResult.progressUpdateMessage
+        });
+      } catch (progressError) {
+          console.warn("Could not track progress for dosage calculation:", progressError);
+      }
+
     } catch (err) {
       console.error("Drug dosage calculation error:", err);
       const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";

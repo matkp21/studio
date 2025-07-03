@@ -1,3 +1,4 @@
+
 // src/components/medico/mcq-generator.tsx
 "use client";
 
@@ -19,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { useProMode } from '@/contexts/pro-mode-context';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
+import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
@@ -62,6 +64,21 @@ export function McqGenerator() {
             variant: "destructive",
           });
         }
+      }
+
+      // Track Progress
+      try {
+        const progressResult = await trackProgress({
+            activityType: 'mcq_session',
+            topic: input.topic,
+            score: undefined // Score would be tracked after user attempts them
+        });
+        toast({
+            title: "Progress Tracked!",
+            description: progressResult.progressUpdateMessage
+        });
+      } catch (progressError) {
+          console.warn("Could not track progress for MCQ generation:", progressError);
       }
     }
   });

@@ -1,3 +1,4 @@
+
 // src/components/medico/flowchart-creator.tsx
 "use client";
 
@@ -17,6 +18,7 @@ import { useAiAgent } from '@/hooks/use-ai-agent';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
+import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).max(150, { message: "Topic too long."}),
@@ -56,6 +58,20 @@ export function FlowchartCreator() {
             variant: "destructive",
           });
         }
+      }
+
+      // Track Progress
+      try {
+        const progressResult = await trackProgress({
+            activityType: 'notes_review',
+            topic: `Flowchart: ${input.topic}`
+        });
+        toast({
+            title: "Progress Tracked!",
+            description: progressResult.progressUpdateMessage
+        });
+      } catch (progressError) {
+          console.warn("Could not track progress for flowchart generation:", progressError);
       }
     }
   });

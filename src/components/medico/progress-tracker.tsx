@@ -1,3 +1,4 @@
+
 // src/components/medico/progress-tracker.tsx
 "use client";
 
@@ -31,9 +32,9 @@ export function ProgressTracker() {
     <div className="space-y-6">
       <Alert variant="default" className="border-green-500/50 bg-green-500/10">
             <Lightbulb className="h-5 w-5 text-green-600" />
-            <AlertTitle className="font-semibold text-green-700 dark:text-green-500">Conceptual Feature</AlertTitle>
+            <AlertTitle className="font-semibold text-green-700 dark:text-green-500">Progress Dashboard</AlertTitle>
             <AlertDescription className="text-green-600/90 dark:text-green-500/90 text-xs">
-            This interface represents a future Progress Tracker tool with gamification elements. A full implementation would involve tracking user activity across different study tools (MCQs, notes, cases) and awarding achievements.
+              Activity tracking is now active! Completing study tasks will generate progress updates via toast notifications. The dashboard below displays sample data, as a full persistent progress view is a future goal.
             </AlertDescription>
       </Alert>
 

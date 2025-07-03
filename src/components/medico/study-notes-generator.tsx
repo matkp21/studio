@@ -1,3 +1,4 @@
+
 // src/components/medico/study-notes-generator.tsx
 "use client";
 
@@ -17,6 +18,7 @@ import { useAiAgent } from '@/hooks/use-ai-agent';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
+import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
@@ -56,6 +58,19 @@ export function StudyNotesGenerator() {
             variant: "destructive",
           });
         }
+      }
+
+      try {
+        const progressResult = await trackProgress({
+            activityType: 'notes_review',
+            topic: input.topic,
+        });
+        toast({
+            title: "Progress Tracked!",
+            description: progressResult.progressUpdateMessage,
+        });
+      } catch (progressError) {
+          console.warn("Could not track progress:", progressError);
       }
     }
   });

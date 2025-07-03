@@ -1,3 +1,4 @@
+
 // src/components/medico/high-yield-topic-predictor.tsx
 "use client";
 
@@ -13,6 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, TrendingUp, Wand2, ListChecks } from 'lucide-react';
 import { predictHighYieldTopics, type MedicoTopicPredictorInput, type MedicoTopicPredictorOutput } from '@/ai/agents/medico/HighYieldTopicPredictorAgent';
 import { useToast } from '@/hooks/use-toast';
+import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
 const formSchema = z.object({
   examType: z.string().min(3, { message: "Exam type must be at least 3 characters." }).max(100, { message: "Exam type too long."}),
@@ -51,6 +53,21 @@ export function HighYieldTopicPredictor() {
         title: "Prediction Ready!",
         description: `High-yield topics for "${data.examType}" ${data.subject ? `(${data.subject})` : ''} generated.`,
       });
+
+       // Track progress
+      try {
+        const progressResult = await trackProgress({
+            activityType: 'notes_review',
+            topic: `Topic Prediction for ${data.examType}`
+        });
+        toast({
+            title: "Progress Tracked!",
+            description: progressResult.progressUpdateMessage
+        });
+      } catch (progressError) {
+          console.warn("Could not track progress for topic prediction:", progressError);
+      }
+
     } catch (err) {
       console.error("High-yield topic prediction error:", err);
       const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";

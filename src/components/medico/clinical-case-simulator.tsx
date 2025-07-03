@@ -1,3 +1,4 @@
+
 // src/components/medico/clinical-case-simulator.tsx
 "use client";
 
@@ -15,6 +16,7 @@ import { Loader2, CaseUpper, Send, FilePlus, RotateCcw } from 'lucide-react';
 import { simulateClinicalCase, type MedicoClinicalCaseInput, type MedicoClinicalCaseOutput } from '@/ai/agents/medico/ClinicalCaseSimulatorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
 const newCaseFormSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).max(150, { message: "Topic too long."}),
@@ -65,11 +67,30 @@ export function ClinicalCaseSimulator() {
     setIsLoading(true);
     setError(null);
     try {
-      const input: MedicoClinicalCaseInput = { caseId: caseData.caseId, userResponse: data.userResponse };
+      const input: MedicoClinicalCaseInput = { 
+        caseId: caseData.caseId, 
+        userResponse: data.userResponse,
+        topic: caseData.topic
+      };
       const result = await simulateClinicalCase(input);
       setCaseData(result);
       responseForm.reset(); // Clear response input
       toast({ title: "Response Submitted", description: "Case updated with your response." });
+
+      if (result.isCompleted) {
+        try {
+            const progressResult = await trackProgress({
+                activityType: 'case_sim_completed',
+                topic: result.topic || 'Clinical Case',
+            });
+            toast({
+                title: "Case Completed & Progress Tracked!",
+                description: progressResult.progressUpdateMessage,
+            });
+        } catch (progressError) {
+            console.warn("Could not track progress:", progressError);
+        }
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit response.";
       setError(msg);

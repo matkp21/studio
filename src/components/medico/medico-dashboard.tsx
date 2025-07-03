@@ -1,3 +1,4 @@
+
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
@@ -81,7 +82,7 @@ const medicoToolsList: MedicoTool[] = [
   { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Explore anatomical structures.', icon: Eye, component: AnatomyVisualizer },
   { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds },
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator },
-  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: true },
+  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
 ];
 
 const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['notes', 'mcq', 'papers', 'videos', 'challenges'];
@@ -250,7 +251,7 @@ export function MedicoDashboard() {
                     <MedicoToolCard tool={tool} onLaunch={setActiveDialog} isFrequentlyUsed isEditMode={isEditMode} />
                     {!tool.comingSoon && tool.component && activeDialog === tool.id && (
                         <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
-                            <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
+                            <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
                             <DialogTitle className="text-2xl flex items-center gap-2">
                                 <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
                             </DialogTitle>
@@ -277,7 +278,7 @@ export function MedicoDashboard() {
                     <MedicoToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
                     {!tool.comingSoon && tool.component && activeDialog === tool.id && (
                          <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
-                            <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
+                            <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
                             <DialogTitle className="text-2xl flex items-center gap-2">
                                 <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
                             </DialogTitle>

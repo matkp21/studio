@@ -19,6 +19,7 @@ import { summarizeNoteText, type MedicoNoteSummarizerInput, type MedicoNoteSumma
 import { useProMode } from '@/contexts/pro-mode-context';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
+import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
 const formSchema = z.object({
   file: z.instanceof(File, { message: "Please upload a file." })
@@ -102,6 +103,20 @@ export function NoteSummarizer() {
             console.error("Failed to save summary to Firestore:", firestoreError);
             toast({ title: "Could not save summary", description: "Your summary was generated but failed to save to your cloud library.", variant: "default" });
         }
+      }
+
+      // Track Progress
+      try {
+        const progressResult = await trackProgress({
+            activityType: 'notes_review',
+            topic: `Summarized: ${data.file.name}`
+        });
+        toast({
+            title: "Progress Tracked!",
+            description: progressResult.progressUpdateMessage
+        });
+      } catch (progressError) {
+          console.warn("Could not track progress for note summarizer:", progressError);
       }
 
     } catch (err) {

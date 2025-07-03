@@ -114,6 +114,7 @@ export type MedicoClinicalCaseInput = z.infer<typeof MedicoClinicalCaseInputSche
 
 export const MedicoClinicalCaseOutputSchema = z.object({
   caseId: z.string().describe('ID of the current case simulation.'),
+  topic: z.string().optional().describe('The topic of the clinical case.'),
   prompt: z.string().describe('The next prompt or question in the case simulation for the user.'),
   feedback: z.string().optional().describe('Feedback on the user s previous response.'),
   isCompleted: z.boolean().default(false).describe('Indicates if the case simulation has ended.'),
@@ -180,6 +181,7 @@ export const MedicoVirtualRoundsOutputSchema = z.object({
   currentObservation: z.string().describe('Result of the user s last action or current observation prompt.'),
   nextPrompt: z.string().describe('Guidance or question for the student s next step in the round.'),
   isCompleted: z.boolean().default(false).describe('Indicates if this patient encounter in the round is completed.'),
+  topic: z.string().optional().describe('The topic/focus of the round.'),
 });
 export type MedicoVirtualRoundsOutput = z.infer<typeof MedicoVirtualRoundsOutputSchema>;
 

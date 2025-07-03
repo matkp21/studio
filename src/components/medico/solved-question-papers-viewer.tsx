@@ -1,3 +1,4 @@
+
 // src/components/medico/solved-question-papers-viewer.tsx
 "use client";
 
@@ -19,6 +20,7 @@ import { useAiAgent } from '@/hooks/use-ai-agent';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
+import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
 const formSchema = z.object({
   examType: z.string().min(3, { message: "Exam type must be at least 3 characters long." }).max(100, { message: "Exam type too long." }),
@@ -61,6 +63,20 @@ export function SolvedQuestionPapersViewer() {
             variant: "destructive",
           });
         }
+      }
+
+      // Track Progress
+      try {
+        const progressResult = await trackProgress({
+            activityType: 'mcq_session',
+            topic: `Exam Paper: ${input.examType}`
+        });
+        toast({
+            title: "Progress Tracked!",
+            description: progressResult.progressUpdateMessage
+        });
+      } catch (progressError) {
+          console.warn("Could not track progress for exam paper generation:", progressError);
       }
     }
   });

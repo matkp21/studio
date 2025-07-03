@@ -1,3 +1,4 @@
+
 // src/components/medico/virtual-patient-rounds.tsx
 "use client";
 
@@ -15,6 +16,7 @@ import { Loader2, Users, Send, FilePlus, RotateCcw, UserCheck } from 'lucide-rea
 import { conductVirtualRound, type MedicoVirtualRoundsInput, type MedicoVirtualRoundsOutput } from '@/ai/agents/medico/VirtualPatientRoundsAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
 const newRoundFormSchema = z.object({
   patientFocus: z.string().optional().describe('Specific patient type or condition for new round.'),
@@ -65,11 +67,30 @@ export function VirtualPatientRounds() {
     setIsLoading(true);
     setError(null);
     try {
-      const input: MedicoVirtualRoundsInput = { caseId: roundData.caseId, userAction: data.userAction };
+      const input: MedicoVirtualRoundsInput = { 
+        caseId: roundData.caseId, 
+        userAction: data.userAction,
+        patientFocus: roundData.topic, // Pass topic back as patientFocus
+      };
       const result = await conductVirtualRound(input);
       setRoundData(result);
       actionForm.reset(); // Clear action input
       toast({ title: "Action Submitted", description: "Round updated with your action." });
+
+      if (result.isCompleted) {
+        try {
+            const progressResult = await trackProgress({
+                activityType: 'case_sim_completed',
+                topic: result.topic || 'Virtual Round'
+            });
+            toast({
+                title: "Round Completed & Progress Tracked!",
+                description: progressResult.progressUpdateMessage
+            });
+        } catch (progressError) {
+            console.warn("Could not track progress for virtual round:", progressError);
+        }
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit action.";
       setError(msg);

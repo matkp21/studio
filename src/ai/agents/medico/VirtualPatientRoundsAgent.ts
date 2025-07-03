@@ -28,13 +28,15 @@ const virtualPatientRoundsPrompt = ai.definePrompt({
 
 {{#if caseId}}
 Current Patient Case ID: {{{caseId}}}
+Current Topic: {{{patientFocus}}}
 Student's last action/query: "{{{userAction}}}"
 ---
 Based on the patient's history (assume you have access to it, not fully provided in this simplified prompt) and the student's last action:
 1. Update the 'patientSummary'.
 2. Provide the 'currentObservation' resulting from the student's action.
 3. Give the 'nextPrompt' to guide the student (e.g., "What investigations would you order next?", "How would you manage this finding?").
-4. Update 'isCompleted' if this encounter is finished.
+4. Retain the topic: The 'topic' field MUST be set to "{{{patientFocus}}}".
+5. Update 'isCompleted' if this encounter is finished.
 {{else}}
 New Virtual Round / New Patient.
 Focus for new patient (if any): "{{{patientFocus}}}"
@@ -45,9 +47,11 @@ Initiate a new virtual patient encounter.
 3. Set 'currentObservation' to an initial presentation point.
 4. Provide the 'nextPrompt' for the student's first action (e.g., "What are your initial thoughts or questions for this patient?").
 5. Set 'isCompleted' to false.
+6. Set the output 'topic' to be the same as the input 'patientFocus'.
 
 Example for a new patient (focus: "Pediatric Asthma Exacerbation"):
   Case ID: "vround-pat-123"
+  Topic: "Pediatric Asthma Exacerbation"
   Patient Summary: "A 7-year-old known asthmatic presents to the ER with increasing shortness of breath, wheezing, and cough for 6 hours. No fever. Last nebulization 2 hours ago with minimal relief."
   Current Observation: "Patient is sitting upright, using accessory muscles of respiration. RR 30/min, SpO2 92% on room air. Audible expiratory wheezes bilaterally."
   Next Prompt: "What is your immediate management plan for this child?"

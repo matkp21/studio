@@ -29,12 +29,14 @@ const clinicalCasePrompt = ai.definePrompt({
 {{#if caseId}}
 You are continuing an existing case.
 Current Case ID: {{{caseId}}}
+Current Topic: {{{topic}}}
 Student's last response/action: "{{{userResponse}}}"
 ---
 1.  **Analyze the student's response**: Was it appropriate? What are the implications of their action? For example, if they ordered a test, what would the result be? If they suggested a treatment, how would the patient respond?
 2.  **Provide Feedback**: Give constructive feedback on the student's response. Explain why it was a good or suboptimal choice. Reference standard guidelines (e.g., NICE, WHO) if relevant.
 3.  **Present the Next Step**: Describe the outcome of the student's action (e.g., "The CT scan shows a large pulmonary embolism.") and present the next clinical question (e.g., "Given this new information, what is your immediate management plan?").
-4.  **Conclude if Necessary**: If the student has successfully managed the case or reached a logical conclusion, set 'isCompleted' to true and provide a final 'summary' of the case and key learning points.
+4.  **Retain the Topic**: The 'topic' field in the output MUST be set to "{{{topic}}}".
+5.  **Conclude if Necessary**: If the student has successfully managed the case or reached a logical conclusion, set 'isCompleted' to true and provide a final 'summary' of the case and key learning points.
 {{else}}
 You are starting a new case.
 Topic: {{{topic}}}
@@ -42,10 +44,11 @@ Topic: {{{topic}}}
 1.  **Initiate a New Case**: Create a realistic opening scenario for a clinical case based on the topic: {{{topic}}}.
 2.  **Provide Patient Presentation**: Give a clear initial patient presentation (e.g., age, gender, presenting complaint, brief history, vital signs).
 3.  **Pose the First Question**: Ask the student for their initial thoughts, priorities, or actions (e.g., "What are your initial assessment priorities?", "What further history would you like to elicit?").
-4.  **Initialize State**: Set 'isCompleted' to false. Assign a new unique 'caseId' (e.g., "case-" followed by a random number). 'feedback' and 'summary' should be null.
+4.  **Initialize State**: Set 'isCompleted' to false. Assign a new unique 'caseId' (e.g., "case-" followed by a random number). The 'topic' field in the output MUST be set to the input topic "{{{topic}}}". 'feedback' and 'summary' should be null.
 
 Example for a new case on "Severe Acute Malnutrition":
   Case ID: "case-12345"
+  Topic: "Severe Acute Malnutrition"
   Prompt: "A 2-year-old child is brought to the clinic by their mother with complaints of progressive weight loss, lethargy, and frequent loose stools for the past month. On examination, the child appears emaciated with visible rib outlines and loose skin folds. Vital signs are stable. What are your initial assessment priorities?"
   Feedback: null
   Is Completed: false
