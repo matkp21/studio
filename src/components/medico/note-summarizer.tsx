@@ -19,6 +19,7 @@ import { useProMode } from '@/contexts/pro-mode-context';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { saveAs } from 'file-saver';
+import { firestore } from '@/lib/firebase';
 
 const getDocument = async (url: string) => {
   const { getDocument } = await import('pdfjs-dist');
@@ -153,8 +154,7 @@ export function NoteSummarizer() {
 
       if (user) {
         try {
-            const db = getFirestore();
-            await addDoc(collection(db, `users/${user.uid}/summaries`), {
+            await addDoc(collection(firestore, `users/${user.uid}/summaries`), {
                 summary: result.summary,
                 format: result.format,
                 originalFileName: data.file.name,
