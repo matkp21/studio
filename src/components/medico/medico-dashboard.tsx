@@ -20,9 +20,10 @@ import { SolvedQuestionPapersViewer } from './solved-question-papers-viewer';
 import { FlowchartCreator } from './flowchart-creator';
 import { ProgressTracker } from './progress-tracker';
 import { NoteSummarizer } from './note-summarizer'; 
+import { SmartDictation } from '@/components/pro/smart-dictation'; // Import the new component
 import {
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
-  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube
+  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic // Added Mic
 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
@@ -46,7 +47,8 @@ type ActiveToolId =
   | 'dosage'
   | 'progress'
   | 'summarizer' 
-  | 'videos' // New tool ID for video library
+  | 'videos'
+  | 'dictation' // New tool ID for dictation
   | null;
 
 interface MedicoTool {
@@ -54,8 +56,8 @@ interface MedicoTool {
   title: string;
   description: string;
   icon: React.ElementType;
-  component?: React.ElementType; // Make component optional for link-based tools
-  href?: string; // Add href for direct navigation
+  component?: React.ElementType; 
+  href?: string; 
   comingSoon?: boolean;
 }
 
@@ -64,6 +66,7 @@ const medicoToolsList: MedicoTool[] = [
   { id: 'notes', title: 'Study Notes Generator', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: StudyNotesGenerator },
   { id: 'summarizer', title: 'Smart Note Summarizer', description: 'Upload notes (PDF/TXT/JPEG) and get AI-powered summaries in various formats.', icon: FileText, component: NoteSummarizer },
   { id: 'videos', title: 'Video Lecture Library', description: 'Search and find relevant medical video lectures from YouTube.', icon: Youtube, href: '/medico/videos' },
+  { id: 'dictation', title: 'Smart Dictation', description: 'Use your voice to dictate notes, which AI can help structure.', icon: Mic, component: SmartDictation },
   { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study based on exam trends or user performance.', icon: TrendingUp, component: HighYieldTopicPredictor },
   { id: 'flowcharts', title: 'Flowchart Creator', description: 'Generate flowcharts for medical topics to aid revision.', icon: Workflow, component: FlowchartCreator },
   { id: 'flashcards', title: 'Flashcard Generator', description: 'Create digital flashcards for quick revision.', icon: Layers, component: FlashcardGenerator },
@@ -78,7 +81,7 @@ const medicoToolsList: MedicoTool[] = [
   { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: true },
 ];
 
-const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['notes', 'mcq', 'papers', 'videos'];
+const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['notes', 'mcq', 'papers', 'videos', 'dictation'];
 
 
 interface MedicoToolCardProps {
@@ -268,7 +271,7 @@ export function MedicoDashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {otherTools.map((tool) => (
                 <Dialog key={tool.id} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
-                    <MedicoToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
+                    <ToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
                     {!tool.comingSoon && tool.component && activeDialog === tool.id && (
                          <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
                             <DialogHeader className="p-6 pb-0 sticky top-0 bg-background border-b z-10">
