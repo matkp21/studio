@@ -1,9 +1,9 @@
 
 'use server';
 /**
- * @fileOverview A Genkit flow for helping medico users practice differential diagnosis.
+ * @fileOverview A Genkit flow for helping medico users practice differential diagnosis through an interactive, iterative questioning process.
  *
- * - trainDifferentialDiagnosis - A function that provides potential diagnoses for given symptoms.
+ * - trainDifferentialDiagnosis - A function that handles the iterative diagnostic training.
  * - MedicoDDTrainerInput - The input type.
  * - MedicoDDTrainerOutput - The output type.
  */
@@ -23,28 +23,30 @@ const differentialDiagnosisTrainerPrompt = ai.definePrompt({
   name: 'medicoDDTrainerPrompt',
   input: { schema: MedicoDDTrainerInputSchema },
   output: { schema: MedicoDDTrainerOutputSchema },
-  prompt: `You are an AI medical education tool designed to help students practice differential diagnosis.
-Given the following symptoms or clinical scenario:
-"{{{symptoms}}}"
+  prompt: `You are an AI medical education tool designed to help students practice the process of differential diagnosis.
 
-Based on these symptoms, provide a list of potential differential diagnoses.
-Also, include a brief explanation or key distinguishing features for why these diagnoses are considered.
-This is for educational purposes.
+{{#if isNewCase}}
+You are starting a new session.
+Clinical Scenario: "{{{symptoms}}}"
+---
+1.  **Acknowledge the Scenario**: Start by acknowledging the clinical presentation.
+2.  **Ask the First Question**: Your primary task is to prompt the student for their first step. Ask them: "What is the first and most important question you would ask this patient, or what is the first physical examination you would perform?"
+3.  **Initial State**: The 'feedback' should be null. The 'isCompleted' flag must be false. The 'updatedCaseSummary' should contain the initial scenario. The 'prompt' for the student should be the question you are asking them.
+{{else}}
+You are continuing a session.
+Case Summary so far: "{{{currentCaseSummary}}}"
+Student's last response (their question or action): "{{{userResponse}}}"
+---
+1.  **Evaluate Student's Response**: Critically evaluate the student's question or action. Is it relevant? Is it well-timed? Is it specific enough?
+2.  **Provide Constructive Feedback**: In the 'feedback' field, explain why the student's response was good, or how it could be improved. (e.g., "Good question, that helps rule out cardiac causes. However, asking about associated symptoms first might be more efficient.").
+3.  **Simulate a Patient's Answer**: Provide a realistic patient answer to the student's question.
+4.  **Update the Case Summary**: In 'updatedCaseSummary', append the new information (the student's question and the patient's answer) to the 'currentCaseSummary'.
+5.  **Prompt for Next Step**: In the 'prompt' field, ask the student for their next question, action, or if they are ready to suggest some differential diagnoses. (e.g., "Excellent. What would you like to ask or check next?").
+6.  **Check for Completion**: If the student provides a list of differential diagnoses, evaluate them, provide final feedback, set 'isCompleted' to true, and end the session.
+{{/if}}
 
-Format the output as JSON conforming to the MedicoDDTrainerOutputSchema.
-'potentialDiagnoses' should be an array of strings.
-'explanation' should be a string summarizing the rationale.
+Format your entire output as JSON conforming to the MedicoDDTrainerOutputSchema.
 `,
-// Future enhancement: Add studentAttempt and feedback for interactive training.
-// {{#if studentAttempt}}
-// Student's attempt at differential diagnoses:
-// {{#each studentAttempt}} - {{{this}}}{{/each}}
-// Evaluate the student's attempt. Provide constructive feedback, highlighting correct diagnoses, missed diagnoses, or less likely ones, with brief reasons.
-// 'feedback' field should contain this evaluation.
-// {{else}}
-// No student attempt provided. Just list potential diagnoses and explanation.
-// {{/if}}
-
   config: {
     temperature: 0.5, // Balanced for accuracy and educational breadth
   }
@@ -59,11 +61,11 @@ const differentialDiagnosisTrainerFlow = ai.defineFlow(
   async (input) => {
     const { output } = await differentialDiagnosisTrainerPrompt(input);
 
-    if (!output || !output.potentialDiagnoses || output.potentialDiagnoses.length === 0) {
-      console.error('MedicoDDTrainerPrompt did not return valid diagnoses for symptoms:', input.symptoms);
-      throw new Error('Failed to generate differential diagnoses. The AI model did not return the expected output or an empty set.');
+    if (!output || !output.prompt || !output.updatedCaseSummary) {
+      console.error('MedicoDDTrainerPrompt did not return valid output for:', input);
+      throw new Error('Failed to process the training step. The AI model did not return the expected output.');
     }
-    // Firestore saving logic could go here for tracking practice sessions
+    // Firestore saving logic for user's training history could go here
     return output;
   }
 );

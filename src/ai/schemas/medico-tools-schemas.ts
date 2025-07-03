@@ -147,19 +147,23 @@ export const MedicoMnemonicsGeneratorOutputSchema = z.object({
 });
 export type MedicoMnemonicsGeneratorOutput = z.infer<typeof MedicoMnemonicsGeneratorOutputSchema>;
 
-// Schema for Differential Diagnosis Trainer
+// Schema for Differential Diagnosis Trainer (Now Interactive)
 export const MedicoDDTrainerInputSchema = z.object({
-  symptoms: z.string().min(10, { message: "Symptoms description must be at least 10 characters." }).describe('A clinical scenario or list of symptoms presented to the student.'),
-  // studentAttempt: z.array(z.string()).optional().describe('Student s attempt at differential diagnoses.'), // For interactive training
+  isNewCase: z.boolean().describe("True if starting a new training session, false if continuing."),
+  symptoms: z.string().optional().describe('A clinical scenario or list of symptoms presented to the student to start a new case.'),
+  userResponse: z.string().optional().describe("The student's question or action in response to the tutor's prompt."),
+  currentCaseSummary: z.string().optional().describe("The story so far, to provide context for the AI tutor."),
 });
 export type MedicoDDTrainerInput = z.infer<typeof MedicoDDTrainerInputSchema>;
 
 export const MedicoDDTrainerOutputSchema = z.object({
-  potentialDiagnoses: z.array(z.string()).describe('A list of potential differential diagnoses for the given symptoms.'),
-  // feedback: z.string().optional().describe('Feedback on the student s attempt, if provided.'), // For interactive training
-  explanation: z.string().optional().describe('Brief explanation for why these diagnoses are considered.'),
+  prompt: z.string().describe("The AI tutor's next question or prompt for the student."),
+  feedback: z.string().optional().describe('Feedback on the student s previous response.'),
+  isCompleted: z.boolean().default(false).describe('Indicates if the training session has ended.'),
+  updatedCaseSummary: z.string().describe("The new summary of the case including the latest interaction."),
 });
 export type MedicoDDTrainerOutput = z.infer<typeof MedicoDDTrainerOutputSchema>;
+
 
 // Schema for Virtual Patient Rounds
 export const MedicoVirtualRoundsInputSchema = z.object({

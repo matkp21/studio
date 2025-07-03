@@ -27,23 +27,26 @@ const clinicalCasePrompt = ai.definePrompt({
   prompt: `You are an AI tutor managing a clinical case simulation for a medical student.
 
 {{#if caseId}}
+You are continuing an existing case.
 Current Case ID: {{{caseId}}}
-Student's last response: {{{userResponse}}}
+Student's last response/action: "{{{userResponse}}}"
 ---
-Review the student's response based on the case history (not provided in this simplified prompt, assume you have it).
-Provide feedback on the response.
-Present the next step/question in the simulation.
-Update 'isCompleted' and 'summary' if the case has concluded.
+1.  **Analyze the student's response**: Was it appropriate? What are the implications of their action? For example, if they ordered a test, what would the result be? If they suggested a treatment, how would the patient respond?
+2.  **Provide Feedback**: Give constructive feedback on the student's response. Explain why it was a good or suboptimal choice. Reference standard guidelines (e.g., NICE, WHO) if relevant.
+3.  **Present the Next Step**: Describe the outcome of the student's action (e.g., "The CT scan shows a large pulmonary embolism.") and present the next clinical question (e.g., "Given this new information, what is your immediate management plan?").
+4.  **Conclude if Necessary**: If the student has successfully managed the case or reached a logical conclusion, set 'isCompleted' to true and provide a final 'summary' of the case and key learning points.
 {{else}}
-New Case Request.
+You are starting a new case.
 Topic: {{{topic}}}
 ---
-Start a new clinical case simulation based on the topic: {{{topic}}}.
-Provide an initial patient presentation and the first question for the student.
-Set 'isCompleted' to false. Assign a new unique 'caseId' (e.g., "case-" + random_number).
+1.  **Initiate a New Case**: Create a realistic opening scenario for a clinical case based on the topic: {{{topic}}}.
+2.  **Provide Patient Presentation**: Give a clear initial patient presentation (e.g., age, gender, presenting complaint, brief history, vital signs).
+3.  **Pose the First Question**: Ask the student for their initial thoughts, priorities, or actions (e.g., "What are your initial assessment priorities?", "What further history would you like to elicit?").
+4.  **Initialize State**: Set 'isCompleted' to false. Assign a new unique 'caseId' (e.g., "case-" followed by a random number). 'feedback' and 'summary' should be null.
+
 Example for a new case on "Severe Acute Malnutrition":
   Case ID: "case-12345"
-  Prompt: "A 2-year-old child is brought to the clinic by their mother with complaints of progressive weight loss, lethargy, and frequent loose stools for the past month. On examination, the child appears emaciated with visible rib outlines and loose skin folds. What are your initial assessment priorities?"
+  Prompt: "A 2-year-old child is brought to the clinic by their mother with complaints of progressive weight loss, lethargy, and frequent loose stools for the past month. On examination, the child appears emaciated with visible rib outlines and loose skin folds. Vital signs are stable. What are your initial assessment priorities?"
   Feedback: null
   Is Completed: false
   Summary: null
