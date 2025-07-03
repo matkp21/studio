@@ -1,3 +1,4 @@
+
 // src/components/medico/note-summarizer.tsx
 "use client";
 
@@ -19,16 +20,11 @@ import { useProMode } from '@/contexts/pro-mode-context';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 
-const getDocument = async (url: string) => {
-  const { getDocument } = await import('pdfjs-dist');
-  return getDocument(url).promise;
-};
-
 const formSchema = z.object({
   file: z.instanceof(File, { message: "Please upload a file." })
     .refine(file => file.size > 0, "File cannot be empty.")
     .refine(file => file.size < 5 * 1024 * 1024, "File size must be less than 5MB.")
-    .refine(file => ["application/pdf", "text/plain", "image/jpeg"].includes(file.type), "Only .pdf, .txt, and .jpeg files are supported."),
+    .refine(file => ["text/plain", "image/jpeg"].includes(file.type), "Only .txt and .jpeg files are supported."),
   format: z.enum(['bullet', 'flowchart', 'table']).default('bullet'),
 });
 
@@ -50,20 +46,6 @@ export function NoteSummarizer() {
     if (file.type === 'text/plain') {
       return file.text();
     }
-    if (file.type === 'application/pdf') {
-      const { GlobalWorkerOptions } = await import('pdfjs-dist');
-      GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs`;
-
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await getDocument({ data: arrayBuffer });
-      let fullText = '';
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        fullText += textContent.items.map(item => 'str' in item ? item.str : '').join(' ');
-      }
-      return fullText;
-    }
     throw new Error("Unsupported file type for text extraction");
   };
 
@@ -77,7 +59,7 @@ export function NoteSummarizer() {
       let input: MedicoNoteSummarizerInput;
       const fileType = data.file.type;
 
-      if (fileType === 'application/pdf' || fileType === 'text/plain') {
+      if (fileType === 'text/plain') {
         const text = await extractTextFromFile(data.file);
         setExtractedText(text);
         if (text.length < 100) {
@@ -151,12 +133,12 @@ export function NoteSummarizer() {
                     <Input
                       id="file-upload-summarizer"
                       type="file"
-                      accept=".pdf,.txt,.jpeg,.jpg"
+                      accept=".txt,.jpeg,.jpg"
                       onChange={(e) => field.onChange(e.target.files?.[0])}
                       className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary file:text-sm file:font-medium"
                     />
                   </FormControl>
-                  <FormDescription className="text-xs">Supports .pdf, .txt, and .jpeg files up to 5MB.</FormDescription>
+                  <FormDescription className="text-xs">Supports .txt and .jpeg files up to 5MB.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
