@@ -2,7 +2,7 @@
 // src/lib/firebase.ts
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
-// import { getFirestore, type Firestore } from "firebase/firestore";
+import { getFirestore, type Firestore } from "firebase/firestore";
 // import { getStorage, type FirebaseStorage } from "firebase/storage";
 // import { getFunctions, type Functions } from "firebase/functions";
 
@@ -24,8 +24,8 @@ if (!getApps().length) {
 }
 
 const auth: Auth = getAuth(app);
-// const firestore: Firestore = getFirestore(app);
+const firestore: Firestore = getFirestore(app);
 // const storage: FirebaseStorage = getStorage(app);
 // const functions: Functions = getFunctions(app); // Optional: specify region
 
-export { app, auth /*, firestore, storage, functions */ };
+export { app, auth, firestore /*, storage, functions */ };

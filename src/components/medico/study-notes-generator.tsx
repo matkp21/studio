@@ -1,3 +1,4 @@
+
 // src/components/medico/study-notes-generator.tsx
 "use client";
 
@@ -14,6 +15,9 @@ import { Loader2, BookOpen, Wand2 } from 'lucide-react';
 import { generateStudyNotes, type MedicoStudyNotesInput, type MedicoStudyNotesOutput } from '@/ai/agents/medico/StudyNotesAgent';
 import { useToast } from '@/hooks/use-toast';
 import { useAiAgent } from '@/hooks/use-ai-agent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
@@ -23,12 +27,36 @@ type StudyNotesFormValues = z.infer<typeof formSchema>;
 
 export function StudyNotesGenerator() {
   const { toast } = useToast();
+  const { user } = useProMode(); // Get the authenticated user
   const { execute: runGenerateNotes, data: generatedNotes, isLoading, error, reset } = useAiAgent(generateStudyNotes, {
-    onSuccess: (data) => {
-        toast({
-            title: "Study Notes Generated!",
-            description: `Notes for the topic are ready.`
-        });
+     onSuccess: async (data, input) => {
+      toast({
+          title: "Study Notes Generated!",
+          description: `Notes for "${input.topic}" are ready.`
+      });
+      if (user) {
+        try {
+          const libraryRef = collection(firestore, `users/${user.uid}/studyLibrary`);
+          await addDoc(libraryRef, {
+            type: 'notes',
+            topic: input.topic,
+            notes: data.notes,
+            summaryPoints: data.summaryPoints,
+            createdAt: serverTimestamp(),
+          });
+          toast({
+            title: "Saved to Library",
+            description: "Your generated notes have been saved.",
+          });
+        } catch (firestoreError) {
+          console.error("Firestore save error:", firestoreError);
+          toast({
+            title: "Save Failed",
+            description: "Could not save notes to your library.",
+            variant: "destructive",
+          });
+        }
+      }
     }
   });
 

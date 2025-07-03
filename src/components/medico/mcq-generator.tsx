@@ -1,3 +1,4 @@
+
 // src/components/medico/mcq-generator.tsx
 "use client";
 
@@ -16,6 +17,9 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useAiAgent } from '@/hooks/use-ai-agent';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
@@ -28,12 +32,37 @@ type McqFormValues = z.infer<typeof formSchema>;
 
 export function McqGenerator() {
   const { toast } = useToast();
+  const { user } = useProMode();
   const { execute: runGenerateMcqs, data: generatedMcqs, isLoading, error, reset } = useAiAgent(generateMCQs, {
-     onSuccess: (data) => {
+     onSuccess: async (data, input) => {
       toast({
         title: "MCQs Generated!",
         description: `${data.mcqs.length} MCQs for "${data.topicGenerated}" are ready.`,
       });
+      if (user) {
+        try {
+          const libraryRef = collection(firestore, `users/${user.uid}/studyLibrary`);
+          await addDoc(libraryRef, {
+            type: 'mcqs',
+            topic: input.topic,
+            mcqs: data.mcqs,
+            difficulty: input.difficulty,
+            examType: input.examType,
+            createdAt: serverTimestamp(),
+          });
+          toast({
+            title: "Saved to Library",
+            description: "Your generated MCQs have been saved.",
+          });
+        } catch (firestoreError) {
+          console.error("Firestore save error:", firestoreError);
+          toast({
+            title: "Save Failed",
+            description: "Could not save MCQs to your library.",
+            variant: "destructive",
+          });
+        }
+      }
     }
   });
 
