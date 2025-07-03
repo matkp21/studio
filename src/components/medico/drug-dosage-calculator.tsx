@@ -1,3 +1,4 @@
+
 // src/components/medico/drug-dosage-calculator.tsx
 "use client";
 
@@ -19,6 +20,7 @@ const formSchema = z.object({
   drugName: z.string().min(2, { message: "Drug name is required." }).max(100, { message: "Drug name too long."}),
   patientWeightKg: z.coerce.number().positive({ message: "Patient weight must be a positive number." }),
   patientAgeYears: z.coerce.number().min(0).optional(),
+  renalFunction: z.string().optional(),
   indication: z.string().optional(),
   concentrationAvailable: z.string().optional(),
 });
@@ -37,6 +39,7 @@ export function DrugDosageCalculator() {
       drugName: "",
       patientWeightKg: undefined,
       patientAgeYears: undefined,
+      renalFunction: "",
       indication: "",
       concentrationAvailable: "",
     },
@@ -51,6 +54,7 @@ export function DrugDosageCalculator() {
       const input: MedicoDrugDosageInput = {
         ...data,
         patientAgeYears: data.patientAgeYears === undefined || isNaN(data.patientAgeYears) ? undefined : data.patientAgeYears,
+        renalFunction: data.renalFunction || undefined,
       };
       const result = await calculateDrugDosage(input);
       setCalculationResult(result);
@@ -119,6 +123,20 @@ export function DrugDosageCalculator() {
                   <FormControl>
                     <Input id="patientAgeYears-dosage" type="number" placeholder="e.g., 1" {...field} className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary" />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="renalFunction"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="renalFunction-dosage" className="text-base">Renal Function (optional)</FormLabel>
+                  <FormControl>
+                    <Input id="renalFunction-dosage" placeholder="e.g., eGFR 45ml/min, Impaired" {...field} className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary" />
+                  </FormControl>
+                  <FormDescription className="text-xs">Provide eGFR or status if dose adjustment may be needed.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

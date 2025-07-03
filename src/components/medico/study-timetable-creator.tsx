@@ -1,3 +1,4 @@
+
 // src/components/medico/study-timetable-creator.tsx
 "use client";
 
@@ -7,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -21,6 +22,7 @@ const formSchema = z.object({
   examDate: z.date({ required_error: "Exam date is required." }),
   subjects: z.string().min(1, { message: "At least one subject is required."}).transform(val => val.split(',').map(s => s.trim()).filter(s => s.length > 0)),
   studyHoursPerWeek: z.coerce.number().int().min(1, {message: "Minimum 1 hour."}).max(100, {message: "Maximum 100 hours."}).default(20),
+  weakSubjects: z.string().optional().transform(val => val ? val.split(',').map(s => s.trim()).filter(s => s.length > 0) : undefined),
 });
 
 type TimetableFormValues = z.infer<typeof formSchema>;
@@ -38,6 +40,7 @@ export function StudyTimetableCreator() {
       examDate: undefined,
       subjects: [],
       studyHoursPerWeek: 20,
+      weakSubjects: [],
     },
   });
 
@@ -131,6 +134,28 @@ export function StudyTimetableCreator() {
                     onChange={(e) => field.onChange(e.target.value)}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+           <FormField
+            control={form.control}
+            name="weakSubjects"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel htmlFor="weakSubjects-timetable" className="text-base">Weaker Subjects (Optional)</FormLabel>
+                <FormControl>
+                  <Input
+                    id="weakSubjects-timetable"
+                    placeholder="e.g., Pharmacology, Biochemistry"
+                    className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary"
+                    // Temporarily use any due to RHF type mismatch with transform
+                    {...field as any} 
+                    value={Array.isArray(field.value) ? field.value.join(', ') : (field.value || '')}
+                    onChange={(e) => field.onChange(e.target.value)}
+                  />
+                </FormControl>
+                <FormDescription>List subjects you want to prioritize, separated by commas.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

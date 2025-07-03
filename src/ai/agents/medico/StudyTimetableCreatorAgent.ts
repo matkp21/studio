@@ -23,17 +23,33 @@ const studyTimetablePrompt = ai.definePrompt({
   name: 'medicoStudyTimetablePrompt',
   input: { schema: MedicoStudyTimetableInputSchema },
   output: { schema: MedicoStudyTimetableOutputSchema },
-  prompt: `You are an AI assistant specializing in helping medical students plan their study schedules.
-Given the following details:
-Exam Name: {{{examName}}}
-Exam Date: {{{examDate}}}
-Subjects: {{#each subjects}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
-Study Hours Per Week: {{{studyHoursPerWeek}}}
+  prompt: `You are an expert AI academic advisor for medical students. Your task is to create a personalized, effective study timetable.
 
-Create a structured and realistic study timetable. Distribute study hours appropriately among subjects.
-The output should be a clear, organized timetable. For example, a weekly breakdown in Markdown format.
-Ensure the timetable helps the student cover all subjects effectively before the exam date.
-Provide the timetable in the 'timetable' field of the output.
+**Student's Goal:**
+- Exam Name: {{{examName}}}
+- Exam Date: {{{examDate}}}
+- Available Study Hours Per Week: {{{studyHoursPerWeek}}}
+- Subjects to Cover: {{#each subjects}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+{{#if weakSubjects}}
+- **Prioritize These Subjects**: {{#each weakSubjects}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+{{/if}}
+
+**Your Task:**
+1.  **Analyze**: Review all the details provided.
+2.  **Strategize**: Create a structured, realistic, and personalized study timetable.
+3.  **Prioritize**: If 'weak subjects' are listed, allocate more time and potentially more frequent revision sessions for them.
+4.  **Structure**: The output should be a clear, organized timetable, ideally in a week-by-week Markdown format. Include a mix of first-reads, revisions, and practice question sessions.
+5.  **Explain**: Briefly explain the rationale behind the schedule, especially how it addresses the weak subjects.
+
+Example of a good structure:
+"### Week 1-2: Foundation & High-Yield Topics
+**Focus:** Build a strong base in all subjects, with extra time for Pathology.
+- **Monday:** 3h Medicine (Cardiology), 2h Pathology (Cell Injury)
+- **Tuesday:** 3h Surgery (Wound Healing), 2h Pathology (Inflammation)
+...
+**Rationale:** We are starting with high-yield topics and dedicating an extra session to Pathology each week to build confidence."
+
+Ensure the final output in the 'timetable' field is the complete, well-formatted Markdown schedule.
 `,
   config: {
     temperature: 0.5, // For some creativity in scheduling

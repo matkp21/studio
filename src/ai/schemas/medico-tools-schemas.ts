@@ -73,6 +73,7 @@ export const MedicoStudyTimetableInputSchema = z.object({
   examDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Exam date must be in YYYY-MM-DD format." }).describe('Date of the examination in YYYY-MM-DD format.'),
   subjects: z.array(z.string().min(1)).min(1, { message: "At least one subject is required." }).describe('List of subjects to study.'),
   studyHoursPerWeek: z.number().min(1).max(100).describe('Total number of study hours available per week.'),
+  weakSubjects: z.array(z.string()).optional().describe('Optional list of weaker subjects to prioritize in the schedule.'),
 });
 export type MedicoStudyTimetableInput = z.infer<typeof MedicoStudyTimetableInputSchema>;
 
@@ -200,6 +201,7 @@ export const MedicoDrugDosageInputSchema = z.object({
   drugName: z.string().min(2, { message: "Drug name is required." }).describe('Name of the drug.'),
   patientWeightKg: z.number().positive({ message: "Patient weight must be a positive number." }).describe('Patient s weight in kilograms.'),
   patientAgeYears: z.number().min(0).optional().describe('Patient s age in years (optional).'),
+  renalFunction: z.string().optional().describe('Patient\'s renal function status (e.g., "Normal", "eGFR 45ml/min", "Impaired").'),
   indication: z.string().optional().describe('Medical indication for the drug (optional).'),
   concentrationAvailable: z.string().optional().describe('Concentration of the drug available, if non-standard (e.g., "250mg/5ml").'),
 });

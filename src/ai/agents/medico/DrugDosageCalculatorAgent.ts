@@ -25,34 +25,35 @@ const drugDosageCalculatorPrompt = ai.definePrompt({
   output: { schema: MedicoDrugDosageOutputSchema },
   prompt: `You are an AI tool designed for medical students to practice drug dosage calculations. THIS IS FOR EDUCATIONAL PURPOSES ONLY AND NOT FOR ACTUAL CLINICAL USE.
 
-Calculate the drug dosage based on the following information:
+Calculate the drug dosage based on the following complete clinical context:
 Drug Name: {{{drugName}}}
 Patient Weight (kg): {{{patientWeightKg}}}
 {{#if patientAgeYears}}Patient Age (years): {{{patientAgeYears}}}{{/if}}
+{{#if renalFunction}}Patient Renal Function: {{{renalFunction}}}{{/if}}
 {{#if indication}}Indication: {{{indication}}}{{/if}}
 {{#if concentrationAvailable}}Concentration Available: {{{concentrationAvailable}}}{{/if}}
 
 Instructions:
-1.  Use standard pediatric or adult dosing guidelines for the given drug and indication (if provided). Assume common concentrations if not specified by 'concentrationAvailable'.
-2.  Clearly state the dose per kg or total dose as appropriate.
-3.  If a liquid formulation is implied or stated by 'concentrationAvailable', calculate the volume to be administered.
-4.  Provide a step-by-step 'calculationExplanation'.
-5.  List any important 'warnings' or common considerations (e.g., max dose, renal adjustments, common side effects to mention).
-6.  Emphasize that this is for educational practice and real clinical decisions require consulting official pharmacopoeias and senior clinicians.
+1.  **Cross-reference Pharmacopeia Data**: Using your knowledge of standard drug data (conceptually like OpenFDA or RxNorm), determine the standard dosing for the drug.
+2.  **Adjust for Context**: Adjust the dose based on all provided patient context. Pay special attention to weight (for pediatric or weight-based dosing) and renal function (e.g., dose reduction for impaired eGFR).
+3.  **Calculate Final Dose**: Clearly state the final calculated dose per kg or total dose as appropriate. If a liquid formulation is implied or stated by 'concentrationAvailable', calculate the volume to be administered.
+4.  **Show Your Work**: Provide a step-by-step 'calculationExplanation' that clearly shows how you arrived at the final dose, including any adjustments made for patient context.
+5.  **Provide Clinical Warnings**: List important 'warnings' or common considerations. This MUST include any dose adjustments made due to renal function and other critical points like maximum dose, common side effects, etc.
+6.  **Educational Disclaimer**: Emphasize that this is for educational practice and real clinical decisions require consulting official pharmacopoeias and senior clinicians.
 
 Format the output as JSON conforming to the MedicoDrugDosageOutputSchema.
 'calculatedDose' should be a string (e.g., "500 mg", "7.5 ml").
 'calculationExplanation' must be provided.
 'warnings' is an array of strings.
-If critical information is missing to make a safe calculation (e.g. for a drug that strictly requires age or specific indication not provided), 'calculatedDose' can state "Insufficient information" and explanation should detail what's missing.
+If critical information is missing to make a safe calculation, 'calculatedDose' can state "Insufficient information" and the explanation should detail what's missing.
 
-Example (Paracetamol for a child):
-Input: drugName: "Paracetamol", patientWeightKg: 10, patientAgeYears: 1
+Example (Drug X for a patient with renal impairment):
+Input: drugName: "Gabapentin", patientWeightKg: 70, renalFunction: "eGFR 45 ml/min"
 Output:
 {
-  "calculatedDose": "150 mg (or 3 ml of 120mg/5ml suspension)",
-  "calculationExplanation": "Standard pediatric dose for Paracetamol is 10-15 mg/kg/dose.\nUsing 15 mg/kg: 15 mg/kg * 10 kg = 150 mg.\nIf using a common suspension of 120mg/5ml: (150 mg / 120 mg) * 5 ml = 6.25 ml. (Typically rounded or specific product concentration used, for example if 250mg/5ml is available, then 150mg / 250mg * 5ml = 3ml)",
-  "warnings": ["Maximum 4 doses per 24 hours.", "Check total daily dose of paracetamol from all sources.", "THIS IS FOR EDUCATIONAL PRACTICE. ALWAYS VERIFY WITH OFFICIAL SOURCES IN CLINICAL SETTINGS."]
+  "calculatedDose": "300 mg daily",
+  "calculationExplanation": "Standard starting dose for Gabapentin can be 300 mg TID. However, the patient's renal function (eGFR 45 ml/min) requires dose adjustment. Based on standard guidelines for moderate renal impairment (eGFR 30-59), the total daily dose is typically reduced to 200-700 mg/day. A conservative starting dose of 300 mg once daily is recommended.",
+  "warnings": ["Dose adjusted for renal impairment. Further titration should be done cautiously.", "Monitor for signs of dizziness and somnolence.", "THIS IS FOR EDUCATIONAL PRACTICE. ALWAYS VERIFY WITH OFFICIAL SOURCES IN CLINICAL SETTINGS."]
 }
 `,
   config: {
