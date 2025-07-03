@@ -236,7 +236,7 @@ export function ChatInterface() {
              isErrorRespFlag = true;
           }
           else {
-            const mcqInput: MedicoMCQGeneratorInput = { topic, count };
+            const mcqInput: MedicoMCQGeneratorInput = { topic, count, difficulty: 'medium', examType: 'university' };
             const result = await generateMCQs(mcqInput);
             botResponseContent = formatMCQResponse(result);
             if (isVoiceOutputEnabled) speakText(`Generated ${result.mcqs.length} MCQs for ${topic}. Check the chat for details.`);
