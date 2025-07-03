@@ -60,7 +60,7 @@ export default function StudyLibraryPage() {
 
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [uploadTopic, setUploadTopic] = useState('');
-  const [uploadType, setUploadType<'Note' | 'Mnemonic'>>('Note');
+  const [uploadType, setUploadType] = useState<'Note' | 'Mnemonic'>('Note');
   const [uploadContent, setUploadContent] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
