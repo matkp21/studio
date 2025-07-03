@@ -1,4 +1,3 @@
-
 // src/components/medico/anatomy-visualizer.tsx
 "use client";
 

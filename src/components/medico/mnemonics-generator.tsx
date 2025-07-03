@@ -1,4 +1,3 @@
-
 // src/components/medico/mnemonics-generator.tsx
 "use client";
 

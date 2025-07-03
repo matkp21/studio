@@ -1,4 +1,3 @@
-
 // src/components/medico/study-notes-generator.tsx
 "use client";
 
