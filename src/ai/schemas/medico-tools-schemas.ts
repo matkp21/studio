@@ -87,6 +87,7 @@ export const MedicoFlashcardGeneratorInputSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).describe('The medical topic for flashcards.'),
   count: z.number().int().min(1).max(20).default(10).describe('Number of flashcards to generate (1-20).'),
   difficulty: z.enum(['easy', 'medium', 'hard']).default('medium').describe('The difficulty level of the flashcards.'),
+  examType: z.enum(['university', 'neet-pg', 'usmle']).default('university').describe('The style of exam to pattern the flashcards after.'),
 });
 export type MedicoFlashcardGeneratorInput = z.infer<typeof MedicoFlashcardGeneratorInputSchema>;
 

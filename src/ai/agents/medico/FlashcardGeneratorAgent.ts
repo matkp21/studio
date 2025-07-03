@@ -27,10 +27,11 @@ const flashcardGeneratorPrompt = ai.definePrompt({
   prompt: `You are an AI assistant skilled in creating educational flashcards for medical students.
 Given the topic: {{{topic}}}
 Difficulty: {{{difficulty}}}
+Exam Style: {{{examType}}}
 Number of flashcards to generate: {{{count}}}
 
 For each flashcard, create a 'front' (question or term) and a 'back' (answer or definition).
-The flashcards should be concise and focus on key information relevant to the topic and difficulty.
+The flashcards should be concise and focus on key, high-yield information relevant to the topic, difficulty, and exam style.
 Format the output as JSON conforming to the MedicoFlashcardGeneratorOutput schema, with an array of flashcard objects.
 Each flashcard object must have 'front' and 'back' string properties.
 The 'topicGenerated' field should reflect the input topic.
