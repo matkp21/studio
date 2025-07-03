@@ -2,10 +2,11 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { firestore } from '@/lib/firebase';
 import { collection, query, where, getDocs, orderBy, Timestamp, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { Loader2, Library, BookOpen, FileQuestion, Users, UploadCloud, Bookmark, BookmarkCheck, BookmarkX } from 'lucide-react';
+import { Loader2, Library, BookOpen, FileQuestion, Users, UploadCloud, Bookmark, BookmarkCheck, BookmarkX, UserCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
@@ -280,7 +281,23 @@ export default function StudyLibraryPage() {
 
 
   if (authLoading) return <div className="flex justify-center items-center min-h-[calc(100vh-200px)]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
-  if (!user) return <div className="text-center p-8">You must be logged in to view the study library.</div>;
+  if (!user) {
+    return (
+      <div className="text-center p-8 flex flex-col items-center justify-center min-h-[calc(100vh-250px)]">
+        <Library className="h-16 w-16 mb-4 text-primary/60" />
+        <h2 className="text-xl font-semibold text-foreground mb-2">Access Your Study Library</h2>
+        <p className="text-muted-foreground mb-6 max-w-sm">
+          Please log in to access your personal collection of saved notes, MCQs, and community-contributed study materials.
+        </p>
+        <Button asChild className="rounded-lg">
+          <Link href="/login">
+            <UserCircle className="mr-2 h-4 w-4" />
+            Log In or Sign Up
+          </Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto py-6">
