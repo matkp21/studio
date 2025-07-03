@@ -1,4 +1,3 @@
-
 // src/components/medico/mcq-generator.tsx
 "use client";
 
@@ -12,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, HelpCircle, Wand2 } from 'lucide-react';
-import { generateMCQs, type MedicoMCQGeneratorInput, type MedicoMCQGeneratorOutput } from '@/ai/agents/medico/MCQGeneratorAgent';
+import { generateMCQs } from '@/ai/agents/medico/MCQGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useAiAgent } from '@/hooks/use-ai-agent';
@@ -45,6 +44,7 @@ export function McqGenerator() {
           await addDoc(libraryRef, {
             type: 'mcqs',
             topic: input.topic,
+            userId: user.uid,
             mcqs: data.mcqs,
             difficulty: input.difficulty,
             examType: input.examType,

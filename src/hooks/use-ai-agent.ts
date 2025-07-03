@@ -17,7 +17,7 @@ interface UseAiAgentResult<T, R> {
 export function useAiAgent<T, R>(
   agentFunction: AgentFunction<T, R>,
   options?: {
-    onSuccess?: (data: R) => void;
+    onSuccess?: (data: R, input: T) => void;
     onError?: (error: string) => void;
     successMessage?: string;
   }
@@ -36,7 +36,7 @@ export function useAiAgent<T, R>(
       const result = await agentFunction(input);
       setData(result);
       if (options?.onSuccess) {
-        options.onSuccess(result);
+        options.onSuccess(result, input);
       } else if (options?.successMessage) {
         toast({
             title: "Success!",

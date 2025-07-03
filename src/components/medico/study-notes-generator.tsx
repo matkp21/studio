@@ -1,4 +1,3 @@
-
 // src/components/medico/study-notes-generator.tsx
 "use client";
 
@@ -12,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, BookOpen, Wand2 } from 'lucide-react';
-import { generateStudyNotes, type MedicoStudyNotesInput, type MedicoStudyNotesOutput } from '@/ai/agents/medico/StudyNotesAgent';
+import { generateStudyNotes } from '@/ai/agents/medico/StudyNotesAgent';
 import { useToast } from '@/hooks/use-toast';
 import { useAiAgent } from '@/hooks/use-ai-agent';
 import { useProMode } from '@/contexts/pro-mode-context';
@@ -40,6 +39,7 @@ export function StudyNotesGenerator() {
           await addDoc(libraryRef, {
             type: 'notes',
             topic: input.topic,
+            userId: user.uid,
             notes: data.notes,
             summaryPoints: data.summaryPoints,
             createdAt: serverTimestamp(),

@@ -27,7 +27,8 @@ import {
   HeartPulse,
   PillIcon,
   BellRing,
-  Orbit, // Added Orbit for 3D Explorer
+  Orbit,
+  Library,
 } from 'lucide-react';
 import {
   Tooltip,
@@ -63,6 +64,13 @@ const medicoDashboardNavItem = {
   ariaLabel: 'Open Medico Study Hub'
 };
 
+const medicoLibraryItem = {
+  href: '/medico/library',
+  label: 'Study Library',
+  icon: Library,
+  ariaLabel: 'Open Study Library'
+};
+
 const proToolsNavItem = {
   href: '/pro',
   label: 'Clinical Suite',
@@ -86,6 +94,9 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
   if (userRole === 'medico') {
     if (!navItems.find(item => item.href === '/medico')) {
       navItems.push(medicoDashboardNavItem);
+    }
+    if (!navItems.find(item => item.href === '/medico/library')) {
+      navItems.push(medicoLibraryItem);
     }
   } else if (userRole === 'pro') {
      if (!navItems.find(item => item.href === '/pro')) {

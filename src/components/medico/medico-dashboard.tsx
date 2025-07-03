@@ -1,4 +1,3 @@
-
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
@@ -29,7 +28,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import { cn } from '@/lib/utils';
 import { motion, Reorder } from 'framer-motion';
-import Link from 'next/link'; // Import Link
+import Link from 'next/link';
 
 type ActiveToolId =
   | 'papers'
