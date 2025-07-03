@@ -1,3 +1,4 @@
+
 // src/components/medico/flashcard-generator.tsx
 "use client";
 
@@ -15,10 +16,12 @@ import { Loader2, Layers, Wand2, ArrowLeftRight, CheckCircle, XCircle } from 'lu
 import { generateFlashcards, type MedicoFlashcardGeneratorInput, type MedicoFlashcardGeneratorOutput, type MedicoFlashcard } from '@/ai/agents/medico/FlashcardGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, { message: "Topic too long." }),
   count: z.coerce.number().int().min(1, { message: "Minimum 1 flashcard." }).max(20, { message: "Maximum 20 flashcards." }).default(10),
+  difficulty: z.enum(['easy', 'medium', 'hard']).default('medium'),
 });
 
 type FlashcardFormValues = z.infer<typeof formSchema>;
@@ -41,6 +44,7 @@ export function FlashcardGenerator() {
     defaultValues: {
       topic: "",
       count: 10,
+      difficulty: 'medium',
     },
   });
 
@@ -98,25 +102,25 @@ export function FlashcardGenerator() {
     <div className="space-y-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-1">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <FormField
-              control={form.control}
-              name="topic"
-              render={({ field }) => (
-                <FormItem className="sm:col-span-2">
-                  <FormLabel htmlFor="topic-flashcard" className="text-base">Medical Topic</FormLabel>
-                  <FormControl>
-                    <Input
-                      id="topic-flashcard"
-                      placeholder="e.g., Antibiotics, Cranial Nerves"
-                      className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="topic"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-2">
+                <FormLabel htmlFor="topic-flashcard" className="text-base">Medical Topic</FormLabel>
+                <FormControl>
+                  <Input
+                    id="topic-flashcard"
+                    placeholder="e.g., Antibiotics, Cranial Nerves"
+                    className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="count"
@@ -133,6 +137,28 @@ export function FlashcardGenerator() {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="difficulty"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="difficulty-flashcard" className="text-base">Difficulty</FormLabel>
+                   <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger id="difficulty-flashcard" className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary">
+                        <SelectValue placeholder="Select difficulty"/>
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="easy">Easy</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="hard">Hard</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

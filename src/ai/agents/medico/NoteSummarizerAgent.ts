@@ -5,13 +5,16 @@
  * - summarizeNoteText - A function that handles the summarization process.
  * - MedicoNoteSummarizerInput - The input type.
  * - MedicoNoteSummarizerOutput - The output type.
+ *
+ * Note: The agent now incorporates functionality for generating diagrams and flowcharts,
+ * specifically using Mermaid.js syntax for flowcharts when the 'flowchart' format is requested.
  */
 
 import { ai } from '@/ai/genkit';
 import { MedicoNoteSummarizerInputSchema, MedicoNoteSummarizerOutputSchema } from '@/ai/schemas/medico-tools-schemas';
 import type { z } from 'zod';
 
-export type MedicoNoteSummarizerInput = z.infer<typeof MedicoNoteSummarizerInputSchema>;
+export type MedicoNoteSummarizerInput = z.infer<typeof MedicoNoteSummarizerInputSchema> & { format: 'bullet' | 'table' | 'flowchart' | 'diagram' }; // Explicitly include format types
 export type MedicoNoteSummarizerOutput = z.infer<typeof MedicoNoteSummarizerOutputSchema>;
 
 export async function summarizeNoteText(input: MedicoNoteSummarizerInput): Promise<MedicoNoteSummarizerOutput> {
@@ -28,7 +31,7 @@ Summarize the provided content into the requested format: {{{format}}}.
 The summary should be concise, accurate, and focus on the most high-yield information for a medical student.
 If the requested format is a 'flowchart', generate the summary using Mermaid.js syntax.
 If the requested format is a 'table', use Markdown table syntax.
-If the requested format is 'bullet', use standard bullet points.
+If the requested format is 'bullet' or 'diagram', use standard bullet points or a textual description suitable for generating a diagram.
 
 {{#if text}}
 Text to summarize:

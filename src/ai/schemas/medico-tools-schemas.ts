@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview Defines Zod schemas for Medico Mode specific tools,
  * including Study Notes Generator and MCQ Generator.
@@ -85,6 +86,7 @@ export type MedicoStudyTimetableOutput = z.infer<typeof MedicoStudyTimetableOutp
 export const MedicoFlashcardGeneratorInputSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).describe('The medical topic for flashcards.'),
   count: z.number().int().min(1).max(20).default(10).describe('Number of flashcards to generate (1-20).'),
+  difficulty: z.enum(['easy', 'medium', 'hard']).default('medium').describe('The difficulty level of the flashcards.'),
 });
 export type MedicoFlashcardGeneratorInput = z.infer<typeof MedicoFlashcardGeneratorInputSchema>;
 

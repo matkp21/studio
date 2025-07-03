@@ -14,6 +14,7 @@ import type { z } from 'zod';
 
 export type MedicoFlashcardGeneratorInput = z.infer<typeof MedicoFlashcardGeneratorInputSchema>;
 export type MedicoFlashcardGeneratorOutput = z.infer<typeof MedicoFlashcardGeneratorOutputSchema>;
+export type { MedicoFlashcard } from '@/ai/schemas/medico-tools-schemas';
 
 export async function generateFlashcards(input: MedicoFlashcardGeneratorInput): Promise<MedicoFlashcardGeneratorOutput> {
   return flashcardGeneratorFlow(input);
@@ -25,10 +26,11 @@ const flashcardGeneratorPrompt = ai.definePrompt({
   output: { schema: MedicoFlashcardGeneratorOutputSchema },
   prompt: `You are an AI assistant skilled in creating educational flashcards for medical students.
 Given the topic: {{{topic}}}
+Difficulty: {{{difficulty}}}
 Number of flashcards to generate: {{{count}}}
 
 For each flashcard, create a 'front' (question or term) and a 'back' (answer or definition).
-The flashcards should be concise and focus on key information relevant to the topic.
+The flashcards should be concise and focus on key information relevant to the topic and difficulty.
 Format the output as JSON conforming to the MedicoFlashcardGeneratorOutput schema, with an array of flashcard objects.
 Each flashcard object must have 'front' and 'back' string properties.
 The 'topicGenerated' field should reflect the input topic.
