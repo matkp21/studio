@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { cn } from '@/lib/utils';
 import {
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
-  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords
+  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords, Trophy
 } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
 import Link from 'next/link';
@@ -33,6 +33,7 @@ import { ProgressTracker } from './progress-tracker';
 import { NoteSummarizer } from './note-summarizer'; 
 import { SmartDictation } from '@/components/pro/smart-dictation';
 import { GamifiedCaseChallenges } from './gamified-case-challenges';
+import { MockExamSuite } from './mock-exam-suite'; // New import
 
 type ActiveToolId =
   | 'papers'
@@ -53,6 +54,7 @@ type ActiveToolId =
   | 'videos'
   | 'dictation'
   | 'challenges'
+  | 'exams' // New ID for mock exams
   | null;
 
 interface MedicoTool {
@@ -73,6 +75,7 @@ const allMedicoToolsList: MedicoTool[] = [
   { id: 'videos', title: 'Video Lecture Library', description: 'Search and find relevant medical video lectures from YouTube.', icon: Youtube, href: '/medico/videos' },
   { id: 'dictation', title: 'Smart Dictation', description: 'Use your voice to dictate notes, which AI can help structure.', icon: Mic, component: SmartDictation },
   { id: 'challenges', title: 'Gamified Case Challenges', description: 'Solve timed clinical scenarios and compete on leaderboards.', icon: Swords, component: GamifiedCaseChallenges },
+  { id: 'exams', title: 'Mock Exam Suite', description: 'Take full-length mock exams, get detailed analytics, and compete on leaderboards.', icon: Trophy, component: MockExamSuite },
   { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study based on exam trends or user performance.', icon: TrendingUp, component: HighYieldTopicPredictor },
   { id: 'flowcharts', title: 'Flowchart Creator', description: 'Generate flowcharts for medical topics to aid revision.', icon: Workflow, component: FlowchartCreator },
   { id: 'flashcards', title: 'Flashcard Generator', description: 'Create digital flashcards for quick revision.', icon: Layers, component: FlashcardGenerator },
@@ -87,7 +90,7 @@ const allMedicoToolsList: MedicoTool[] = [
   { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
 ];
 
-const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['notes', 'mcq', 'papers', 'videos', 'challenges'];
+const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['notes', 'mcq', 'papers', 'exams', 'challenges'];
 
 interface MedicoToolCardProps {
   tool: MedicoTool;
