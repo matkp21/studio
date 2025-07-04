@@ -35,6 +35,7 @@ import { NoteSummarizer } from './note-summarizer';
 import { SmartDictation } from '@/components/pro/smart-dictation';
 import { GamifiedCaseChallenges } from './gamified-case-challenges';
 import { MockExamSuite } from './mock-exam-suite';
+import { HeroWidgets, type HeroTask } from '@/components/homepage/hero-widgets';
 
 type ActiveToolId =
   | 'papers'
@@ -208,10 +209,18 @@ const MedicoDashboardContent = () => {
     const currentTool = displayedTools.find(tool => tool.id === activeDialog);
     const frequentlyUsedTools = displayedTools.filter(tool => frequentlyUsedMedicoToolIds.includes(tool.id));
     const otherTools = displayedTools.filter(tool => !frequentlyUsedMedicoToolIds.includes(tool.id));
+    
+    // Sample tasks for the medico dashboard widget
+    const medicoTasks: HeroTask[] = [
+      { id: 'med-1', date: new Date(), title: 'Anatomy Lecture', description: '10:00 AM - Skeletal System' },
+      { id: 'med-2', date: new Date(), title: 'Study Group: Cardiology', description: '4:00 PM - Discuss ECGs' },
+      { id: 'med-3', date: new Date(new Date().setDate(new Date().getDate() + 1)), title: 'Quiz Due: Pharmacology', description: 'Covers autonomic drugs' },
+    ];
+
 
      return (
         <div className="container mx-auto py-8">
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-6">
                 <div className="text-left">
                     <h1 className="text-3xl font-bold tracking-tight text-foreground mb-1 firebase-gradient-text">Medico Study Hub</h1>
                     <p className="text-md text-muted-foreground">
@@ -222,6 +231,10 @@ const MedicoDashboardContent = () => {
                 {isEditMode ? <CheckSquare className="mr-2 h-4 w-4"/> : <Settings className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-45"/>}
                 {isEditMode ? 'Save Layout' : 'Customize'}
                 </Button>
+            </div>
+            
+            <div className="mb-8">
+              <HeroWidgets tasks={medicoTasks} />
             </div>
 
             <Dialog open={activeDialog !== null} onOpenChange={handleOpenChange}>
@@ -308,3 +321,4 @@ export function MedicoDashboard() {
   );
 }
 
+    
