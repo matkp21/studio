@@ -11,18 +11,17 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, CalendarDays, Wand2 } from 'lucide-react';
+import { Loader2, CalendarDays, Wand2, Lightbulb } from 'lucide-react';
 import { createStudyTimetable, type MedicoStudyTimetableInput, type MedicoStudyTimetableOutput } from '@/ai/agents/medico/StudyTimetableCreatorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { DatePicker } from '@/components/ui/date-picker';
-import { Textarea } from '@/components/ui/textarea'; // Import Textarea
+import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
   examName: z.string().min(3, { message: "Exam name must be at least 3 characters." }).max(100, { message: "Exam name too long."}),
   examDate: z.date({ required_error: "Exam date is required." }),
   subjects: z.string().min(1, { message: "At least one subject is required."}),
   studyHoursPerWeek: z.coerce.number().int().min(1, {message: "Minimum 1 hour."}).max(100, {message: "Maximum 100 hours."}).default(20),
-  weakSubjects: z.string().optional(), // Now a string for free-text input
 });
 
 type TimetableFormValues = z.infer<typeof formSchema>;
@@ -40,7 +39,6 @@ export function StudyTimetableCreator() {
       examDate: undefined,
       subjects: "",
       studyHoursPerWeek: 20,
-      weakSubjects: "",
     },
   });
 
@@ -50,19 +48,17 @@ export function StudyTimetableCreator() {
     setError(null);
 
     try {
-      // Convert data to match the agent's expected input schema
       const formattedData: MedicoStudyTimetableInput = {
         examName: data.examName,
         examDate: data.examDate.toISOString().split('T')[0], 
         subjects: data.subjects.split(',').map(s => s.trim()).filter(Boolean),
         studyHoursPerWeek: data.studyHoursPerWeek,
-        weakSubjects: data.weakSubjects || undefined,
       };
       const result = await createStudyTimetable(formattedData);
       setGeneratedTimetable(result);
       toast({
-        title: "Timetable Generated!",
-        description: `Study timetable for "${data.examName}" is ready.`,
+        title: "Personalized Timetable Generated!",
+        description: `Your smart study plan for "${data.examName}" is ready.`,
       });
     } catch (err) {
       console.error("Timetable generation error:", err);
@@ -80,6 +76,13 @@ export function StudyTimetableCreator() {
 
   return (
     <div className="space-y-6">
+       <Alert variant="default" className="border-purple-500/50 bg-purple-500/10">
+        <Lightbulb className="h-5 w-5 text-purple-600" />
+        <AlertTitle className="font-semibold text-purple-700 dark:text-purple-500">Smart Planner</AlertTitle>
+        <AlertDescription className="text-purple-600/90 dark:text-purple-500/90 text-xs">
+          The AI will automatically analyze your (simulated) performance data on the provided subjects to identify weak spots and generate a prioritized schedule.
+        </AlertDescription>
+      </Alert>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -125,7 +128,7 @@ export function StudyTimetableCreator() {
             name="subjects"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="subjects-timetable" className="text-base">Subjects (comma-separated)</FormLabel>
+                <FormLabel htmlFor="subjects-timetable" className="text-base">Subjects to Cover (comma-separated)</FormLabel>
                 <FormControl>
                   <Input
                     id="subjects-timetable"
@@ -134,26 +137,6 @@ export function StudyTimetableCreator() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-           <FormField
-            control={form.control}
-            name="weakSubjects"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="weakSubjects-timetable" className="text-base">Weaker Subjects / Areas to Focus On (Optional)</FormLabel>
-                <FormControl>
-                  <Textarea
-                    id="weakSubjects-timetable"
-                    placeholder="e.g., Struggling with Cardiology pharmacology, find ECG interpretation difficult, scored low on renal physiology quizzes."
-                    className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary min-h-[100px]"
-                    {...field}
-                    value={field.value || ''}
-                  />
-                </FormControl>
-                <FormDescription>Provide context on your weak areas. The AI will use this to create a more focused plan.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -187,7 +170,7 @@ export function StudyTimetableCreator() {
             ) : (
               <>
                 <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-6" />
-                Create Timetable
+                Generate Personalized Plan
               </>
             )}
           </Button>
@@ -206,11 +189,19 @@ export function StudyTimetableCreator() {
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
               <CalendarDays className="h-6 w-6 text-green-600" />
-              Study Timetable: {form.getValues("examName")}
+              Your Personalized Study Plan: {form.getValues("examName")}
             </CardTitle>
-            <CardDescription>Here's your personalized study plan.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+             {generatedTimetable.performanceAnalysis && (
+                 <Alert variant="default" className="border-purple-500/50 bg-purple-500/10">
+                    <Lightbulb className="h-5 w-5 text-purple-600" />
+                    <AlertTitle className="font-semibold text-purple-700 dark:text-purple-500">AI Performance Analysis</AlertTitle>
+                    <AlertDescription className="text-purple-600/90 dark:text-purple-500/90 text-xs">
+                    {generatedTimetable.performanceAnalysis}
+                    </AlertDescription>
+                 </Alert>
+            )}
             <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
               <div className="p-4 whitespace-pre-wrap text-sm prose prose-sm dark:prose-invert max-w-none">
                 {generatedTimetable.timetable}
