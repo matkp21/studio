@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { firestore } from '@/lib/firebase';
 import { collection, query, where, getDocs, orderBy, Timestamp, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
@@ -132,22 +132,18 @@ export default function StudyLibraryPage() {
   const [bookmarkedItemIds, setBookmarkedItemIds] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<CombinedLibraryItem | null>(null);
   
-  const [isLoading, setIsLoading] = useState(true);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [uploadTopic, setUploadTopic] = useState('');
   const [uploadType, setUploadType] = useState<'communityNote' | 'communityMnemonic'>('communityNote');
   const [uploadContent, setUploadContent] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
-  const fetchUserData = useCallback(async () => {
-    if (!user) {
-      if (!authLoading) setIsLoading(false);
-      return;
-    }
-    setIsLoading(true);
+  const fetchUserData = useCallback(async (uid: string) => {
+    setIsDataLoading(true);
     try {
       // Fetch personal library
-      const libraryQuery = query(collection(firestore, `users/${user.uid}/studyLibrary`), orderBy('createdAt', 'desc'));
+      const libraryQuery = query(collection(firestore, `users/${uid}/studyLibrary`), orderBy('createdAt', 'desc'));
       const librarySnapshot = await getDocs(libraryQuery);
       const personalItems = librarySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MyLibraryItem));
       setMyLibraryItems(personalItems);
@@ -159,7 +155,7 @@ export default function StudyLibraryPage() {
       setCommunityItems(approvedCommunityItems);
       
       // Fetch bookmarks
-      const userDocRef = doc(firestore, `users/${user.uid}`);
+      const userDocRef = doc(firestore, `users/${uid}`);
       const userDocSnap = await getDoc(userDocRef);
       if (userDocSnap.exists()) {
         setBookmarkedItemIds(userDocSnap.data().bookmarkedItems || []);
@@ -168,14 +164,19 @@ export default function StudyLibraryPage() {
       console.error("Error fetching library data:", error);
       toast({ title: "Error", description: "Could not fetch library content.", variant: "destructive" });
     } finally {
-      setIsLoading(false);
+      setIsDataLoading(false);
     }
-  }, [user, authLoading, toast]);
+  }, [toast]);
 
 
   useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
+    if (user) {
+      fetchUserData(user.uid);
+    } else if (!authLoading) {
+      // If auth is done loading and there's no user, we are not loading data.
+      setIsDataLoading(false);
+    }
+  }, [user, authLoading, fetchUserData]);
 
   const handleToggleBookmark = async (itemId: string) => {
     if (!user) return;
@@ -316,7 +317,7 @@ export default function StudyLibraryPage() {
   }
   
   const renderTabContent = (items: CombinedLibraryItem[], tabName: string) => {
-    if (isLoading) {
+    if (isDataLoading) {
         return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
     }
     if (items.length === 0) {
