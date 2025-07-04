@@ -30,7 +30,7 @@ const studyTimetablePrompt = ai.definePrompt({
 - Exam Date: {{{examDate}}}
 - Available Study Hours Per Week: {{{studyHoursPerWeek}}}
 - Subjects to Cover: {{#each subjects}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
-{{#if weakSubjects}}
+{{#if weakSubjects.length}}
 - **Prioritize These Subjects**: {{#each weakSubjects}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
 {{/if}}
 

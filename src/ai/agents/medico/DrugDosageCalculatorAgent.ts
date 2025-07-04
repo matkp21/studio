@@ -34,8 +34,8 @@ Patient Weight (kg): {{{patientWeightKg}}}
 {{#if concentrationAvailable}}Concentration Available: {{{concentrationAvailable}}}{{/if}}
 
 Instructions:
-1.  **Cross-reference Pharmacopeia Data**: Using your knowledge of standard drug data (conceptually like OpenFDA or RxNorm), determine the standard dosing for the drug.
-2.  **Adjust for Context**: Adjust the dose based on all provided patient context. Pay special attention to weight (for pediatric or weight-based dosing) and renal function (e.g., dose reduction for impaired eGFR).
+1.  **Cross-reference Pharmacopeia Data**: Using your knowledge of standard drug data (conceptually like OpenFDA or RxNorm), determine the standard dosing for the specified drug and indication.
+2.  **Adjust for Context**: Adjust the dose based on all provided patient context. Pay special attention to weight (for pediatric or weight-based dosing), age, and renal function (e.g., dose reduction for impaired eGFR). The specified indication is also critical for determining the correct dosage regimen.
 3.  **Calculate Final Dose**: Clearly state the final calculated dose per kg or total dose as appropriate. If a liquid formulation is implied or stated by 'concentrationAvailable', calculate the volume to be administered.
 4.  **Show Your Work**: Provide a step-by-step 'calculationExplanation' that clearly shows how you arrived at the final dose, including any adjustments made for patient context.
 5.  **Provide Clinical Warnings**: List important 'warnings' or common considerations. This MUST include any dose adjustments made due to renal function and other critical points like maximum dose, common side effects, etc.
