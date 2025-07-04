@@ -1,4 +1,3 @@
-
 // src/components/chat/chat-interface.tsx
 "use client";
 
@@ -10,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { SendHorizonal, HeartPulse, Mic, MicOff, Volume2, VolumeX, ArrowDownCircle, BookCopy, FileQuestion } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { processChatMessage, type ChatMessageInput } from '@/ai/agents/ChatAgent';
-import { generateStudyNotes, type MedicoStudyNotesInput, type MedicoStudyNotesOutput } from '@/ai/agents/medico/StudyNotesAgent';
+import { generateTheoryAnswer, type TheoryCoachInput, type TheoryCoachOutput } from '@/ai/agents/medico/TheoryCoachAgent';
 import { generateMCQs, type MedicoMCQGeneratorInput, type MedicoMCQGeneratorOutput, type MCQSchema as SingleMCQ } from '@/ai/agents/medico/MCQGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -165,7 +164,7 @@ export function ChatInterface() {
     );
   };
 
-  const formatStudyNotesResponse = (notesData: MedicoStudyNotesOutput, topic: string): ReactNode => {
+  const formatTheoryAnswerResponse = (notesData: TheoryCoachOutput, topic: string): ReactNode => {
      return (
       <div className="space-y-3">
         <h4 className="font-semibold text-base">Study Notes for: {topic}</h4>
@@ -215,9 +214,9 @@ export function ChatInterface() {
             botResponseContent = "Please provide a topic for notes. Usage: `/notes <topic>` (e.g., `/notes Diabetes Mellitus`)";
             isErrorRespFlag = true;
           } else {
-            const notesInput: MedicoStudyNotesInput = { topic };
-            const result = await generateStudyNotes(notesInput);
-            botResponseContent = formatStudyNotesResponse(result, topic);
+            const notesInput: TheoryCoachInput = { topic, answerLength: '10-mark' }; // Default to 10-mark for chat
+            const result = await generateTheoryAnswer(notesInput);
+            botResponseContent = formatTheoryAnswerResponse(result, topic);
             if (isVoiceOutputEnabled && typeof result.notes === 'string') speakText(`Generated study notes for ${topic}. Please check the chat for details.`);
           }
         } else if (command === '/mcq') {

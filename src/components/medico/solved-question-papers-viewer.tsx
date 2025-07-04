@@ -5,14 +5,14 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { BookCopy, FileText, Wand2, Loader2, Database, AlertCircle, CheckCircle, Pilcrow, FileQuestion, BadgeHelp } from 'lucide-react';
+import { BookCopy, FileText, Wand2, Loader2, Database, AlertCircle, CheckCircle, Pilcrow, FileQuestion, BadgeHelp, ArrowLeft } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from '@/lib/utils';
 
 
-// Define the Question type based on your Prisma schema
+// Define the Question type
 interface Question {
   id: string;
   questionText: string;
@@ -24,20 +24,21 @@ interface Question {
   university?: string | null;
   keywords: string[];
   references?: string | null;
-  createdAt: string; // Comes as string from JSON
 }
 
 // AI-generated answer for the seed data
-const seedData: Omit<Question, 'id' | 'createdAt'> = {
-  questionText: "Describe the clinical features and management of papillary carcinoma thyroid.",
-  subject: "Surgery",
-  system: "Endocrine",
-  keywords: ["thyroid", "papillary", "carcinoma", "surgery"],
-  references: "Bailey & Love, Sabiston Textbook of Surgery, Robbins and Cotran Pathologic Basis of Disease",
-  university: "Kerala University of Health Sciences",
-  diagramURL: "https://placehold.co/600x400.png",
-  answer5M: `**Definition:** Papillary Thyroid Carcinoma (PTC) is the most common, well-differentiated thyroid cancer from follicular cells, known for its slow growth and lymphatic spread.\n\n**Clinical Features:** Typically presents as a painless, firm thyroid nodule. Cervical lymphadenopathy can be the first sign. Hoarseness (recurrent laryngeal nerve involvement) and compressive symptoms are late signs.\n\n**Investigations:** Neck Ultrasound is primary, showing suspicious features like microcalcifications and hypoechogenicity. Fine Needle Aspiration Cytology (FNAC) is the diagnostic gold standard, revealing characteristic "Orphan Annie eye" nuclei.\n\n**Management:** Primarily surgical. Total thyroidectomy is standard for most cases >1cm. Post-operative Radioactive Iodine (RAI) ablation is used for high-risk patients to destroy remnant tissue. Lifelong TSH suppression with Levothyroxine is crucial to prevent recurrence. Prognosis is excellent.`,
-  answer10M: `
+const seedData: Question[] = [
+    {
+        id: '1',
+        questionText: "Describe the clinical features and management of papillary carcinoma thyroid.",
+        subject: "Surgery",
+        system: "Endocrine",
+        keywords: ["thyroid", "papillary", "carcinoma", "surgery"],
+        references: "Bailey & Love, Sabiston Textbook of Surgery, Robbins and Cotran Pathologic Basis of Disease",
+        university: "Kerala University of Health Sciences",
+        diagramURL: "https://placehold.co/600x400.png",
+        answer5M: `**Definition:** Papillary Thyroid Carcinoma (PTC) is the most common, well-differentiated thyroid cancer from follicular cells, known for its slow growth and lymphatic spread.\n\n**Clinical Features:** Typically presents as a painless, firm thyroid nodule. Cervical lymphadenopathy can be the first sign. Hoarseness (recurrent laryngeal nerve involvement) and compressive symptoms are late signs.\n\n**Investigations:** Neck Ultrasound is primary, showing suspicious features like microcalcifications and hypoechogenicity. Fine Needle Aspiration Cytology (FNAC) is the diagnostic gold standard, revealing characteristic "Orphan Annie eye" nuclei.\n\n**Management:** Primarily surgical. Total thyroidectomy is standard for most cases >1cm. Post-operative Radioactive Iodine (RAI) ablation is used for high-risk patients to destroy remnant tissue. Lifelong TSH suppression with Levothyroxine is crucial to prevent recurrence. Prognosis is excellent.`,
+        answer10M: `
 ## 1. Definition
 Papillary Thyroid Carcinoma (PTC) is the most common type of thyroid cancer, accounting for about 80-85% of all thyroid malignancies. It is a well-differentiated tumor arising from the follicular epithelial cells of the thyroid gland. It is characterized by its papillary architecture and distinctive nuclear features.
 
@@ -106,7 +107,8 @@ graph TD
 - Sabiston Textbook of Surgery
 - Robbins and Cotran Pathologic Basis of Disease
 `
-};
+    }
+];
 
 
 export function SolvedQuestionPapersViewer() {
@@ -114,59 +116,22 @@ export function SolvedQuestionPapersViewer() {
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
-
-  const fetchQuestions = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch('/api/questions');
-      if (!response.ok) {
-        throw new Error(`Failed to fetch questions: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setQuestions(data);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-      setError(errorMessage);
-      toast({ title: "Error", description: "Could not fetch questions from the database.", variant: "destructive" });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchQuestions();
-  }, [toast]);
-
-  const handleSeedDatabase = async () => {
+    // Simulate fetching data
     setIsLoading(true);
-    try {
-        const response = await fetch('/api/questions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(seedData),
-        });
-        if (!response.ok) {
-            throw new Error(`Failed to seed database: ${response.statusText}`);
-        }
-        toast({ title: "Database Seeded!", description: "The sample question has been added." });
-        await fetchQuestions(); // Refresh the list
-    } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-        setError(errorMessage);
-        toast({ title: "Seeding Failed", description: errorMessage, variant: "destructive" });
-    } finally {
+    setTimeout(() => {
+        setQuestions(seedData);
         setIsLoading(false);
-    }
-  }
+    }, 500);
+  }, []);
 
   if (selectedQuestion) {
     return (
         <Card className="shadow-lg rounded-xl border-indigo-500/30">
             <CardHeader>
-                <Button onClick={() => setSelectedQuestion(null)} variant="outline" size="sm" className="mb-4">
-                    &larr; Back to Question List
+                <Button onClick={() => setSelectedQuestion(null)} variant="outline" size="sm" className="mb-4 text-xs group">
+                    <ArrowLeft className="mr-1.5 h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5"/> Back to Question List
                 </Button>
                 <CardTitle>{selectedQuestion.questionText}</CardTitle>
                 <CardDescription>Subject: {selectedQuestion.subject} | System: {selectedQuestion.system}</CardDescription>
@@ -197,7 +162,7 @@ export function SolvedQuestionPapersViewer() {
     <div className="space-y-6">
       <Alert variant="default" className="border-blue-500/50 bg-blue-500/10">
         <BookCopy className="h-5 w-5 text-blue-600" />
-        <AlertTitle className="font-semibold text-blue-700 dark:text-blue-500">TheoryCoach Question Bank</AlertTitle>
+        <AlertTitle className="font-semibold text-blue-700 dark:text-blue-500">Theory Q-Bank</AlertTitle>
         <AlertDescription className="text-blue-600/90 dark:text-blue-500/90 text-xs">
           Browse structured answers to university-style questions. The content is AI-generated and should be used as a study guide.
         </AlertDescription>
@@ -214,9 +179,6 @@ export function SolvedQuestionPapersViewer() {
              {!isLoading && !error && questions.length === 0 && (
                  <div className="text-center p-8 border border-dashed rounded-lg">
                     <p className="text-muted-foreground mb-4">Your question bank is empty.</p>
-                    <Button onClick={handleSeedDatabase}>
-                        <Database className="mr-2 h-4 w-4"/> Seed First Question
-                    </Button>
                 </div>
              )}
             {!isLoading && !error && questions.length > 0 && (
