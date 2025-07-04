@@ -2,7 +2,7 @@
 import type { InteractiveModel } from '@/types/interactive-models';
 
 // Using a specific anatomy model for some entries, and modelviewer.dev astronaut as a placeholder for others.
-const HUMAN_ANATOMY_MODEL_SRC = "/models/human-anatomy.glb"; // Path to your new model
+const HUMAN_ANATOMY_MODEL_SRC = "/models/Astronaut.glb"; // Path corrected to use the placeholder model
 const PLACEHOLDER_MODEL_SRC = "/models/Astronaut.glb"; // Consistent placeholder path
 const PLACEHOLDER_POSTER_SRC = "https://placehold.co/600x400.png"; // Generic placeholder
 
@@ -31,7 +31,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     description: 'Explore the human heart within a full anatomical model.',
     iconName: 'Heart',
     modelType: 'anatomy',
-    glbPath: HUMAN_ANATOMY_MODEL_SRC, // Uses the full anatomy model
+    glbPath: HUMAN_ANATOMY_MODEL_SRC, // Uses the placeholder anatomy model
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'human heart anatomy',
     annotations: [
