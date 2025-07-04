@@ -1,3 +1,4 @@
+
 // src/components/medico/study-timetable-creator.tsx
 "use client";
 
@@ -100,6 +101,7 @@ ${generatedTimetable.performanceAnalysis || 'N/A'}
         topic: `Study Timetable: ${form.getValues('examName')}`,
         userId: user.uid,
         notes: notesContent,
+        performanceAnalysis: generatedTimetable.performanceAnalysis || null, // FIX: Ensure performanceAnalysis is not undefined
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "This timetable has been saved as a note." });

@@ -63,7 +63,7 @@ export function PathoMindExplainer() {
         topic: `Pathophysiology of ${form.getValues('topic')}`,
         userId: user.uid,
         notes: explanationData.explanation,
-        diagram: explanationData.diagram,
+        diagram: explanationData.diagram || null, // FIX: Ensure diagram is not undefined
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "This explanation has been saved." });

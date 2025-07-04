@@ -85,6 +85,7 @@ ${anatomyData.relatedStructures?.map(s => `- ${s}`).join('\n') || 'N/A'}
         topic: `Anatomy: ${form.getValues('anatomicalStructure')}`,
         userId: user.uid,
         notes: notesContent,
+        imageUrl: anatomyData.imageUrl || null, // FIX: Ensure imageUrl is not undefined
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "This anatomy description has been saved as a note." });

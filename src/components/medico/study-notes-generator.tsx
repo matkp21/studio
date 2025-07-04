@@ -1,3 +1,4 @@
+
 // src/components/medico/study-notes-generator.tsx
 "use client";
 
@@ -102,8 +103,8 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
             topic: form.getValues('topic'),
             userId: user.uid,
             notes: generatedAnswer.notes,
-            summaryPoints: generatedAnswer.summaryPoints,
-            diagram: generatedAnswer.diagram,
+            summaryPoints: generatedAnswer.summaryPoints || [], // FIX: Ensure summaryPoints is not undefined
+            diagram: generatedAnswer.diagram || null, // FIX: Ensure diagram is not undefined
             createdAt: serverTimestamp(),
         });
         toast({ title: "Saved to Library", description: "Your generated notes have been saved." });

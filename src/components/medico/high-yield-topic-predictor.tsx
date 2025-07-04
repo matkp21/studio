@@ -105,6 +105,7 @@ ${predictionResult.rationale || 'N/A'}
         topic: `High-Yield Topics: ${form.getValues('examType')}`,
         userId: user.uid,
         notes: notesContent,
+        rationale: predictionResult.rationale || null, // FIX: Ensure rationale is not undefined
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "This topic prediction has been saved as a note." });

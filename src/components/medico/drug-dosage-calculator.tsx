@@ -118,6 +118,7 @@ ${calculationResult.warnings?.map(w => `- ${w}`).join('\n') || 'N/A'}
         topic: `Dosage Calculation: ${form.getValues('drugName')}`,
         userId: user.uid,
         notes: notesContent,
+        warnings: calculationResult.warnings || [], // FIX: Ensure warnings is not undefined
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "This dosage calculation has been saved as a note." });

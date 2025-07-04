@@ -1,3 +1,4 @@
+
 // src/components/medico/flowchart-creator.tsx
 "use client";
 
@@ -141,13 +142,14 @@ const FlowchartEditor = () => {
           return;
         }
         try {
-          await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+          const dataToSave = {
             type: 'flowchart',
             topic: aiTopic || 'Custom Flowchart',
             userId: user.uid,
-            flowchartData: JSON.stringify({ nodes, edges }),
+            flowchartData: JSON.stringify({ nodes: nodes || [], edges: edges || [] }), // FIX: Guard against undefined
             createdAt: serverTimestamp(),
-          });
+          };
+          await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), dataToSave);
           toast({ title: "Flowchart Saved!", description: "Your flowchart has been saved to your library."});
         } catch(err) {
           toast({ title: "Save Failed", description: "Could not save flowchart.", variant: "destructive"});

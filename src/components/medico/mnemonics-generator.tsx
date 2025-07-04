@@ -74,8 +74,8 @@ export function MnemonicsGenerator() {
         topic: generatedMnemonic.topicGenerated,
         userId: user.uid,
         mnemonic: generatedMnemonic.mnemonic,
-        explanation: generatedMnemonic.explanation,
-        imageUrl: generatedMnemonic.imageUrl,
+        explanation: generatedMnemonic.explanation || null, // FIX: Ensure explanation is not undefined
+        imageUrl: generatedMnemonic.imageUrl || null, // FIX: Ensure imageUrl is not undefined
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "Your generated mnemonic has been saved." });
