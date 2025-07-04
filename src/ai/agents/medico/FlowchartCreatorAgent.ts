@@ -72,6 +72,6 @@ const flowchartCreatorFlow = ai.defineFlow(
       throw new Error('Failed to generate flowchart. The AI model did not return the expected output.');
     }
     // Firestore saving logic could go here
-    return { ...output, topicGenerated: input.topic };
+    return output;
   }
 );

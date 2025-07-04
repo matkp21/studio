@@ -145,7 +145,7 @@ export type MedicoAnatomyVisualizerInput = z.infer<typeof MedicoAnatomyVisualize
 
 export const MedicoAnatomyVisualizerOutputSchema = z.object({
   description: z.string().describe('Detailed description of the anatomical structure, including its function, location, and key features.'),
-  imageUrl: z.string().url().optional().describe('Optional URL to an image or diagram of the structure.'),
+  imageUrl: z.string().url().optional(),
   relatedStructures: z.array(z.string()).optional().describe('List of related anatomical structures.'),
   nextSteps: z.array(NextStepSuggestionSchema).optional().describe("A list of recommended next steps or tools to use."),
 });
@@ -244,7 +244,7 @@ export type MedicoFlowchartCreatorInput = z.infer<typeof MedicoFlowchartCreatorI
 
 const ReactFlowNodeSchema = z.object({
   id: z.string(),
-  type: z.enum(['symptom', 'test', 'decision', 'treatment']).optional(),
+  type: z.enum(['symptom', 'test', 'decision', 'treatment']),
   position: z.object({ x: z.number(), y: z.number() }),
   data: z.object({ label: z.string() }),
 });

@@ -1,4 +1,3 @@
-
 // src/components/medico/flowchart-creator.tsx
 "use client";
 
@@ -146,7 +145,10 @@ const FlowchartEditor = () => {
             type: 'flowchart',
             topic: aiTopic || 'Custom Flowchart',
             userId: user.uid,
-            flowchartData: JSON.stringify({ nodes: nodes || [], edges: edges || [] }), // FIX: Guard against undefined
+            flowchartData: JSON.stringify(
+              { nodes: nodes || [], edges: edges || [] },
+              (key, value) => (value === undefined ? null : value)
+            ),
             createdAt: serverTimestamp(),
           };
           await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), dataToSave);
