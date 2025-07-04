@@ -10,7 +10,7 @@ import { HeartPulse, BookHeart, BriefcaseMedical, Sparkles } from "lucide-react"
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProMode } from '@/contexts/pro-mode-context';
-import { HeroWidgets, type HeroTask } from './hero-widgets';
+// Removed HeroWidgets import as it's no longer used here
 
 const greetings = [
   { lang: "en", text: "Hello," },
@@ -20,12 +20,9 @@ const greetings = [
   { lang: "fr", text: "Bonjour," },
 ];
 
-// const userName = "Dr. Medi User"; // User name removed
-
 export function HeroSection() {
   const [currentGreetingIndex, setCurrentGreetingIndex] = useState(0);
   const { userRole } = useProMode();
-  const [heroTasks, setHeroTasks] = useState<HeroTask[]>([]); // Using HeroTask type for clarity
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -35,35 +32,6 @@ export function HeroSection() {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    if (userRole === 'pro') {
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate() + 1);
-      const dayAfterTomorrow = new Date(today);
-      dayAfterTomorrow.setDate(today.getDate() + 2);
-
-      setHeroTasks([
-        { id: '1', date: today, title: 'Review Mr. Smith\'s X-Ray', description: 'Uploaded at 10:00 AM' },
-        { id: '2', date: today, title: 'Team Meeting', description: 'Scheduled for 2:00 PM' },
-        { id: '3', date: tomorrow, title: 'Follow-up: Patient A', description: 'Check medication adherence' },
-        { id: '4', date: dayAfterTomorrow, title: 'Case Conference', description: 'Discuss complex cases' },
-      ]);
-    } else if (userRole === 'medico') {
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate() + 1);
-
-      setHeroTasks([
-        { id: 'med-1', date: today, title: 'Anatomy Lecture', description: '10:00 AM - Skeletal System' },
-        { id: 'med-2', date: today, title: 'Study Group: Cardiology', description: '4:00 PM - Discuss ECGs' },
-        { id: 'med-3', date: tomorrow, title: 'Quiz Due: Pharmacology', description: 'Covers autonomic drugs' },
-      ]);
-    } else {
-      setHeroTasks([]);
-    }
-  }, [userRole]);
 
   let ctaLink = "/chat";
   let ctaText = "Get Started";
@@ -139,13 +107,11 @@ export function HeroSection() {
               {greetings[currentGreetingIndex].text}
             </motion.span>
           </AnimatePresence>
-          {/* User name span removed */}
          </h1>
         )}
         {!isClient && ( // Fallback for SSR/initial render before client-side hydration
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center mb-6">
                 <span className="inline-block firebase-gradient-text">{greetings[0].text}</span>
-                {/* User name span removed */}
             </h1>
          )}
 
@@ -197,17 +163,6 @@ export function HeroSection() {
             </Link>
           </Button>
         </motion.div>
-
-        {(userRole === 'pro' || userRole === 'medico') && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.5 }}
-            className="mt-12"
-          >
-            <HeroWidgets tasks={heroTasks} />
-          </motion.div>
-        )}
       </div>
     </section>
   );
