@@ -1,3 +1,4 @@
+
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
@@ -33,7 +34,7 @@ import { ProgressTracker } from './progress-tracker';
 import { NoteSummarizer } from './note-summarizer'; 
 import { SmartDictation } from '@/components/pro/smart-dictation';
 import { GamifiedCaseChallenges } from './gamified-case-challenges';
-import { MockExamSuite } from './mock-exam-suite'; // New import
+import { MockExamSuite } from './mock-exam-suite';
 
 type ActiveToolId =
   | 'papers'
@@ -54,7 +55,7 @@ type ActiveToolId =
   | 'videos'
   | 'dictation'
   | 'challenges'
-  | 'exams' // New ID for mock exams
+  | 'exams'
   | null;
 
 interface MedicoTool {
@@ -87,7 +88,7 @@ const allMedicoToolsList: MedicoTool[] = [
   { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Explore anatomical structures.', icon: Eye, component: AnatomyVisualizer },
   { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds },
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator },
-  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
+  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false }, // FIX: comingSoon set to false
 ];
 
 const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['notes', 'mcq', 'papers', 'exams', 'challenges'];
