@@ -224,8 +224,22 @@ export const MedicoFlowchartCreatorInputSchema = z.object({
 });
 export type MedicoFlowchartCreatorInput = z.infer<typeof MedicoFlowchartCreatorInputSchema>;
 
+const ReactFlowNodeSchema = z.object({
+  id: z.string(),
+  type: z.enum(['symptom', 'test', 'decision', 'treatment']).optional(),
+  position: z.object({ x: z.number(), y: z.number() }),
+  data: z.object({ label: z.string() }),
+});
+const ReactFlowEdgeSchema = z.object({
+    id: z.string(),
+    source: z.string(),
+    target: z.string(),
+    label: z.string().optional(),
+    animated: z.boolean().optional(),
+});
 export const MedicoFlowchartCreatorOutputSchema = z.object({
-  flowchartData: z.string().describe('A flowchart representation in Mermaid Markdown syntax.'),
+  nodes: z.array(ReactFlowNodeSchema).describe("An array of nodes for React Flow."),
+  edges: z.array(ReactFlowEdgeSchema).describe("An array of edges for React Flow."),
   topicGenerated: z.string().describe('The topic for which the flowchart was generated.'),
 });
 export type MedicoFlowchartCreatorOutput = z.infer<typeof MedicoFlowchartCreatorOutputSchema>;

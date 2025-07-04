@@ -11,10 +11,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { medicalFlowchartTemplates, type FlowchartTemplate } from '@/config/flowchart-templates';
 import { useFlowEditor } from '@/hooks/use-flow-editor';
 import { nodeTypes } from './flowchart-custom-nodes';
-import { FileDown, Undo, Redo, PlusCircle, Trash2, BookCopy, Share2, Save } from 'lucide-react';
+import { FileDown, Undo, Redo, PlusCircle, Trash2, BookCopy, Share2, Save, Wand2, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '../ui/input';
+import { createFlowchart } from '@/ai/agents/medico/FlowchartCreatorAgent';
 
 // Toolbar component
 const Toolbar = ({ onAddNode, onUndo, onRedo, canUndo, canRedo, onExport, onClear, onSave }) => {
@@ -64,8 +66,31 @@ const FlowchartEditor = () => {
     const { toast } = useToast();
     const flowRef = useRef<HTMLDivElement>(null);
     const { nodes, setNodes, onNodesChange, edges, setEdges, onConnect, addNode, loadTemplate, undo, redo, canUndo, canRedo } = useFlowEditor();
+    
+    const [aiTopic, setAiTopic] = useState('');
+    const [isAiLoading, setIsAiLoading] = useState(false);
 
-    const handleExport = useCallback((format) => {
+    const handleAiGenerate = async () => {
+      if (!aiTopic.trim()) {
+        toast({ title: "Topic Required", description: "Please enter a topic for the AI to generate a flowchart.", variant: "destructive" });
+        return;
+      }
+      setIsAiLoading(true);
+      try {
+        const result = await createFlowchart({ topic: aiTopic });
+        if (result.nodes && result.edges) {
+          loadTemplate({ id: 'ai-generated', name: aiTopic, category: 'AI', description: '', nodes: result.nodes, edges: result.edges });
+          toast({ title: "Flowchart Generated!", description: "AI has created a flowchart. You can now edit it." });
+        }
+      } catch (err) {
+        toast({ title: "AI Generation Failed", description: err instanceof Error ? err.message : "An unknown error occurred.", variant: "destructive" });
+      } finally {
+        setIsAiLoading(false);
+      }
+    };
+
+
+    const handleExport = useCallback((format: 'png' | 'pdf') => {
         const flowchartElement = flowRef.current;
         if (flowchartElement) {
             html2canvas(flowchartElement, {
@@ -90,7 +115,7 @@ const FlowchartEditor = () => {
                     toast({ title: "Export Successful", description: "Flowchart saved as PDF."});
                 }
             }).catch(err => {
-                 toast({title: "Export Failed", description: err.message, variant: "destructive"});
+                 toast({title: "Export Failed", description: err instanceof Error ? err.message : "An unknown error occurred.", variant: "destructive"});
             });
         }
     }, [flowRef, toast]);
@@ -106,11 +131,25 @@ const FlowchartEditor = () => {
     }
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-[75vh]">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-[85vh]">
             <div className="lg:col-span-1">
                 <TemplateSelector onLoadTemplate={loadTemplate} />
             </div>
             <div className="lg:col-span-3 flex flex-col h-full">
+                <Card className="p-3 shadow-md mb-4 space-y-2">
+                    <div className="flex gap-2">
+                        <Input 
+                            value={aiTopic}
+                            onChange={(e) => setAiTopic(e.target.value)}
+                            placeholder="Enter a topic for AI generation..."
+                            className="h-9"
+                        />
+                        <Button onClick={handleAiGenerate} disabled={isAiLoading} className="h-9">
+                            {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Wand2 className="h-4 w-4"/>}
+                            <span className="ml-2 hidden sm:inline">Generate with AI</span>
+                        </Button>
+                    </div>
+                </Card>
                 <Toolbar onAddNode={addNode} onUndo={undo} onRedo={redo} canUndo={canUndo} canRedo={canRedo} onExport={handleExport} onClear={handleClear} onSave={handleSave} />
                 <div ref={flowRef} className="flex-grow rounded-lg border bg-background shadow-inner">
                     <ReactFlow
