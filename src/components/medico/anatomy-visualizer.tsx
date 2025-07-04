@@ -8,13 +8,16 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Eye, Wand2, Bone, Brain } from 'lucide-react';
+import { Loader2, Eye, Wand2, Bone, Brain, Save } from 'lucide-react';
 import { getAnatomyDescription, type MedicoAnatomyVisualizerInput, type MedicoAnatomyVisualizerOutput } from '@/ai/agents/medico/AnatomyVisualizerAgent';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
 
 const formSchema = z.object({
   anatomicalStructure: z.string().min(3, { message: "Structure name must be at least 3 characters." }).max(100, { message: "Structure name too long."}),
@@ -27,6 +30,7 @@ export function AnatomyVisualizer() {
   const [anatomyData, setAnatomyData] = useState<MedicoAnatomyVisualizerOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useProMode();
 
   const form = useForm<AnatomyFormValues>({
     resolver: zodResolver(formSchema),
@@ -58,6 +62,33 @@ export function AnatomyVisualizer() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  const handleSaveToLibrary = async () => {
+    if (!anatomyData || !user) {
+      toast({ title: "Cannot Save", description: "No content to save or user not logged in.", variant: "destructive" });
+      return;
+    }
+    const notesContent = `
+## Description
+${anatomyData.description}
+
+## Related Structures
+${anatomyData.relatedStructures?.map(s => `- ${s}`).join('\n') || 'N/A'}
+    `;
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'notes',
+        topic: `Anatomy: ${form.getValues('anatomicalStructure')}`,
+        userId: user.uid,
+        notes: notesContent,
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "This anatomy description has been saved as a note." });
+    } catch (e) {
+      console.error("Firestore save error:", e);
+      toast({ title: "Save Failed", description: "Could not save to library.", variant: "destructive" });
     }
   };
 
@@ -140,6 +171,11 @@ export function AnatomyVisualizer() {
               </div>
             </ScrollArea>
           </CardContent>
+           <CardFooter className="p-4 border-t">
+            <Button onClick={handleSaveToLibrary} disabled={!user}>
+              <Save className="mr-2 h-4 w-4"/> Save to Library
+            </Button>
+          </CardFooter>
         </Card>
       )}
     </div>

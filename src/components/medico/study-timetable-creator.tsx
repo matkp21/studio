@@ -8,15 +8,18 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, CalendarDays, Wand2, Lightbulb } from 'lucide-react';
+import { Loader2, CalendarDays, Wand2, Lightbulb, Save } from 'lucide-react';
 import { createStudyTimetable, type MedicoStudyTimetableInput, type MedicoStudyTimetableOutput } from '@/ai/agents/medico/StudyTimetableCreatorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { DatePicker } from '@/components/ui/date-picker';
 import { Textarea } from '@/components/ui/textarea';
 import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
 
 const formSchema = z.object({
   examName: z.string().min(3, { message: "Exam name must be at least 3 characters." }).max(100, { message: "Exam name too long."}),
@@ -33,6 +36,7 @@ export function StudyTimetableCreator() {
   const [generatedTimetable, setGeneratedTimetable] = useState<MedicoStudyTimetableOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useProMode();
 
   const form = useForm<TimetableFormValues>({
     resolver: zodResolver(formSchema),
@@ -75,6 +79,33 @@ export function StudyTimetableCreator() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  const handleSaveToLibrary = async () => {
+    if (!generatedTimetable || !user) {
+      toast({ title: "Cannot Save", description: "No content to save or user not logged in.", variant: "destructive" });
+      return;
+    }
+    const notesContent = `
+## Timetable for ${form.getValues('examName')}
+${generatedTimetable.timetable}
+
+## AI Planning Rationale
+${generatedTimetable.performanceAnalysis || 'N/A'}
+    `;
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'notes',
+        topic: `Study Timetable: ${form.getValues('examName')}`,
+        userId: user.uid,
+        notes: notesContent,
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "This timetable has been saved as a note." });
+    } catch (e) {
+      console.error("Firestore save error:", e);
+      toast({ title: "Save Failed", description: "Could not save to library.", variant: "destructive" });
     }
   };
 
@@ -215,7 +246,7 @@ export function StudyTimetableCreator() {
               Your Personalized Study Plan: {form.getValues("examName")}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
              {generatedTimetable.performanceAnalysis && (
                  <Alert variant="default" className="border-purple-500/50 bg-purple-500/10">
                     <Lightbulb className="h-5 w-5 text-purple-600" />
@@ -225,12 +256,17 @@ export function StudyTimetableCreator() {
                     </AlertDescription>
                  </Alert>
             )}
-            <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
+            <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg mt-4">
               <div className="p-4">
                 <MarkdownRenderer content={generatedTimetable.timetable} />
               </div>
             </ScrollArea>
           </CardContent>
+          <CardFooter className="p-4 border-t">
+            <Button onClick={handleSaveToLibrary} disabled={!user}>
+              <Save className="mr-2 h-4 w-4"/> Save to Library
+            </Button>
+          </CardFooter>
         </Card>
       )}
     </div>

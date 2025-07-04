@@ -1,4 +1,3 @@
-
 // src/components/medico/drug-dosage-calculator.tsx
 "use client";
 
@@ -9,13 +8,16 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, CalculatorIcon, Wand2, Info } from 'lucide-react';
+import { Loader2, CalculatorIcon, Wand2, Info, Save } from 'lucide-react';
 import { calculateDrugDosage, type MedicoDrugDosageInput, type MedicoDrugDosageOutput } from '@/ai/agents/medico/DrugDosageCalculatorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
 
 const formSchema = z.object({
   drugName: z.string().min(2, { message: "Drug name is required." }).max(100, { message: "Drug name too long."}),
@@ -33,6 +35,7 @@ export function DrugDosageCalculator() {
   const [calculationResult, setCalculationResult] = useState<MedicoDrugDosageOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useProMode();
 
   const form = useForm<DosageFormValues>({
     resolver: zodResolver(formSchema),
@@ -89,6 +92,36 @@ export function DrugDosageCalculator() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  const handleSaveToLibrary = async () => {
+    if (!calculationResult || !user) {
+      toast({ title: "Cannot Save", description: "No content to save or user not logged in.", variant: "destructive" });
+      return;
+    }
+    const notesContent = `
+## Calculated Dose
+**${calculationResult.calculatedDose}**
+
+## Explanation
+${calculationResult.calculationExplanation}
+
+## Warnings & Considerations
+${calculationResult.warnings?.map(w => `- ${w}`).join('\n') || 'N/A'}
+    `;
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'notes',
+        topic: `Dosage Calculation: ${form.getValues('drugName')}`,
+        userId: user.uid,
+        notes: notesContent,
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "This dosage calculation has been saved as a note." });
+    } catch (e) {
+      console.error("Firestore save error:", e);
+      toast({ title: "Save Failed", description: "Could not save to library.", variant: "destructive" });
     }
   };
 
@@ -241,6 +274,11 @@ export function DrugDosageCalculator() {
                 </div>
             </ScrollArea>
           </CardContent>
+          <CardFooter className="p-4 border-t">
+            <Button onClick={handleSaveToLibrary} disabled={!user}>
+              <Save className="mr-2 h-4 w-4"/> Save to Library
+            </Button>
+          </CardFooter>
         </Card>
       )}
     </div>

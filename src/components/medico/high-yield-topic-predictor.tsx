@@ -1,4 +1,3 @@
-
 // src/components/medico/high-yield-topic-predictor.tsx
 "use client";
 
@@ -9,12 +8,15 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, TrendingUp, Wand2, ListChecks } from 'lucide-react';
+import { Loader2, TrendingUp, Wand2, ListChecks, Save } from 'lucide-react';
 import { predictHighYieldTopics, type MedicoTopicPredictorInput, type MedicoTopicPredictorOutput } from '@/ai/agents/medico/HighYieldTopicPredictorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
 
 const formSchema = z.object({
   examType: z.string().min(3, { message: "Exam type must be at least 3 characters." }).max(100, { message: "Exam type too long."}),
@@ -28,6 +30,7 @@ export function HighYieldTopicPredictor() {
   const [predictionResult, setPredictionResult] = useState<MedicoTopicPredictorOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useProMode();
 
   const form = useForm<TopicPredictorFormValues>({
     resolver: zodResolver(formSchema),
@@ -81,6 +84,34 @@ export function HighYieldTopicPredictor() {
       setIsLoading(false);
     }
   };
+
+  const handleSaveToLibrary = async () => {
+    if (!predictionResult || !user) {
+      toast({ title: "Cannot Save", description: "No content to save or user not logged in.", variant: "destructive" });
+      return;
+    }
+    const notesContent = `
+## Predicted High-Yield Topics for ${form.getValues('examType')}
+${predictionResult.predictedTopics.map(t => `- ${t}`).join('\n')}
+
+## Rationale
+${predictionResult.rationale || 'N/A'}
+    `;
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'notes',
+        topic: `High-Yield Topics: ${form.getValues('examType')}`,
+        userId: user.uid,
+        notes: notesContent,
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "This topic prediction has been saved as a note." });
+    } catch (e) {
+      console.error("Firestore save error:", e);
+      toast({ title: "Save Failed", description: "Could not save to library.", variant: "destructive" });
+    }
+  };
+
 
   return (
     <div className="space-y-6">
@@ -182,6 +213,11 @@ export function HighYieldTopicPredictor() {
                 )}
             </div>
           </CardContent>
+          <CardFooter className="p-4 border-t">
+            <Button onClick={handleSaveToLibrary} disabled={!user}>
+              <Save className="mr-2 h-4 w-4"/> Save to Library
+            </Button>
+          </CardFooter>
         </Card>
       )}
     </div>
