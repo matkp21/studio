@@ -1,4 +1,4 @@
-
+// src/ai/agents/medico/ExamPaperAgent.ts
 'use server';
 /**
  * @fileOverview A Genkit flow for generating mock exam papers on medical topics for medico users.
@@ -32,16 +32,15 @@ Number of MCQs to generate: {{{count}}}
 Instructions:
 1.  Based on the exam type (and year if provided), generate a realistic mock paper.
 2.  Create a clear and unambiguous set of Multiple Choice Questions (MCQs). For each MCQ:
-    - Provide exactly four distinct options.
-    - Ensure one option is clearly the correct answer.
-    - The other three options should be plausible distractors.
+    - Provide exactly four distinct options. One option must have 'isCorrect' set to true.
+    - The other three options should be plausible distractors with 'isCorrect' set to false.
     - Provide a brief explanation for the correct answer.
 3.  Generate 2-3 essay-style questions that are typical for this kind of exam. For each essay, provide a brief outline of the expected answer.
 4.  The overall paper should be representative of the specified medical examination.
 
 Format the output as JSON conforming to the MedicoExamPaperOutputSchema.
 The root output must be an object containing 'mcqs', 'essays', and 'topicGenerated' fields.
-Each object in the 'mcqs' array must conform to the MCQSchema.
+Each object in the 'mcqs' array must conform to the MCQSchema, including the 'isCorrect' boolean for each option.
 Each object in the 'essays' array must have 'question' and 'answer_outline' strings.
 `,
   config: {
