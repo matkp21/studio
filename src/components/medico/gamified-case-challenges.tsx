@@ -197,9 +197,9 @@ export function GamifiedCaseChallenges() {
             <CardContent>
                 <ul className="space-y-1">
                     {sampleLeaderboard.map(entry => (
-                        <li key={entry.rank} className="flex justify-between items-center p-2 rounded-md hover:bg-muted/50">
-                            <span className="font-medium text-sm">#{entry.rank} {entry.name}</span>
-                            <span className="text-sm text-muted-foreground">{entry.score} pts</span>
+                        <li key={entry.rank} className="flex justify-between items-center p-2 rounded-md hover:bg-muted/50 text-sm">
+                            <span className="font-medium">#{entry.rank} {entry.name}</span>
+                            <span className="text-muted-foreground">{entry.score} pts</span>
                         </li>
                     ))}
                 </ul>

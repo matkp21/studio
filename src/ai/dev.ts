@@ -28,6 +28,7 @@ import '@/ai/agents/medico/PathoMindAgent.ts';
 import '@/ai/agents/medico/PharmaGenieAgent.ts';
 import '@/ai/agents/medico/MicroMateAgent.ts';
 import '@/ai/agents/medico/DiagnoBotAgent.ts';
+// Mock Exam Suite and Gamified Cases do not have dedicated agents, they use existing ones or sample data.
 
 
 // Professional tools
