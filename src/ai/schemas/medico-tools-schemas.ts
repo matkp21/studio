@@ -285,4 +285,17 @@ export const MedicoNoteSummarizerOutputSchema = z.object({
 export type MedicoNoteSummarizerOutput = z.infer<typeof MedicoNoteSummarizerOutputSchema>;
 
 
+// Schema for PathoMind
+export const PathoMindInputSchema = z.object({
+  topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).describe('The medical topic or disease to explain.'),
+});
+export type PathoMindInput = z.infer<typeof PathoMindInputSchema>;
+
+export const PathoMindOutputSchema = z.object({
+  explanation: z.string().describe('A detailed explanation of the pathophysiology.'),
+  diagram: z.string().optional().describe('A Mermaid.js syntax diagram illustrating the pathophysiological process.'),
+});
+export type PathoMindOutput = z.infer<typeof PathoMindOutputSchema>;
+
+
 // ... Potentially other schemas as features expand

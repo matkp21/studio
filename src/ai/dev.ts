@@ -23,7 +23,8 @@ import '@/ai/agents/medico/HighYieldTopicPredictorAgent.ts';
 import '@/ai/agents/medico/DrugDosageCalculatorAgent.ts';
 import '@/ai/agents/medico/FlowchartCreatorAgent.ts';
 import '@/ai/agents/medico/ProgressTrackerAgent.ts';
-import '@/ai/agents/medico/NoteSummarizerAgent.ts'; // New import
+import '@/ai/agents/medico/NoteSummarizerAgent.ts';
+import '@/ai/agents/medico/PathoMindAgent.ts'; // NEW
 
 // Professional tools
 import '@/ai/agents/pro/DischargeSummaryGeneratorAgent.ts';

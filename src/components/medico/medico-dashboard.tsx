@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { cn } from '@/lib/utils';
 import {
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
-  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords, Trophy, Library, CalendarDays
+  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords, Trophy, Library, CalendarDays, BrainCircuit
 } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
 import Link from 'next/link';
@@ -37,6 +37,7 @@ import { SmartDictation } from '@/components/pro/smart-dictation';
 import { GamifiedCaseChallenges } from './gamified-case-challenges';
 import { MockExamSuite } from './mock-exam-suite';
 import { HeroWidgets, type HeroTask } from '@/components/homepage/hero-widgets';
+import { PathoMindExplainer } from './pathomind-explainer';
 
 type ActiveToolId =
   | 'q-bank'
@@ -59,6 +60,7 @@ type ActiveToolId =
   | 'challenges'
   | 'exams'
   | 'library'
+  | 'pathomind'
   | null;
 
 interface MedicoTool {
@@ -73,6 +75,7 @@ interface MedicoTool {
 
 // Define the full list of tools
 const allMedicoToolsList: MedicoTool[] = [
+  { id: 'pathomind', title: 'PathoMind', description: 'Explain any disease pathophysiology with diagrams.', icon: BrainCircuit, component: PathoMindExplainer },
   { id: 'exams', title: 'Mock Exam Suite', description: 'Take full-length mock exams, get detailed analytics, and compete on leaderboards.', icon: Trophy, component: MockExamSuite, comingSoon: false },
   { id: 'challenges', title: 'Gamified Case Challenges', description: 'Solve timed clinical scenarios and compete on leaderboards.', icon: Swords, component: GamifiedCaseChallenges, comingSoon: false },
   { id: 'q-bank', title: 'Theory Q-Bank', description: 'AI-generated, structured answers for past university questions.', icon: BookCopy, component: SolvedQuestionPapersViewer },
@@ -95,7 +98,7 @@ const allMedicoToolsList: MedicoTool[] = [
   { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
 ];
 
-const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['exams', 'challenges', 'q-bank', 'mcq', 'theorycoach-generator', 'library'];
+const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['pathomind', 'exams', 'challenges', 'q-bank', 'mcq', 'theorycoach-generator', 'library'];
 
 interface MedicoToolCardProps {
   tool: MedicoTool;
