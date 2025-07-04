@@ -1,217 +1,238 @@
 // src/components/medico/solved-question-papers-viewer.tsx
 "use client";
 
-import { useForm, type SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { BookCopy, FileText, Wand2, Loader2, FileQuestion, Pilcrow } from 'lucide-react';
+import { BookCopy, FileText, Wand2, Loader2, Database, AlertCircle, CheckCircle, Pilcrow, FileQuestion, BadgeHelp } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { generateExamPaper } from '@/ai/agents/medico/ExamPaperAgent';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from '@/lib/utils';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import { useAiAgent } from '@/hooks/use-ai-agent';
-import { useProMode } from '@/contexts/pro-mode-context';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { firestore } from '@/lib/firebase';
-import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
-const formSchema = z.object({
-  examType: z.string().min(3, { message: "Exam type must be at least 3 characters long." }).max(100, { message: "Exam type too long." }),
-  year: z.string().optional(),
-  count: z.coerce.number().int().min(1, { message: "Minimum 1 MCQ." }).max(20, { message: "Maximum 20 MCQs." }).default(10),
-});
 
-type ExamPaperFormValues = z.infer<typeof formSchema>;
+// Define the Question type based on your Prisma schema
+interface Question {
+  id: string;
+  questionText: string;
+  subject: string;
+  system: string;
+  answer10M: string;
+  answer5M: string;
+  diagramURL?: string | null;
+  university?: string | null;
+  keywords: string[];
+  references?: string | null;
+  createdAt: string; // Comes as string from JSON
+}
+
+// AI-generated answer for the seed data
+const seedData: Omit<Question, 'id' | 'createdAt'> = {
+  questionText: "Describe the clinical features and management of papillary carcinoma thyroid.",
+  subject: "Surgery",
+  system: "Endocrine",
+  keywords: ["thyroid", "papillary", "carcinoma", "surgery"],
+  references: "Bailey & Love, Sabiston Textbook of Surgery, Robbins and Cotran Pathologic Basis of Disease",
+  university: "Kerala University of Health Sciences",
+  diagramURL: "https://placehold.co/600x400.png",
+  answer5M: `**Definition:** Papillary Thyroid Carcinoma (PTC) is the most common, well-differentiated thyroid cancer from follicular cells, known for its slow growth and lymphatic spread.\n\n**Clinical Features:** Typically presents as a painless, firm thyroid nodule. Cervical lymphadenopathy can be the first sign. Hoarseness (recurrent laryngeal nerve involvement) and compressive symptoms are late signs.\n\n**Investigations:** Neck Ultrasound is primary, showing suspicious features like microcalcifications and hypoechogenicity. Fine Needle Aspiration Cytology (FNAC) is the diagnostic gold standard, revealing characteristic "Orphan Annie eye" nuclei.\n\n**Management:** Primarily surgical. Total thyroidectomy is standard for most cases >1cm. Post-operative Radioactive Iodine (RAI) ablation is used for high-risk patients to destroy remnant tissue. Lifelong TSH suppression with Levothyroxine is crucial to prevent recurrence. Prognosis is excellent.`,
+  answer10M: `
+## 1. Definition
+Papillary Thyroid Carcinoma (PTC) is the most common type of thyroid cancer, accounting for about 80-85% of all thyroid malignancies. It is a well-differentiated tumor arising from the follicular epithelial cells of the thyroid gland. It is characterized by its papillary architecture and distinctive nuclear features.
+
+## 2. Relevant Anatomy
+The thyroid gland is a butterfly-shaped endocrine gland located in the anterior neck, consisting of two lobes connected by an isthmus. It has a rich lymphatic drainage system, primarily to the central and lateral cervical lymph nodes, which is crucial for understanding PTC's metastatic pattern.
+
+## 3. Etiology / Risk Factors
+- **Radiation Exposure:** The most well-established risk factor, especially during childhood.
+- **Family History:** A first-degree relative with thyroid cancer increases risk.
+- **Genetic Syndromes:** Familial adenomatous polyposis (FAP), Gardner syndrome, and Carney complex.
+- **Iodine Intake:** High dietary iodine intake has been associated with a higher incidence of PTC.
+- **Sex and Age:** More common in females (3:1 ratio) and typically presents between ages 30-50.
+
+## 4. Pathophysiology
+PTC is driven by genetic mutations, most commonly:
+- **BRAF V600E mutation:** Present in ~50% of cases, associated with more aggressive tumors and higher recurrence rates.
+- **RET/PTC rearrangements:** Result from chromosomal inversions or translocations.
+The tumor grows slowly and tends to spread via lymphatics to regional lymph nodes. Hematogenous spread is less common but can occur to lungs and bones.
+
+## 5. Clinical Features
+- **Painless Thyroid Nodule:** The most common presentation is a firm, solitary, slow-growing neck mass.
+- **Cervical Lymphadenopathy:** Palpable neck nodes may be the first sign in up to 20-50% of cases, especially in younger patients.
+- **Hoarseness:** Suggests involvement of the recurrent laryngeal nerve.
+- **Dysphagia or Dyspnea:** Occurs with large tumors compressing the esophagus or trachea.
+- **Metastatic Symptoms:** Rarely, patients may present with symptoms from distant metastases (e.g., cough from lung mets).
+
+## 6. Investigations
+- **Ultrasound (USG) of the Neck:** The primary imaging modality. Suspicious features include microcalcifications, hypoechogenicity, irregular margins, taller-than-wide shape, and increased vascularity. It also assesses cervical lymph nodes.
+- **Fine Needle Aspiration Cytology (FNAC):** The gold standard for diagnosis. Cytology shows characteristic features like papillary clusters, psammoma bodies, and "Orphan Annie eye" nuclei with nuclear grooves.
+- **Blood Tests:**
+  - **TSH (Thyroid Stimulating Hormone):** Usually normal. A low TSH may suggest a hyperfunctioning nodule, which is less likely to be malignant.
+  - **Serum Thyroglobulin (Tg):** Not a diagnostic test, but a crucial tumor marker for post-operative monitoring.
+
+## 7. Management
+- **Surgery:** The mainstay of treatment.
+  - **Total Thyroidectomy:** The standard procedure for most PTCs >1 cm, or with high-risk features.
+  - **Thyroid Lobectomy:** Can be considered for small (<1 cm), unifocal, intrathyroidal tumors without lymph node involvement or high-risk features.
+  - **Therapeutic Neck Dissection:** Central and/or lateral neck dissection is performed if lymph nodes are clinically or radiologically positive.
+- **Radioactive Iodine (RAI) Ablation:** Post-operative I-131 therapy is used to ablate any remnant thyroid tissue and treat microscopic residual disease. It is typically recommended for patients with high-risk features (large tumor size, lymph node metastasis, extrathyroidal extension).
+- **TSH Suppression Therapy:** Patients are placed on lifelong Levothyroxine to suppress TSH levels, which reduces the risk of tumor recurrence.
+
+## 8. Complications
+- **Surgical Complications:** Hypoparathyroidism (leading to hypocalcemia), recurrent laryngeal nerve injury (hoarseness), bleeding.
+- **RAI Complications:** Sialadenitis, xerostomia, risk of secondary malignancies (long-term).
+- **Recurrence:** Can recur in cervical lymph nodes or distant sites.
+
+## 9. Prognosis
+The prognosis for PTC is generally excellent, especially in younger patients with small tumors. The 10-year survival rate is over 95%. Prognosis is worse in older patients (>55 years), with large tumors, extrathyroidal extension, or distant metastases.
+
+## 10. Flowcharts / Tables / Diagrams
+\`\`\`mermaid
+graph TD
+    A[Patient with Thyroid Nodule] --> B{Neck USG + TSH};
+    B --> C{Suspicious USG Features?};
+    C -- Yes --> D[FNAC];
+    C -- No --> E[Follow-up / Monitor];
+    D --> F{FNAC shows PTC};
+    F -- Yes --> G[Surgical Management: Total Thyroidectomy +/- Neck Dissection];
+    F -- No --> H[Benign: Observe or Lobectomy];
+    G --> I[Post-op RAI Ablation (if indicated)];
+    I --> J[TSH Suppression Therapy + Surveillance];
+\`\`\`
+
+## 11. References
+- Bailey & Love's Short Practice of Surgery
+- Sabiston Textbook of Surgery
+- Robbins and Cotran Pathologic Basis of Disease
+`
+};
+
 
 export function SolvedQuestionPapersViewer() {
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-  const { user } = useProMode();
 
-  const { execute: runGenerateExam, data: generatedPaper, isLoading, error, reset } = useAiAgent(generateExamPaper, {
-    onSuccess: async (data, input) => {
-      toast({
-        title: "Mock Paper Generated!",
-        description: `Exam paper for "${input.examType}" is ready.`,
-      });
-
-      if (user) {
-        try {
-          await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
-            type: 'examPaper',
-            topic: data.topicGenerated,
-            userId: user.uid,
-            mcqs: data.mcqs || [],
-            essays: data.essays || [],
-            createdAt: serverTimestamp(),
-          });
-          toast({
-            title: "Saved to Library",
-            description: "Your generated exam paper has been saved.",
-          });
-        } catch (firestoreError) {
-          console.error("Firestore save error:", firestoreError);
-          toast({
-            title: "Save Failed",
-            description: "Could not save exam paper to your library.",
-            variant: "destructive",
-          });
-        }
+  const fetchQuestions = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/questions');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch questions: ${response.statusText}`);
       }
-
-      // Track Progress
-      try {
-        const progressResult = await trackProgress({
-            activityType: 'mcq_session',
-            topic: `Exam Paper: ${input.examType}`
-        });
-        toast({
-            title: "Progress Tracked!",
-            description: progressResult.progressUpdateMessage
-        });
-      } catch (progressError) {
-          console.warn("Could not track progress for exam paper generation:", progressError);
-      }
+      const data = await response.json();
+      setQuestions(data);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
+      setError(errorMessage);
+      toast({ title: "Error", description: "Could not fetch questions from the database.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
     }
-  });
-
-  const form = useForm<ExamPaperFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { examType: "", year: "", count: 10 },
-  });
-
-  const onSubmit: SubmitHandler<ExamPaperFormValues> = async (data) => {
-    await runGenerateExam(data);
   };
 
-  const handleReset = () => {
-    form.reset();
-    reset();
+  useEffect(() => {
+    fetchQuestions();
+  }, [toast]);
+
+  const handleSeedDatabase = async () => {
+    setIsLoading(true);
+    try {
+        const response = await fetch('/api/questions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(seedData),
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to seed database: ${response.statusText}`);
+        }
+        toast({ title: "Database Seeded!", description: "The sample question has been added." });
+        await fetchQuestions(); // Refresh the list
+    } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
+        setError(errorMessage);
+        toast({ title: "Seeding Failed", description: errorMessage, variant: "destructive" });
+    } finally {
+        setIsLoading(false);
+    }
+  }
+
+  if (selectedQuestion) {
+    return (
+        <Card className="shadow-lg rounded-xl border-indigo-500/30">
+            <CardHeader>
+                <Button onClick={() => setSelectedQuestion(null)} variant="outline" size="sm" className="mb-4">
+                    &larr; Back to Question List
+                </Button>
+                <CardTitle>{selectedQuestion.questionText}</CardTitle>
+                <CardDescription>Subject: {selectedQuestion.subject} | System: {selectedQuestion.system}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Tabs defaultValue="10m">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="10m"><FileQuestion className="mr-2 h-4 w-4"/> 10-Mark Answer</TabsTrigger>
+                        <TabsTrigger value="5m"><Pilcrow className="mr-2 h-4 w-4"/> 5-Mark Answer</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="10m">
+                        <ScrollArea className="h-[60vh] mt-4 border rounded-lg p-4 bg-background">
+                            <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: selectedQuestion.answer10M.replace(/##/g, '<h3>').replace(/\n/g, '<br/>') }} />
+                        </ScrollArea>
+                    </TabsContent>
+                    <TabsContent value="5m">
+                       <ScrollArea className="h-[60vh] mt-4 border rounded-lg p-4 bg-background">
+                            <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: selectedQuestion.answer5M.replace(/\n/g, '<br/>') }} />
+                        </ScrollArea>
+                    </TabsContent>
+                </Tabs>
+            </CardContent>
+        </Card>
+    );
   }
 
   return (
     <div className="space-y-6">
       <Alert variant="default" className="border-blue-500/50 bg-blue-500/10">
         <BookCopy className="h-5 w-5 text-blue-600" />
-        <AlertTitle className="font-semibold text-blue-700 dark:text-blue-500">AI-Powered Exam Generator</AlertTitle>
+        <AlertTitle className="font-semibold text-blue-700 dark:text-blue-500">TheoryCoach Question Bank</AlertTitle>
         <AlertDescription className="text-blue-600/90 dark:text-blue-500/90 text-xs">
-          This tool uses AI to generate mock exam papers based on the specified exam type and year. It's designed for practice and to understand potential exam patterns.
+          Browse structured answers to university-style questions. The content is AI-generated and should be used as a study guide.
         </AlertDescription>
       </Alert>
       
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="examType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel htmlFor="exam-type">Exam Type</FormLabel>
-                  <FormControl><Input id="exam-type" placeholder="e.g., USMLE Step 1, Final MBBS" {...field} className="rounded-lg" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="year"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel htmlFor="exam-year">Focus Year (Optional)</FormLabel>
-                  <FormControl><Input id="exam-year" placeholder="e.g., 2023" {...field} className="rounded-lg" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="flex gap-2">
-            <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
-              {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating Paper...</> : <><Wand2 className="mr-2 h-4 w-4" /> Generate Mock Paper</>}
-            </Button>
-            {generatedPaper && (
-              <Button type="button" variant="outline" onClick={handleReset} className="rounded-lg">
-                Clear
-              </Button>
+      <Card>
+        <CardHeader>
+            <CardTitle>Question Bank</CardTitle>
+            <CardDescription>Select a question to view the detailed, structured answer.</CardDescription>
+        </CardHeader>
+        <CardContent>
+             {isLoading && <div className="flex items-center justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>}
+             {error && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
+             {!isLoading && !error && questions.length === 0 && (
+                 <div className="text-center p-8 border border-dashed rounded-lg">
+                    <p className="text-muted-foreground mb-4">Your question bank is empty.</p>
+                    <Button onClick={handleSeedDatabase}>
+                        <Database className="mr-2 h-4 w-4"/> Seed First Question
+                    </Button>
+                </div>
+             )}
+            {!isLoading && !error && questions.length > 0 && (
+                <ScrollArea className="h-[50vh]">
+                    <div className="space-y-2 pr-4">
+                        {questions.map(q => (
+                            <button key={q.id} onClick={() => setSelectedQuestion(q)} className="w-full text-left p-3 border rounded-lg hover:bg-muted/50 hover:border-primary/50 transition-colors">
+                                <p className="font-medium">{q.questionText}</p>
+                                <p className="text-xs text-muted-foreground">{q.subject} - {q.system}</p>
+                            </button>
+                        ))}
+                    </div>
+                </ScrollArea>
             )}
-          </div>
-        </form>
-      </Form>
-
-      {error && (
-        <Alert variant="destructive" className="rounded-lg">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {generatedPaper && !isLoading && (
-        <Card className="shadow-md rounded-xl mt-6 border-indigo-500/30 bg-gradient-to-br from-card via-card to-indigo-500/5">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <FileText className="h-6 w-6 text-indigo-600" /> Mock Exam: {generatedPaper.topicGenerated}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[50vh] p-1 border bg-background rounded-lg">
-              <div className="p-4 space-y-6">
-                {generatedPaper.mcqs && generatedPaper.mcqs.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2 flex items-center gap-2"><FileQuestion className="h-5 w-5 text-primary"/>Multiple Choice Questions</h3>
-                    <div className="space-y-4">
-                       {generatedPaper.mcqs.map((mcq, index) => (
-                          <Card key={index} className="p-3 bg-card/80 shadow-sm rounded-lg">
-                            <p className="font-medium text-sm mb-1.5">Q{index + 1}: {mcq.question}</p>
-                            <ul className="space-y-1 text-xs">
-                              {mcq.options.map((opt, optIndex) => (
-                                <li key={optIndex} className={cn("p-1.5 border rounded-md", opt.isCorrect ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400 font-semibold" : "border-border hover:bg-muted/50")}>
-                                  {String.fromCharCode(65 + optIndex)}. {opt.text}
-                                </li>
-                              ))}
-                            </ul>
-                            <Accordion type="single" collapsible className="w-full mt-2">
-                               <AccordionItem value="explanation" className="border-b-0">
-                                   <AccordionTrigger className="text-xs py-1 text-muted-foreground hover:no-underline">View Explanation</AccordionTrigger>
-                                   <AccordionContent className="text-xs text-muted-foreground italic pt-1">
-                                      {mcq.explanation || "No explanation provided."}
-                                   </AccordionContent>
-                               </AccordionItem>
-                           </Accordion>
-                          </Card>
-                        ))}
-                    </div>
-                  </div>
-                )}
-                 {generatedPaper.essays && generatedPaper.essays.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2 flex items-center gap-2"><Pilcrow className="h-5 w-5 text-primary"/>Essay Questions</h3>
-                     <div className="space-y-4">
-                       {generatedPaper.essays.map((essay, index) => (
-                          <Card key={index} className="p-3 bg-card/80 shadow-sm rounded-lg">
-                            <p className="font-medium text-sm mb-1.5">Q{index + 1}: {essay.question}</p>
-                             <Accordion type="single" collapsible className="w-full mt-1">
-                               <AccordionItem value="outline" className="border-b-0">
-                                   <AccordionTrigger className="text-xs py-1 text-muted-foreground hover:no-underline">View Answer Outline</AccordionTrigger>
-                                   <AccordionContent className="text-xs text-muted-foreground italic pt-1 whitespace-pre-wrap">
-                                      {essay.answer_outline || "No outline provided."}
-                                   </AccordionContent>
-                               </AccordionItem>
-                           </Accordion>
-                          </Card>
-                        ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

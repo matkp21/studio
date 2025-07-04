@@ -57,7 +57,8 @@ type ActiveToolId =
   | 'dictation'
   | 'challenges'
   | 'exams'
-  | 'library' // New ID for library
+  | 'library'
+  | 'theorycoach' // New ID for TheoryCoach
   | null;
 
 interface MedicoTool {
@@ -74,7 +75,7 @@ interface MedicoTool {
 const allMedicoToolsList: MedicoTool[] = [
   { id: 'exams', title: 'Mock Exam Suite', description: 'Take full-length mock exams, get detailed analytics, and compete on leaderboards.', icon: Trophy, component: MockExamSuite, comingSoon: false },
   { id: 'challenges', title: 'Gamified Case Challenges', description: 'Solve timed clinical scenarios and compete on leaderboards.', icon: Swords, component: GamifiedCaseChallenges, comingSoon: false },
-  { id: 'papers', title: 'Previous Question Papers', description: 'Access and solve past MBBS question papers (essays, short notes, MCQs).', icon: BookCopy, component: SolvedQuestionPapersViewer },
+  { id: 'theorycoach', title: 'TheoryCoach Q-Bank', description: 'AI-generated, structured answers for past university questions.', icon: BookCopy, component: SolvedQuestionPapersViewer },
   { id: 'notes', title: 'Study Notes Generator', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: StudyNotesGenerator },
   { id: 'summarizer', title: 'Smart Note Summarizer', description: 'Upload notes (PDF/TXT/JPEG) and get AI-powered summaries in various formats.', icon: FileText, component: NoteSummarizer },
   { id: 'videos', title: 'Video Lecture Library', description: 'Search and find relevant medical video lectures from YouTube.', icon: Youtube, href: '/medico/videos' },
@@ -94,7 +95,7 @@ const allMedicoToolsList: MedicoTool[] = [
   { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
 ];
 
-const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['exams', 'challenges', 'notes', 'mcq', 'papers', 'library'];
+const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['exams', 'challenges', 'theorycoach', 'mcq', 'notes', 'library'];
 
 interface MedicoToolCardProps {
   tool: MedicoTool;
