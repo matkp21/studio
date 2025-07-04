@@ -1,3 +1,4 @@
+
 // src/ai/schemas/medico-tools-schemas.ts
 
 /**
@@ -6,19 +7,19 @@
  */
 import { z } from 'zod';
 
-// Schema for Study Notes Generator (TheoryCoach)
-export const MedicoStudyNotesInputSchema = z.object({
+// Schema for TheoryCoach (formerly Study Notes Generator)
+export const TheoryCoachInputSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).describe('The medical topic for which to generate study notes (e.g., "Diabetes Mellitus", "Thalassemia Major").'),
   answerLength: z.enum(['10-mark', '5-mark']).optional().describe('Desired length of the answer based on university exam marks.'),
 });
-export type MedicoStudyNotesInput = z.infer<typeof MedicoStudyNotesInputSchema>;
+export type TheoryCoachInput = z.infer<typeof TheoryCoachInputSchema>;
 
-export const MedicoStudyNotesOutputSchema = z.object({
+export const TheoryCoachOutputSchema = z.object({
   notes: z.string().describe('Concise, AI-generated study notes on the topic, formatted for clarity with headings and bullet points where appropriate.'),
   summaryPoints: z.array(z.string()).optional().describe('Key summary points (e.g., 3-5 points) for quick revision of the topic.'),
   diagram: z.string().optional().describe('A Mermaid.js syntax for a flowchart or diagram relevant to the topic.'),
 });
-export type MedicoStudyNotesOutput = z.infer<typeof MedicoStudyNotesOutputSchema>;
+export type TheoryCoachOutput = z.infer<typeof TheoryCoachOutputSchema>;
 
 
 // Schema for MCQ Generator

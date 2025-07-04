@@ -7,7 +7,7 @@ import '@/ai/schemas/guideline-retrieval-schemas.ts'; // Ensure schemas are part
 import '@/ai/agents/ImageAnalyzerAgent.ts';
 import '@/ai/agents/SymptomAnalyzerAgent.ts';
 import '@/ai/agents/ChatAgent.ts';
-import '@/ai/agents/medico/StudyNotesAgent.ts'; 
+import '@/ai/agents/medico/TheoryCoachAgent.ts'; 
 import '@/ai/agents/medico/MCQGeneratorAgent.ts'; 
 import '@/ai/agents/medico/ExamPaperAgent.ts';
 

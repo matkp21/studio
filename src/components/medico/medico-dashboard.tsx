@@ -1,3 +1,4 @@
+
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
@@ -17,7 +18,7 @@ import { motion, Reorder } from 'framer-motion';
 import Link from 'next/link';
 
 // Component Imports
-import { StudyNotesGenerator } from './study-notes-generator';
+import { TheoryCoach } from './theory-coach';
 import { McqGenerator } from './mcq-generator';
 import { StudyTimetableCreator } from './study-timetable-creator';
 import { FlashcardGenerator } from './flashcard-generator';
@@ -38,8 +39,8 @@ import { MockExamSuite } from './mock-exam-suite';
 import { HeroWidgets, type HeroTask } from '@/components/homepage/hero-widgets';
 
 type ActiveToolId =
-  | 'papers'
-  | 'notes'
+  | 'q-bank'
+  | 'theorycoach-generator'
   | 'topics'
   | 'flowcharts'
   | 'flashcards'
@@ -58,7 +59,6 @@ type ActiveToolId =
   | 'challenges'
   | 'exams'
   | 'library'
-  | 'theorycoach' // New ID for TheoryCoach
   | null;
 
 interface MedicoTool {
@@ -75,8 +75,8 @@ interface MedicoTool {
 const allMedicoToolsList: MedicoTool[] = [
   { id: 'exams', title: 'Mock Exam Suite', description: 'Take full-length mock exams, get detailed analytics, and compete on leaderboards.', icon: Trophy, component: MockExamSuite, comingSoon: false },
   { id: 'challenges', title: 'Gamified Case Challenges', description: 'Solve timed clinical scenarios and compete on leaderboards.', icon: Swords, component: GamifiedCaseChallenges, comingSoon: false },
-  { id: 'theorycoach', title: 'TheoryCoach Q-Bank', description: 'AI-generated, structured answers for past university questions.', icon: BookCopy, component: SolvedQuestionPapersViewer },
-  { id: 'notes', title: 'Study Notes Generator', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: StudyNotesGenerator },
+  { id: 'q-bank', title: 'Theory Q-Bank', description: 'AI-generated, structured answers for past university questions.', icon: BookCopy, component: SolvedQuestionPapersViewer },
+  { id: 'theorycoach-generator', title: 'TheoryCoach (AI Answer Generator)', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: TheoryCoach },
   { id: 'summarizer', title: 'Smart Note Summarizer', description: 'Upload notes (PDF/TXT/JPEG) and get AI-powered summaries in various formats.', icon: FileText, component: NoteSummarizer },
   { id: 'videos', title: 'Video Lecture Library', description: 'Search and find relevant medical video lectures from YouTube.', icon: Youtube, href: '/medico/videos' },
   { id: 'library', title: 'Knowledge Hub', description: 'Access your personal collection of saved notes, MCQs, and community-contributed study materials.', icon: Library, href: '/medico/library' },
@@ -95,7 +95,7 @@ const allMedicoToolsList: MedicoTool[] = [
   { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
 ];
 
-const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['exams', 'challenges', 'theorycoach', 'mcq', 'notes', 'library'];
+const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['exams', 'challenges', 'q-bank', 'mcq', 'theorycoach-generator', 'library'];
 
 interface MedicoToolCardProps {
   tool: MedicoTool;
