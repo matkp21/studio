@@ -10,18 +10,21 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, BookOpen, Wand2 } from 'lucide-react';
+import { Loader2, BookOpen, Wand2, FileText, BarChart2 } from 'lucide-react';
 import { generateStudyNotes } from '@/ai/agents/medico/StudyNotesAgent';
 import { useToast } from '@/hooks/use-toast';
 import { useAiAgent } from '@/hooks/use-ai-agent';
 import { useProMode } from '@/contexts/pro-mode-context';
-import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 import React, { useEffect } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
+  answerLength: z.enum(['10-mark', '5-mark']).default('10-mark'),
 });
 
 type StudyNotesFormValues = z.infer<typeof formSchema>;
@@ -30,14 +33,18 @@ interface StudyNotesGeneratorProps {
   initialTopic?: string | null;
 }
 
+const seedQuestions = [
+  "Papillary carcinoma thyroid", "Varicose veins", "Inguinal hernia", "Carcinoma breast", "Nephrotic syndrome", "Rheumatic heart disease", "Pneumonia in children", "Cirrhosis of liver", "Malignant melanoma", "Dengue fever"
+];
+
 export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) {
   const { toast } = useToast();
-  const { user } = useProMode(); // Get the authenticated user
+  const { user } = useProMode();
   const { execute: runGenerateNotes, data: generatedNotes, isLoading, error, reset } = useAiAgent(generateStudyNotes, {
      onSuccess: async (data, input) => {
       toast({
-          title: "Study Notes Generated!",
-          description: `Notes for "${input.topic}" are ready.`
+          title: "Structured Answer Generated!",
+          description: `Answer for "${input.topic}" is ready.`
       });
       if (user) {
         try {
@@ -48,11 +55,12 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
             userId: user.uid,
             notes: data.notes,
             summaryPoints: data.summaryPoints,
+            diagram: data.diagram,
             createdAt: serverTimestamp(),
           });
           toast({
             title: "Saved to Library",
-            description: "Your generated notes have been saved.",
+            description: "Your generated answer has been saved.",
           });
         } catch (firestoreError) {
           console.error("Firestore save error:", firestoreError);
@@ -79,11 +87,11 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
     }
   });
 
-
   const form = useForm<StudyNotesFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       topic: initialTopic || "",
+      answerLength: '10-mark',
     },
   });
 
@@ -92,11 +100,15 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
         form.setValue('topic', initialTopic);
     }
   }, [initialTopic, form]);
-  
-  // When form is reset, also reset the AI agent's state
+
   const handleReset = () => {
-    form.reset({ topic: "" });
+    form.reset({ topic: "", answerLength: "10-mark" });
     reset();
+  }
+  
+  const handleSeedQuestionClick = (question: string) => {
+    form.setValue('topic', question);
+    form.handleSubmit(onSubmit)(); // Trigger form submission
   }
 
   const onSubmit: SubmitHandler<StudyNotesFormValues> = async (data) => {
@@ -105,18 +117,18 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
 
   return (
     <div className="space-y-6">
-      <Form {...form}>
+       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-1">
           <FormField
             control={form.control}
             name="topic"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="topic-notes" className="text-base">Medical Topic</FormLabel>
+                <FormLabel htmlFor="topic-notes" className="text-base">University Question / Topic</FormLabel>
                 <FormControl>
                   <Input
                     id="topic-notes"
-                    placeholder="e.g., Diabetes Mellitus, Thalassemia Major"
+                    placeholder="e.g., Inguinal Hernia, Rheumatic Heart Disease"
                     className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary"
                     {...field}
                   />
@@ -125,61 +137,76 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
               </FormItem>
             )}
           />
+           <FormField
+            control={form.control}
+            name="answerLength"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-base">Answer Length</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl><SelectTrigger className="rounded-lg"><SelectValue/></SelectTrigger></FormControl>
+                  <SelectContent>
+                    <SelectItem value="10-mark">10-Mark Answer (~500 words)</SelectItem>
+                    <SelectItem value="5-mark">5-Mark Answer (~250 words)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage/>
+              </FormItem>
+            )}
+           />
           <div className="flex gap-2">
             <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
-                {isLoading ? (
-                <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
-                </>
-                ) : (
-                <>
-                    <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-                    Generate Notes
-                </>
-                )}
+                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
+                : <><Wand2 className="mr-2 h-4 w-4" /> Generate Answer</>}
             </Button>
-             {generatedNotes && (
-                <Button type="button" variant="outline" onClick={handleReset} className="rounded-lg">
-                    Clear
-                </Button>
-            )}
+             {generatedNotes && ( <Button type="button" variant="outline" onClick={handleReset} className="rounded-lg">Clear</Button> )}
           </div>
         </form>
       </Form>
+      
+      <div>
+        <h3 className="text-sm font-semibold text-muted-foreground mb-2">Or, try a sample university question:</h3>
+        <div className="flex flex-wrap gap-2">
+          {seedQuestions.map(q => (
+            <Button key={q} variant="outline" size="sm" onClick={() => handleSeedQuestionClick(q)} disabled={isLoading}>
+              {q}
+            </Button>
+          ))}
+        </div>
+      </div>
 
-      {error && (
-        <Alert variant="destructive" className="rounded-lg">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      {error && <Alert variant="destructive" className="rounded-lg"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
 
       {generatedNotes && !isLoading && (
         <Card className="shadow-md rounded-xl mt-6 border-primary/30 bg-gradient-to-br from-card via-card to-primary/5">
           <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-primary" />
-              Study Notes: {form.getValues("topic")}
-            </CardTitle>
-            <CardDescription>AI-generated notes for your revision.</CardDescription>
+            <CardTitle className="text-xl flex items-center gap-2"><FileText className="h-6 w-6 text-primary" />Structured Answer: {form.getValues("topic")}</CardTitle>
+            <CardDescription>AI-generated structured answer for your exam preparation.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
-                <div className="p-4 whitespace-pre-wrap text-sm prose prose-sm dark:prose-invert max-w-none">
-                    {generatedNotes.notes}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="lg:col-span-1">
+                    <h4 className="font-semibold mb-2">Answer Breakdown:</h4>
+                    <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
+                        <div className="p-4 whitespace-pre-wrap text-sm prose prose-sm dark:prose-invert max-w-none">
+                            {generatedNotes.notes}
+                        </div>
+                    </ScrollArea>
                 </div>
-            </ScrollArea>
-            {generatedNotes.summaryPoints && generatedNotes.summaryPoints.length > 0 && (
-              <div className="mt-4">
-                <h4 className="font-semibold text-md mb-2 text-primary">Key Summary Points:</h4>
-                <ul className="list-disc list-inside ml-4 space-y-1 text-sm bg-secondary/50 p-3 rounded-md">
-                  {generatedNotes.summaryPoints.map((point, index) => (
-                    <li key={index}>{point}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                 <div className="lg:col-span-1">
+                    <h4 className="font-semibold mb-2">Diagram / Flowchart:</h4>
+                     <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
+                        <div className="p-4 text-sm">
+                           {generatedNotes.diagram ? (
+                                <>
+                                <Alert className="mb-2"><AlertDescription>Copy this code into a Mermaid.js renderer to view the diagram.</AlertDescription></Alert>
+                                <pre className="p-2 bg-muted rounded-md overflow-x-auto"><code>{generatedNotes.diagram}</code></pre>
+                                </>
+                           ) : <p className="text-muted-foreground">No diagram was generated for this topic.</p>}
+                        </div>
+                    </ScrollArea>
+                 </div>
+            </div>
           </CardContent>
         </Card>
       )}

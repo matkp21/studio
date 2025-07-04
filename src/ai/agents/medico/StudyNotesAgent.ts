@@ -1,11 +1,10 @@
 
 'use server';
 /**
- * @fileOverview A Genkit flow for generating study notes on medical topics for medico users.
- * This flow takes a medical topic as input and returns structured study notes
- * along with key summary points for quick revision.
+ * @fileOverview A Genkit flow for generating structured, exam-style answers on medical topics.
+ * This acts as the "TheoryCoach" for medico users.
  *
- * - generateStudyNotes - A function that handles the study notes generation process.
+ * - generateStudyNotes - A function that handles the answer generation process.
  * - MedicoStudyNotesInput - The input type for the generateStudyNotes function.
  * - MedicoStudyNotesOutput - The return type for the generateStudyNotes function.
  */
@@ -42,30 +41,38 @@ const studyNotesPrompt = ai.definePrompt({
   name: 'medicoStudyNotesPrompt',
   input: { schema: MedicoStudyNotesInputSchema },
   output: { schema: MedicoStudyNotesOutputSchema },
-  prompt: `You are an AI assistant specializing in creating concise and informative study notes for medical students.
-Given the medical topic: {{{topic}}}
+  prompt: `You are an AI medical expert, the "TheoryCoach," creating a structured, exam-ready answer for an MBBS student.
+Given the medical topic/question: {{{topic}}}
+Desired answer length: {{{answerLength}}}
 
-Generate study notes that are:
-1.  Accurate and up-to-date, based on standard medical textbooks and guidelines.
-2.  Well-structured: Use headings for main sections, and bullet points or numbered lists for details like etiology, clinical features, diagnosis, and management.
-3.  Focused on key concepts, definitions, mechanisms, and clinical relevance.
-4.  Easy to understand and suitable for revision for MBBS exams.
-5.  Include 3-5 key summary points as an array of strings for quick recall. For example, if the topic is 'Thalassemia Major', summary points might cover its definition, key genetic defect, hallmark clinical features, main diagnostic tests, and primary management strategy.
+Generate a comprehensive answer strictly following this 11-point format. Use Markdown for headings (e.g., '## 1. Definition').
 
-Topic: {{{topic}}}
+1.  **Definition**: Provide a clear, concise definition.
+2.  **Relevant Anatomy / Physiology**: Briefly mention if critical to understanding the topic.
+3.  **Etiology / Risk Factors**: List the causes and risk factors.
+4.  **Pathophysiology**: Explain the mechanism of the disease.
+5.  **Clinical Features**: Detail the signs and symptoms.
+6.  **Investigations**: List relevant investigations under subheadings:
+    -   Blood tests
+    -   Imaging
+    -   Special tests
+7.  **Management**: Detail the management under subheadings:
+    -   Medical
+    -   Surgical (if applicable)
+8.  **Complications**: List potential complications.
+9.  **Prognosis**: Briefly describe the likely outcome.
+10. **Flowcharts / Tables / Diagrams**: Generate a relevant flowchart or table using Mermaid.js syntax. For example, a diagnostic pathway or a classification table. The diagram should be useful for visual learners.
+11. **References**: Name 1-2 standard textbooks (e.g., Robbins, Ghai, Bailey & Love) where this topic is covered.
 
-Format the output as JSON conforming to the MedicoStudyNotesOutput schema.
-Ensure 'notes' is a single comprehensive string containing the structured notes (with newlines for formatting like \n for line breaks and \n\n for paragraphs).
-Ensure 'summaryPoints' is an array of strings, each string being a concise summary point.
-Example output for 'notes' on "Type 1 Diabetes Mellitus":
-"## Type 1 Diabetes Mellitus\n\n**Definition:**\nType 1 Diabetes Mellitus (T1DM) is an autoimmune disease characterized by the destruction of insulin-producing beta cells in the pancreas, leading to absolute insulin deficiency.\n\n**Etiology:**\n- Autoimmune destruction of beta cells (most common)\n- Genetic predisposition (HLA-DR3, HLA-DR4)\n- Environmental triggers (e.g., viral infections, dietary factors)\n\n**Clinical Features:**\n- Polyuria (excessive urination)\n- Polydipsia (excessive thirst)\n- Polyphagia (excessive hunger)\n- Weight loss\n- Fatigue\n- Diabetic Ketoacidosis (DKA) in severe cases\n\n**Diagnosis:**\n- Random plasma glucose >= 200 mg/dL with symptoms\n- Fasting plasma glucose >= 126 mg/dL\n- HbA1c >= 6.5%\n- Presence of autoantibodies (e.g., GAD65, ICA)\n\n**Management:**\n- Lifelong insulin therapy (subcutaneous injections or insulin pump)\n- Blood glucose monitoring\n- Diet and exercise management\n- Education and psychosocial support"
-
-Example output for 'summaryPoints' on "Type 1 Diabetes Mellitus":
-["Autoimmune destruction of pancreatic beta cells leading to absolute insulin deficiency.", "Key symptoms include polyuria, polydipsia, polyphagia, and weight loss.", "Diagnosis involves blood glucose tests (random, fasting, HbA1c) and autoantibody detection.", "Management primarily involves lifelong insulin therapy and lifestyle adjustments.", "Acute complication includes Diabetic Ketoacidosis (DKA)."]
-
+Constraints:
+- For a '10-mark' answer, the total word count should be around 500 words.
+- For a '5-mark' answer, it should be a more concise ~250 words.
+- The entire response must be a single JSON object conforming to the MedicoStudyNotesOutputSchema.
+- The structured answer text goes into the 'notes' field.
+- The Mermaid.js diagram code goes into the 'diagram' field.
 `,
   config: {
-    temperature: 0.3, // More factual for notes
+    temperature: 0.3, // Factual for notes
   }
 });
 
@@ -77,7 +84,7 @@ const studyNotesFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await studyNotesPrompt(input);
-    if (!output) {
+    if (!output || !output.notes) {
       console.error('MedicoStudyNotesPrompt did not return an output for topic:', input.topic);
       throw new Error('Failed to generate study notes. The AI model did not return the expected output. Please try a different topic or rephrase.');
     }
