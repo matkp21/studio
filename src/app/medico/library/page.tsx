@@ -72,7 +72,7 @@ interface LibraryCardProps {
 const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: LibraryCardProps) => {
     const router = useRouter();
 
-    const handleAction = (tool: 'mcq' | 'flashcards') => {
+    const handleAction = (tool: 'mcq' | 'flashcards' | 'notes') => {
         const url = `/medico?tool=${tool}&topic=${encodeURIComponent(item.topic)}`;
         router.push(url);
     };
@@ -112,8 +112,9 @@ const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: Libra
                         <Button variant="outline" size="sm" className="ml-2 text-xs">Actions</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => handleAction('mcq')}>Generate MCQs from this</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleAction('mcq')}>Generate MCQs</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleAction('flashcards')}>Create Flashcards</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleAction('notes')}>Generate More Notes</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </CardContent>

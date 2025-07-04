@@ -180,7 +180,7 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
 };
 
 // Wrapper component to handle suspense boundary for useSearchParams
-const MedicoDashboardContent = () => {
+export function MedicoDashboard() {
     const [activeDialog, setActiveDialog] = useState<ActiveToolId>(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [displayedTools, setDisplayedTools] = useState<MedicoTool[]>(allMedicoToolsList);
@@ -316,12 +316,3 @@ const MedicoDashboardContent = () => {
         </div>
     );
 };
-
-
-export function MedicoDashboard() {
-  return (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <MedicoDashboardContent />
-    </React.Suspense>
-  );
-}
