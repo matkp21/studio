@@ -32,18 +32,18 @@ const studyTimetablePrompt = ai.definePrompt({
 - Subjects to Cover: {{#each subjects}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
 
 **Your Task:**
-1.  **Analyze & Synthesize (Simulated)**: Your first task is to generate a 'performanceAnalysis'. Based on the subjects the user wants to cover, synthesize a realistic analysis of their likely weak points. For example, if they list 'Cardiology' and 'Pharmacology', you might surmise "User's performance suggests a strong grasp of general cardiology but shows weakness in ECG interpretation and the side effects of antiarrhythmic drugs." Be specific and provide a credible-sounding analysis. This simulates reviewing their performance data.
+1.  **Analyze & Synthesize (Simulated)**: Your first task is to generate a 'performanceAnalysis'. Based on the subjects the user wants to cover, synthesize a realistic analysis of their likely weak points. For example, if they list 'Cardiology' and 'Pharmacology', you might surmise "User's performance suggests a strong grasp of general cardiology but shows weakness in ECG interpretation and the side effects of antiarrhythmic drugs." Be specific and provide a credible-sounding analysis.
 
 2.  **Strategize & Prioritize**: Use your generated 'performanceAnalysis' to create a structured, realistic, and personalized study timetable. Allocate more time, more frequent revision sessions, and targeted practice (e.g., "ECG Practice Session") for the identified weak areas.
 
-3.  **Structure**: The output for the 'timetable' field should be a clear, organized timetable, ideally in a week-by-week Markdown format. Include a mix of first-reads, revisions, and practice question sessions.
+3.  **Structure**: The output for the 'timetable' field should be a clear, organized timetable, ideally in a week-by-week Markdown format.
 
 4.  **Explain**: The 'performanceAnalysis' field should contain your summary of the student's weak points, which serves as the rationale for the schedule's structure.
 
-Example of a good `performanceAnalysis`:
+Example of a good 'performanceAnalysis':
 "Based on app-wide performance data, the student shows strong understanding in basic physiology but struggles with clinical application, especially in Neurology (e.g., localizing lesions) and complex pharmacological mechanisms. The schedule will prioritize these areas."
 
-Ensure the final output is a valid JSON object with `performanceAnalysis` and `timetable` fields.
+Ensure the final output is a valid JSON object with 'performanceAnalysis' and 'timetable' fields.
 `,
   config: {
     temperature: 0.5, // For some creativity in scheduling
