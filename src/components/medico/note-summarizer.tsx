@@ -1,4 +1,3 @@
-
 // src/components/medico/note-summarizer.tsx
 "use client";
 

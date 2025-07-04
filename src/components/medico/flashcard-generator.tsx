@@ -1,4 +1,3 @@
-
 // src/components/medico/flashcard-generator.tsx
 "use client";
 
