@@ -1,47 +1,48 @@
 
+// src/ai/agents/medico/StudyNotesAgent.ts
 'use server';
 /**
- * @fileOverview A Genkit flow for generating structured, exam-style answers on medical topics.
- * This acts as the "TheoryCoach" for medico users.
+ * @fileOverview A Genkit flow for generating structured, exam-style study notes on medical topics.
+ * This acts as the "StudyNotesGenerator" for medico users.
  *
- * - generateTheoryAnswer - A function that handles the answer generation process.
- * - TheoryCoachInput - The input type for the generateTheoryAnswer function.
- * - TheoryCoachOutput - The return type for the generateTheoryAnswer function.
+ * - generateStudyNotes - A function that handles the answer generation process.
+ * - StudyNotesGeneratorInput - The input type for the generateStudyNotes function.
+ * - StudyNotesGeneratorOutput - The return type for the generateStudyNotes function.
  */
 
 import { ai } from '@/ai/genkit';
-import { TheoryCoachInputSchema, TheoryCoachOutputSchema } from '@/ai/schemas/medico-tools-schemas';
+import { StudyNotesGeneratorInputSchema, StudyNotesGeneratorOutputSchema } from '@/ai/schemas/medico-tools-schemas';
 import type { z } from 'zod';
 
-export type TheoryCoachInput = z.infer<typeof TheoryCoachInputSchema>;
-export type TheoryCoachOutput = z.infer<typeof TheoryCoachOutputSchema>;
+export type StudyNotesGeneratorInput = z.infer<typeof StudyNotesGeneratorInputSchema>;
+export type StudyNotesGeneratorOutput = z.infer<typeof StudyNotesGeneratorOutputSchema>;
 
 // Simple in-memory cache
-const theoryAnswerCache = new Map<string, TheoryCoachOutput>();
+const studyNotesCache = new Map<string, StudyNotesGeneratorOutput>();
 
-export async function generateTheoryAnswer(input: TheoryCoachInput): Promise<TheoryCoachOutput> {
+export async function generateStudyNotes(input: StudyNotesGeneratorInput): Promise<StudyNotesGeneratorOutput> {
   const cacheKey = JSON.stringify(input);
-  if (theoryAnswerCache.has(cacheKey)) {
-    console.log(`[Cache HIT] Serving cached theory answer for: ${input.topic}`);
-    return theoryAnswerCache.get(cacheKey)!;
+  if (studyNotesCache.has(cacheKey)) {
+    console.log(`[Cache HIT] Serving cached study notes for: ${input.topic}`);
+    return studyNotesCache.get(cacheKey)!;
   }
   
-  console.log(`[Cache MISS] Generating new theory answer for: ${input.topic}`);
-  const result = await theoryCoachFlow(input);
+  console.log(`[Cache MISS] Generating new study notes for: ${input.topic}`);
+  const result = await studyNotesFlow(input);
   
   // Cache the successful result
   if (result) {
-    theoryAnswerCache.set(cacheKey, result);
+    studyNotesCache.set(cacheKey, result);
   }
   
   return result;
 }
 
-const theoryCoachPrompt = ai.definePrompt({
-  name: 'medicoTheoryCoachPrompt',
-  input: { schema: TheoryCoachInputSchema },
-  output: { schema: TheoryCoachOutputSchema },
-  prompt: `You are an AI medical expert, the "TheoryCoach," creating a structured, exam-ready answer for an MBBS student.
+const studyNotesPrompt = ai.definePrompt({
+  name: 'medicoStudyNotesPrompt',
+  input: { schema: StudyNotesGeneratorInputSchema },
+  output: { schema: StudyNotesGeneratorOutputSchema },
+  prompt: `You are an AI medical expert creating a structured, exam-ready study note for an MBBS student.
 Given the medical topic/question: {{{topic}}}
 Desired answer length: {{{answerLength}}}
 
@@ -67,7 +68,7 @@ Generate a comprehensive answer strictly following this 11-point format. Use Mar
 Constraints:
 - For a '10-mark' answer, the total word count should be around 500 words.
 - For a '5-mark' answer, it should be a more concise ~250 words.
-- The entire response must be a single JSON object conforming to the TheoryCoachOutputSchema.
+- The entire response must be a single JSON object conforming to the StudyNotesGeneratorOutputSchema.
 - The structured answer text goes into the 'notes' field.
 - The Mermaid.js diagram code goes into the 'diagram' field.
 `,
@@ -76,20 +77,20 @@ Constraints:
   }
 });
 
-const theoryCoachFlow = ai.defineFlow(
+const studyNotesFlow = ai.defineFlow(
   {
-    name: 'medicoTheoryCoachFlow',
-    inputSchema: TheoryCoachInputSchema,
-    outputSchema: TheoryCoachOutputSchema,
+    name: 'medicoStudyNotesFlow',
+    inputSchema: StudyNotesGeneratorInputSchema,
+    outputSchema: StudyNotesGeneratorOutputSchema,
   },
   async (input) => {
-    const { output } = await theoryCoachPrompt(input);
+    const { output } = await studyNotesPrompt(input);
     if (!output || !output.notes) {
-      console.error('TheoryCoachPrompt did not return an output for topic:', input.topic);
+      console.error('StudyNotesPrompt did not return an output for topic:', input.topic);
       throw new Error('Failed to generate study notes. The AI model did not return the expected output. Please try a different topic or rephrase.');
     }
     // Firestore saving logic could go here in a real application, e.g.:
-    // await saveTheoryAnswerToFirestore(input.topic, output);
+    // await saveStudyNotesToFirestore(input.topic, output);
     return output;
   }
 );

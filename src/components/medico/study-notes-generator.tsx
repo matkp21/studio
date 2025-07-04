@@ -1,3 +1,4 @@
+
 // src/components/medico/solved-question-papers-viewer.tsx
 "use client";
 

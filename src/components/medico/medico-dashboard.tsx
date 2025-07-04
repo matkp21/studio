@@ -1,3 +1,4 @@
+
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
@@ -17,7 +18,7 @@ import { motion, Reorder } from 'framer-motion';
 import Link from 'next/link';
 
 // Component Imports
-import { TheoryCoach } from './theory-coach';
+import { StudyNotesGenerator } from './study-notes-generator';
 import { McqGenerator } from './mcq-generator';
 import { StudyTimetableCreator } from './study-timetable-creator';
 import { FlashcardGenerator } from './flashcard-generator';
@@ -85,8 +86,8 @@ const allMedicoToolsList: MedicoTool[] = [
   { id: 'pathomind', title: 'PathoMind', description: 'Explain any disease pathophysiology with diagrams.', icon: BrainCircuit, component: PathoMindExplainer },
   { id: 'exams', title: 'Mock Exam Suite', description: 'Take full-length mock exams, get detailed analytics, and compete on leaderboards.', icon: Trophy, component: MockExamSuite, comingSoon: false },
   { id: 'challenges', title: 'Gamified Case Challenges', description: 'Solve timed clinical scenarios and compete on leaderboards.', icon: Swords, component: GamifiedCaseChallenges, comingSoon: false },
-  { id: 'q-bank', title: 'Theory Q-Bank', description: 'AI-generated, structured answers for past university questions.', icon: BookCopy, component: SolvedQuestionPapersViewer },
-  { id: 'theorycoach-generator', title: 'TheoryCoach (AI Answer Generator)', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: TheoryCoach },
+  { id: 'q-bank', title: 'Solved Question Papers', description: 'Structured answers for past university theory questions.', icon: BookCopy, component: SolvedQuestionPapersViewer },
+  { id: 'theorycoach-generator', title: 'Study Notes Generator', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: StudyNotesGenerator },
   { id: 'summarizer', title: 'Smart Note Summarizer', description: 'Upload notes (PDF/TXT/JPEG) and get AI-powered summaries in various formats.', icon: FileText, component: NoteSummarizer },
   { id: 'videos', title: 'Video Lecture Library', description: 'Search and find relevant medical video lectures from YouTube.', icon: Youtube, href: '/medico/videos' },
   { id: 'library', title: 'Knowledge Hub', description: 'Access your personal collection of saved notes, MCQs, and community-contributed study materials.', icon: Library, href: '/medico/library' },

@@ -1,3 +1,4 @@
+
 // src/components/medico/solved-question-papers-viewer.tsx
 "use client";
 
@@ -162,7 +163,7 @@ export function SolvedQuestionPapersViewer() {
     <div className="space-y-6">
       <Alert variant="default" className="border-blue-500/50 bg-blue-500/10">
         <BookCopy className="h-5 w-5 text-blue-600" />
-        <AlertTitle className="font-semibold text-blue-700 dark:text-blue-500">Theory Q-Bank</AlertTitle>
+        <AlertTitle className="font-semibold text-blue-700 dark:text-blue-500">Solved Question Papers</AlertTitle>
         <AlertDescription className="text-blue-600/90 dark:text-blue-500/90 text-xs">
           Browse structured answers to university-style questions. The content is AI-generated and should be used as a study guide.
         </AlertDescription>
@@ -170,7 +171,7 @@ export function SolvedQuestionPapersViewer() {
       
       <Card>
         <CardHeader>
-            <CardTitle>Question Bank</CardTitle>
+            <CardTitle>Solved Question Bank</CardTitle>
             <CardDescription>Select a question to view the detailed, structured answer.</CardDescription>
         </CardHeader>
         <CardContent>
