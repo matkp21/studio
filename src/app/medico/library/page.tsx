@@ -272,18 +272,18 @@ export default function StudyLibraryPage() {
                       ))}
                     </ul>
                     {mcq.explanation && (
-                      <p className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
-                        <span className="font-semibold">Explanation:</span> {mcq.explanation}
-                      </p>
+                      <div className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
+                        <MarkdownRenderer content={`**Explanation:** ${mcq.explanation}`} />
+                      </div>
                     )}
                   </Card>
                 ))}
                 {myItem.essays?.map((essay, index) => (
                   <Card key={`essay-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
                     <p className="font-semibold mb-2 text-foreground text-sm">Essay Q{index + 1}: {essay.question}</p>
-                    <p className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
-                      <span className="font-semibold">Answer Outline:</span> {essay.answer_outline}
-                    </p>
+                    <div className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
+                       <MarkdownRenderer content={`**Answer Outline:** ${essay.answer_outline}`} />
+                    </div>
                   </Card>
                 ))}
               </div>
