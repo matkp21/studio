@@ -232,18 +232,24 @@ exports.searchYouTubeVideos = functions.https.onCall(async (data, context) => {
     const response = await axios.get('https://www.googleapis.com/youtube/v3/search', {
       params: {
         part: 'snippet',
-        q: `${query} MBBS lecture`,
+        q: `${query} medical lecture`,
         key: apiKey,
         type: 'video',
-        maxResults: 12, // Fetch a few more for better layout
+        maxResults: 12,
+        relevanceLanguage: 'en',
+        safeSearch: 'moderate',
+        videoCategoryId: '27', // Education Category
       },
     });
-
-    const videos = response.data.items.map(item => ({
-      id: item.id.videoId,
-      title: item.snippet.title,
-      thumbnail: item.snippet.thumbnails.high.url,
-      channel: item.snippet.channelTitle,
+    
+    // Filter for items that are definitely videos and have necessary data
+    const videos = response.data.items
+      .filter(item => item.id && item.id.videoId && item.snippet)
+      .map(item => ({
+        id: item.id.videoId,
+        title: item.snippet.title,
+        thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default.url,
+        channel: item.snippet.channelTitle,
     }));
     
     return { videos };
