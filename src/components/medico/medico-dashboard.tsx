@@ -163,7 +163,7 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
   }
 
   return (
-    <DialogTrigger asChild onClick={() => !tool.href && onLaunch(tool.id)}>
+    <DialogTrigger asChild onClick={() => !tool.href && !tool.comingSoon && onLaunch(tool.id)}>
       {cardContent}
     </DialogTrigger>
   );
