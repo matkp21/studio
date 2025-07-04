@@ -50,7 +50,7 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
       aria-label="Date and Time Information Panel"
     >
        {/* Underglow Element */}
-      <div className="hero-widget-underglow" aria-hidden="true" />
+      {/* <div className="hero-widget-underglow" aria-hidden="true" /> This class was not defined anywhere so removing it */}
 
       {/* Left Side: Compact Functional Calendar - Apple Theme */}
       <Popover open={isCalendarPopoverOpen} onOpenChange={setIsCalendarPopoverOpen}>
@@ -148,4 +148,3 @@ export const HeroWidgets: React.FC<HeroWidgetsProps> = ({ tasks }) => {
     </div>
   );
 };
-

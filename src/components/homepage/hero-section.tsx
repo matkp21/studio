@@ -10,7 +10,7 @@ import { HeartPulse, BookHeart, BriefcaseMedical, Sparkles } from "lucide-react"
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProMode } from '@/contexts/pro-mode-context';
-import { HeroWidgets } from './hero-widgets';
+import { HeroWidgets, type HeroTask } from './hero-widgets';
 
 const greetings = [
   { lang: "en", text: "Hello," },
@@ -49,6 +49,16 @@ export function HeroSection() {
         { id: '2', date: today, title: 'Team Meeting', description: 'Scheduled for 2:00 PM' },
         { id: '3', date: tomorrow, title: 'Follow-up: Patient A', description: 'Check medication adherence' },
         { id: '4', date: dayAfterTomorrow, title: 'Case Conference', description: 'Discuss complex cases' },
+      ]);
+    } else if (userRole === 'medico') {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      setHeroTasks([
+        { id: 'med-1', date: today, title: 'Anatomy Lecture', description: '10:00 AM - Skeletal System' },
+        { id: 'med-2', date: today, title: 'Study Group: Cardiology', description: '4:00 PM - Discuss ECGs' },
+        { id: 'med-3', date: tomorrow, title: 'Quiz Due: Pharmacology', description: 'Covers autonomic drugs' },
       ]);
     } else {
       setHeroTasks([]);
@@ -188,7 +198,7 @@ export function HeroSection() {
           </Button>
         </motion.div>
 
-        {userRole === 'pro' && (
+        {(userRole === 'pro' || userRole === 'medico') && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
