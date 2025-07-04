@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle as AlertTitleComponent } from '@/components/ui/alert';
-import { UploadCloud, CameraOff, Loader2, Info, ScanEye, Wand2, Brain, BookOpen, Search, Camera, SlidersHorizontal, Video, RotateCcw, ExternalLink } from 'lucide-react';
+import { UploadCloud, CameraOff, Loader2, Info, ScanEye, Wand2, Brain, BookOpen, Search, Camera, SlidersHorizontal, Video, RotateCcw, ExternalLink, Link as LinkIcon } from 'lucide-react';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -20,6 +20,7 @@ import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { proArTools, medicoArTools, userArTools } from '@/config/ar-tools-config';
 import type { ArToolDefinition } from '@/types/ar-tools';
 import { Badge } from '@/components/ui/badge';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 interface Annotation {
   id: string;
@@ -75,6 +76,11 @@ export default function ARViewerPage() {
   const [anatomyDetailLoading, setAnatomyDetailLoading] = useState(false);
   const [anatomyDetailData, setAnatomyDetailData] = useState<MedicoAnatomyVisualizerOutput | null>(null);
   const [anatomyDetailError, setAnatomyDetailError] = useState<string | null>(null);
+
+  // New state for external MedlinePlus data
+  const [medlinePlusLoading, setMedlinePlusLoading] = useState(false);
+  const [medlinePlusData, setMedlinePlusData] = useState<any>(null);
+  const [medlinePlusError, setMedlinePlusError] = useState<string | null>(null);
 
   const { userRole } = useProMode();
   const [selectedArTool, setSelectedArTool] = useState<ArToolDefinition | null>(null);
@@ -207,6 +213,9 @@ export default function ARViewerPage() {
     setAnatomyDetailLoading(true);
     setAnatomyDetailData(null);
     setAnatomyDetailError(null);
+    // Reset MedlinePlus data when opening dialog
+    setMedlinePlusData(null); 
+    setMedlinePlusError(null);
     setShowAnatomyDetailDialog(true);
     try {
       const result = await getAnatomyDescription({ anatomicalStructure: annotationText });
@@ -217,6 +226,25 @@ export default function ARViewerPage() {
       toast({ title: "Anatomy Lookup Failed", description: errorMsg, variant: "destructive" });
     } finally {
       setAnatomyDetailLoading(false);
+    }
+  };
+
+  const handleFetchMedlinePlus = async (geneName: string) => {
+    if (!geneName) return;
+    setMedlinePlusLoading(true);
+    setMedlinePlusData(null);
+    setMedlinePlusError(null);
+    try {
+        const functions = getFunctions();
+        const searchGeneFunction = httpsCallable(functions, 'searchGene');
+        const response = await searchGeneFunction({ geneName });
+        setMedlinePlusData(response.data);
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Failed to fetch from MedlinePlus.";
+        setMedlinePlusError(errorMessage);
+        toast({ title: "MedlinePlus Search Failed", description: errorMessage, variant: "destructive" });
+    } finally {
+        setMedlinePlusLoading(false);
     }
   };
   
@@ -416,6 +444,31 @@ export default function ARViewerPage() {
                   <div><h4 className="font-semibold text-foreground mb-1">Related Structures:</h4><ul className="list-disc list-inside ml-4 text-muted-foreground">{anatomyDetailData.relatedStructures.map((structure, index) => (<li key={index}>{structure}</li>))}</ul></div>
                 )}
                 {!anatomyDetailData.description && (!anatomyDetailData.relatedStructures || anatomyDetailData.relatedStructures.length === 0) && (<p className="text-muted-foreground text-center py-6">No detailed info for "{selectedAnnotationTextForDetail}".</p>)}
+                <div className="border-t pt-4 mt-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => handleFetchMedlinePlus(selectedAnnotationTextForDetail || '')}
+                    disabled={medlinePlusLoading}
+                  >
+                    {medlinePlusLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <LinkIcon className="mr-2 h-4 w-4"/>}
+                    Search MedlinePlus for related info
+                  </Button>
+                  {medlinePlusError && <Alert variant="destructive" className="mt-2"><AlertTitleComponent>Error</AlertTitleComponent><AlertDescription>{medlinePlusError}</AlertDescription></Alert>}
+                  {medlinePlusData && (
+                    <div className="mt-2 p-3 bg-muted/50 rounded-md text-xs">
+                      <h5 className="font-semibold text-foreground mb-1">MedlinePlus Result:</h5>
+                      <p className="font-bold">{medlinePlusData.title || 'No title found'}</p>
+                      <p className="text-muted-foreground">{medlinePlusData.summary || medlinePlusData.message}</p>
+                      {medlinePlusData.link && (
+                        <a href={medlinePlusData.link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline mt-1 inline-block">
+                          Read More <ExternalLink className="inline h-3 w-3"/>
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </ScrollArea>
