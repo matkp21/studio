@@ -40,6 +40,14 @@ export function McqGenerator({ initialTopic }: McqGeneratorProps) {
   const { user } = useProMode();
   const { execute: runGenerateMcqs, data: generatedMcqs, isLoading, error, reset } = useAiAgent(generateMCQs, {
      onSuccess: async (data, input) => {
+      if (!data?.mcqs || !data.topicGenerated) {
+        toast({
+          title: "Generation Error",
+          description: "The AI agent returned an incomplete response. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
       toast({
         title: "MCQs Generated!",
         description: `${data.mcqs.length} MCQs for "${data.topicGenerated}" are ready.`,

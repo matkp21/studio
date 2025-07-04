@@ -31,6 +31,14 @@ export function MnemonicsGenerator() {
 
   const { execute: runGenerateMnemonic, data: generatedMnemonic, isLoading, error, reset } = useAiAgent(generateMnemonic, {
     onSuccess: (data, input) => {
+      if (!data?.mnemonic || !data.topicGenerated) {
+        toast({
+          title: "Generation Error",
+          description: "The AI agent returned an incomplete response. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
       toast({
         title: "Mnemonic Generated!",
         description: `Mnemonic for "${data.topicGenerated}" is ready.`,

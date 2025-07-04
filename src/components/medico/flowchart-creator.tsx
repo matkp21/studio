@@ -82,9 +82,11 @@ const FlowchartEditor = () => {
       setIsAiLoading(true);
       try {
         const result = await createFlowchart({ topic: aiTopic });
-        if (result.nodes && result.edges) {
+        if (result && result.nodes && result.edges) {
           loadTemplate({ id: 'ai-generated', name: aiTopic, category: 'AI', description: '', nodes: result.nodes, edges: result.edges });
           toast({ title: "Flowchart Generated!", description: "AI has created a flowchart. You can now edit it." });
+        } else {
+            throw new Error("AI did not return a valid flowchart structure.");
         }
       } catch (err) {
         toast({ title: "AI Generation Failed", description: err instanceof Error ? err.message : "An unknown error occurred.", variant: "destructive" });

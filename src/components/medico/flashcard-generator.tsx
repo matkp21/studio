@@ -50,6 +50,14 @@ export function FlashcardGenerator({ initialTopic }: FlashcardGeneratorProps) {
 
   const { execute: runGenerateFlashcards, data: aiData, isLoading, error, reset } = useAiAgent(generateFlashcards, {
     onSuccess: async (data, input) => {
+      if (!data?.flashcards || !data.topicGenerated) {
+        toast({
+          title: "Generation Error",
+          description: "The AI agent returned an incomplete response. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
       const displayFlashcards = data.flashcards.map((fc, index) => ({
         ...fc,
         id: `${input.topic}-${index}-${Date.now()}`,
