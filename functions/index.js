@@ -8,18 +8,18 @@ const { PredictionServiceClient } = require('@google-cloud/aiplatform').v1;
 const { GoogleAuth } = require('google-auth-library');
 
 
-// Helper to ensure consistent response format for errors from external APIs
-const handleApiError = (error, apiName) => {
+// Helper to throw a consistent HttpsError from external API errors
+const throwHttpsErrorFromApi = (error, apiName) => {
   console.error(`Error calling ${apiName} API:`, error.response ? error.response.data : error.message);
+  let message = `An error occurred with the ${apiName} API.`;
   if (error.response) {
-    return {
-      error: `API Error from ${apiName}: ${error.response.status} - ${JSON.stringify(error.response.data).substring(0,100)}`
-    };
+    message = `API Error from ${apiName}: ${error.response.status} - ${JSON.stringify(error.response.data).substring(0, 100)}`;
   } else if (error.request) {
-    return { error: `No response from ${apiName} API.` };
+    message = `No response from ${apiName} API.`;
   } else {
-    return { error: `Error setting up ${apiName} API request: ${error.message}` };
+    message = `Error setting up ${apiName} API request: ${error.message}`;
   }
+  throw new functions.https.HttpsError('internal', message);
 };
 
 
@@ -37,7 +37,7 @@ exports.searchDrug = functions.https.onCall(async (data, context) => {
       return { message: 'No drug data found for the specified name on OpenFDA.' };
     }
   } catch (error) {
-    return handleApiError(error, 'OpenFDA');
+    throwHttpsErrorFromApi(error, 'OpenFDA');
   }
 });
 
@@ -62,7 +62,7 @@ exports.searchGene = functions.https.onCall(async (data, context) => {
       return { message: 'No gene data found for the specified name on MedlinePlus Connect or unexpected JSON structure.' };
     }
   } catch (error) {
-    return handleApiError(error, 'MedlinePlus Connect');
+    throwHttpsErrorFromApi(error, 'MedlinePlus Connect');
   }
 });
 
@@ -97,7 +97,7 @@ exports.searchICD10 = functions.https.onCall(async (data, context) => {
       return { message: `No ICD-10 codes found for "${diseaseName}" on HIPAASpace or unexpected response.` };
     }
   } catch (error) {
-    return handleApiError(error, 'HIPAASpace ICD-10');
+    throwHttpsErrorFromApi(error, 'HIPAASpace ICD-10');
   }
 });
 
@@ -242,19 +242,25 @@ exports.searchYouTubeVideos = functions.https.onCall(async (data, context) => {
       },
     });
     
+    // Defensive check for unexpected successful response structure
+    if (!response.data || !Array.isArray(response.data.items)) {
+        console.warn('YouTube API returned a successful response but the items array is missing or not an array.', response.data);
+        return { videos: [] }; // Return an empty array to prevent crashes.
+    }
+    
     // Filter for items that are definitely videos and have necessary data
     const videos = response.data.items
-      .filter(item => item.id && item.id.videoId && item.snippet)
+      .filter(item => item && item.id && item.id.videoId && item.snippet)
       .map(item => ({
         id: item.id.videoId,
         title: item.snippet.title,
-        thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default.url,
+        thumbnail: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
         channel: item.snippet.channelTitle,
     }));
     
     return { videos };
 
   } catch (error) {
-    return handleApiError(error, 'YouTube Data API');
+    throwHttpsErrorFromApi(error, 'YouTube Data API');
   }
 });
