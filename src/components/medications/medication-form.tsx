@@ -1,4 +1,3 @@
-
 // src/components/medications/medication-form.tsx
 "use client";
 
@@ -34,7 +33,6 @@ const medicationFormSchema = z.object({
   instructions: z.string().max(500).optional(),
   personalNotes: z.string().max(1000).optional(),
   photoUrl: z.string().url({ message: "Please enter a valid URL for the photo." }).optional().or(z.literal('')),
-  // barcode: z.string().optional(), // Barcode field removed for now
 
   // Schedule fields
   scheduleType: z.enum(medicationFrequencyTypes).optional(),
@@ -76,7 +74,6 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       instructions: existingMedication?.instructions || "",
       personalNotes: existingMedication?.personalNotes || "",
       photoUrl: existingMedication?.photoUrl || "",
-      // barcode: existingMedication?.barcode || "", // Barcode field removed
 
       scheduleType: existingMedication?.schedule?.type || undefined,
       scheduleTimes: existingMedication?.schedule?.times || [],
@@ -121,8 +118,7 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       quantityPerPrescription: data.quantityPerPrescription,
       instructions: data.instructions,
       personalNotes: data.personalNotes,
-      photoUrl: imagePreview || data.photoUrl,
-      // barcode: data.barcode, // Barcode field removed
+      photoUrl: imagePreview || undefined,
 
       schedule: data.scheduleType ? {
         type: data.scheduleType,
@@ -142,7 +138,7 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
       title: existingMedication ? "Medication Updated!" : "Medication Added!",
       description: `${data.name} has been ${existingMedication ? 'updated' : 'added to your list'}.`,
     });
-    form.reset({ prescriptionDate: new Date(), form: undefined, route: undefined, scheduleType: undefined, scheduleTimes: [], scheduleDaysOfWeek: [], personalNotes: "", photoUrl: "" /* barcode: "" */ }); // Barcode reset removed
+    form.reset({ prescriptionDate: new Date(), form: undefined, route: undefined, scheduleType: undefined, scheduleTimes: [], scheduleDaysOfWeek: [], personalNotes: "", photoUrl: "" }); 
     setImagePreview(null);
     setIsSubmitting(false);
   };
@@ -156,8 +152,6 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
             {existingMedication ? "Edit Medication" : "Add New Medication"}
           </CardTitle>
         </CardHeader>
-
-        {/* Barcode scanning UI removed */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Medication Name</FormLabel><FormControl><Input placeholder="e.g., Amoxicillin" {...field} className="rounded-lg" /></FormControl><FormMessage /></FormItem>)} />
@@ -338,4 +332,3 @@ export function MedicationForm({ onAddMedication, existingMedication }: Medicati
     </Form>
   );
 }
-

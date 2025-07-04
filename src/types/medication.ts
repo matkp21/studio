@@ -55,7 +55,6 @@ export interface Medication {
   instructions?: string; // Optional, e.g., "Take with food"
   personalNotes?: string; // User's personal notes about the medication
   photoUrl?: string; // URL to an image of the medication (can be data URI for local)
-  barcode?: string; // For barcode scanning feature
 
   schedule?: MedicationSchedule;
   log?: MedicationLogEntry[]; // Array to store adherence log

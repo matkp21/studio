@@ -18,11 +18,9 @@ import { motion, Reorder } from 'framer-motion';
 import { DifferentialDiagnosisAssistant } from './differential-diagnosis-assistant';
 import { DischargeSummaryGenerator } from './discharge-summary-generator';
 import { TreatmentProtocolNavigator } from './treatment-protocol-navigator';
-import { RoundsTool } from './rounds-tool';
 import { PharmacopeiaChecker } from './pharmacopeia-checker';
 import { SmartDictation } from './smart-dictation';
 import { ClinicalCalculatorSuite } from './clinical-calculator-suite';
-import { ReferralStreamliner } from './referral-streamliner';
 import { PatientCommunicationDrafter } from './patient-communication-drafter';
 import { OnCallHandoverAssistant } from './on-call-handover-assistant';
 import { ResearchSummarizer } from './research-summarizer';
@@ -34,8 +32,6 @@ type ActiveToolId =
   | 'pharmacopeia'
   | 'dictation'
   | 'calculators'
-  | 'referral'
-  | 'rounds'
   | 'patientComm'
   | 'onCallHandover'
   | 'research'
@@ -49,26 +45,23 @@ interface ProTool {
   description: string;
   icon: React.ElementType;
   component: React.ElementType;
-  comingSoon?: boolean;
 }
 
 const allProToolsList: ProTool[] = [
-  { id: 'smartTriage', title: 'Smart Triage & Referral', description: 'AI coordinator analyzes symptoms and drafts a referral if needed.', icon: ArrowRightLeft, component: TriageAndReferral, comingSoon: false },
-  { id: 'diffDx', title: 'Differential Diagnosis Assistant', description: 'AI-powered suggestions, investigations, and initial management steps.', icon: Brain, component: DifferentialDiagnosisAssistant, comingSoon: false },
-  { id: 'discharge', title: 'Discharge Summary Generator', description: 'Ultra-streamlined, predictive discharge summary creation.', icon: FilePlus, component: DischargeSummaryGenerator, comingSoon: false },
-  { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator, comingSoon: false },
-  { id: 'rounds', title: 'Patient Rounds Tool', description: 'Shared task lists, real-time updates, and handover summaries.', icon: Users, component: RoundsTool, comingSoon: false },
-  { id: 'pharmacopeia', title: 'Pharmacopeia & Interaction Checker', description: 'Comprehensive drug database and interaction analysis.', icon: Pill, component: PharmacopeiaChecker, comingSoon: false },
-  { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation, comingSoon: false },
-  { id: 'calculators', title: 'Intelligent Clinical Calculators', description: 'Suite of scores and criteria (GRACE, Wells\', etc.).', icon: BarChart3, component: ClinicalCalculatorSuite, comingSoon: false },
-  { id: 'referral', title: 'Referral & Consultation Streamliner', description: 'Templates and quick summary generation for referrals.', icon: PhoneForwarded, component: ReferralStreamliner, comingSoon: false },
-  { id: 'patientComm', title: 'Patient Communication Drafter', description: 'AI drafts for patient-friendly explanations and instructions.', icon: MessageSquareHeart, component: PatientCommunicationDrafter, comingSoon: false },
-  { id: 'onCallHandover', title: 'On-Call Handover Assistant', description: 'Structured handovers with "if-then" scenarios and escalation.', icon: Users, component: OnCallHandoverAssistant, comingSoon: false },
-  { id: 'research', title: 'Research & Literature Summarizer', description: 'AI summaries of key papers for clinical questions.', icon: Library, component: ResearchSummarizer, comingSoon: false },
+  { id: 'smartTriage', title: 'Smart Triage & Referral', description: 'AI coordinator analyzes symptoms and drafts a referral if needed.', icon: ArrowRightLeft, component: TriageAndReferral },
+  { id: 'diffDx', title: 'Differential Diagnosis Assistant', description: 'AI-powered suggestions, investigations, and initial management steps.', icon: Brain, component: DifferentialDiagnosisAssistant },
+  { id: 'discharge', title: 'Discharge Summary Generator', description: 'Ultra-streamlined, predictive discharge summary creation.', icon: FilePlus, component: DischargeSummaryGenerator },
+  { id: 'protocols', title: 'Treatment Protocol Navigator', description: 'Access latest evidence-based treatment guidelines.', icon: ClipboardCheck, component: TreatmentProtocolNavigator },
+  { id: 'pharmacopeia', title: 'Pharmacopeia & Interaction Checker', description: 'Comprehensive drug database and interaction analysis.', icon: Pill, component: PharmacopeiaChecker },
+  { id: 'dictation', title: 'Smart Dictation & Note Assistant', description: 'Advanced voice-to-text with medical terminology and structuring.', icon: Mic, component: SmartDictation },
+  { id: 'calculators', title: 'Intelligent Clinical Calculators', description: 'Suite of scores and criteria (GRACE, Wells\', etc.).', icon: BarChart3, component: ClinicalCalculatorSuite },
+  { id: 'patientComm', title: 'Patient Communication Drafter', description: 'AI drafts for patient-friendly explanations and instructions.', icon: MessageSquareHeart, component: PatientCommunicationDrafter },
+  { id: 'onCallHandover', title: 'On-Call Handover Assistant', description: 'Structured handovers with "if-then" scenarios and escalation.', icon: Users, component: OnCallHandoverAssistant },
+  { id: 'research', title: 'Research & Literature Summarizer', description: 'AI summaries of key papers for clinical questions.', icon: Library, component: ResearchSummarizer },
 ];
 
 // Simulate frequently used tools - in a real app, this would be dynamic
-const frequentlyUsedToolIds: ActiveToolId[] = ['smartTriage', 'discharge', 'rounds', 'pharmacopeia'];
+const frequentlyUsedToolIds: ActiveToolId[] = ['smartTriage', 'discharge', 'pharmacopeia', 'protocols'];
 
 interface ToolCardProps {
   tool: ProTool;
@@ -86,14 +79,13 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
         className={cn(
           "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
           !isEditMode && "hover:shadow-lg cursor-pointer tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
-          tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
           isEditMode && "cursor-grab border-dashed border-muted-foreground/50"
         )}
-        onClick={() => !isEditMode && !tool.comingSoon && onLaunch(tool.id)}
+        onClick={() => !isEditMode && onLaunch(tool.id)}
         role="button"
-        tabIndex={tool.comingSoon || isEditMode ? -1 : 0}
-        onKeyDown={(e) => { if (!isEditMode && (e.key === 'Enter' || e.key === ' ') && !tool.comingSoon) onLaunch(tool.id); }}
-        aria-disabled={!!(tool.comingSoon || isEditMode)}
+        tabIndex={isEditMode ? -1 : 0}
+        onKeyDown={(e) => { if (!isEditMode && (e.key === 'Enter' || e.key === ' ') ) onLaunch(tool.id); }}
+        aria-disabled={!!(isEditMode)}
         aria-label={`Launch ${tool.title}`}
       >
         {isEditMode && (
@@ -122,21 +114,15 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, i
           <CardDescription className="text-xs leading-relaxed line-clamp-2 min-h-[2.5em]">{tool.description}</CardDescription>
         </CardHeader>
         <CardContent className="pt-2 px-4 pb-3 flex-grow flex items-end">
-          {tool.comingSoon ? (
-            <div className="text-center text-xs text-amber-700 dark:text-amber-500 font-semibold p-1.5 bg-amber-500/10 rounded-md w-full">
-              Coming Soon!
-            </div>
-          ) : (
-             <div className="w-full text-right">
-                <Button variant="link" size="sm" disabled={isEditMode} className={cn(
-                    "text-primary group-hover:underline p-0 h-auto text-xs",
-                     !isEditMode && "group-hover:text-foreground group-hover:hover:text-primary",
-                     isEditMode && "text-muted-foreground cursor-default"
-                    )}>
-                   Open Tool <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
-                </Button>
-             </div>
-          )}
+           <div className="w-full text-right">
+              <Button variant="link" size="sm" disabled={isEditMode} className={cn(
+                  "text-primary group-hover:underline p-0 h-auto text-xs",
+                   !isEditMode && "group-hover:text-foreground group-hover:hover:text-primary",
+                   isEditMode && "text-muted-foreground cursor-default"
+                  )}>
+                 Open Tool <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
+              </Button>
+           </div>
         </CardContent>
       </motion.div>
     </DialogTrigger>
@@ -191,7 +177,7 @@ export function ProModeDashboard() {
                     isFrequentlyUsed={frequentlyUsedToolIds.includes(tool.id)}
                     isEditMode={isEditMode}
                   />
-                  {!tool.comingSoon && tool.component && activeDialog === tool.id && (
+                  {tool.component && activeDialog === tool.id && (
                     <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
                       <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
                         <DialogTitle className="text-2xl flex items-center gap-2">
@@ -222,7 +208,7 @@ export function ProModeDashboard() {
                 {frequentlyUsedTools.map((tool) => (
                   <Dialog key={`${tool.id}-freq`} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
                     <ToolCard tool={tool} onLaunch={setActiveDialog} isFrequentlyUsed isEditMode={isEditMode} />
-                    {!tool.comingSoon && tool.component && activeDialog === tool.id && (
+                    {tool.component && activeDialog === tool.id && (
                         <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
                             <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
                             <DialogTitle className="text-2xl flex items-center gap-2">
@@ -249,7 +235,7 @@ export function ProModeDashboard() {
               {otherTools.map((tool) => (
                 <Dialog key={tool.id} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
                     <ToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
-                    {!tool.comingSoon && tool.component && activeDialog === tool.id && (
+                    {tool.component && activeDialog === tool.id && (
                          <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
                             <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
                             <DialogTitle className="text-2xl flex items-center gap-2">

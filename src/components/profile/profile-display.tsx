@@ -9,6 +9,7 @@ import { Edit3, Save, UserCircle, Mail, BriefcaseMedical, School, Stethoscope, X
 import { ProfileForm, type ProfileFormValues } from './profile-form';
 import type { UserRole } from '@/contexts/pro-mode-context';
 import { cn } from '@/lib/utils';
+import { useProMode } from '@/contexts/pro-mode-context';
 
 interface UserProfile {
   name: string;
@@ -19,12 +20,12 @@ interface UserProfile {
 
 interface ProfileDisplayProps {
   initialUser: UserProfile;
-  userRole: UserRole | null;
 }
 
-export function ProfileDisplay({ initialUser, userRole }: ProfileDisplayProps) {
+export function ProfileDisplay({ initialUser }: ProfileDisplayProps) {
   const [user, setUser] = useState<UserProfile>(initialUser);
   const [isEditing, setIsEditing] = useState(false);
+  const { userRole } = useProMode();
 
   const handleSaveProfile = (data: ProfileFormValues) => {
     setUser(prevUser => ({ ...prevUser, name: data.name, bio: data.bio || '' }));
