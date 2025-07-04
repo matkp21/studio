@@ -90,7 +90,7 @@ const allMedicoToolsList: MedicoTool[] = [
   { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
 ];
 
-const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['notes', 'mcq', 'papers', 'exams', 'challenges'];
+const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['exams', 'challenges', 'notes', 'mcq', 'papers'];
 
 interface MedicoToolCardProps {
   tool: MedicoTool;

@@ -110,9 +110,8 @@ export default function VideoLibraryPage() {
                                         <Image 
                                             src={video.thumbnail} 
                                             alt={video.title}
-                                            layout="fill"
-                                            objectFit="cover"
-                                            className="group-hover:scale-105 transition-transform"
+                                            fill
+                                            className="object-cover group-hover:scale-105 transition-transform"
                                             data-ai-hint="youtube thumbnail"
                                         />
                                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
