@@ -1,174 +1,142 @@
-
 // src/components/medico/flowchart-creator.tsx
 "use client";
 
-import { useForm, type SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useState, useRef, useCallback } from 'react';
+import ReactFlow, { Background, Controls, MiniMap, ReactFlowProvider } from 'reactflow';
+import 'reactflow/dist/style.css';
+import '@reactflow/node-resizer/dist/style.css';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Workflow, Wand2, Lightbulb } from 'lucide-react';
-import { createFlowchart } from '@/ai/agents/medico/FlowchartCreatorAgent';
+import { medicalFlowchartTemplates, type FlowchartTemplate } from '@/config/flowchart-templates';
+import { useFlowEditor } from '@/hooks/use-flow-editor';
+import { nodeTypes } from './flowchart-custom-nodes';
+import { FileDown, Undo, Redo, PlusCircle, Trash2, BookCopy, Share2, Save } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { useToast } from '@/hooks/use-toast';
-import { useAiAgent } from '@/hooks/use-ai-agent';
-import { useProMode } from '@/contexts/pro-mode-context';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { firestore } from '@/lib/firebase';
-import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
-const formSchema = z.object({
-  topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).max(150, { message: "Topic too long."}),
-});
+// Toolbar component
+const Toolbar = ({ onAddNode, onUndo, onRedo, canUndo, canRedo, onExport, onClear, onSave }) => {
+  return (
+    <Card className="p-2 flex flex-wrap gap-2 shadow-md mb-4">
+      <Button variant="outline" size="sm" onClick={() => onAddNode('symptom', 'Symptom')}><PlusCircle className="mr-1 h-4 w-4"/>Symptom</Button>
+      <Button variant="outline" size="sm" onClick={() => onAddNode('test', 'Test')}><PlusCircle className="mr-1 h-4 w-4"/>Test</Button>
+      <Button variant="outline" size="sm" onClick={() => onAddNode('decision', 'Decision')}><PlusCircle className="mr-1 h-4 w-4"/>Decision</Button>
+      <Button variant="outline" size="sm" onClick={() => onAddNode('treatment', 'Treatment')}><PlusCircle className="mr-1 h-4 w-4"/>Treatment</Button>
+      <div className="flex-grow" />
+      <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo} title="Undo"><Undo className="h-4 w-4"/></Button>
+      <Button variant="ghost" size="icon" onClick={onRedo} disabled={!canRedo} title="Redo"><Redo className="h-4 w-4"/></Button>
+      <Button variant="ghost" size="icon" onClick={() => onExport('png')} title="Export as PNG"><FileDown className="h-4 w-4"/></Button>
+      <Button variant="ghost" size="icon" onClick={onSave} title="Save (Conceptual)"><Save className="h-4 w-4" /></Button>
+      <Button variant="destructive" size="icon" onClick={onClear} title="Clear Canvas"><Trash2 className="h-4 w-4"/></Button>
+    </Card>
+  );
+};
 
-type FlowchartFormValues = z.infer<typeof formSchema>;
+// Template Selector component
+const TemplateSelector = ({ onLoadTemplate }) => {
+  return (
+    <Card className="h-full shadow-md">
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2"><BookCopy className="h-5 w-5 text-primary"/>Templates</CardTitle>
+        <CardDescription className="text-xs">Load a pre-built medical flowchart.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className="h-[60vh] pr-2">
+          <div className="space-y-2">
+            {medicalFlowchartTemplates.map(template => (
+              <div key={template.id} className="p-2 border rounded-md hover:bg-muted/50 hover:border-primary/50 transition-colors">
+                <h4 className="font-semibold text-sm">{template.name}</h4>
+                <p className="text-xs text-muted-foreground">{template.description}</p>
+                <Button size="xs" className="mt-2" onClick={() => onLoadTemplate(template)}>Load</Button>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Main editor component
+const FlowchartEditor = () => {
+    const { toast } = useToast();
+    const flowRef = useRef<HTMLDivElement>(null);
+    const { nodes, setNodes, onNodesChange, edges, setEdges, onConnect, addNode, loadTemplate, undo, redo, canUndo, canRedo } = useFlowEditor();
+
+    const handleExport = useCallback((format) => {
+        const flowchartElement = flowRef.current;
+        if (flowchartElement) {
+            html2canvas(flowchartElement, {
+                useCORS: true,
+                backgroundColor: null, // Use transparent background
+            }).then((canvas) => {
+                if (format === 'png') {
+                    const link = document.createElement('a');
+                    link.download = 'flowchart.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    toast({ title: "Export Successful", description: "Flowchart saved as PNG."});
+                } else if (format === 'pdf') {
+                    const pdf = new jsPDF({
+                        orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+                        unit: 'px',
+                        format: [canvas.width, canvas.height]
+                    });
+                    const imgData = canvas.toDataURL('image/png');
+                    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                    pdf.save("flowchart.pdf");
+                    toast({ title: "Export Successful", description: "Flowchart saved as PDF."});
+                }
+            }).catch(err => {
+                 toast({title: "Export Failed", description: err.message, variant: "destructive"});
+            });
+        }
+    }, [flowRef, toast]);
+    
+    const handleClear = () => {
+        loadTemplate({id: 'clear', name: '', category: '', description: '', nodes: [], edges: []});
+        toast({ title: "Canvas Cleared" });
+    }
+
+    const handleSave = () => {
+        // Conceptual save function
+        toast({ title: "Save (Conceptual)", description: "In a full app, this would save the flowchart to your library."});
+    }
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-[75vh]">
+            <div className="lg:col-span-1">
+                <TemplateSelector onLoadTemplate={loadTemplate} />
+            </div>
+            <div className="lg:col-span-3 flex flex-col h-full">
+                <Toolbar onAddNode={addNode} onUndo={undo} onRedo={redo} canUndo={canUndo} canRedo={canRedo} onExport={handleExport} onClear={handleClear} onSave={handleSave} />
+                <div ref={flowRef} className="flex-grow rounded-lg border bg-background shadow-inner">
+                    <ReactFlow
+                        nodes={nodes}
+                        edges={edges}
+                        onNodesChange={onNodesChange}
+                        onEdgesChange={onEdgesChange}
+                        onConnect={onConnect}
+                        nodeTypes={nodeTypes}
+                        fitView
+                        className="medico-layout-background" // Use consistent background
+                    >
+                        <Controls />
+                        <MiniMap nodeStrokeWidth={3} zoomable pannable />
+                        <Background variant="dots" gap={12} size={1} />
+                    </ReactFlow>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export function FlowchartCreator() {
-  const { toast } = useToast();
-  const { user } = useProMode();
-
-  const { execute: runCreateFlowchart, data: generatedFlowchart, isLoading, error, reset } = useAiAgent(createFlowchart, {
-    onSuccess: async (data, input) => {
-      toast({
-        title: "Flowchart Generated!",
-        description: `Mermaid syntax for "${data.topicGenerated}" is ready.`,
-      });
-
-      if (user) {
-        try {
-          await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
-            type: 'flowchart',
-            topic: data.topicGenerated,
-            userId: user.uid,
-            flowchartData: data.flowchartData,
-            createdAt: serverTimestamp(),
-          });
-          toast({
-            title: "Saved to Library",
-            description: "Your generated flowchart has been saved.",
-          });
-        } catch (firestoreError) {
-          console.error("Firestore save error:", firestoreError);
-          toast({
-            title: "Save Failed",
-            description: "Could not save flowchart to your library.",
-            variant: "destructive",
-          });
-        }
-      }
-
-      // Track Progress
-      try {
-        const progressResult = await trackProgress({
-            activityType: 'notes_review',
-            topic: `Flowchart: ${input.topic}`
-        });
-        toast({
-            title: "Progress Tracked!",
-            description: progressResult.progressUpdateMessage
-        });
-      } catch (progressError) {
-          console.warn("Could not track progress for flowchart generation:", progressError);
-      }
-    }
-  });
-
-  const form = useForm<FlowchartFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { topic: "" },
-  });
-
-  const onSubmit: SubmitHandler<FlowchartFormValues> = async (data) => {
-    await runCreateFlowchart(data);
-  };
-  
-  const handleReset = () => {
-    form.reset();
-    reset();
-  }
-
   return (
-    <div className="space-y-6">
-      <Alert variant="default" className="border-purple-500/50 bg-purple-500/10">
-            <Lightbulb className="h-5 w-5 text-purple-600" />
-            <AlertTitle className="font-semibold text-purple-700 dark:text-purple-500">Mermaid Syntax Output</AlertTitle>
-            <AlertDescription className="text-purple-600/90 dark:text-purple-500/90 text-xs">
-            This tool generates flowcharts in Mermaid Markdown syntax. You can copy this code and use it in any Mermaid-compatible viewer or editor to render the visual flowchart.
-            </AlertDescription>
-      </Alert>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-1">
-          <FormField
-            control={form.control}
-            name="topic"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="topic-flowchart" className="text-base">Topic for Flowchart</FormLabel>
-                <FormControl>
-                  <Input
-                    id="topic-flowchart"
-                    placeholder="e.g., Management of Acute Asthma, Glycolysis Pathway"
-                    className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex gap-2">
-            <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-                  Generate Flowchart
-                </>
-              )}
-            </Button>
-            {generatedFlowchart && (
-              <Button type="button" variant="outline" onClick={handleReset} className="rounded-lg">
-                Clear
-              </Button>
-            )}
-          </div>
-        </form>
-      </Form>
-
-      {error && (
-        <Alert variant="destructive" className="rounded-lg">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {generatedFlowchart && !isLoading && (
-        <Card className="shadow-md rounded-xl mt-6 border-teal-500/30 bg-gradient-to-br from-card via-card to-teal-500/5">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <Workflow className="h-6 w-6 text-teal-600" />
-              Flowchart for: {generatedFlowchart.topicGenerated}
-            </CardTitle>
-            <CardDescription>Copy the Mermaid code below to render your flowchart.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-auto max-h-[400px] p-1 border bg-background rounded-lg">
-                <pre className="p-4 whitespace-pre-wrap text-sm">
-                  <code>
-                    {generatedFlowchart.flowchartData}
-                  </code>
-                </pre>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+    <ReactFlowProvider>
+      <FlowchartEditor />
+    </ReactFlowProvider>
   );
 }
