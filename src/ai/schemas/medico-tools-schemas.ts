@@ -77,6 +77,7 @@ export const MedicoExamPaperOutputSchema = z.object({
   mcqs: z.array(MCQSchema).optional().describe('An array of generated MCQs for the exam.'),
   essays: z.array(EssayQuestionSchema).optional().describe('An array of generated essay questions.'),
   topicGenerated: z.string().describe('The exam type for which this paper was generated.'),
+  nextSteps: z.array(NextStepSuggestionSchema).optional().describe("A list of recommended next steps or tools to use."),
 });
 export type MedicoExamPaperOutput = z.infer<typeof MedicoExamPaperOutputSchema>;
 
@@ -259,6 +260,7 @@ export const MedicoFlowchartCreatorOutputSchema = z.object({
   nodes: z.array(ReactFlowNodeSchema).describe("An array of nodes for React Flow."),
   edges: z.array(ReactFlowEdgeSchema).describe("An array of edges for React Flow."),
   topicGenerated: z.string().describe('The topic for which the flowchart was generated.'),
+  nextSteps: z.array(NextStepSuggestionSchema).optional().describe("A list of recommended next steps or tools to use."),
 });
 export type MedicoFlowchartCreatorOutput = z.infer<typeof MedicoFlowchartCreatorOutputSchema>;
 
@@ -296,6 +298,7 @@ export type MedicoNoteSummarizerInput = z.infer<typeof MedicoNoteSummarizerInput
 export const MedicoNoteSummarizerOutputSchema = z.object({
   summary: z.string().describe('The AI-generated summary in the specified format.'),
   format: z.enum(['bullet', 'flowchart', 'table']).describe('The format of the returned summary.'),
+  nextSteps: z.array(NextStepSuggestionSchema).optional().describe("A list of recommended next steps or tools to use."),
 });
 export type MedicoNoteSummarizerOutput = z.infer<typeof MedicoNoteSummarizerOutputSchema>;
 

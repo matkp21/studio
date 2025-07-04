@@ -27,11 +27,12 @@ const flowchartCreatorPrompt = ai.definePrompt({
 Given the topic: {{{topic}}}
 
 Generate a structured JSON object representing the flowchart. This JSON should contain 'nodes' and 'edges' arrays compatible with the React Flow library.
-Use the custom node types: 'symptom', 'test', 'decision', 'treatment'.
+- Use the custom node types: 'symptom', 'test', 'decision', 'treatment'.
 - Each node must have a unique 'id', a 'type', a 'position' {x, y}, and 'data' {label}.
 - Each edge must have a unique 'id', a 'source' node id, and a 'target' node id.
 - Arrange the node positions logically in a top-down manner. Start with x=250, y=25 for the first node and increment y by ~125 for subsequent nodes. Use different x positions for branches.
 - The 'topicGenerated' field should reflect the input topic.
+- The 'nextSteps' field should contain suggestions like: { "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge on this flowchart" }.
 
 Example of the required JSON output format for the topic "Basic Life Support":
 {
@@ -48,6 +49,9 @@ Example of the required JSON output format for the topic "Basic Life Support":
     { "id": "e2-3", "source": "2", "target": "3", "animated": true },
     { "id": "e3-4", "source": "3", "target": "4", "label": "No" },
     { "id": "e3-5", "source": "3", "target": "5", "label": "Yes" }
+  ],
+  "nextSteps": [
+    { "tool": "mcq", "topic": "Basic Life Support", "reason": "Test your BLS knowledge" }
   ]
 }
 
@@ -67,11 +71,16 @@ const flowchartCreatorFlow = ai.defineFlow(
   async (input) => {
     const { output } = await flowchartCreatorPrompt(input);
 
-    if (!output || !output.nodes || !output.edges) {
+    if (!output || !output.nodes || output.nodes.length === 0 || !output.edges) {
       console.error('MedicoFlowchartCreatorPrompt did not return valid flowchart data for topic:', input.topic);
-      throw new Error('Failed to generate flowchart. The AI model did not return the expected output.');
+      throw new Error('Failed to generate flowchart. The AI model did not return a valid flowchart structure. Please try a different topic.');
     }
-    // Firestore saving logic could go here
+    // Sanitize to prevent saving undefined node types, which causes rendering issues.
+    output.nodes = output.nodes.map(node => ({
+      ...node,
+      type: node.type || 'symptom' // Default to a valid type if missing
+    }));
+
     return output;
   }
 );

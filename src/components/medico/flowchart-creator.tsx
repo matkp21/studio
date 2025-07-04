@@ -5,21 +5,22 @@ import { useState, useRef, useCallback } from 'react';
 import ReactFlow, { Background, Controls, MiniMap, ReactFlowProvider } from 'reactflow';
 import 'reactflow/dist/style.css';
 import '@reactflow/node-resizer/dist/style.css';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { medicalFlowchartTemplates, type FlowchartTemplate } from '@/config/flowchart-templates';
 import { useFlowEditor } from '@/hooks/use-flow-editor';
 import { nodeTypes } from './flowchart-custom-nodes';
-import { FileDown, Undo, Redo, PlusCircle, Trash2, BookCopy, Share2, Save, Wand2, Loader2 } from 'lucide-react';
+import { FileDown, Undo, Redo, PlusCircle, Trash2, BookCopy, Share2, Save, Wand2, Loader2, ArrowRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '../ui/input';
-import { createFlowchart } from '@/ai/agents/medico/FlowchartCreatorAgent';
+import { createFlowchart, type MedicoFlowchartCreatorOutput } from '@/ai/agents/medico/FlowchartCreatorAgent';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
+import Link from 'next/link';
 
 // Toolbar component
 const Toolbar = ({ onAddNode, onUndo, onRedo, canUndo, canRedo, onExport, onClear, onSave }) => {
@@ -72,6 +73,7 @@ const FlowchartEditor = () => {
     
     const [aiTopic, setAiTopic] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
+    const [aiResult, setAiResult] = useState<MedicoFlowchartCreatorOutput | null>(null);
     const { user } = useProMode();
 
     const handleAiGenerate = async () => {
@@ -80,10 +82,12 @@ const FlowchartEditor = () => {
         return;
       }
       setIsAiLoading(true);
+      setAiResult(null);
       try {
         const result = await createFlowchart({ topic: aiTopic });
         if (result && result.nodes && result.edges) {
           loadTemplate({ id: 'ai-generated', name: aiTopic, category: 'AI', description: '', nodes: result.nodes, edges: result.edges });
+          setAiResult(result);
           toast({ title: "Flowchart Generated!", description: "AI has created a flowchart. You can now edit it." });
         } else {
             throw new Error("AI did not return a valid flowchart structure.");
@@ -128,6 +132,7 @@ const FlowchartEditor = () => {
     
     const handleClear = () => {
         loadTemplate({id: 'clear', name: '', category: '', description: '', nodes: [], edges: []});
+        setAiResult(null);
         toast({ title: "Canvas Cleared" });
     }
 
@@ -143,7 +148,7 @@ const FlowchartEditor = () => {
         try {
           const dataToSave = {
             type: 'flowchart',
-            topic: aiTopic || 'Custom Flowchart',
+            topic: aiResult?.topicGenerated || aiTopic || 'Custom Flowchart',
             userId: user.uid,
             flowchartData: JSON.stringify(
               { nodes: nodes || [], edges: edges || [] },
@@ -179,6 +184,22 @@ const FlowchartEditor = () => {
                     </div>
                 </Card>
                 <Toolbar onAddNode={addNode} onUndo={undo} onRedo={redo} canUndo={canUndo} canRedo={canRedo} onExport={handleExport} onClear={handleClear} onSave={handleSave} />
+                {aiResult?.nextSteps && aiResult.nextSteps.length > 0 && (
+                  <Card className="p-2 mb-4">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-primary">Next Steps:</h4>
+                       <div className="flex flex-wrap gap-2">
+                        {aiResult.nextSteps.map((step, index) => (
+                          <Button key={index} variant="outline" size="sm" asChild>
+                            <Link href={`/medico?tool=${step.tool}&topic=${encodeURIComponent(step.topic)}`}>
+                              {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
+                            </Link>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                )}
                 <div ref={flowRef} className="flex-grow rounded-lg border bg-background shadow-inner">
                     <ReactFlow
                         nodes={nodes}

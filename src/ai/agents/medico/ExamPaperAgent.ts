@@ -36,12 +36,13 @@ Instructions:
     - The other three options should be plausible distractors with 'isCorrect' set to false.
     - Provide a brief explanation for the correct answer.
 3.  Generate 2-3 essay-style questions that are typical for this kind of exam. For each essay, provide a brief outline of the expected answer.
-4.  The overall paper should be representative of the specified medical examination.
+4.  Suggest a logical next step, like generating study notes for the topics covered.
 
 Format the output as JSON conforming to the MedicoExamPaperOutputSchema.
-The root output must be an object containing 'mcqs', 'essays', and 'topicGenerated' fields.
+The root output must be an object containing 'mcqs', 'essays', 'topicGenerated', and optional 'nextSteps' fields.
 Each object in the 'mcqs' array must conform to the MCQSchema, including the 'isCorrect' boolean for each option.
 Each object in the 'essays' array must have 'question' and 'answer_outline' strings.
+The 'nextSteps' field should contain suggestions like: { "tool": "theorycoach-generator", "topic": "{{{examType}}}", "reason": "Review weak areas from this exam" }.
 `,
   config: {
     temperature: 0.6, // More creative for varied questions
@@ -56,7 +57,7 @@ const examPaperFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await examPaperPrompt(input);
-    if (!output || (!output.mcqs && !output.essays)) {
+    if (!output || (!output.mcqs?.length && !output.essays?.length)) {
       console.error('MedicoExamPaperPrompt did not return valid content for exam:', input.examType);
       throw new Error('Failed to generate exam paper. The AI model did not return the expected output. Please try a different exam type or adjust the parameters.');
     }

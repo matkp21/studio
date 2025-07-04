@@ -1,4 +1,3 @@
-
 // src/components/medico/study-notes-generator.tsx
 "use client";
 
@@ -103,8 +102,8 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
             topic: form.getValues('topic'),
             userId: user.uid,
             notes: generatedAnswer.notes,
-            summaryPoints: generatedAnswer.summaryPoints || [], // FIX: Ensure summaryPoints is not undefined
-            diagram: generatedAnswer.diagram || null, // FIX: Ensure diagram is not undefined
+            summaryPoints: generatedAnswer.summaryPoints || [],
+            diagram: generatedAnswer.diagram || null,
             createdAt: serverTimestamp(),
         });
         toast({ title: "Saved to Library", description: "Your generated notes have been saved." });
@@ -189,38 +188,38 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
             <CardDescription>AI-generated structured notes for your exam preparation.</CardDescription>
           </CardHeader>
           <CardContent>
-            {generatedAnswer.summaryPoints && generatedAnswer.summaryPoints.length > 0 && (
-                <div className="mb-6">
-                    <h3 className="font-semibold text-lg text-primary mb-2">Key Summary Points</h3>
-                    <ul className="space-y-1.5 list-disc list-inside bg-primary/10 p-4 rounded-lg text-primary-foreground">
-                        {generatedAnswer.summaryPoints.map((point, index) => (
-                            <li key={index} className="text-sm text-foreground">{point}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="lg:col-span-1">
-                    <h4 className="font-semibold mb-2">Notes Breakdown:</h4>
-                    <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
-                        <div className="p-4">
-                            <MarkdownRenderer content={generatedAnswer.notes} />
-                        </div>
-                    </ScrollArea>
-                </div>
-                 <div className="lg:col-span-1">
-                    <h4 className="font-semibold mb-2">Diagram / Flowchart:</h4>
-                     <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
-                        <div className="p-4 text-sm">
-                           {generatedAnswer.diagram ? (
-                                <>
-                                <Alert className="mb-2"><AlertDescription>Copy this code into a Mermaid.js renderer to view the diagram.</AlertDescription></Alert>
-                                <pre className="p-2 bg-muted rounded-md overflow-x-auto"><code>{generatedAnswer.diagram}</code></pre>
-                                </>
-                           ) : <p className="text-muted-foreground">No diagram was generated for this topic.</p>}
-                        </div>
-                    </ScrollArea>
-                 </div>
+            <div className="space-y-6">
+              {generatedAnswer.summaryPoints && generatedAnswer.summaryPoints.length > 0 && (
+                  <div>
+                      <h3 className="font-semibold text-lg text-primary mb-2">Key Summary Points</h3>
+                      <ul className="space-y-1.5 list-disc list-inside bg-primary/10 p-4 rounded-lg text-primary-foreground">
+                          {generatedAnswer.summaryPoints.map((point, index) => (
+                              <li key={index} className="text-sm text-foreground">{point}</li>
+                          ))}
+                      </ul>
+                  </div>
+              )}
+              <div>
+                  <h4 className="font-semibold mb-2 text-lg text-primary">Notes Breakdown:</h4>
+                  <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
+                      <div className="p-4">
+                          <MarkdownRenderer content={generatedAnswer.notes} />
+                      </div>
+                  </ScrollArea>
+              </div>
+              <div>
+                  <h4 className="font-semibold mb-2 text-lg text-primary">Diagram / Flowchart:</h4>
+                    <ScrollArea className="h-auto max-h-[400px] p-1 border bg-background rounded-lg">
+                      <div className="p-4 text-sm">
+                          {generatedAnswer.diagram ? (
+                              <>
+                              <Alert className="mb-2"><AlertDescription>Copy this code into a Mermaid.js renderer to view the diagram.</AlertDescription></Alert>
+                              <pre className="p-2 bg-muted rounded-md overflow-x-auto"><code>{generatedAnswer.diagram}</code></pre>
+                              </>
+                          ) : <p className="text-muted-foreground">No diagram was generated for this topic.</p>}
+                      </div>
+                  </ScrollArea>
+              </div>
             </div>
           </CardContent>
            <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
