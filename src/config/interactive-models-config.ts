@@ -1,20 +1,19 @@
 // src/config/interactive-models-config.ts
 import type { InteractiveModel } from '@/types/interactive-models';
 
-// Using a specific anatomy model for some entries, and modelviewer.dev astronaut as a placeholder for others.
-const HUMAN_ANATOMY_MODEL_SRC = "/models/Astronaut.glb"; // Path corrected to use the placeholder model
-const PLACEHOLDER_MODEL_SRC = "/models/Astronaut.glb"; // Consistent placeholder path
+// Using a single constant for the placeholder model to ensure consistency.
+const MODEL_SRC = "/models/Astronaut.glb";
 const PLACEHOLDER_POSTER_SRC = "https://placehold.co/600x400.png"; // Generic placeholder
 
 export const interactiveModelsList: InteractiveModel[] = [
   {
-    id: 'human-skeleton', // Retained ID, but content changed
+    id: 'human-skeleton',
     title: 'Human Anatomy Explorer',
     description: 'Explore the skeletal and organ systems of the human body in 3D.',
     modelType: 'anatomy',
     iconName: "Stethoscope",
-    glbPath: HUMAN_ANATOMY_MODEL_SRC,
-    posterSrc: PLACEHOLDER_POSTER_SRC, // Generic poster for now
+    glbPath: MODEL_SRC,
+    posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'human anatomy',
     annotations: [
       { id: 'skull', name: 'Skull', title: 'Cranium (Skull)', description: 'Protects the brain and houses sensory organs. Composed of 22 bones.', cameraTarget: "0m 1.7m 0m", cameraOrbit: "0deg 75deg 0.8m" },
@@ -31,33 +30,33 @@ export const interactiveModelsList: InteractiveModel[] = [
     description: 'Explore the human heart within a full anatomical model.',
     iconName: 'Heart',
     modelType: 'anatomy',
-    glbPath: HUMAN_ANATOMY_MODEL_SRC, // Uses the placeholder anatomy model
+    glbPath: MODEL_SRC,
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'human heart anatomy',
     annotations: [
       {
         id: 'heart-front',
-        name: 'Anterior View', // Name for list
+        name: 'Anterior View',
         title: 'Anterior View of Heart',
         description: 'The heart is a muscular organ located slightly left of the midline, enclosed within the mediastinum. Visible are the right ventricle, parts of the left ventricle, and major vessels.',
-        cameraTarget: '0m 1.3m 0.15m', // Adjusted for full body model
-        cameraOrbit: '0deg 75deg 1.0m',   // Zoomed out slightly
+        cameraTarget: '0m 1.3m 0.15m',
+        cameraOrbit: '0deg 75deg 1.0m',
       },
       {
-        id: 'heart-superior', // Changed ID for uniqueness
+        id: 'heart-superior',
         name: 'Superior View',
         title: 'Superior View of Heart & Great Vessels',
         description: 'From above, the heart reveals the origins of the great vessels — aorta, pulmonary trunk, and venae cavae entering the atria.',
-        cameraTarget: '0m 1.35m 0.1m', // Adjusted for full body model
-        cameraOrbit: '-90deg 65deg 0.8m', // Closer zoom for superior view
+        cameraTarget: '0m 1.35m 0.1m',
+        cameraOrbit: '-90deg 65deg 0.8m',
       },
       {
-        id: 'heart-posterior', // Changed ID
+        id: 'heart-posterior',
         name: 'Posterior View',
         title: 'Posterior View of Heart',
         description: 'The posterior aspect mainly shows the left atrium receiving pulmonary veins, and parts of the ventricles.',
-        cameraTarget: '0m 1.3m -0.1m', // Adjusted for full body model
-        cameraOrbit: '180deg 70deg 1.0m',  // Zoomed out slightly
+        cameraTarget: '0m 1.3m -0.1m',
+        cameraOrbit: '180deg 70deg 1.0m',
       }
     ],
   },
@@ -67,7 +66,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     description: 'Step-by-step visual guide of an appendectomy procedure.',
     modelType: 'procedure',
     iconName: "Scissors",
-    glbPath: PLACEHOLDER_MODEL_SRC,
+    glbPath: MODEL_SRC,
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'appendectomy surgery',
     procedureSteps: [
@@ -83,7 +82,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     description: 'Compare a healthy liver with one affected by cirrhosis, noting key pathological changes.',
     modelType: 'pathology',
     iconName: "ShieldAlert",
-    glbPath: PLACEHOLDER_MODEL_SRC,
+    glbPath: MODEL_SRC,
     posterSrc: PLACEHOLDER_POSTER_SRC,
     dataAiHint: 'liver cirrhosis',
     annotations: [
@@ -96,7 +95,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     id: 'liver-resection',
     title: 'Liver Resection',
     description: 'Step-by-step 3D simulation of liver segmentectomy.',
-    glbPath: PLACEHOLDER_MODEL_SRC,
+    glbPath: MODEL_SRC,
     modelType: 'procedure',
     iconName: 'Scissors',
     posterSrc: PLACEHOLDER_POSTER_SRC,
@@ -112,7 +111,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     id: 'thyroidectomy',
     title: 'Thyroidectomy',
     description: 'Visual simulation of thyroid gland removal.',
-    glbPath: PLACEHOLDER_MODEL_SRC,
+    glbPath: MODEL_SRC,
     modelType: 'procedure',
     iconName: 'Scissors',
     posterSrc: PLACEHOLDER_POSTER_SRC,
@@ -128,7 +127,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     id: 'mastectomy',
     title: 'Mastectomy Simulation',
     description: '3D guide for simple or modified radical mastectomy.',
-    glbPath: PLACEHOLDER_MODEL_SRC,
+    glbPath: MODEL_SRC,
     modelType: 'procedure',
     iconName: 'Scissors',
     posterSrc: PLACEHOLDER_POSTER_SRC,
@@ -145,7 +144,7 @@ export const interactiveModelsList: InteractiveModel[] = [
     id: 'colectomy',
     title: 'Colectomy (Colon Resection)',
     description: 'Simulation of segmental colon removal and anastomosis.',
-    glbPath: PLACEHOLDER_MODEL_SRC,
+    glbPath: MODEL_SRC,
     modelType: 'procedure',
     iconName: 'Scissors',
     posterSrc: PLACEHOLDER_POSTER_SRC,
