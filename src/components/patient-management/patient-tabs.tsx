@@ -351,4 +351,3 @@ export function PatientTabs() {
     </Tabs>
   );
 }
-
