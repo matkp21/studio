@@ -3,11 +3,12 @@
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'; // Import useRouter
 import { useProMode } from '@/contexts/pro-mode-context';
 import { firestore } from '@/lib/firebase';
 import { collection, query, where, getDocs, orderBy, Timestamp, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
-import { Loader2, Library, BookOpen, FileQuestion, Users, UploadCloud, Bookmark, BookmarkCheck, BookmarkX, UserCircle, Lightbulb, Workflow, Layers } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Library, BookOpen, FileQuestion, Users, UploadCloud, Bookmark, BookmarkCheck, Lightbulb, Workflow, Layers, UserCircle } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -21,6 +22,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+
 
 // Define types for library items
 type LibraryItemType = 'notes' | 'mcqs' | 'summary' | 'mnemonic' | 'communityNote' | 'communityMnemonic' | 'flowchart' | 'flashcards' | 'examPaper';
@@ -67,6 +70,13 @@ interface LibraryCardProps {
 }
 
 const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: LibraryCardProps) => {
+    const router = useRouter();
+
+    const handleAction = (tool: 'mcq' | 'flashcards') => {
+        const url = `/medico?tool=${tool}&topic=${encodeURIComponent(item.topic)}`;
+        router.push(url);
+    };
+
     const getIcon = (type: LibraryItemType) => {
         switch (type) {
             case 'mcqs': case 'examPaper': return FileQuestion;
@@ -93,10 +103,19 @@ const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: Libra
                     Type: <span className="capitalize">{item.type.replace('community', '')}</span> | {item.createdAt ? format(item.createdAt.toDate(), 'dd MMM yyyy') : 'Date N/A'}
                 </CardDescription>
             </CardHeader>
-            <CardContent className="p-4 pt-2 flex-grow flex items-end">
-                <Button variant="outline" size="sm" className="w-full text-xs" onClick={() => onViewItem(item)}>
+            <CardContent className="p-4 pt-2 flex-grow flex items-end justify-between">
+                <Button variant="outline" size="sm" className="text-xs flex-1" onClick={() => onViewItem(item)}>
                     View Details
                 </Button>
+                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="ml-2 text-xs">Actions</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => handleAction('mcq')}>Generate MCQs from this</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleAction('flashcards')}>Create Flashcards</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </CardContent>
         </Card>
     );
@@ -367,12 +386,12 @@ export default function StudyLibraryPage() {
                     </div>
                     <div><Label htmlFor="upload-content">Content</Label><Textarea id="upload-content" value={uploadContent} onChange={(e) => setUploadContent(e.target.value)} placeholder={`Enter your content here...`} className="min-h-[150px]"/></div>
                 </div>
-                <CardContent className="p-0 pt-4">
+                <CardFooter className="p-0 pt-4">
                     <Button onClick={handleUploadSubmit} disabled={isUploading} className="w-full">
                         {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <UploadCloud className="mr-2 h-4 w-4"/>}
                         Submit for Review
                     </Button>
-                </CardContent>
+                </CardFooter>
             </DialogContent>
           </Dialog>
         </CardHeader>
@@ -381,7 +400,7 @@ export default function StudyLibraryPage() {
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="my-library"><BookOpen className="mr-2 h-4 w-4"/>My Library</TabsTrigger>
               <TabsTrigger value="community"><Users className="mr-2 h-4 w-4"/>Community</TabsTrigger>
-              <TabsTrigger value="bookmarked"><Bookmark className="mr-2 h-4 w-4"/>Bookmarked</TabsTrigger>
+              <TabsTrigger value="bookmarked"><BookmarkCheck className="mr-2 h-4 w-4"/>Bookmarked</TabsTrigger>
             </TabsList>
             <TabsContent value="my-library" className="mt-4">{renderTabContent(myLibraryItems, "Your personal library")}</TabsContent>
             <TabsContent value="community" className="mt-4">{renderTabContent(communityItems, "The community library")}</TabsContent>

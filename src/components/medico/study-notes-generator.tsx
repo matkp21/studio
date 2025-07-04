@@ -18,6 +18,7 @@ import { useProMode } from '@/contexts/pro-mode-context';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
+import React, { useEffect } from 'react';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
@@ -25,7 +26,11 @@ const formSchema = z.object({
 
 type StudyNotesFormValues = z.infer<typeof formSchema>;
 
-export function StudyNotesGenerator() {
+interface StudyNotesGeneratorProps {
+  initialTopic?: string | null;
+}
+
+export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) {
   const { toast } = useToast();
   const { user } = useProMode(); // Get the authenticated user
   const { execute: runGenerateNotes, data: generatedNotes, isLoading, error, reset } = useAiAgent(generateStudyNotes, {
@@ -78,13 +83,19 @@ export function StudyNotesGenerator() {
   const form = useForm<StudyNotesFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      topic: "",
+      topic: initialTopic || "",
     },
   });
+
+  useEffect(() => {
+    if (initialTopic) {
+        form.setValue('topic', initialTopic);
+    }
+  }, [initialTopic, form]);
   
   // When form is reset, also reset the AI agent's state
   const handleReset = () => {
-    form.reset();
+    form.reset({ topic: "" });
     reset();
   }
 

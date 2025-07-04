@@ -19,7 +19,7 @@ import { useAiAgent } from '@/hooks/use-ai-agent';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
 const formSchema = z.object({
@@ -37,7 +37,12 @@ interface FlashcardDisplay extends MedicoFlashcard {
   status: 'new' | 'learning' | 'mastered';
 }
 
-export function FlashcardGenerator() {
+interface FlashcardGeneratorProps {
+  initialTopic?: string | null;
+}
+
+
+export function FlashcardGenerator({ initialTopic }: FlashcardGeneratorProps) {
   const { toast } = useToast();
   const { user } = useProMode();
   const [generatedFlashcards, setGeneratedFlashcards] = useState<FlashcardDisplay[] | null>(null);
@@ -101,15 +106,21 @@ export function FlashcardGenerator() {
   const form = useForm<FlashcardFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      topic: "",
+      topic: initialTopic || "",
       count: 10,
       difficulty: 'medium',
       examType: 'university',
     },
   });
   
+  useEffect(() => {
+    if (initialTopic) {
+        form.setValue('topic', initialTopic);
+    }
+  }, [initialTopic, form]);
+
   const handleReset = () => {
-    form.reset();
+    form.reset({ topic: "", count: 10, difficulty: "medium", examType: "university" });
     reset();
     setGeneratedFlashcards(null);
     setCurrentTopic(null);

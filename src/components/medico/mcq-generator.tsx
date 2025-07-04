@@ -20,6 +20,7 @@ import { useProMode } from '@/contexts/pro-mode-context';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
+import React, { useEffect } from 'react';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
@@ -30,7 +31,11 @@ const formSchema = z.object({
 
 type McqFormValues = z.infer<typeof formSchema>;
 
-export function McqGenerator() {
+interface McqGeneratorProps {
+  initialTopic?: string | null;
+}
+
+export function McqGenerator({ initialTopic }: McqGeneratorProps) {
   const { toast } = useToast();
   const { user } = useProMode();
   const { execute: runGenerateMcqs, data: generatedMcqs, isLoading, error, reset } = useAiAgent(generateMCQs, {
@@ -85,15 +90,21 @@ export function McqGenerator() {
   const form = useForm<McqFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      topic: "",
+      topic: initialTopic || "",
       count: 5,
       difficulty: 'medium',
       examType: 'university',
     },
   });
+
+  useEffect(() => {
+    if (initialTopic) {
+        form.setValue('topic', initialTopic);
+    }
+  }, [initialTopic, form]);
   
   const handleReset = () => {
-    form.reset();
+    form.reset({ topic: "", count: 5, difficulty: 'medium', examType: 'university' });
     reset();
   }
 
