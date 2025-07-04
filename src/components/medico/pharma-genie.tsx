@@ -1,4 +1,4 @@
-'use server';
+"use client";
 
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
