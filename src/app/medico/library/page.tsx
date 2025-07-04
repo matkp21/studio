@@ -23,6 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 
 
 // Define types for library items
@@ -253,7 +254,7 @@ export default function StudyLibraryPage() {
                       </ul>
                   </div>
                   )}
-                  <div className="whitespace-pre-wrap text-sm prose prose-sm dark:prose-invert max-w-none">{myItem.notes || myItem.summary}</div>
+                  <MarkdownRenderer content={myItem.notes || myItem.summary || ''} />
                 </>
             );
         case 'mcqs':
@@ -291,7 +292,7 @@ export default function StudyLibraryPage() {
             return (
                  <div className="space-y-3">
                     <p className="text-lg font-bold text-foreground whitespace-pre-wrap">{myItem.mnemonic}</p>
-                    {myItem.explanation && <p className="text-sm whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">{myItem.explanation}</p>}
+                    {myItem.explanation && <MarkdownRenderer content={myItem.explanation} />}
                     {myItem.imageUrl && <Image src={myItem.imageUrl} alt="Mnemonic visual" width={200} height={200} className="rounded-md border"/>}
                 </div>
             )
@@ -311,7 +312,7 @@ export default function StudyLibraryPage() {
                  </div>
              )
         case 'communityNote': case 'communityMnemonic':
-            return <div className="whitespace-pre-wrap text-sm">{commItem.content}</div>;
+            return <MarkdownRenderer content={commItem.content} />;
         default: return <p>No details to display.</p>
     }
   }
@@ -339,7 +340,10 @@ export default function StudyLibraryPage() {
   };
 
 
-  if (authLoading) return <div className="flex justify-center items-center min-h-[calc(100vh-200px)]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
+  if (authLoading || (isDataLoading && user)) {
+    return <div className="flex justify-center items-center min-h-[calc(100vh-200px)]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
+  }
+  
   if (!user) {
     return (
       <div className="text-center p-8 flex flex-col items-center justify-center min-h-[calc(100vh-250px)]">

@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from '@/lib/utils';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 
 
 // Define the Question type
@@ -299,12 +300,12 @@ export function SolvedQuestionPapersViewer() {
                     </TabsList>
                     <TabsContent value="10m">
                         <ScrollArea className="h-[60vh] mt-4 border rounded-lg p-4 bg-background">
-                            <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: selectedQuestion.answer10M.replace(/##/g, '<h3>').replace(/\n/g, '<br/>') }} />
+                            <MarkdownRenderer content={selectedQuestion.answer10M} />
                         </ScrollArea>
                     </TabsContent>
                     <TabsContent value="5m">
                        <ScrollArea className="h-[60vh] mt-4 border rounded-lg p-4 bg-background">
-                            <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: selectedQuestion.answer5M.replace(/\n/g, '<br/>') }} />
+                            <MarkdownRenderer content={selectedQuestion.answer5M} />
                         </ScrollArea>
                     </TabsContent>
                 </Tabs>

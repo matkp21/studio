@@ -17,6 +17,7 @@ import { explainPathophysiology, type PathoMindInput, type PathoMindOutput } fro
 import { useProMode } from '@/contexts/pro-mode-context';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
+import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).max(150),
@@ -136,8 +137,8 @@ export function PathoMindExplainer() {
               <div className="lg:col-span-1">
                 <h4 className="font-semibold mb-2">Explanation</h4>
                 <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
-                  <div className="p-4 whitespace-pre-wrap text-sm prose prose-sm dark:prose-invert max-w-none">
-                    {explanationData.explanation}
+                  <div className="p-4">
+                    <MarkdownRenderer content={explanationData.explanation} />
                   </div>
                 </ScrollArea>
               </div>

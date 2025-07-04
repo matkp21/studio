@@ -16,6 +16,7 @@ import { Textarea } from '../ui/textarea';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
+import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 
 const formSchema = z.object({
   labResults: z.string().min(10, { message: "Please provide some lab results to interpret." }),
@@ -140,8 +141,8 @@ ${interpretationData.likelyDifferentials.map(d => `- ${d}`).join('\n')}
                 <div className="p-4 space-y-4">
                      <div>
                         <h4 className="font-semibold text-md mb-2 text-cyan-700 dark:text-cyan-400">Interpretation:</h4>
-                        <div className="p-4 whitespace-pre-wrap text-sm prose prose-sm dark:prose-invert max-w-none bg-muted/50 rounded-md">
-                            {interpretationData.interpretation}
+                        <div className="p-4 bg-muted/50 rounded-md">
+                            <MarkdownRenderer content={interpretationData.interpretation} />
                         </div>
                     </div>
                      {interpretationData.likelyDifferentials && interpretationData.likelyDifferentials.length > 0 && (

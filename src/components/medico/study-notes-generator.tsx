@@ -20,6 +20,7 @@ import { firestore } from '@/lib/firebase';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 import React, { useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
@@ -190,8 +191,8 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
                 <div className="lg:col-span-1">
                     <h4 className="font-semibold mb-2">Notes Breakdown:</h4>
                     <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
-                        <div className="p-4 whitespace-pre-wrap text-sm prose prose-sm dark:prose-invert max-w-none">
-                            {generatedAnswer.notes}
+                        <div className="p-4">
+                            <MarkdownRenderer content={generatedAnswer.notes} />
                         </div>
                     </ScrollArea>
                 </div>

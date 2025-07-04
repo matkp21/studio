@@ -16,6 +16,7 @@ import { createStudyTimetable, type MedicoStudyTimetableInput, type MedicoStudyT
 import { useToast } from '@/hooks/use-toast';
 import { DatePicker } from '@/components/ui/date-picker';
 import { Textarea } from '@/components/ui/textarea';
+import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 
 const formSchema = z.object({
   examName: z.string().min(3, { message: "Exam name must be at least 3 characters." }).max(100, { message: "Exam name too long."}),
@@ -225,8 +226,8 @@ export function StudyTimetableCreator() {
                  </Alert>
             )}
             <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
-              <div className="p-4 whitespace-pre-wrap text-sm prose prose-sm dark:prose-invert max-w-none">
-                {generatedTimetable.timetable}
+              <div className="p-4">
+                <MarkdownRenderer content={generatedTimetable.timetable} />
               </div>
             </ScrollArea>
           </CardContent>
