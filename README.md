@@ -15,22 +15,44 @@ MediAssistant offers tailored experiences through different user modes:
     *   Health & Wellness Tracking (Conceptual)
     *   Curated Health Library (Conceptual: OpenFDA, MedlinePlus Genetics, WHO ICD-10 integration)
     *   **AR Features (Conceptual):** AR Body Explorer, AR Condition Visualizer, Medication Effects Viewer, AR Child Health Educator.
-*   **Medico (Medical Student) Mode:**
-    *   **Study Aids:** Previous Question Papers, Study Notes Generator, High-Yield Topic Predictor, Flashcard Creator, Flowchart Creator (Conceptual), Mnemonics Generator, MCQ Generator. (Accessible via Medico Dashboard & Chat commands)
-    *   **Planning & Tracking:** Study Timetable Creator, Progress Tracker (Conceptual).
-    *   **Interactive Learning:** Clinical Case Simulations, Differential Diagnosis Trainer, Interactive Anatomy Visualizer, Virtual Patient Rounds.
-    *   **Practice Tools:** Drug Dosage Calculator.
-    *   **AR Features (Conceptual):** AR Anatomy Lab, Clinical Skills AR Tutor, Pathology Visuals, AR Surgical Steps Demo, Augmented Flashcards.
+*   **Medico (Medical Student) Mode:** An interconnected ecosystem designed to streamline the study process. Tools are centered around the **Knowledge Hub (Study Library)**, where all generated content is saved and can be used to contextually launch other tools.
+    *   **Medico Dashboard:** The central command center featuring a **Schedule Overview** (calendar & clock widget) and one-click access to all study tools. The layout is customizable.
+    *   **Knowledge Hub (Study Library):** A personal repository for all generated content. From any saved item (e.g., notes on "Cardiology"), you can directly launch another tool (e.g., "Generate MCQs") with the topic pre-filled.
+    *   **Video Lecture Library:** Search and find curated medical lectures from YouTube.
+    *   **Core Study Aids (AI-Powered):**
+        *   **Mock Exam Suite:** Generate full-length mock exams with MCQs and essays.
+        *   **Gamified Case Challenges:** Solve timed diagnostic challenges and compete on leaderboards.
+        *   **Study Notes Generator:** Creates structured, detailed notes on any medical topic.
+        *   **MCQ Generator:** Produces high-quality multiple-choice questions for practice.
+        *   **Previous Question Papers:** Simulates past exam papers with relevant questions.
+        *   **Flowchart Creator:** Interactive drag-and-drop canvas to build or AI-generate medical algorithms and pathways.
+        *   **Flashcard Generator:** Instantly creates flashcards from a topic.
+        *   **Mnemonic Generator:** Generates memory aids with AI-created visual mnemonics.
+        *   **Smart Note Summarizer:** Upload text or image files to get AI-powered summaries.
+    *   **Planning & Interactive Learning:**
+        *   **Study Timetable Creator:** Generates personalized study plans based on exams, subjects, and weak areas.
+        *   **Clinical Case Simulator:** Interactive patient scenarios that evolve based on your decisions.
+        *   **Differential Diagnosis Trainer:** Iterative Q&A to hone diagnostic reasoning.
+        *   **Interactive Anatomy Visualizer:** Explore anatomical structures with detailed descriptions.
+        *   **Drug Dosage Calculator:** An educational tool for practicing dosage calculations.
+        *   **Smart Dictation:** Voice-to-text with AI suggestions for structuring notes.
+    *   **Progress Tracking:** Gamified feedback system that logs your activity across all tools and provides motivational updates.
 *   **Professional (Clinician) Mode:**
-    *   **Clinical Decision Support:** AI-Powered Differential Diagnosis Assistant, Evidence-Based Treatment Protocol Navigator.
-    *   **Workflow Optimization:** Advanced Pharmacopeia & Interaction Checker, Smart Dictation & Note Assistant, Quick Discharge Summary Generator, Rounds Tool, Referral Streamliner, On-Call Handover Assistant.
-    *   **Knowledge Enhancement:** AI-Powered Research & Literature Summarizer.
-    *   **AR Features (Conceptual):** AR Anatomy Overlay, AR Clinical Guides, 3D Organ Viewer, AR Patient Education, Emergency Triage AR Cards.
+    *   **Clinical Decision Support:**
+        *   **Smart Triage & Referral:** A coordinator agent that analyzes symptoms and automatically drafts a referral summary if a high-confidence diagnosis is found.
+        *   **AI-Powered Differential Diagnosis Assistant:** Provides differential diagnoses, investigation plans, and management suggestions.
+        *   **Evidence-Based Treatment Protocol Navigator:** Access and review the latest clinical guidelines.
+    *   **Workflow Optimization:**
+        *   **Discharge Summary Generator:** AI-assisted drafting of comprehensive discharge summaries from key clinical anchors.
+        *   **Advanced Pharmacopeia & Interaction Checker:** Detailed drug information and interaction analysis.
+        *   **Smart Dictation & Note Assistant:** Advanced voice-to-text with medical terminology recognition.
+        *   **Patient Management Suite:** A central hub to log patient round notes and set clinical reminders.
 *   **Common Features:**
-    *   **AR Viewer:** General image analysis ("Snapshot & Analyze" live feed, or upload images) with AI annotations. Conceptually supports role-specific AR tools.
+    *   **AR Viewer:** General image analysis ("Snapshot & Analyze" live feed, or upload images) with AI annotations and links to external databases like MedlinePlus.
+    *   **3D Interactive Explorer:** Explore high-quality 3D anatomical and procedural models with detailed annotations and external API integration.
     *   **Advanced AI Chat:** Conversational AI with tool usage (e.g., symptom analysis, Medico commands).
     *   User Feedback System.
-    *   Dedicated Notifications Page.
+    *   Dedicated Notifications Page & Panel.
     *   Global Clock Widget in header (Clock, Timer, Reminders).
     *   Dynamic "Hello," greeting on homepage with Firebase/Gemini-inspired gradient.
 
