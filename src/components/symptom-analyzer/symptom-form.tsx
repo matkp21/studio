@@ -1,4 +1,3 @@
-
 // src/components/symptom-analyzer/symptom-form.tsx
 "use client";
 
@@ -41,10 +40,10 @@ export function SymptomForm({ onAnalysisComplete, setIsLoading, isLoading = fals
     },
   });
 
+  // This handler will now be used by the parent component (TriageAndReferral)
+  // to trigger its own logic. For standalone use, it would still work.
   const onSubmit: SubmitHandler<SymptomFormValues> = async (data) => {
     setIsLoading(true);
-    onAnalysisComplete(null, undefined, data as SymptomAnalyzerInput); 
-
     const agentInput: SymptomAnalyzerInput = {
         symptoms: data.symptoms,
         patientContext: {
@@ -53,28 +52,8 @@ export function SymptomForm({ onAnalysisComplete, setIsLoading, isLoading = fals
             history: data.history
         }
     };
-
-    try {
-      // In a simple component, we call the direct agent.
-      // In a coordinator component, the parent will handle calling the coordinator flow.
-      const result = await analyzeSymptoms(agentInput);
-      onAnalysisComplete(result, undefined, agentInput);
-      toast({
-        title: "Analysis Complete",
-        description: "Symptom analysis successfully completed.",
-      });
-    } catch (error) {
-      console.error("Symptom analysis error:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during analysis.";
-      onAnalysisComplete(null, errorMessage, agentInput);
-      toast({
-        title: "Analysis Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // The parent component will now handle the logic
+    onAnalysisComplete(null, undefined, agentInput);
   };
 
   return (
