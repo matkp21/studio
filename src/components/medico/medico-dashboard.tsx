@@ -6,6 +6,17 @@ import type { ReactNode } from 'react';
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '../ui/scroll-area';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
+import { cn } from '@/lib/utils';
+import {
+  NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
+  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords
+} from 'lucide-react';
+import { motion, Reorder } from 'framer-motion';
+import Link from 'next/link';
+
+// Component Imports
 import { StudyNotesGenerator } from './study-notes-generator';
 import { McqGenerator } from './mcq-generator';
 import { StudyTimetableCreator } from './study-timetable-creator';
@@ -22,16 +33,7 @@ import { FlowchartCreator } from './flowchart-creator';
 import { ProgressTracker } from './progress-tracker';
 import { NoteSummarizer } from './note-summarizer'; 
 import { SmartDictation } from '@/components/pro/smart-dictation';
-import { GamifiedCaseChallenges } from './gamified-case-challenges'; // New import
-import {
-  NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
-  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords
-} from 'lucide-react';
-import { ScrollArea } from '../ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
-import { cn } from '@/lib/utils';
-import { motion, Reorder } from 'framer-motion';
-import Link from 'next/link';
+import { GamifiedCaseChallenges } from './gamified-case-challenges';
 
 type ActiveToolId =
   | 'papers'
@@ -51,7 +53,7 @@ type ActiveToolId =
   | 'summarizer' 
   | 'videos'
   | 'dictation'
-  | 'challenges' // New tool ID for challenges
+  | 'challenges'
   | null;
 
 interface MedicoTool {
@@ -82,7 +84,7 @@ const medicoToolsList: MedicoTool[] = [
   { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Explore anatomical structures.', icon: Eye, component: AnatomyVisualizer },
   { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds },
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator },
-  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
+  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false }, // Explicitly setting comingSoon to false
 ];
 
 const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['notes', 'mcq', 'papers', 'videos', 'challenges'];
@@ -169,7 +171,6 @@ const MedicoToolCard: React.FC<MedicoToolCardProps> = ({ tool, onLaunch, isFrequ
     </DialogTrigger>
   );
 };
-
 
 export function MedicoDashboard() {
   const [activeDialog, setActiveDialog] = useState<ActiveToolId>(null);
@@ -300,3 +301,5 @@ export function MedicoDashboard() {
     </div>
   );
 }
+
+    
