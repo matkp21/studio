@@ -1,3 +1,4 @@
+
 // src/components/pro/clinical-calculator-suite.tsx
 "use client";
 
@@ -9,19 +10,17 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BarChart3, Calculator, Lightbulb, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Checkbox } from '../ui/checkbox';
+import { cn } from '@/lib/utils';
 
-// This is a placeholder component for a suite of clinical calculators.
-// A full implementation would involve separate logic for each calculator (GRACE, Wells', qSOFA, etc.)
-// and potentially AI integration for context-aware suggestions or interpretations.
 
 const calculatorTypes = [
   { id: 'qsofa', name: 'qSOFA Score (Sepsis)' },
-  { id: 'grace', name: 'GRACE Score (ACS Risk)' },
-  { id: 'wells-pe', name: "Wells' Score (PE)" },
-  { id: 'wells-dvt', name: "Wells' Score (DVT)" },
+  { id: 'wells-pe', name: "Wells' Score (Pulmonary Embolism)" },
   { id: 'chadsvasc', name: 'CHA₂DS₂-VASc Score (Stroke Risk in AF)' },
   { id: 'meld', name: 'MELD Score (Liver Disease Severity)' },
-  // Add more calculators as needed
+  { id: 'grace', name: 'GRACE Score (ACS Risk) - Placeholder' },
+  { id: 'wells-dvt', name: "Wells' Score (DVT) - Placeholder" },
 ];
 
 interface CalculationResult {
@@ -32,44 +31,109 @@ interface CalculationResult {
 
 export function ClinicalCalculatorSuite() {
   const [selectedCalculator, setSelectedCalculator] = useState<string | null>(null);
-  const [calculatorInputs, setCalculatorInputs] = useState<Record<string, string | number | boolean>>({});
+  const [inputs, setInputs] = useState<Record<string, any>>({});
   const [calculatorResult, setCalculatorResult] = useState<CalculationResult | null>(null);
 
   const handleCalculatorSelect = (calcId: string) => {
     setSelectedCalculator(calcId);
-    setCalculatorInputs({}); // Reset inputs for new calculator
+    setInputs({}); // Reset inputs for new calculator
     setCalculatorResult(null);
   };
 
-  const handleInputChange = (fieldId: string, value: string | number | boolean) => {
-    setCalculatorInputs(prev => ({ ...prev, [fieldId]: value }));
+  const handleInputChange = (fieldId: string, value: string | number) => {
+    setInputs(prev => ({ ...prev, [fieldId]: value }));
   };
+  
+  const handleCheckboxChange = (fieldId: string, checked: boolean) => {
+    setInputs(prev => ({...prev, [fieldId]: checked}));
+  }
 
   const handleCalculate = () => {
     if (!selectedCalculator) return;
     
     let result: CalculationResult | null = null;
+    let score = 0;
+    let interpretation = '';
+    let colorClass = 'text-green-600 border-green-500 bg-green-500/10';
 
-    if (selectedCalculator === 'qsofa') {
-      let score = 0;
-      if (calculatorInputs.respRateHigh === 'yes') score++;
-      if (calculatorInputs.alteredMental === 'yes') score++;
-      if (calculatorInputs.sbpLow === 'yes') score++;
-      
-      let interpretation = `qSOFA Score: ${score}. `;
-      let colorClass = 'text-green-600 border-green-500 bg-green-500/10';
+    switch (selectedCalculator) {
+        case 'qsofa':
+            if (inputs.respRate) score++;
+            if (inputs.alteredMental) score++;
+            if (inputs.sbpLow) score++;
+            interpretation = `qSOFA Score: ${score}. `;
+            if (score >= 2) {
+                interpretation += 'High risk for poor outcome with sepsis. Consider escalating care and further sepsis workup.';
+                colorClass = 'text-red-600 border-red-500 bg-red-500/10';
+            } else {
+                interpretation += 'Low risk based on qSOFA criteria. Continue monitoring.';
+            }
+            result = { score, interpretation, colorClass };
+            break;
+            
+        case 'wells-pe':
+            if (inputs.dvtSigns) score += 3;
+            if (inputs.peLikely) score += 3;
+            if (inputs.hrHigh) score += 1.5;
+            if (inputs.immobilization) score += 1.5;
+            if (inputs.prevDvtPe) score += 1.5;
+            if (inputs.hemoptysis) score += 1;
+            if (inputs.malignancy) score += 1;
+            interpretation = `Wells' Score for PE: ${score}. `;
+            if (score > 6) {
+                interpretation += 'High Probability of PE.';
+                colorClass = 'text-red-600 border-red-500 bg-red-500/10';
+            } else if (score >= 2) {
+                interpretation += 'Moderate Probability of PE.';
+                 colorClass = 'text-orange-600 border-orange-500 bg-orange-500/10';
+            } else {
+                interpretation += 'Low Probability of PE.';
+            }
+             result = { score, interpretation, colorClass };
+            break;
 
-      if (score >= 2) {
-        interpretation += 'High risk for poor outcome with sepsis. Consider escalating care and further sepsis workup (e.g., SOFA score).';
-        colorClass = 'text-red-600 border-red-500 bg-red-500/10';
-      } else {
-        interpretation += 'Low risk based on qSOFA criteria. Continue monitoring.';
-      }
-      result = { score, interpretation, colorClass };
-    } else {
-      // Placeholder for other calculators
-      const calculator = calculatorTypes.find(c => c.id === selectedCalculator);
-      result = { score: 'N/A', interpretation: `Calculation for ${calculator?.name} is not yet implemented. This is a demonstration.`, colorClass: 'text-muted-foreground border-border bg-muted/50' };
+        case 'chadsvasc':
+            if (inputs.chf) score++;
+            if (inputs.htn) score++;
+            if (inputs.age75) score += 2;
+            if (inputs.diabetes) score++;
+            if (inputs.stroke) score += 2;
+            if (inputs.vascular) score++;
+            if (inputs.age65) score++;
+            if (inputs.female) score++;
+            interpretation = `CHA₂DS₂-VASc Score: ${score}. This corresponds to an adjusted stroke risk. Consult guidelines for anticoagulation therapy recommendations based on this score.`;
+            if(score >= 2) colorClass = 'text-red-600 border-red-500 bg-red-500/10';
+            else if (score === 1) colorClass = 'text-orange-600 border-orange-500 bg-orange-500/10';
+            result = { score, interpretation, colorClass };
+            break;
+
+        case 'meld':
+            const creatinine = parseFloat(inputs.creatinine) || 0;
+            const bilirubin = parseFloat(inputs.bilirubin) || 0;
+            const inr = parseFloat(inputs.inr) || 0;
+            if(creatinine > 0 && bilirubin > 0 && inr > 0) {
+                 const clampedCreatinine = Math.max(1.0, Math.min(4.0, creatinine));
+                 score = Math.round(
+                    (0.957 * Math.log(clampedCreatinine)) +
+                    (0.378 * Math.log(bilirubin)) +
+                    (1.120 * Math.log(inr)) + 0.643
+                 ) * 10;
+                 if(score > 40) score = 40;
+                 interpretation = `MELD Score: ${score}. Used to prioritize patients for liver transplants. Higher scores indicate more severe liver disease and higher short-term mortality.`;
+                 if(score >= 25) colorClass = 'text-red-600 border-red-500 bg-red-500/10';
+                 else if(score >= 15) colorClass = 'text-orange-600 border-orange-500 bg-orange-500/10';
+            } else {
+                 score = 'Invalid Input';
+                 interpretation = 'Please enter valid positive values for Creatinine, Bilirubin, and INR to calculate the MELD score.';
+                 colorClass = 'text-red-600 border-red-500 bg-red-500/10';
+            }
+            result = { score, interpretation, colorClass };
+            break;
+            
+        default:
+            const calculator = calculatorTypes.find(c => c.id === selectedCalculator);
+            result = { score: 'N/A', interpretation: `Calculation for ${calculator?.name} is not yet implemented. This is a demonstration.`, colorClass: 'text-muted-foreground border-border bg-muted/50' };
+            break;
     }
 
     setCalculatorResult(result);
@@ -79,33 +143,56 @@ export function ClinicalCalculatorSuite() {
     if (!selectedCalculator) {
       return <p className="text-muted-foreground text-sm text-center py-4">Select a calculator to see input fields.</p>;
     }
-    // Dynamically render input fields based on selectedCalculator
-    // This is a simplified example. A real implementation would have specific fields for each calculator.
+    
+    const commonCheckbox = (id: string, label: string) => (
+      <div key={id} className="flex items-center space-x-2">
+        <Checkbox id={id} checked={!!inputs[id]} onCheckedChange={(checked) => handleCheckboxChange(id, !!checked)} />
+        <Label htmlFor={id} className="text-sm font-normal">{label}</Label>
+      </div>
+    );
+    
     switch (selectedCalculator) {
       case 'qsofa':
          return (
           <div className="space-y-3 p-2 border rounded-md bg-muted/20">
-            <h4 className="font-medium text-sm">qSOFA Score Inputs:</h4>
-            <div><Label htmlFor="rr-qsofa">Respiratory Rate ≥ 22/min?</Label>
-                <Select onValueChange={val => handleInputChange('respRateHigh', val)} value={String(calculatorInputs.respRateHigh || '')}>
-                    <SelectTrigger id="rr-qsofa" className="mt-1 rounded-md"><SelectValue placeholder="Select..."/></SelectTrigger>
-                    <SelectContent><SelectItem value="yes">Yes</SelectItem><SelectItem value="no">No</SelectItem></SelectContent>
-                </Select>
-            </div>
-            <div><Label htmlFor="mental-qsofa">Altered Mental Status (GCS &lt;15?)</Label>
-                 <Select onValueChange={val => handleInputChange('alteredMental', val)} value={String(calculatorInputs.alteredMental || '')}>
-                    <SelectTrigger id="mental-qsofa" className="mt-1 rounded-md"><SelectValue placeholder="Select..."/></SelectTrigger>
-                    <SelectContent><SelectItem value="yes">Yes</SelectItem><SelectItem value="no">No</SelectItem></SelectContent>
-                </Select>
-            </div>
-            <div><Label htmlFor="sbp-qsofa">Systolic BP ≤ 100 mmHg?</Label>
-                 <Select onValueChange={val => handleInputChange('sbpLow', val)} value={String(calculatorInputs.sbpLow || '')}>
-                    <SelectTrigger id="sbp-qsofa" className="mt-1 rounded-md"><SelectValue placeholder="Select..."/></SelectTrigger>
-                    <SelectContent><SelectItem value="yes">Yes</SelectItem><SelectItem value="no">No</SelectItem></SelectContent>
-                </Select>
-            </div>
+            {commonCheckbox('respRate', 'Respiratory Rate ≥ 22/min')}
+            {commonCheckbox('alteredMental', 'Altered Mental Status (GCS < 15)')}
+            {commonCheckbox('sbpLow', 'Systolic BP ≤ 100 mmHg')}
           </div>
         );
+      case 'wells-pe':
+        return (
+          <div className="space-y-3 p-2 border rounded-md bg-muted/20">
+            {commonCheckbox('dvtSigns', 'Clinical signs and symptoms of DVT (3 pts)')}
+            {commonCheckbox('peLikely', 'PE is #1 diagnosis OR equally likely (3 pts)')}
+            {commonCheckbox('hrHigh', 'Heart rate > 100 bpm (1.5 pts)')}
+            {commonCheckbox('immobilization', 'Immobilization at least 3 days OR surgery in the previous 4 weeks (1.5 pts)')}
+            {commonCheckbox('prevDvtPe', 'Previous, objectively diagnosed DVT or PE (1.5 pts)')}
+            {commonCheckbox('hemoptysis', 'Hemoptysis (1 pt)')}
+            {commonCheckbox('malignancy', 'Malignancy w/ treatment within 6 mo or palliative (1 pt)')}
+          </div>
+        )
+       case 'chadsvasc':
+        return (
+          <div className="space-y-3 p-2 border rounded-md bg-muted/20">
+            {commonCheckbox('chf', 'Congestive heart failure (1 pt)')}
+            {commonCheckbox('htn', 'Hypertension (1 pt)')}
+            {commonCheckbox('age75', 'Age ≥ 75 years (2 pts)')}
+            {commonCheckbox('diabetes', 'Diabetes mellitus (1 pt)')}
+            {commonCheckbox('stroke', 'Stroke/TIA/thromboembolism (2 pts)')}
+            {commonCheckbox('vascular', 'Vascular disease (prior MI, PAD, or aortic plaque) (1 pt)')}
+            {commonCheckbox('age65', 'Age 65-74 years (1 pt)')}
+            {commonCheckbox('female', 'Sex category Female (1 pt)')}
+          </div>
+        )
+       case 'meld':
+        return (
+          <div className="space-y-3 p-2 border rounded-md bg-muted/20">
+            <div><Label htmlFor="creatinine">Serum Creatinine (mg/dL)</Label><Input type="number" id="creatinine" step="0.1" value={inputs.creatinine || ''} onChange={e=>handleInputChange('creatinine', e.target.value)} className="mt-1 rounded-sm"/></div>
+            <div><Label htmlFor="bilirubin">Serum Bilirubin (mg/dL)</Label><Input type="number" id="bilirubin" step="0.1" value={inputs.bilirubin || ''} onChange={e=>handleInputChange('bilirubin', e.target.value)} className="mt-1 rounded-sm"/></div>
+            <div><Label htmlFor="inr">INR</Label><Input type="number" id="inr" step="0.1" value={inputs.inr || ''} onChange={e=>handleInputChange('inr', e.target.value)} className="mt-1 rounded-sm"/></div>
+          </div>
+        )
       default:
         return <p className="text-muted-foreground text-sm text-center py-4">Input fields for {calculatorTypes.find(c => c.id === selectedCalculator)?.name} will appear here.</p>;
     }
@@ -117,7 +204,7 @@ export function ClinicalCalculatorSuite() {
         <Lightbulb className="h-5 w-5 text-orange-600" />
         <AlertTitle className="font-semibold text-orange-700 dark:text-orange-500">Clinical Calculator</AlertTitle>
         <AlertDescription className="text-orange-600/90 dark:text-orange-500/90 text-xs">
-          This calculator suite is for educational and quick reference purposes. The qSOFA calculator is functional; others are placeholders. Always verify with official guidelines.
+          This calculator suite is for educational and quick reference purposes. Always verify with official guidelines.
         </AlertDescription>
       </Alert>
 
@@ -154,7 +241,7 @@ export function ClinicalCalculatorSuite() {
           )}
 
           {calculatorResult && (
-            <div className={`mt-4 p-4 border rounded-md ${calculatorResult.colorClass}`}>
+            <div className={cn("mt-4 p-4 border rounded-md", calculatorResult.colorClass)}>
               <h4 className="font-semibold text-md mb-1">Result:</h4>
               <p className="text-lg font-bold">{calculatorResult.score}</p>
               <p className="text-sm whitespace-pre-wrap">{calculatorResult.interpretation}</p>
