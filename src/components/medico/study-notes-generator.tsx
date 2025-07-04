@@ -1,4 +1,3 @@
-
 // src/components/medico/study-notes-generator.tsx
 "use client";
 
@@ -189,6 +188,16 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
             <CardDescription>AI-generated structured notes for your exam preparation.</CardDescription>
           </CardHeader>
           <CardContent>
+            {generatedAnswer.summaryPoints && generatedAnswer.summaryPoints.length > 0 && (
+                <div className="mb-6">
+                    <h3 className="font-semibold text-lg text-primary mb-2">Key Summary Points</h3>
+                    <ul className="space-y-1.5 list-disc list-inside bg-primary/10 p-4 rounded-lg text-primary-foreground">
+                        {generatedAnswer.summaryPoints.map((point, index) => (
+                            <li key={index} className="text-sm text-foreground">{point}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="lg:col-span-1">
                     <h4 className="font-semibold mb-2">Notes Breakdown:</h4>
