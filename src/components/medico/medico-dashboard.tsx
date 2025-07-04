@@ -1,3 +1,4 @@
+
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
@@ -104,7 +105,7 @@ const allMedicoToolsList: MedicoTool[] = [
   { id: 'pharmagenie', title: 'PharmaGenie', description: 'Drug classification, mechanisms, and side effects.', icon: FlaskConical, component: PharmaGenie },
   { id: 'micromate', title: 'MicroMate', description: 'Bugs, virulence factors, lab diagnosis.', icon: Microscope, component: MicroMate },
   { id: 'diagnobot', title: 'DiagnoBot', description: 'Interpret labs, ECGs, X-rays, etc.', icon: TestTubeDiagonal, component: DiagnoBot },
-  { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds, comingSoon: true },
+  { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds, comingSoon: false },
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator },
   { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
 ];
