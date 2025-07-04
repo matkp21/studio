@@ -145,7 +145,7 @@ export type MedicoAnatomyVisualizerInput = z.infer<typeof MedicoAnatomyVisualize
 
 export const MedicoAnatomyVisualizerOutputSchema = z.object({
   description: z.string().describe('Detailed description of the anatomical structure, including its function, location, and key features.'),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.string().optional().describe('A URL to a relevant image of the anatomical structure.'),
   relatedStructures: z.array(z.string()).optional().describe('List of related anatomical structures.'),
   nextSteps: z.array(NextStepSuggestionSchema).optional().describe("A list of recommended next steps or tools to use."),
 });
@@ -161,7 +161,7 @@ export const MedicoMnemonicsGeneratorOutputSchema = z.object({
   mnemonic: z.string().describe('The generated mnemonic.'),
   explanation: z.string().optional().describe('Explanation of how the mnemonic works or what it represents.'),
   topicGenerated: z.string().describe('The topic for which the mnemonic was generated.'),
-  imageUrl: z.string().url().optional().describe('AI-generated visual to aid memory.'),
+  imageUrl: z.string().optional().describe('URL to an AI-generated visual to aid memory.'),
   nextSteps: z.array(NextStepSuggestionSchema).optional().describe("A list of recommended next steps or tools to use."),
 });
 export type MedicoMnemonicsGeneratorOutput = z.infer<typeof MedicoMnemonicsGeneratorOutputSchema>;
