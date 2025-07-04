@@ -7,10 +7,10 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, BookOpen, Wand2, FileText, BarChart2 } from 'lucide-react';
+import { Loader2, BookOpen, Wand2, FileText, Save } from 'lucide-react';
 import { generateTheoryAnswer } from '@/ai/agents/medico/TheoryCoachAgent';
 import { useToast } from '@/hooks/use-toast';
 import { useAiAgent } from '@/hooks/use-ai-agent';
@@ -20,7 +20,6 @@ import { firestore } from '@/lib/firebase';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 import React, { useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
@@ -46,40 +45,15 @@ export function TheoryCoach({ initialTopic }: TheoryCoachProps) {
           title: "Structured Answer Generated!",
           description: `Answer for "${input.topic}" is ready.`
       });
-      if (user) {
-        try {
-          const libraryRef = collection(firestore, `users/${user.uid}/studyLibrary`);
-          await addDoc(libraryRef, {
-            type: 'notes', // Still 'notes' type in library for now
-            topic: input.topic,
-            userId: user.uid,
-            notes: data.notes,
-            summaryPoints: data.summaryPoints,
-            diagram: data.diagram,
-            createdAt: serverTimestamp(),
-          });
-          toast({
-            title: "Saved to Library",
-            description: "Your generated answer has been saved.",
-          });
-        } catch (firestoreError) {
-          console.error("Firestore save error:", firestoreError);
-          toast({
-            title: "Save Failed",
-            description: "Could not save notes to your library.",
-            variant: "destructive",
-          });
-        }
-      }
-
+      
       try {
-        const progressResult = await trackProgress({
+        await trackProgress({
             activityType: 'notes_review',
             topic: input.topic,
         });
         toast({
             title: "Progress Tracked!",
-            description: progressResult.progressUpdateMessage,
+            description: "This activity has been added to your progress."
         });
       } catch (progressError) {
           console.warn("Could not track progress:", progressError);
@@ -108,11 +82,33 @@ export function TheoryCoach({ initialTopic }: TheoryCoachProps) {
   
   const handleSeedQuestionClick = (question: string) => {
     form.setValue('topic', question);
-    form.handleSubmit(onSubmit)(); // Trigger form submission
+    form.handleSubmit(onSubmit)();
   }
 
   const onSubmit: SubmitHandler<TheoryCoachFormValues> = async (data) => {
     await runGenerateAnswer(data);
+  };
+  
+  const handleSaveToLibrary = async () => {
+    if (!generatedAnswer || !user) {
+        toast({ title: "Cannot Save", description: "No content to save or user not logged in.", variant: "destructive" });
+        return;
+    }
+    try {
+        await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+            type: 'notes',
+            topic: form.getValues('topic'),
+            userId: user.uid,
+            notes: generatedAnswer.notes,
+            summaryPoints: generatedAnswer.summaryPoints,
+            diagram: generatedAnswer.diagram,
+            createdAt: serverTimestamp(),
+        });
+        toast({ title: "Saved to Library", description: "Your generated answer has been saved." });
+    } catch (e) {
+        console.error("Firestore save error:", e);
+        toast({ title: "Save Failed", description: "Could not save notes to your library.", variant: "destructive" });
+    }
   };
 
   return (
@@ -177,8 +173,14 @@ export function TheoryCoach({ initialTopic }: TheoryCoachProps) {
 
       {error && <Alert variant="destructive" className="rounded-lg"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
 
-      {generatedAnswer && !isLoading && (
-        <Card className="shadow-md rounded-xl mt-6 border-primary/30 bg-gradient-to-br from-card via-card to-primary/5">
+      {generatedAnswer && (
+        <Card className="shadow-md rounded-xl mt-6 border-primary/30 bg-gradient-to-br from-card via-card to-primary/5 relative">
+          {isLoading && (
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Updating...</span>
+            </div>
+          )}
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2"><FileText className="h-6 w-6 text-primary" />Structured Answer: {form.getValues("topic")}</CardTitle>
             <CardDescription>AI-generated structured answer for your exam preparation.</CardDescription>
@@ -208,6 +210,11 @@ export function TheoryCoach({ initialTopic }: TheoryCoachProps) {
                  </div>
             </div>
           </CardContent>
+           <CardFooter className="p-4 border-t">
+              <Button onClick={handleSaveToLibrary} disabled={!user}>
+                <Save className="mr-2 h-4 w-4"/> Save to Library
+              </Button>
+            </CardFooter>
         </Card>
       )}
     </div>

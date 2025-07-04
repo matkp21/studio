@@ -11,12 +11,12 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, FileText, Wand2 } from 'lucide-react';
+import { Loader2, FileText, Wand2, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { summarizeNoteText, type MedicoNoteSummarizerInput, type MedicoNoteSummarizerOutput } from '@/ai/agents/medico/NoteSummarizerAgent';
 import { useProMode } from '@/contexts/pro-mode-context';
-import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 
@@ -87,32 +87,15 @@ export function NoteSummarizer() {
         description: `Your document has been summarized as a ${data.format}.`,
       });
 
-      if (user) {
-        try {
-            await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
-                type: 'summary',
-                summary: result.summary,
-                format: result.format,
-                originalFileName: data.file.name,
-                createdAt: serverTimestamp(),
-                topic: `Summary of ${data.file.name}`,
-            });
-            toast({ title: "Summary saved to your library." });
-        } catch (firestoreError) {
-            console.error("Failed to save summary to Firestore:", firestoreError);
-            toast({ title: "Could not save summary", description: "Your summary was generated but failed to save to your cloud library.", variant: "default" });
-        }
-      }
-
       // Track Progress
       try {
-        const progressResult = await trackProgress({
+        await trackProgress({
             activityType: 'notes_review',
             topic: `Summarized: ${data.file.name}`
         });
         toast({
             title: "Progress Tracked!",
-            description: progressResult.progressUpdateMessage
+            description: "This activity has been added to your progress."
         });
       } catch (progressError) {
           console.warn("Could not track progress for note summarizer:", progressError);
@@ -129,6 +112,27 @@ export function NoteSummarizer() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  const handleSaveToLibrary = async () => {
+    if (!summaryResult || !user || !form.getValues('file')) {
+      toast({ title: "Cannot Save", description: "No content to save, user not logged in, or file info missing.", variant: "destructive" });
+      return;
+    }
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'summary',
+        summary: summaryResult.summary,
+        format: summaryResult.format,
+        originalFileName: form.getValues('file').name,
+        createdAt: serverTimestamp(),
+        topic: `Summary of ${form.getValues('file').name}`,
+      });
+      toast({ title: "Summary saved to your library." });
+    } catch (firestoreError) {
+      console.error("Failed to save summary to Firestore:", firestoreError);
+      toast({ title: "Could not save summary", description: "Your summary was generated but failed to save to your cloud library.", variant: "destructive" });
     }
   };
 
@@ -204,7 +208,13 @@ export function NoteSummarizer() {
       )}
       
       {summaryResult && (
-        <Card className="shadow-md rounded-xl mt-6 border-fuchsia-500/30 bg-gradient-to-br from-card via-card to-fuchsia-500/5">
+        <Card className="shadow-md rounded-xl mt-6 border-fuchsia-500/30 bg-gradient-to-br from-card via-card to-fuchsia-500/5 relative">
+            {isLoading && (
+              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <span className="ml-2 text-muted-foreground">Updating...</span>
+              </div>
+            )}
             <CardHeader>
                 <CardTitle className="text-xl flex items-center gap-2">
                     <FileText className="h-6 w-6 text-fuchsia-600" />
@@ -219,6 +229,11 @@ export function NoteSummarizer() {
                     </pre>
                 </ScrollArea>
             </CardContent>
+             <CardFooter className="p-4 border-t">
+              <Button onClick={handleSaveToLibrary} disabled={!user}>
+                <Save className="mr-2 h-4 w-4"/> Save to Library
+              </Button>
+            </CardFooter>
         </Card>
       )}
 

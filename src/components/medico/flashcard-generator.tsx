@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Layers, Wand2, ArrowLeftRight, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, Layers, Wand2, ArrowLeftRight, CheckCircle, XCircle, Save } from 'lucide-react';
 import { generateFlashcards, type MedicoFlashcardGeneratorInput, type MedicoFlashcardGeneratorOutput, type MedicoFlashcard } from '@/ai/agents/medico/FlashcardGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -48,7 +48,7 @@ export function FlashcardGenerator({ initialTopic }: FlashcardGeneratorProps) {
   const [generatedFlashcards, setGeneratedFlashcards] = useState<FlashcardDisplay[] | null>(null);
   const [currentTopic, setCurrentTopic] = useState<string | null>(null);
 
-  const { execute: runGenerateFlashcards, isLoading, error, reset } = useAiAgent(generateFlashcards, {
+  const { execute: runGenerateFlashcards, data: aiData, isLoading, error, reset } = useAiAgent(generateFlashcards, {
     onSuccess: async (data, input) => {
       const displayFlashcards = data.flashcards.map((fc, index) => ({
         ...fc,
@@ -62,39 +62,16 @@ export function FlashcardGenerator({ initialTopic }: FlashcardGeneratorProps) {
         title: "Flashcards Generated!",
         description: `${data.flashcards.length} flashcards for "${data.topicGenerated}" are ready.`,
       });
-
-      if (user) {
-        try {
-          await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
-            type: 'flashcards',
-            topic: data.topicGenerated,
-            userId: user.uid,
-            flashcards: data.flashcards,
-            createdAt: serverTimestamp(),
-          });
-          toast({
-            title: "Saved to Library",
-            description: "Your generated flashcards have been saved.",
-          });
-        } catch (firestoreError) {
-          console.error("Firestore save error:", firestoreError);
-          toast({
-            title: "Save Failed",
-            description: "Could not save flashcards to your library.",
-            variant: "destructive",
-          });
-        }
-      }
-
+      
        // Track Progress
       try {
-        const progressResult = await trackProgress({
+        await trackProgress({
             activityType: 'notes_review',
             topic: `Flashcards: ${input.topic}`
         });
         toast({
             title: "Progress Tracked!",
-            description: progressResult.progressUpdateMessage
+            description: "This activity has been added to your progress."
         });
       } catch (progressError) {
           console.warn("Could not track progress for flashcard generation:", progressError);
@@ -146,6 +123,26 @@ export function FlashcardGenerator({ initialTopic }: FlashcardGeneratorProps) {
         card.id === id ? { ...card, status: status, isFlipped: false } : card
       ) || null
     );
+  };
+
+  const handleSaveToLibrary = async () => {
+    if (!aiData || !user) {
+      toast({ title: "Cannot Save", description: "No content to save or user not logged in.", variant: "destructive" });
+      return;
+    }
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'flashcards',
+        topic: aiData.topicGenerated,
+        userId: user.uid,
+        flashcards: aiData.flashcards,
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "Your generated flashcards have been saved." });
+    } catch (firestoreError) {
+      console.error("Firestore save error:", firestoreError);
+      toast({ title: "Save Failed", description: "Could not save flashcards to your library.", variant: "destructive" });
+    }
   };
 
 
@@ -267,8 +264,14 @@ export function FlashcardGenerator({ initialTopic }: FlashcardGeneratorProps) {
         </Alert>
       )}
 
-      {generatedFlashcards && !isLoading && (
-        <Card className="shadow-md rounded-xl mt-6 border-blue-500/30 bg-gradient-to-br from-card via-card to-blue-500/5">
+      {generatedFlashcards && (
+        <Card className="shadow-md rounded-xl mt-6 border-blue-500/30 bg-gradient-to-br from-card via-card to-blue-500/5 relative">
+           {isLoading && (
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Updating...</span>
+            </div>
+          )}
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
               <Layers className="h-6 w-6 text-blue-600" />
@@ -338,6 +341,11 @@ export function FlashcardGenerator({ initialTopic }: FlashcardGeneratorProps) {
               </div>
             </ScrollArea>
           </CardContent>
+           <CardFooter className="p-4 border-t">
+              <Button onClick={handleSaveToLibrary} disabled={!user}>
+                <Save className="mr-2 h-4 w-4"/> Save to Library
+              </Button>
+            </CardFooter>
         </Card>
       )}
     </div>

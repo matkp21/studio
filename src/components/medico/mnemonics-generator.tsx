@@ -7,10 +7,10 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Lightbulb, Wand2, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Lightbulb, Wand2, Image as ImageIcon, Save } from 'lucide-react';
 import { generateMnemonic } from '@/ai/agents/medico/MnemonicsGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -30,36 +30,11 @@ export function MnemonicsGenerator() {
   const { user } = useProMode();
 
   const { execute: runGenerateMnemonic, data: generatedMnemonic, isLoading, error, reset } = useAiAgent(generateMnemonic, {
-    onSuccess: async (data, input) => {
+    onSuccess: (data, input) => {
       toast({
         title: "Mnemonic Generated!",
         description: `Mnemonic for "${data.topicGenerated}" is ready.`,
       });
-
-      if (user) {
-        try {
-          await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
-            type: 'mnemonic',
-            topic: data.topicGenerated,
-            userId: user.uid,
-            mnemonic: data.mnemonic,
-            explanation: data.explanation,
-            imageUrl: data.imageUrl,
-            createdAt: serverTimestamp(),
-          });
-          toast({
-            title: "Saved to Library",
-            description: "Your generated mnemonic has been saved.",
-          });
-        } catch (firestoreError) {
-          console.error("Firestore save error:", firestoreError);
-          toast({
-            title: "Save Failed",
-            description: "Could not save mnemonic to your library.",
-            variant: "destructive",
-          });
-        }
-      }
     }
   });
 
@@ -77,6 +52,29 @@ export function MnemonicsGenerator() {
     form.reset();
     reset();
   }
+  
+  const handleSaveToLibrary = async () => {
+    if (!generatedMnemonic || !user) {
+      toast({ title: "Cannot Save", description: "No content to save or user not logged in.", variant: "destructive" });
+      return;
+    }
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'mnemonic',
+        topic: generatedMnemonic.topicGenerated,
+        userId: user.uid,
+        mnemonic: generatedMnemonic.mnemonic,
+        explanation: generatedMnemonic.explanation,
+        imageUrl: generatedMnemonic.imageUrl,
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "Your generated mnemonic has been saved." });
+    } catch (e) {
+      console.error("Firestore save error:", e);
+      toast({ title: "Save Failed", description: "Could not save mnemonic to your library.", variant: "destructive" });
+    }
+  };
+
 
   return (
     <div className="space-y-6">
@@ -130,8 +128,14 @@ export function MnemonicsGenerator() {
         </Alert>
       )}
 
-      {generatedMnemonic && !isLoading && (
-        <Card className="shadow-md rounded-xl mt-6 border-yellow-500/30 bg-gradient-to-br from-card via-card to-yellow-500/5">
+      {generatedMnemonic && (
+        <Card className="shadow-md rounded-xl mt-6 border-yellow-500/30 bg-gradient-to-br from-card via-card to-yellow-500/5 relative">
+          {isLoading && (
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Updating...</span>
+            </div>
+          )}
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
               <Lightbulb className="h-6 w-6 text-yellow-600" />
@@ -170,6 +174,11 @@ export function MnemonicsGenerator() {
               </div>
             </div>
           </CardContent>
+          <CardFooter className="p-4 border-t">
+              <Button onClick={handleSaveToLibrary} disabled={!user}>
+                <Save className="mr-2 h-4 w-4"/> Save to Library
+              </Button>
+          </CardFooter>
         </Card>
       )}
     </div>

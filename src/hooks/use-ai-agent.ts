@@ -30,7 +30,7 @@ export function useAiAgent<T, R>(
   const execute = useCallback(async (input: T) => {
     setIsLoading(true);
     setError(null);
-    setData(null);
+    // setData(null); // This line is removed to keep old data visible during loading
 
     try {
       const result = await agentFunction(input);

@@ -7,10 +7,10 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, HelpCircle, Wand2 } from 'lucide-react';
+import { Loader2, HelpCircle, Wand2, Save } from 'lucide-react';
 import { generateMCQs } from '@/ai/agents/medico/MCQGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -44,42 +44,16 @@ export function McqGenerator({ initialTopic }: McqGeneratorProps) {
         title: "MCQs Generated!",
         description: `${data.mcqs.length} MCQs for "${data.topicGenerated}" are ready.`,
       });
-      if (user) {
-        try {
-          const libraryRef = collection(firestore, `users/${user.uid}/studyLibrary`);
-          await addDoc(libraryRef, {
-            type: 'mcqs',
-            topic: input.topic,
-            userId: user.uid,
-            mcqs: data.mcqs,
-            difficulty: input.difficulty,
-            examType: input.examType,
-            createdAt: serverTimestamp(),
-          });
-          toast({
-            title: "Saved to Library",
-            description: "Your generated MCQs have been saved.",
-          });
-        } catch (firestoreError) {
-          console.error("Firestore save error:", firestoreError);
-          toast({
-            title: "Save Failed",
-            description: "Could not save MCQs to your library.",
-            variant: "destructive",
-          });
-        }
-      }
-
-      // Track Progress
+      
       try {
-        const progressResult = await trackProgress({
+        await trackProgress({
             activityType: 'mcq_session',
             topic: input.topic,
-            score: undefined // Score would be tracked after user attempts them
+            score: undefined
         });
         toast({
             title: "Progress Tracked!",
-            description: progressResult.progressUpdateMessage
+            description: "This activity has been added to your progress."
         });
       } catch (progressError) {
           console.warn("Could not track progress for MCQ generation:", progressError);
@@ -110,6 +84,28 @@ export function McqGenerator({ initialTopic }: McqGeneratorProps) {
 
   const onSubmit: SubmitHandler<McqFormValues> = async (data) => {
     await runGenerateMcqs(data);
+  };
+  
+  const handleSaveToLibrary = async () => {
+    if (!generatedMcqs || !user) {
+      toast({ title: "Cannot Save", description: "No content to save or user not logged in.", variant: "destructive" });
+      return;
+    }
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'mcqs',
+        topic: generatedMcqs.topicGenerated,
+        userId: user.uid,
+        mcqs: generatedMcqs.mcqs,
+        difficulty: form.getValues('difficulty'),
+        examType: form.getValues('examType'),
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "Your generated MCQs have been saved." });
+    } catch (e) {
+      console.error("Firestore save error:", e);
+      toast({ title: "Save Failed", description: "Could not save MCQs to your library.", variant: "destructive" });
+    }
   };
 
   return (
@@ -230,8 +226,14 @@ export function McqGenerator({ initialTopic }: McqGeneratorProps) {
         </Alert>
       )}
 
-      {generatedMcqs && !isLoading && (
-        <Card className="shadow-md rounded-xl mt-6 border-accent/30 bg-gradient-to-br from-card via-card to-accent/5">
+      {generatedMcqs && (
+        <Card className="shadow-md rounded-xl mt-6 border-accent/30 bg-gradient-to-br from-card via-card to-accent/5 relative">
+          {isLoading && (
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Updating...</span>
+            </div>
+          )}
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
               <HelpCircle className="h-6 w-6 text-accent" />
@@ -268,6 +270,11 @@ export function McqGenerator({ initialTopic }: McqGeneratorProps) {
               </div>
             </ScrollArea>
           </CardContent>
+          <CardFooter className="p-4 border-t">
+            <Button onClick={handleSaveToLibrary} disabled={!user}>
+                <Save className="mr-2 h-4 w-4"/> Save to Library
+            </Button>
+          </CardFooter>
         </Card>
       )}
     </div>
