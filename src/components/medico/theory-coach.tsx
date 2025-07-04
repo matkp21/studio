@@ -1,4 +1,3 @@
-
 // src/components/medico/theory-coach.tsx
 "use client";
 

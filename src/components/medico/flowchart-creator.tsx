@@ -17,6 +17,9 @@ import jsPDF from 'jspdf';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '../ui/input';
 import { createFlowchart } from '@/ai/agents/medico/FlowchartCreatorAgent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
 
 // Toolbar component
 const Toolbar = ({ onAddNode, onUndo, onRedo, canUndo, canRedo, onExport, onClear, onSave }) => {
@@ -69,6 +72,7 @@ const FlowchartEditor = () => {
     
     const [aiTopic, setAiTopic] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
+    const { user } = useProMode();
 
     const handleAiGenerate = async () => {
       if (!aiTopic.trim()) {
@@ -125,9 +129,27 @@ const FlowchartEditor = () => {
         toast({ title: "Canvas Cleared" });
     }
 
-    const handleSave = () => {
-        // Conceptual save function
-        toast({ title: "Save (Conceptual)", description: "In a full app, this would save the flowchart to your library."});
+    const handleSave = async () => {
+        if (!user) {
+          toast({ title: "Login Required", description: "You must be logged in to save.", variant: "destructive"});
+          return;
+        }
+        if (nodes.length === 0) {
+          toast({ title: "Empty Flowchart", description: "Cannot save an empty flowchart.", variant: "destructive"});
+          return;
+        }
+        try {
+          await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+            type: 'flowchart',
+            topic: aiTopic || 'Custom Flowchart',
+            userId: user.uid,
+            flowchartData: JSON.stringify({ nodes, edges }),
+            createdAt: serverTimestamp(),
+          });
+          toast({ title: "Flowchart Saved!", description: "Your flowchart has been saved to your library."});
+        } catch(err) {
+          toast({ title: "Save Failed", description: "Could not save flowchart.", variant: "destructive"});
+        }
     }
 
     return (
