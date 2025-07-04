@@ -46,7 +46,7 @@ const studyNotesPrompt = ai.definePrompt({
 Given the medical topic/question: {{{topic}}}
 Desired answer length: {{{answerLength}}}
 
-Generate a comprehensive answer strictly following this 11-point format. Use Markdown for headings (e.g., '## 1. Definition').
+Generate a comprehensive answer strictly following this 12-point format. Use Markdown for headings (e.g., '## 1. Definition').
 
 1.  **Definition**: Provide a clear, concise definition.
 2.  **Relevant Anatomy / Physiology**: Briefly mention if critical to understanding the topic.
@@ -64,6 +64,7 @@ Generate a comprehensive answer strictly following this 11-point format. Use Mar
 9.  **Prognosis**: Briefly describe the likely outcome.
 10. **Flowcharts / Tables / Diagrams**: Generate a relevant flowchart or table using Mermaid.js syntax. For example, a diagnostic pathway or a classification table. The diagram should be useful for visual learners.
 11. **References**: Name 1-2 standard textbooks (e.g., Robbins, Ghai, Bailey & Love) where this topic is covered.
+12. **Next Steps**: Based on the generated notes, suggest 1-2 logical next study steps for the user. These should be actionable suggestions to use other tools. For example, recommend generating MCQs and Flashcards on the same topic. Format this as an array of objects in the 'nextSteps' field.
 
 Constraints:
 - For a '10-mark' answer, the total word count should be around 500 words.
@@ -71,6 +72,7 @@ Constraints:
 - The entire response must be a single JSON object conforming to the StudyNotesGeneratorOutputSchema.
 - The structured answer text goes into the 'notes' field.
 - The Mermaid.js diagram code goes into the 'diagram' field.
+- The 'nextSteps' field should contain suggestions like: { "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge" } or { "tool": "flashcards", "topic": "{{{topic}}}", "reason": "Create flashcards" }.
 `,
   config: {
     temperature: 0.3, // Factual for notes

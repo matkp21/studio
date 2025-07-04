@@ -1,3 +1,4 @@
+
 // src/components/medico/study-notes-generator.tsx
 "use client";
 
@@ -10,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, BookOpen, Wand2, FileText, Save } from 'lucide-react';
+import { Loader2, BookOpen, Wand2, FileText, Save, ArrowRight } from 'lucide-react';
 import { generateStudyNotes } from '@/ai/agents/medico/StudyNotesAgent';
 import { useToast } from '@/hooks/use-toast';
 import { useAiAgent } from '@/hooks/use-ai-agent';
@@ -21,6 +22,7 @@ import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 import React, { useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
+import Link from 'next/link';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
@@ -211,10 +213,24 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
                  </div>
             </div>
           </CardContent>
-           <CardFooter className="p-4 border-t">
+           <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
               <Button onClick={handleSaveToLibrary} disabled={!user}>
                 <Save className="mr-2 h-4 w-4"/> Save to Library
               </Button>
+               {generatedAnswer.nextSteps && generatedAnswer.nextSteps.length > 0 && (
+                <div className="w-full">
+                    <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
+                    <div className="flex flex-wrap gap-2">
+                        {generatedAnswer.nextSteps.map((step, index) => (
+                            <Button key={index} variant="outline" size="sm" asChild>
+                                <Link href={`/medico?tool=${step.tool}&topic=${encodeURIComponent(step.topic)}`}>
+                                    {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
+                                </Link>
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+                )}
             </CardFooter>
         </Card>
       )}

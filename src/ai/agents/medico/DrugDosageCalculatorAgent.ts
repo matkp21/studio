@@ -40,21 +40,14 @@ Instructions:
 4.  **Show Your Work**: Provide a step-by-step 'calculationExplanation' that clearly shows how you arrived at the final dose, including any adjustments made for patient context.
 5.  **Provide Clinical Warnings**: List important 'warnings' or common considerations. This MUST include any dose adjustments made due to renal function and other critical points like maximum dose, common side effects, etc.
 6.  **Educational Disclaimer**: Emphasize that this is for educational practice and real clinical decisions require consulting official pharmacopoeias and senior clinicians.
+7.  **Suggest Next Steps**: Suggest a logical next step, like creating flashcards for the drug.
 
 Format the output as JSON conforming to the MedicoDrugDosageOutputSchema.
 'calculatedDose' should be a string (e.g., "500 mg", "7.5 ml").
 'calculationExplanation' must be provided.
 'warnings' is an array of strings.
+'nextSteps' should contain suggestions like: { "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }.
 If critical information is missing to make a safe calculation, 'calculatedDose' can state "Insufficient information" and the explanation should detail what's missing.
-
-Example (Drug X for a patient with renal impairment):
-Input: drugName: "Gabapentin", patientWeightKg: 70, renalFunction: "eGFR 45 ml/min"
-Output:
-{
-  "calculatedDose": "300 mg daily",
-  "calculationExplanation": "Standard starting dose for Gabapentin can be 300 mg TID. However, the patient's renal function (eGFR 45 ml/min) requires dose adjustment. Based on standard guidelines for moderate renal impairment (eGFR 30-59), the total daily dose is typically reduced to 200-700 mg/day. A conservative starting dose of 300 mg once daily is recommended.",
-  "warnings": ["Dose adjusted for renal impairment. Further titration should be done cautiously.", "Monitor for signs of dizziness and somnolence.", "THIS IS FOR EDUCATIONAL PRACTICE. ALWAYS VERIFY WITH OFFICIAL SOURCES IN CLINICAL SETTINGS."]
-}
 `,
   config: {
     temperature: 0.2, // Very precise for calculations

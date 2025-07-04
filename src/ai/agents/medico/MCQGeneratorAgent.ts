@@ -55,15 +55,12 @@ For each MCQ:
 3.  Ensure one option is clearly the correct answer.
 4.  The other three options should be plausible distractors, relevant to the topic but incorrect.
 5.  Provide a brief explanation for why the correct answer is correct and, if relevant, why common distractors are incorrect.
+6.  Suggest a logical next step, like generating study notes for deeper understanding.
 
 Format the output as JSON conforming to the MedicoMCQGeneratorOutput schema.
-The root output must be an object containing an 'mcqs' array and a 'topicGenerated' string.
-Each object within the 'mcqs' array must conform to the MCQSchema:
-  - 'question': string (the question text)
-  - 'options': array of 4 objects, each conforming to MCQOptionSchema:
-    - 'text': string (the option text)
-    - 'isCorrect': boolean (true for the correct answer, false for others)
-  - 'explanation': string (optional, but highly encouraged, explanation for the correct answer)
+The root output must be an object containing an 'mcqs' array, a 'topicGenerated' string, and a 'nextSteps' array.
+Each object within the 'mcqs' array must conform to the MCQSchema.
+The 'nextSteps' field should contain suggestions like: { "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate study notes" }.
 
 Example of a single MCQ object:
 {
@@ -76,7 +73,7 @@ Example of a single MCQ object:
   ],
   "explanation": "Streptococcus pneumoniae is the most common bacterial cause of community-acquired pneumonia (CAP) in adults, responsible for a significant percentage of cases."
 }
-Ensure the final output is a valid JSON object with 'mcqs' and 'topicGenerated'.
+Ensure the final output is a valid JSON object.
 `,
   config: {
     temperature: 0.5, // A bit of creativity for plausible distractors but still medically sound

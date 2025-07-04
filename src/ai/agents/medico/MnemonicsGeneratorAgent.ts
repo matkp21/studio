@@ -28,27 +28,21 @@ Given the topic or list: {{{topic}}}
 
 Generate a creative and easy-to-remember mnemonic.
 Also, provide a brief explanation of what each part of the mnemonic stands for.
+Suggest a logical next step, like creating flashcards with the mnemonic.
+
 Format the output as JSON conforming to the MedicoMnemonicsGeneratorOutputSchema.
 The 'mnemonic' field should contain the mnemonic itself.
 The 'explanation' field should detail its components.
 The 'topicGenerated' field should reflect the input topic.
 The 'imageUrl' field should be left empty as it will be generated in a subsequent step.
+The 'nextSteps' field should contain suggestions like: { "tool": "flashcards", "topic": "{{{topic}}}", "reason": "Create a flashcard for this mnemonic" }.
 
 Example for topic "Cranial Nerves (Order)":
 Mnemonic: "Oh Oh Oh To Touch And Feel Very Good Velvet, Ah Heaven"
 Explanation:
   Oh: Olfactory (I)
   Oh: Optic (II)
-  Oh: Oculomotor (III)
-  To: Trochlear (IV)
-  Touch: Trigeminal (V)
-  And: Abducens (VI)
-  Feel: Facial (VII)
-  Very: Vestibulocochlear (VIII)
-  Good: Glossopharyngeal (IX)
-  Velvet: Vagus (X)
-  Ah: Accessory (XI)
-  Heaven: Hypoglossal (XII)
+  ...
 `,
   config: {
     temperature: 0.7, // Creative for mnemonics

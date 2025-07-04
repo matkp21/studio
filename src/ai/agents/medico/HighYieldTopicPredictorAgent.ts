@@ -27,13 +27,14 @@ const highYieldTopicPredictorPrompt = ai.definePrompt({
 Given the exam type: "{{{examType}}}"
 {{#if subject}}And specific subject: "{{{subject}}}"{{/if}}
 
-Predict a list of 5-10 high-yield topics that are most likely to be important for this exam.
-If a subject is specified, focus topics within that subject. Otherwise, provide general high-yield topics for the exam.
-Provide a brief rationale for your predictions (e.g., based on past exam trends, curriculum weightage, clinical importance).
+1.  **Predict High-Yield Topics**: Predict a list of 5-10 high-yield topics that are most likely to be important for this exam. If a subject is specified, focus topics within that subject. Otherwise, provide general high-yield topics for the exam.
+2.  **Provide Rationale**: Provide a brief rationale for your predictions (e.g., based on past exam trends, curriculum weightage, clinical importance).
+3.  **Suggest Next Steps**: For each predicted topic, suggest a "next step" to generate study notes for it. This should be an object with the tool ID 'theorycoach-generator' and the specific topic.
 
 Format the output as JSON conforming to the MedicoTopicPredictorOutputSchema.
 'predictedTopics' should be an array of strings.
 'rationale' should be a brief explanation.
+'nextSteps' should be an array of objects, one for each predicted topic. Example: { "tool": "theorycoach-generator", "topic": "Myocardial Infarction", "reason": "Generate notes for Myocardial Infarction" }
 `,
   config: {
     temperature: 0.4, // More analytical and based on patterns

@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview The MicroMate agent, for providing information on microorganisms.
@@ -30,9 +31,11 @@ Provide a detailed summary covering:
 2.  **Virulence Factors**: Key mechanisms it uses to cause disease.
 3.  **Diseases Caused**: Common diseases associated with this organism.
 4.  **Lab Diagnosis**: Standard methods for identifying the organism in a lab.
+5.  **Next Steps**: Suggest creating MCQs or flashcards to test knowledge on this organism.
 
 Format the output as JSON conforming to the MicroMateOutputSchema.
 - The fields 'characteristics', 'virulenceFactors', 'diseasesCaused', and 'labDiagnosis' should be detailed strings.
+- 'nextSteps' should contain suggestions like: { "tool": "mcq", "topic": "{{{microorganism}}}", "reason": "Generate MCQs for {{{microorganism}}}" }.
 `,
   config: {
     temperature: 0.3, // Factual and detailed

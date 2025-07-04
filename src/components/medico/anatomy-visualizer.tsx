@@ -1,3 +1,4 @@
+
 // src/components/medico/anatomy-visualizer.tsx
 "use client";
 
@@ -11,13 +12,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Eye, Wand2, Bone, Brain, Save } from 'lucide-react';
+import { Loader2, Eye, Wand2, Bone, Brain, Save, ArrowRight } from 'lucide-react';
 import { getAnatomyDescription, type MedicoAnatomyVisualizerInput, type MedicoAnatomyVisualizerOutput } from '@/ai/agents/medico/AnatomyVisualizerAgent';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
+import Link from 'next/link';
 
 const formSchema = z.object({
   anatomicalStructure: z.string().min(3, { message: "Structure name must be at least 3 characters." }).max(100, { message: "Structure name too long."}),
@@ -171,10 +173,24 @@ ${anatomyData.relatedStructures?.map(s => `- ${s}`).join('\n') || 'N/A'}
               </div>
             </ScrollArea>
           </CardContent>
-           <CardFooter className="p-4 border-t">
+           <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
             <Button onClick={handleSaveToLibrary} disabled={!user}>
               <Save className="mr-2 h-4 w-4"/> Save to Library
             </Button>
+            {anatomyData.nextSteps && anatomyData.nextSteps.length > 0 && (
+              <div className="w-full">
+                <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
+                <div className="flex flex-wrap gap-2">
+                  {anatomyData.nextSteps.map((step, index) => (
+                    <Button key={index} variant="outline" size="sm" asChild>
+                      <Link href={`/medico?tool=${step.tool}&topic=${encodeURIComponent(step.topic)}`}>
+                        {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
+                      </Link>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
           </CardFooter>
         </Card>
       )}

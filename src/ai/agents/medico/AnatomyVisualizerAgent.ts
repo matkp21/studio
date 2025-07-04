@@ -32,16 +32,18 @@ const anatomyVisualizerPrompt = ai.definePrompt({
 Given the anatomical structure: {{{anatomicalStructure}}}
 
 Provide a detailed description covering:
-1.  Location
-2.  Key features/parts
-3.  Primary functions
-4.  Important clinical correlations or relevance.
-5.  Optionally, list a few related structures.
+1.  **Location**: Where is the structure found in the body?
+2.  **Key Features/Parts**: What are its main components?
+3.  **Primary Functions**: What does it do?
+4.  **Important Clinical Correlations**: Why is it important in medicine (common diseases, injuries, procedures)?
+5.  **Related Structures**: List a few anatomically or functionally related structures.
+6.  **Next Steps**: Suggest a logical next step, like generating study notes or MCQs for the same structure.
 
 Format the output as JSON conforming to the MedicoAnatomyVisualizerOutputSchema.
-The 'description' field should be comprehensive.
+'description' field should be comprehensive.
 'imageUrl' can be omitted or set to null if image generation is not used/available.
 'relatedStructures' should be an array of strings.
+'nextSteps' should contain suggestions like: { "tool": "theorycoach-generator", "topic": "Anatomy of the {{{anatomicalStructure}}}", "reason": "Generate study notes" }.
 `,
   config: {
     temperature: 0.3, // Factual and detailed

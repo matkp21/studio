@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview The DiagnoBot agent, for interpreting clinical data.
@@ -29,11 +30,13 @@ Given the following lab results:
 Provide a structured interpretation covering:
 1.  **Abnormal Values**: Clearly list which values are high, low, or abnormal.
 2.  **Potential Implications**: Explain what these abnormalities could suggest (e.g., "Elevated WBC may indicate infection or inflammation").
-3.  **Next Steps/Correlations**: Suggest what clinical correlations or next steps might be considered (e.g., "Correlate with patient's clinical signs of infection," or "Consider a peripheral smear for further evaluation.").
+3.  **Likely Differentials**: List a few possible differential diagnoses suggested by the lab results.
+4.  **Next Steps**: Suggest what clinical correlations or next steps might be considered, such as explaining the pathophysiology of a likely differential.
 
 Format the output as JSON conforming to the DiagnoBotOutputSchema.
 - The 'interpretation' field should be a detailed, well-structured text in Markdown.
 - The 'likelyDifferentials' field should be an array of possible conditions suggested by the labs.
+- 'nextSteps' should contain suggestions like: { "tool": "pathomind", "topic": "[One of the likely differentials]", "reason": "Explain pathophysiology" }.
 `,
   config: {
     temperature: 0.3, // Factual for data interpretation

@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview The PharmaGenie agent, for providing drug information.
@@ -30,10 +31,12 @@ Provide a detailed summary covering:
 2.  **Mechanism of Action**: How the drug works at a physiological and molecular level.
 3.  **Key Indications**: The primary medical uses for the drug.
 4.  **Common Side Effects**: Important and common adverse effects.
+5.  **Next Steps**: Suggest creating flashcards for this drug to help with memorization.
 
 Format the output as JSON conforming to the PharmaGenieOutputSchema.
 - 'drugClass' and 'mechanismOfAction' should be detailed strings.
 - 'indications' and 'sideEffects' should be arrays of strings.
+- 'nextSteps' should contain suggestions like: { "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }.
 `,
   config: {
     temperature: 0.3, // Factual and structured

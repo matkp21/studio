@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview The PathoMind agent, responsible for explaining disease pathophysiology.
@@ -28,10 +29,12 @@ Given the medical topic: {{{topic}}}
 Provide a clear, step-by-step explanation of the pathophysiology.
 Structure the explanation logically, from initial triggers to clinical manifestations.
 Additionally, generate a simple Mermaid.js flowchart (graph TD) that visually summarizes the key steps of the pathophysiological process.
+Finally, suggest a next step to generate study notes for a deeper dive.
 
 Format the output as JSON conforming to the PathoMindOutputSchema.
 - The 'explanation' field should be a detailed, well-structured text.
 - The 'diagram' field should contain only the Mermaid.js syntax for the flowchart.
+- The 'nextSteps' field should contain a suggestion like: { "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate comprehensive notes" }.
 
 Example for 'Myocardial Infarction':
 Explanation: "Coronary artery plaque rupture leads to thrombus formation..."
