@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { cn } from '@/lib/utils';
 import {
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
-  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords, Trophy, Library
+  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords, Trophy, Library, CalendarDays
 } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
 import Link from 'next/link';
@@ -201,8 +201,6 @@ const MedicoDashboardContent = () => {
         if (!isOpen) {
             setActiveDialog(null);
             setInitialTopic(null);
-            // Optionally clear URL params
-            // router.push('/medico', { scroll: false });
         }
     };
     
@@ -210,7 +208,6 @@ const MedicoDashboardContent = () => {
     const frequentlyUsedTools = displayedTools.filter(tool => frequentlyUsedMedicoToolIds.includes(tool.id));
     const otherTools = displayedTools.filter(tool => !frequentlyUsedMedicoToolIds.includes(tool.id));
     
-    // Sample tasks for the medico dashboard widget
     const medicoTasks: HeroTask[] = [
       { id: 'med-1', date: new Date(), title: 'Anatomy Lecture', description: '10:00 AM - Skeletal System' },
       { id: 'med-2', date: new Date(), title: 'Study Group: Cardiology', description: '4:00 PM - Discuss ECGs' },
@@ -233,9 +230,20 @@ const MedicoDashboardContent = () => {
                 </Button>
             </div>
             
-            <div className="mb-8">
-              <HeroWidgets tasks={medicoTasks} />
-            </div>
+             <Card className="shadow-lg rounded-xl mb-10">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <CalendarDays className="h-6 w-6 text-primary"/>
+                    Schedule Overview
+                  </CardTitle>
+                  <CardDescription>
+                    Your upcoming tasks, events, and a quick-access clock.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex justify-center">
+                  <HeroWidgets tasks={medicoTasks} />
+                </CardContent>
+              </Card>
 
             <Dialog open={activeDialog !== null} onOpenChange={handleOpenChange}>
                 {isEditMode ? (
@@ -289,7 +297,6 @@ const MedicoDashboardContent = () => {
                 </>
                 )}
                 
-                {/* Centralized Dialog Content */}
                 {currentTool && !currentTool.href && !currentTool.comingSoon && currentTool.component && (
                     <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
                         <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
@@ -300,7 +307,6 @@ const MedicoDashboardContent = () => {
                         </DialogHeader>
                         <ScrollArea className="flex-grow overflow-y-auto">
                         <div className="p-6 pt-2">
-                            {/* Pass initialTopic to the component if it exists */}
                             {React.createElement(currentTool.component, { initialTopic })}
                         </div>
                         </ScrollArea>
@@ -314,11 +320,8 @@ const MedicoDashboardContent = () => {
 
 export function MedicoDashboard() {
   return (
-    // The Suspense boundary is important for components that use `useSearchParams`
     <React.Suspense fallback={<div>Loading...</div>}>
       <MedicoDashboardContent />
     </React.Suspense>
   );
 }
-
-    
