@@ -1,3 +1,4 @@
+
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
@@ -274,7 +275,7 @@ export function MedicoDashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {otherTools.map((tool) => (
                 <Dialog key={tool.id} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
-                    <ToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
+                    <MedicoToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
                     {!tool.comingSoon && tool.component && activeDialog === tool.id && (
                          <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
                             <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
