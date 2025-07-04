@@ -24,7 +24,11 @@ import '@/ai/agents/medico/DrugDosageCalculatorAgent.ts';
 import '@/ai/agents/medico/FlowchartCreatorAgent.ts';
 import '@/ai/agents/medico/ProgressTrackerAgent.ts';
 import '@/ai/agents/medico/NoteSummarizerAgent.ts';
-import '@/ai/agents/medico/PathoMindAgent.ts'; // NEW
+import '@/ai/agents/medico/PathoMindAgent.ts';
+import '@/ai/agents/medico/PharmaGenieAgent.ts';
+import '@/ai/agents/medico/MicroMateAgent.ts';
+import '@/ai/agents/medico/DiagnoBotAgent.ts';
+
 
 // Professional tools
 import '@/ai/agents/pro/DischargeSummaryGeneratorAgent.ts';

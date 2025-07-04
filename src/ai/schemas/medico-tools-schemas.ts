@@ -298,4 +298,42 @@ export const PathoMindOutputSchema = z.object({
 export type PathoMindOutput = z.infer<typeof PathoMindOutputSchema>;
 
 
-// ... Potentially other schemas as features expand
+// Schema for PharmaGenie
+export const PharmaGenieInputSchema = z.object({
+  drugName: z.string().min(3, { message: "Drug name must be at least 3 characters." }).describe('The drug to explain.'),
+});
+export type PharmaGenieInput = z.infer<typeof PharmaGenieInputSchema>;
+
+export const PharmaGenieOutputSchema = z.object({
+  drugClass: z.string().describe('The pharmacological class of the drug.'),
+  mechanismOfAction: z.string().describe('A detailed explanation of the drug\'s mechanism of action.'),
+  indications: z.array(z.string()).describe('A list of key medical uses for the drug.'),
+  sideEffects: z.array(z.string()).describe('A list of common or important side effects.'),
+});
+export type PharmaGenieOutput = z.infer<typeof PharmaGenieOutputSchema>;
+
+// Schema for MicroMate
+export const MicroMateInputSchema = z.object({
+  microorganism: z.string().min(3, { message: "Microorganism name must be at least 3 characters." }).describe('The microorganism to explain.'),
+});
+export type MicroMateInput = z.infer<typeof MicroMateInputSchema>;
+
+export const MicroMateOutputSchema = z.object({
+  characteristics: z.string().describe('Key characteristics of the microorganism (e.g., Gram stain, shape).'),
+  virulenceFactors: z.string().describe('Key virulence factors.'),
+  diseasesCaused: z.string().describe('Common diseases associated with the organism.'),
+  labDiagnosis: z.string().describe('Standard methods for lab diagnosis.'),
+});
+export type MicroMateOutput = z.infer<typeof MicroMateOutputSchema>;
+
+// Schema for DiagnoBot
+export const DiagnoBotInputSchema = z.object({
+  labResults: z.string().min(10, { message: "Please provide some lab results." }).describe('A text description of lab results (e.g., "CBC: Hb 10.5, WBC 15000, Plt 450k").'),
+});
+export type DiagnoBotInput = z.infer<typeof DiagnoBotInputSchema>;
+
+export const DiagnoBotOutputSchema = z.object({
+  interpretation: z.string().describe('A structured interpretation of the lab results provided.'),
+  likelyDifferentials: z.array(z.string()).describe('A list of likely differential diagnoses suggested by the lab results.'),
+});
+export type DiagnoBotOutput = z.infer<typeof DiagnoBotOutputSchema>;

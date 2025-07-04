@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { cn } from '@/lib/utils';
 import {
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
-  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords, Trophy, Library, CalendarDays, BrainCircuit
+  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, ArrowRight, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords, Trophy, Library, CalendarDays, BrainCircuit, FlaskConical, Microscope, TestTubeDiagonal
 } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
 import Link from 'next/link';
@@ -38,6 +38,10 @@ import { GamifiedCaseChallenges } from './gamified-case-challenges';
 import { MockExamSuite } from './mock-exam-suite';
 import { HeroWidgets, type HeroTask } from '@/components/homepage/hero-widgets';
 import { PathoMindExplainer } from './pathomind-explainer';
+import { PharmaGenie } from './pharma-genie';
+import { MicroMate } from './micro-mate';
+import { DiagnoBot } from './diagno-bot';
+
 
 type ActiveToolId =
   | 'q-bank'
@@ -61,6 +65,9 @@ type ActiveToolId =
   | 'exams'
   | 'library'
   | 'pathomind'
+  | 'pharmagenie'
+  | 'micromate'
+  | 'diagnobot'
   | null;
 
 interface MedicoTool {
@@ -93,6 +100,9 @@ const allMedicoToolsList: MedicoTool[] = [
   { id: 'cases', title: 'Clinical Case Simulations', description: 'Practice with interactive patient scenarios.', icon: CaseUpper, component: ClinicalCaseSimulator },
   { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'List diagnoses based on symptoms with feedback.', icon: Brain, component: DifferentialDiagnosisTrainer },
   { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Explore anatomical structures.', icon: Eye, component: AnatomyVisualizer },
+  { id: 'pharmagenie', title: 'PharmaGenie', description: 'Drug classification, mechanisms, and side effects.', icon: FlaskConical, component: PharmaGenie },
+  { id: 'micromate', title: 'MicroMate', description: 'Bugs, virulence factors, lab diagnosis.', icon: Microscope, component: MicroMate },
+  { id: 'diagnobot', title: 'DiagnoBot', description: 'Interpret labs, ECGs, X-rays, etc.', icon: TestTubeDiagonal, component: DiagnoBot },
   { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds, comingSoon: true },
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator },
   { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
