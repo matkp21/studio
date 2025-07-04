@@ -1,4 +1,4 @@
-
+// src/ai/agents/medico/StudyTimetableCreatorAgent.ts
 'use server';
 /**
  * @fileOverview A Genkit flow for creating personalized study timetables for medico users.
@@ -30,24 +30,24 @@ const studyTimetablePrompt = ai.definePrompt({
 - Exam Date: {{{examDate}}}
 - Available Study Hours Per Week: {{{studyHoursPerWeek}}}
 - Subjects to Cover: {{#each subjects}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
-{{#if weakSubjects.length}}
-- **Prioritize These Subjects**: {{#each weakSubjects}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+{{#if weakSubjects}}
+- **Performance Context / Weak Areas to Prioritize**: {{{weakSubjects}}}
 {{/if}}
 
 **Your Task:**
 1.  **Analyze**: Review all the details provided.
 2.  **Strategize**: Create a structured, realistic, and personalized study timetable.
-3.  **Prioritize**: If 'weak subjects' are listed, allocate more time and potentially more frequent revision sessions for them.
+3.  **Prioritize**: If 'Weak Areas' are described, analyze this context to understand where the student is struggling. Allocate more time, more frequent revision sessions, and targeted practice for these specific subjects or topics. For example, if the user mentions "ECGs", integrate dedicated ECG practice sessions.
 4.  **Structure**: The output should be a clear, organized timetable, ideally in a week-by-week Markdown format. Include a mix of first-reads, revisions, and practice question sessions.
-5.  **Explain**: Briefly explain the rationale behind the schedule, especially how it addresses the weak subjects.
+5.  **Explain**: Briefly explain the rationale behind the schedule, especially how it addresses the weak subjects or performance context provided.
 
-Example of a good structure:
+Example of a good structure for a user who mentioned weakness in "Cardiology pharmacology":
 "### Week 1-2: Foundation & High-Yield Topics
-**Focus:** Build a strong base in all subjects, with extra time for Pathology.
-- **Monday:** 3h Medicine (Cardiology), 2h Pathology (Cell Injury)
+**Focus:** Build a strong base, with extra time for Cardiology.
+- **Monday:** 3h Medicine (Cardiology basics), 2h Pharmacology (Antihypertensives)
 - **Tuesday:** 3h Surgery (Wound Healing), 2h Pathology (Inflammation)
 ...
-**Rationale:** We are starting with high-yield topics and dedicating an extra session to Pathology each week to build confidence."
+**Rationale:** We are starting with high-yield topics and dedicating an extra session to Pharmacology each week, starting with those relevant to Cardiology to address your stated weak area."
 
 Ensure the final output in the 'timetable' field is the complete, well-formatted Markdown schedule.
 `,

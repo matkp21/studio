@@ -1,4 +1,3 @@
-
 // src/components/medico/study-timetable-creator.tsx
 "use client";
 
@@ -15,14 +14,15 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, CalendarDays, Wand2 } from 'lucide-react';
 import { createStudyTimetable, type MedicoStudyTimetableInput, type MedicoStudyTimetableOutput } from '@/ai/agents/medico/StudyTimetableCreatorAgent';
 import { useToast } from '@/hooks/use-toast';
-import { DatePicker } from '@/components/ui/date-picker'; // Assuming you have a DatePicker component
+import { DatePicker } from '@/components/ui/date-picker';
+import { Textarea } from '@/components/ui/textarea'; // Import Textarea
 
 const formSchema = z.object({
   examName: z.string().min(3, { message: "Exam name must be at least 3 characters." }).max(100, { message: "Exam name too long."}),
   examDate: z.date({ required_error: "Exam date is required." }),
-  subjects: z.string().min(1, { message: "At least one subject is required."}).transform(val => val.split(',').map(s => s.trim()).filter(s => s.length > 0)),
+  subjects: z.string().min(1, { message: "At least one subject is required."}),
   studyHoursPerWeek: z.coerce.number().int().min(1, {message: "Minimum 1 hour."}).max(100, {message: "Maximum 100 hours."}).default(20),
-  weakSubjects: z.string().optional().transform(val => val ? val.split(',').map(s => s.trim()).filter(s => s.length > 0) : undefined),
+  weakSubjects: z.string().optional(), // Now a string for free-text input
 });
 
 type TimetableFormValues = z.infer<typeof formSchema>;
@@ -38,9 +38,9 @@ export function StudyTimetableCreator() {
     defaultValues: {
       examName: "",
       examDate: undefined,
-      subjects: [],
+      subjects: "",
       studyHoursPerWeek: 20,
-      weakSubjects: [],
+      weakSubjects: "",
     },
   });
 
@@ -50,10 +50,13 @@ export function StudyTimetableCreator() {
     setError(null);
 
     try {
-      // Convert Date object to YYYY-MM-DD string format for the flow
+      // Convert data to match the agent's expected input schema
       const formattedData: MedicoStudyTimetableInput = {
-        ...data,
+        examName: data.examName,
         examDate: data.examDate.toISOString().split('T')[0], 
+        subjects: data.subjects.split(',').map(s => s.trim()).filter(Boolean),
+        studyHoursPerWeek: data.studyHoursPerWeek,
+        weakSubjects: data.weakSubjects || undefined,
       };
       const result = await createStudyTimetable(formattedData);
       setGeneratedTimetable(result);
@@ -128,10 +131,7 @@ export function StudyTimetableCreator() {
                     id="subjects-timetable"
                     placeholder="e.g., Surgery, Pediatrics, Medicine"
                     className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary"
-                    // Temporarily use any due to RHF type mismatch with transform
-                    {...field as any} 
-                    value={Array.isArray(field.value) ? field.value.join(', ') : field.value}
-                    onChange={(e) => field.onChange(e.target.value)}
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -143,19 +143,17 @@ export function StudyTimetableCreator() {
             name="weakSubjects"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="weakSubjects-timetable" className="text-base">Weaker Subjects (Optional)</FormLabel>
+                <FormLabel htmlFor="weakSubjects-timetable" className="text-base">Weaker Subjects / Areas to Focus On (Optional)</FormLabel>
                 <FormControl>
-                  <Input
+                  <Textarea
                     id="weakSubjects-timetable"
-                    placeholder="e.g., Pharmacology, Biochemistry"
-                    className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary"
-                    // Temporarily use any due to RHF type mismatch with transform
-                    {...field as any} 
-                    value={Array.isArray(field.value) ? field.value.join(', ') : (field.value || '')}
-                    onChange={(e) => field.onChange(e.target.value)}
+                    placeholder="e.g., Struggling with Cardiology pharmacology, find ECG interpretation difficult, scored low on renal physiology quizzes."
+                    className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary min-h-[100px]"
+                    {...field}
+                    value={field.value || ''}
                   />
                 </FormControl>
-                <FormDescription>List subjects you want to prioritize, separated by commas.</FormDescription>
+                <FormDescription>Provide context on your weak areas. The AI will use this to create a more focused plan.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
