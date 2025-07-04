@@ -22,6 +22,7 @@ const formSchema = z.object({
   examDate: z.date({ required_error: "Exam date is required." }),
   subjects: z.string().min(1, { message: "At least one subject is required."}),
   studyHoursPerWeek: z.coerce.number().int().min(1, {message: "Minimum 1 hour."}).max(100, {message: "Maximum 100 hours."}).default(20),
+  performanceContext: z.string().optional(), // New field
 });
 
 type TimetableFormValues = z.infer<typeof formSchema>;
@@ -39,6 +40,7 @@ export function StudyTimetableCreator() {
       examDate: undefined,
       subjects: "",
       studyHoursPerWeek: 20,
+      performanceContext: "", // New field default
     },
   });
 
@@ -53,6 +55,7 @@ export function StudyTimetableCreator() {
         examDate: data.examDate.toISOString().split('T')[0], 
         subjects: data.subjects.split(',').map(s => s.trim()).filter(Boolean),
         studyHoursPerWeek: data.studyHoursPerWeek,
+        performanceContext: data.performanceContext || undefined, // Pass new field
       };
       const result = await createStudyTimetable(formattedData);
       setGeneratedTimetable(result);
@@ -80,7 +83,7 @@ export function StudyTimetableCreator() {
         <Lightbulb className="h-5 w-5 text-purple-600" />
         <AlertTitle className="font-semibold text-purple-700 dark:text-purple-500">Smart Planner</AlertTitle>
         <AlertDescription className="text-purple-600/90 dark:text-purple-500/90 text-xs">
-          The AI will automatically analyze your (simulated) performance data on the provided subjects to identify weak spots and generate a prioritized schedule.
+          Provide your exam details and context about your performance. The AI will generate a prioritized schedule focusing on your weaker areas.
         </AlertDescription>
       </Alert>
       <Form {...form}>
@@ -141,6 +144,25 @@ export function StudyTimetableCreator() {
               </FormItem>
             )}
           />
+           <FormField
+            control={form.control}
+            name="performanceContext"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel htmlFor="performanceContext-timetable" className="text-base">Performance Context / Weaker Areas (Optional)</FormLabel>
+                 <FormControl>
+                    <Textarea
+                        id="performanceContext-timetable"
+                        placeholder="e.g., 'Struggling with ECG interpretation and side effects of antiarrhythmics. Scored low on renal physiology quizzes.'"
+                        className="min-h-[100px] rounded-lg text-base py-2.5 border-border/70 focus:border-primary"
+                        {...field}
+                    />
+                </FormControl>
+                <FormDescription className="text-xs">Provide details on topics you find difficult to get a more tailored plan.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="studyHoursPerWeek"
@@ -196,7 +218,7 @@ export function StudyTimetableCreator() {
              {generatedTimetable.performanceAnalysis && (
                  <Alert variant="default" className="border-purple-500/50 bg-purple-500/10">
                     <Lightbulb className="h-5 w-5 text-purple-600" />
-                    <AlertTitle className="font-semibold text-purple-700 dark:text-purple-500">AI Performance Analysis</AlertTitle>
+                    <AlertTitle className="font-semibold text-purple-700 dark:text-purple-500">AI Planning Rationale</AlertTitle>
                     <AlertDescription className="text-purple-600/90 dark:text-purple-500/90 text-xs">
                     {generatedTimetable.performanceAnalysis}
                     </AlertDescription>

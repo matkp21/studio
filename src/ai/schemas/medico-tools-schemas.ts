@@ -74,6 +74,7 @@ export const MedicoStudyTimetableInputSchema = z.object({
   examDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Exam date must be in YYYY-MM-DD format." }).describe('Date of the examination in YYYY-MM-DD format.'),
   subjects: z.array(z.string().min(1)).min(1, { message: "At least one subject is required." }).describe('List of subjects to study.'),
   studyHoursPerWeek: z.number().min(1).max(100).describe('Total number of study hours available per week.'),
+  performanceContext: z.string().optional().describe('Detailed description of weak areas or performance notes to help prioritize the schedule.'),
 });
 export type MedicoStudyTimetableInput = z.infer<typeof MedicoStudyTimetableInputSchema>;
 

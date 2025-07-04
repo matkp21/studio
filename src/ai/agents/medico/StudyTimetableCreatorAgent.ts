@@ -23,7 +23,7 @@ const studyTimetablePrompt = ai.definePrompt({
   name: 'medicoStudyTimetablePrompt',
   input: { schema: MedicoStudyTimetableInputSchema },
   output: { schema: MedicoStudyTimetableOutputSchema },
-  prompt: `You are an expert AI academic advisor for medical students. You have access to the user's entire performance history on MediAssistant, including quiz scores, case simulation results, and topics they've generated notes for.
+  prompt: `You are an expert AI academic advisor for medical students.
 
 **Student's Goal:**
 - Exam Name: {{{examName}}}
@@ -31,17 +31,17 @@ const studyTimetablePrompt = ai.definePrompt({
 - Available Study Hours Per Week: {{{studyHoursPerWeek}}}
 - Subjects to Cover: {{#each subjects}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
 
+{{#if performanceContext}}
+**Student's Performance Context / Weak Areas:**
+{{{performanceContext}}}
+{{/if}}
+
 **Your Task:**
-1.  **Analyze & Synthesize (Simulated)**: Your first task is to generate a 'performanceAnalysis'. Based on the subjects the user wants to cover, synthesize a realistic analysis of their likely weak points. For example, if they list 'Cardiology' and 'Pharmacology', you might surmise "User's performance suggests a strong grasp of general cardiology but shows weakness in ECG interpretation and the side effects of antiarrhythmic drugs." Be specific and provide a credible-sounding analysis.
+1.  **Analyze & Prioritize**: Use the student's provided performance context to create a structured, realistic, and personalized study timetable. Allocate more time, more frequent revision sessions, and targeted practice for the weak areas identified in the context. If no context is provided, create a balanced schedule.
 
-2.  **Strategize & Prioritize**: Use your generated 'performanceAnalysis' to create a structured, realistic, and personalized study timetable. Allocate more time, more frequent revision sessions, and targeted practice (e.g., "ECG Practice Session") for the identified weak areas.
+2.  **Structure**: The output for the 'timetable' field should be a clear, organized timetable, ideally in a week-by-week Markdown format. It should be detailed and actionable.
 
-3.  **Structure**: The output for the 'timetable' field should be a clear, organized timetable, ideally in a week-by-week Markdown format.
-
-4.  **Explain**: The 'performanceAnalysis' field should contain your summary of the student's weak points, which serves as the rationale for the schedule's structure.
-
-Example of a good 'performanceAnalysis':
-"Based on app-wide performance data, the student shows strong understanding in basic physiology but struggles with clinical application, especially in Neurology (e.g., localizing lesions) and complex pharmacological mechanisms. The schedule will prioritize these areas."
+3.  **Confirm Understanding**: In the 'performanceAnalysis' field of your response, provide a brief summary of the weak points from the user's context that you prioritized in the schedule. This confirms you understood the request. For example: "The schedule prioritizes clinical application in Neurology and complex pharmacology based on the provided context."
 
 Ensure the final output is a valid JSON object with 'performanceAnalysis' and 'timetable' fields.
 `,
