@@ -1,3 +1,4 @@
+
 // src/components/medico/high-yield-topic-predictor.tsx
 "use client";
 
@@ -60,13 +61,13 @@ export function HighYieldTopicPredictor() {
 
        // Track progress
       try {
-        const progressResult = await trackProgress({
+        await trackProgress({
             activityType: 'notes_review',
             topic: `Topic Prediction for ${data.examType}`
         });
         toast({
             title: "Progress Tracked!",
-            description: progressResult.progressUpdateMessage
+            description: "This activity has been added to your progress."
         });
       } catch (progressError) {
           console.warn("Could not track progress for topic prediction:", progressError);

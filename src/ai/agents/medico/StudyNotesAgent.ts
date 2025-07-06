@@ -17,23 +17,23 @@ import type { z } from 'zod';
 export type StudyNotesGeneratorInput = z.infer<typeof StudyNotesGeneratorInputSchema>;
 export type StudyNotesGeneratorOutput = z.infer<typeof StudyNotesGeneratorOutputSchema>;
 
-// Simple in-memory cache
-const studyNotesCache = new Map<string, StudyNotesGeneratorOutput>();
+// Simple in-memory cache - DISABLED to ensure fresh prompts
+// const studyNotesCache = new Map<string, StudyNotesGeneratorOutput>();
 
 export async function generateStudyNotes(input: StudyNotesGeneratorInput): Promise<StudyNotesGeneratorOutput> {
-  const cacheKey = JSON.stringify(input);
-  if (studyNotesCache.has(cacheKey)) {
-    console.log(`[Cache HIT] Serving cached study notes for: ${input.topic}`);
-    return studyNotesCache.get(cacheKey)!;
-  }
+  // const cacheKey = JSON.stringify(input);
+  // if (studyNotesCache.has(cacheKey)) {
+  //   console.log(`[Cache HIT] Serving cached study notes for: ${input.topic}`);
+  //   return studyNotesCache.get(cacheKey)!;
+  // }
   
-  console.log(`[Cache MISS] Generating new study notes for: ${input.topic}`);
+  // console.log(`[Cache MISS] Generating new study notes for: ${input.topic}`);
   const result = await studyNotesFlow(input);
   
   // Cache the successful result
-  if (result) {
-    studyNotesCache.set(cacheKey, result);
-  }
+  // if (result) {
+  //   studyNotesCache.set(cacheKey, result);
+  // }
   
   return result;
 }
@@ -65,7 +65,7 @@ Your task is to generate a comprehensive JSON output with four fields: 'notes', 
 
 3.  **'diagram' field**: Place the Mermaid.js syntax generated in step 10 into this field as a single string. If no diagram is relevant, this can be null.
 
-4.  **'nextSteps' field**: Based on the generated notes, suggest 1-2 logical next study steps. Format this as an array of objects, where each object has "tool", "topic", and "reason". Example: { "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge" }.
+4.  **'nextSteps' field**: CRITICAL: You must suggest 1-2 logical next study steps based on the generated notes. Format this as an array of objects, where each object has "tool", "topic", and "reason". Example: [{ "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge" }].
 
 Constraint: For a '10-mark' answer, the 'notes' content should be around 500 words. For a '5-mark' answer, around 250 words.
 Ensure the entire response is a single valid JSON object conforming to the StudyNotesGeneratorOutputSchema.

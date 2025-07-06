@@ -1,3 +1,4 @@
+
 // src/components/medico/progress-tracker.tsx
 "use client";
 
@@ -45,7 +46,7 @@ export function ProgressTracker() {
             <Lightbulb className="h-5 w-5 text-green-600" />
             <AlertTitle className="font-semibold text-green-700 dark:text-green-500">Progress Dashboard</AlertTitle>
             <AlertDescription className="text-green-600/90 dark:text-green-500/90 text-xs">
-              Activity tracking is active across all Medico tools! Your progress is logged, and you'll receive toast notifications. This dashboard visualizes sample data to demonstrate how your future progress will be displayed.
+              Activity tracking is now active across all Medico tools! As you generate notes, take quizzes, or complete cases, you'll receive toast notifications with gamified feedback. This dashboard visualizes sample data to demonstrate how your future progress will be displayed.
             </AlertDescription>
       </Alert>
       

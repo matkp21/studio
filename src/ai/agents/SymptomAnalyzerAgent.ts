@@ -17,32 +17,32 @@ export type SymptomAnalyzerInput = z.infer<typeof SymptomAnalyzerInputSchema>;
 export type SymptomAnalyzerOutput = z.infer<typeof SymptomAnalyzerOutputSchema>;
 export type { DiagnosisItem, InvestigationItem } from '@/ai/schemas/symptom-analyzer-schemas';
 
-// Simple in-memory cache
-const symptomAnalysisCache = new Map<string, SymptomAnalyzerOutput>();
+// Simple in-memory cache - DISABLED TO ENSURE FRESH PROMPTS
+// const symptomAnalysisCache = new Map<string, SymptomAnalyzerOutput>();
 
 export async function analyzeSymptoms(input: SymptomAnalyzerInput): Promise<SymptomAnalyzerOutput> {
   // Normalize input for better cache hits (e.g., lowercase, trim)
-  const normalizedInput = {
-    ...input,
-    symptoms: input.symptoms.trim().toLowerCase(),
-    patientContext: input.patientContext ? {
-      ...input.patientContext,
-      history: input.patientContext.history?.trim().toLowerCase()
-    } : undefined
-  };
-  const cacheKey = JSON.stringify(normalizedInput);
+  // const normalizedInput = {
+  //   ...input,
+  //   symptoms: input.symptoms.trim().toLowerCase(),
+  //   patientContext: input.patientContext ? {
+  //     ...input.patientContext,
+  //     history: input.patientContext.history?.trim().toLowerCase()
+  //   } : undefined
+  // };
+  // const cacheKey = JSON.stringify(normalizedInput);
 
-  if (symptomAnalysisCache.has(cacheKey)) {
-    console.log(`[Cache HIT] Serving cached symptom analysis.`);
-    return symptomAnalysisCache.get(cacheKey)!;
-  }
+  // if (symptomAnalysisCache.has(cacheKey)) {
+  //   console.log(`[Cache HIT] Serving cached symptom analysis.`);
+  //   return symptomAnalysisCache.get(cacheKey)!;
+  // }
 
-  console.log(`[Cache MISS] Performing new symptom analysis.`);
+  // console.log(`[Cache MISS] Performing new symptom analysis.`);
   const result = await symptomAnalyzerFlow(input); // Use original input for the flow
 
-  if (result) {
-    symptomAnalysisCache.set(cacheKey, result);
-  }
+  // if (result) {
+  //   symptomAnalysisCache.set(cacheKey, result);
+  // }
 
   return result;
 }

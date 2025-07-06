@@ -2,7 +2,7 @@
 import type { MedicoTool, ActiveToolId } from '@/types/medico-tools';
 import {
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
-  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords, Trophy, Library, CalendarDays, BrainCircuit, FlaskConical, Microscope, TestTubeDiagonal, Network
+  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords, Trophy, Library, CalendarDays, BrainCircuit, FlaskConical, Microscope, TestTubeDiagonal, Network, Wand2 
 } from 'lucide-react';
 
 // Component Imports
@@ -28,14 +28,18 @@ import { PathoMindExplainer } from '@/components/medico/pathomind-explainer';
 import { PharmaGenie } from '@/components/medico/pharma-genie';
 import { MicroMate } from '@/components/medico/micro-mate';
 import { DiagnoBot } from '@/components/medico/diagno-bot';
+import { TheoryCoach } from '@/components/medico/theory-coach';
 
 
 // Define the full list of tools
 export const allMedicoToolsList: MedicoTool[] = [
   { id: 'pathomind', title: 'PathoMind', description: 'Explain any disease pathophysiology with diagrams.', icon: BrainCircuit, component: PathoMindExplainer },
+  { id: 'next-tool', title: 'AI-Recommended Next Tool', description: 'Let AI suggest the best tool for your current study goal, based on your recent activity and progress.', icon: Wand2, comingSoon: true },
+  { id: 'next-module', title: 'AI-Recommended Module', description: 'Based on your performance, AI can recommend the next topic or module for you to focus on.', icon: Wand2, comingSoon: true },
   { id: 'exams', title: 'Mock Exam Suite', description: 'Take full-length mock exams, get detailed analytics, and compete on leaderboards.', icon: Trophy, component: MockExamSuite, comingSoon: false },
   { id: 'challenges', title: 'Gamified Case Challenges', description: 'Solve timed clinical scenarios and compete on leaderboards.', icon: Swords, component: GamifiedCaseChallenges, comingSoon: false },
   { id: 'q-bank', title: 'Exam Paper Generator', description: "Generate mock exam papers simulating previous years, with MCQs and essay questions.", icon: BookCopy, component: SolvedQuestionPapersViewer },
+  { id: 'theorycoach', title: 'Theory Coach', description: 'Get detailed explanations of complex medical theories, including analogies and key points.', icon: Lightbulb, component: TheoryCoach },
   { id: 'theorycoach-generator', title: 'Study Notes Generator', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: StudyNotesGenerator },
   { id: 'summarizer', title: 'Smart Note Summarizer', description: 'Upload notes (PDF/TXT/JPEG) and get AI-powered summaries in various formats.', icon: FileText, component: NoteSummarizer },
   { id: 'videos', title: 'Video Lecture Library', description: 'Search and find relevant medical video lectures from YouTube.', icon: Youtube, href: '/medico/videos' },
@@ -59,4 +63,15 @@ export const allMedicoToolsList: MedicoTool[] = [
   { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
 ];
 
-export const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['pathomind', 'exams', 'challenges', 'q-bank', 'mcq', 'theorycoach-generator', 'library', 'topicExplorer'];
+export const frequentlyUsedMedicoToolIds: ActiveToolId[] = [
+  'pathomind', 
+  'next-tool',
+  'next-module',
+  'exams', 
+  'challenges', 
+  'q-bank', 
+  'mcq', 
+  'theorycoach', 
+  'library', 
+  'topicExplorer'
+];

@@ -1,3 +1,4 @@
+
 // src/components/medico/clinical-case-simulator.tsx
 "use client";
 
@@ -83,13 +84,13 @@ export function ClinicalCaseSimulator() {
 
       if (result.isCompleted) {
         try {
-            const progressResult = await trackProgress({
+            await trackProgress({
                 activityType: 'case_sim_completed',
                 topic: result.topic || 'Clinical Case',
             });
             toast({
                 title: "Case Completed & Progress Tracked!",
-                description: progressResult.progressUpdateMessage,
+                description: "This activity has been added to your progress."
             });
         } catch (progressError) {
             console.warn("Could not track progress:", progressError);

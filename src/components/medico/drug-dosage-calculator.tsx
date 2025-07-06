@@ -1,3 +1,4 @@
+
 // src/components/medico/drug-dosage-calculator.tsx
 "use client";
 
@@ -70,13 +71,13 @@ export function DrugDosageCalculator() {
 
       // Track progress
       try {
-        const progressResult = await trackProgress({
+        await trackProgress({
             activityType: 'notes_review', // Treat as a review/practice activity
             topic: `Dosage: ${data.drugName}`
         });
         toast({
             title: "Progress Tracked!",
-            description: progressResult.progressUpdateMessage
+            description: "This activity has been added to your progress."
         });
       } catch (progressError) {
           console.warn("Could not track progress for dosage calculation:", progressError);
@@ -117,7 +118,7 @@ ${calculationResult.warnings?.map(w => `- ${w}`).join('\n') || 'N/A'}
         topic: `Dosage Calculation: ${form.getValues('drugName')}`,
         userId: user.uid,
         notes: notesContent,
-        warnings: calculationResult.warnings || [],
+        warnings: calculationResult.warnings || null,
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "This dosage calculation has been saved as a note." });

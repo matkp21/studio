@@ -86,13 +86,13 @@ export function DifferentialDiagnosisTrainer() {
         try {
             // The topic is the initial symptoms string.
             const topic = result.updatedCaseSummary.split('\n')[0]; // A bit hacky, but should work.
-            const progressResult = await trackProgress({
+            await trackProgress({
                 activityType: 'case_sim_completed', // Treat as a case
                 topic: topic || 'DDx Session'
             });
             toast({
                 title: "Session Completed & Progress Tracked!",
-                description: progressResult.progressUpdateMessage
+                description: "This activity has been added to your progress."
             });
         } catch (progressError) {
             console.warn("Could not track progress for DDx trainer:", progressError);
