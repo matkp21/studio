@@ -27,14 +27,12 @@ const highYieldTopicPredictorPrompt = ai.definePrompt({
 Given the exam type: "{{{examType}}}"
 {{#if subject}}And specific subject: "{{{subject}}}"{{/if}}
 
-1.  **Predict High-Yield Topics**: Predict a list of 5-10 high-yield topics that are most likely to be important for this exam. If a subject is specified, focus topics within that subject. Otherwise, provide general high-yield topics for the exam.
-2.  **Provide Rationale**: Provide a brief rationale for your predictions (e.g., based on past exam trends, curriculum weightage, clinical importance).
-3.  **Suggest Next Steps**: For each predicted topic, suggest a "next step" to generate study notes for it. This should be an object with the tool ID 'theorycoach-generator' and the specific topic.
+Your task is to generate a JSON object with 'predictedTopics', 'rationale', and 'nextSteps'.
+1.  **'predictedTopics'**: Predict a list of 5-10 high-yield topics that are most likely to be important for this exam. If a subject is specified, focus topics within that subject. Otherwise, provide general high-yield topics for the exam. This should be an array of strings.
+2.  **'rationale'**: Provide a brief rationale for your predictions (e.g., based on past exam trends, curriculum weightage, clinical importance). This should be a single string.
+3.  **'nextSteps'**: CRITICAL: You MUST suggest a next step for each predicted topic. This must be a JSON array of objects. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid ID like 'theorycoach-generator'. Example for one topic: [{ "tool": "theorycoach-generator", "topic": "Myocardial Infarction", "reason": "Generate notes for Myocardial Infarction" }]. Create one such object for each topic you predicted.
 
 Format the output as JSON conforming to the MedicoTopicPredictorOutputSchema.
-'predictedTopics' should be an array of strings.
-'rationale' should be a brief explanation.
-'nextSteps' should be an array of objects, one for each predicted topic. Example: { "tool": "theorycoach-generator", "topic": "Myocardial Infarction", "reason": "Generate notes for Myocardial Infarction" }
 `,
   config: {
     temperature: 0.4, // More analytical and based on patterns

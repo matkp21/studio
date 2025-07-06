@@ -36,7 +36,7 @@ Topic: {{{topic}}}
 Based on this activity, provide an encouraging progress update message.
 If the score is high (e.g., > 85%), award a conceptual achievement like "Cardiology Whiz" or "Pharmacology Pro".
 Calculate a new conceptual progress percentage for the topic, assuming they started at a lower percentage.
-Suggest a logical next step. For example, if they did poorly on a quiz (score < 60), suggest they generate study notes. If they did well, suggest they try a different tool or topic. Example: { "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Review weak areas" }.
+CRITICAL: You must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. If they did poorly on a quiz (score < 60), suggest they generate study notes. If they did well, suggest they try a different tool or topic. Example: [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Review weak areas" }].
 
 Format the output as JSON conforming to the MedicoProgressTrackerOutputSchema.
 

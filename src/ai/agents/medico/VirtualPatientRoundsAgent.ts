@@ -36,7 +36,8 @@ Based on the patient's history (assume you have access to it, not fully provided
 2. Provide the 'currentObservation' resulting from the student's action.
 3. Give the 'nextPrompt' to guide the student (e.g., "What investigations would you order next?", "How would you manage this finding?").
 4. Retain the topic: The 'topic' field MUST be set to "{{{patientFocus}}}".
-5. Update 'isCompleted' if this encounter is finished. If it is, also suggest 'nextSteps', like generating study notes for the case topic. Example: { "tool": "theorycoach-generator", "topic": "{{{patientFocus}}}", "reason": "Generate study notes" }.
+5. Update 'isCompleted' if this encounter is finished.
+6. **Suggest Next Steps**: CRITICAL: If the round is completed, you MUST suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "{{{patientFocus}}}", "reason": "Generate study notes" }].
 {{else}}
 New Virtual Round / New Patient.
 Focus for new patient (if any): "{{{patientFocus}}}"

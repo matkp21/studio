@@ -31,11 +31,10 @@ Provide a detailed summary covering:
 2.  **Virulence Factors**: Key mechanisms it uses to cause disease.
 3.  **Diseases Caused**: Common diseases associated with this organism.
 4.  **Lab Diagnosis**: Standard methods for identifying the organism in a lab.
-5.  **Next Steps**: Suggest creating MCQs or flashcards to test knowledge on this organism.
+5.  **Next Steps**: CRITICAL: You must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'mcq', 'flashcards'). Example: [{ "tool": "mcq", "topic": "{{{microorganism}}}", "reason": "Generate MCQs for {{{microorganism}}}" }].
 
 Format the output as JSON conforming to the MicroMateOutputSchema.
-- The fields 'characteristics', 'virulenceFactors', 'diseasesCaused', and 'labDiagnosis' should be detailed strings.
-- 'nextSteps' should contain suggestions like: { "tool": "mcq", "topic": "{{{microorganism}}}", "reason": "Generate MCQs for {{{microorganism}}}" }.
+The fields 'characteristics', 'virulenceFactors', 'diseasesCaused', and 'labDiagnosis' should be detailed strings.
 `,
   config: {
     temperature: 0.3, // Factual and detailed

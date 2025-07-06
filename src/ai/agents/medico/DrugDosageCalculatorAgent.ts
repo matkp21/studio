@@ -40,13 +40,12 @@ Instructions:
 4.  **Show Your Work**: Provide a step-by-step 'calculationExplanation' that clearly shows how you arrived at the final dose, including any adjustments made for patient context.
 5.  **Provide Clinical Warnings**: List important 'warnings' or common considerations. This MUST include any dose adjustments made due to renal function and other critical points like maximum dose, common side effects, etc.
 6.  **Educational Disclaimer**: Emphasize that this is for educational practice and real clinical decisions require consulting official pharmacopoeias and senior clinicians.
-7.  **Suggest Next Steps**: Suggest a logical next step, like creating flashcards for the drug.
+7.  **Suggest Next Steps**: CRITICAL: You must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'flashcards'). Example: [{ "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }].
 
 Format the output as JSON conforming to the MedicoDrugDosageOutputSchema.
 'calculatedDose' should be a string (e.g., "500 mg", "7.5 ml").
 'calculationExplanation' must be provided.
 'warnings' is an array of strings.
-'nextSteps' should contain suggestions like: { "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }.
 If critical information is missing to make a safe calculation, 'calculatedDose' can state "Insufficient information" and the explanation should detail what's missing.
 `,
   config: {

@@ -29,11 +29,11 @@ Given the topic: {{{topic}}}
 
 Generate a structured JSON object representing the flowchart. This JSON should contain 'nodes' and 'edges' arrays compatible with the React Flow library.
 - Use the custom node types: 'symptom', 'test', 'decision', 'treatment'.
-- Each node must have a unique 'id', a 'type', a 'position' {x, y}, and 'data' {label}.
+- Each node must have a unique 'id', a valid 'type', a 'position' {x, y}, and 'data' {label}.
 - Each edge must have a unique 'id', a 'source' node id, and a 'target' node id.
 - Arrange the node positions logically in a top-down manner. Start with x=250, y=25 for the first node and increment y by ~125 for subsequent nodes. Use different x positions for branches.
 - The 'topicGenerated' field should reflect the input topic.
-- The 'nextSteps' field should contain suggestions like: { "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge on this flowchart" }.
+- **Next Steps**: CRITICAL: You must suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'mcq'). Example: [{ "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge on this flowchart" }].
 
 Example of the required JSON output format for the topic "Basic Life Support":
 {

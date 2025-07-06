@@ -31,12 +31,11 @@ Provide a structured interpretation covering:
 1.  **Abnormal Values**: Clearly list which values are high, low, or abnormal.
 2.  **Potential Implications**: Explain what these abnormalities could suggest (e.g., "Elevated WBC may indicate infection or inflammation").
 3.  **Likely Differentials**: List a few possible differential diagnoses suggested by the lab results.
-4.  **Next Steps**: Suggest what clinical correlations or next steps might be considered, such as explaining the pathophysiology of a likely differential.
+4.  **Next Steps**: CRITICAL: You must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'pathomind'). Example: [{ "tool": "pathomind", "topic": "[One of the likely differentials]", "reason": "Explain pathophysiology" }].
 
 Format the output as JSON conforming to the DiagnoBotOutputSchema.
 - The 'interpretation' field should be a detailed, well-structured text in Markdown.
 - The 'likelyDifferentials' field should be an array of possible conditions suggested by the lab results.
-- 'nextSteps' should contain suggestions like: { "tool": "pathomind", "topic": "[One of the likely differentials]", "reason": "Explain pathophysiology" }.
 `,
   config: {
     temperature: 0.3, // Factual for data interpretation

@@ -29,12 +29,12 @@ Given the medical topic: {{{topic}}}
 Provide a clear, step-by-step explanation of the pathophysiology.
 Structure the explanation logically, from initial triggers to clinical manifestations.
 Additionally, generate a simple Mermaid.js flowchart (graph TD) that visually summarizes the key steps of the pathophysiological process.
-Finally, suggest a next step to generate study notes for a deeper dive.
+Finally, you must suggest a next step.
 
 Format the output as JSON conforming to the PathoMindOutputSchema.
 - The 'explanation' field should be a detailed, well-structured text.
 - The 'diagram' field should contain only the Mermaid.js syntax for the flowchart.
-- The 'nextSteps' field should contain a suggestion like: { "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate comprehensive notes" }.
+- **Next Steps**: CRITICAL: You must provide a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate comprehensive notes" }].
 
 Example for 'Myocardial Infarction':
 Explanation: "Coronary artery plaque rupture leads to thrombus formation..."

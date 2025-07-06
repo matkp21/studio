@@ -32,11 +32,13 @@ Number of flashcards to generate: {{{count}}}
 
 For each flashcard, create a 'front' (question or term) and a 'back' (answer or definition).
 The flashcards should be concise and focus on key, high-yield information relevant to the topic, difficulty, and exam style.
-After generating the flashcards, suggest a logical next step, like generating MCQs to test knowledge from the flashcards.
+After generating the flashcards, you must suggest a logical next step.
 
-Format the output as JSON conforming to the MedicoFlashcardGeneratorOutput schema, with an array of flashcard objects, a topicGenerated string, and an optional nextSteps array.
-Each flashcard object must have 'front' and 'back' string properties.
-The 'nextSteps' field should contain suggestions like: { "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge on these flashcards" }.
+Format the output as JSON conforming to the MedicoFlashcardGeneratorOutput schema.
+The output must include:
+1. 'flashcards': An array of flashcard objects, each with 'front' and 'back' string properties.
+2. 'topicGenerated': The topic for which these flashcards were generated.
+3. 'nextSteps': CRITICAL: You must provide a JSON array for this field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'mcq'). Example: [{ "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge on these flashcards" }].
 `,
   config: {
     temperature: 0.4, // Factual and concise

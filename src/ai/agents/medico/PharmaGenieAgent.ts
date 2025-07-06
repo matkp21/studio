@@ -31,12 +31,11 @@ Provide a detailed summary covering:
 2.  **Mechanism of Action**: How the drug works at a physiological and molecular level.
 3.  **Key Indications**: The primary medical uses for the drug.
 4.  **Common Side Effects**: Important and common adverse effects.
-5.  **Next Steps**: Suggest creating flashcards for this drug to help with memorization.
+5.  **Next Steps**: CRITICAL: You must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'flashcards'). Example: [{ "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }].
 
 Format the output as JSON conforming to the PharmaGenieOutputSchema.
 - 'drugClass' and 'mechanismOfAction' should be detailed strings.
 - 'indications' and 'sideEffects' should be arrays of strings.
-- 'nextSteps' should contain suggestions like: { "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }.
 `,
   config: {
     temperature: 0.3, // Factual and structured

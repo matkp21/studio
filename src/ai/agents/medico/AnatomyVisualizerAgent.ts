@@ -37,13 +37,10 @@ Provide a detailed description covering:
 3.  **Primary Functions**: What does it do?
 4.  **Important Clinical Correlations**: Why is it important in medicine (common diseases, injuries, procedures)?
 5.  **Related Structures**: List a few anatomically or functionally related structures.
-6.  **Next Steps**: Suggest a logical next step, like generating study notes or MCQs for the same structure.
+6.  **Next Steps**: CRITICAL: You must suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'theorycoach-generator' or 'mcq'. Example: [{ "tool": "theorycoach-generator", "topic": "Anatomy of the {{{anatomicalStructure}}}", "reason": "Generate study notes" }].
 
-Format the output as JSON conforming to the MedicoAnatomyVisualizerOutputSchema.
-'description' field should be comprehensive.
+Format the entire output as JSON conforming to the MedicoAnatomyVisualizerOutputSchema.
 'imageUrl' can be omitted or set to null if image generation is not used/available.
-'relatedStructures' should be an array of strings.
-'nextSteps' should contain suggestions like: { "tool": "theorycoach-generator", "topic": "Anatomy of the {{{anatomicalStructure}}}", "reason": "Generate study notes" }.
 `,
   config: {
     temperature: 0.3, // Factual and detailed

@@ -36,7 +36,8 @@ Student's last response/action: "{{{userResponse}}}"
 2.  **Provide Feedback**: Give constructive feedback on the student's response. Explain why it was a good or suboptimal choice. Reference standard guidelines (e.g., NICE, WHO) if relevant.
 3.  **Present the Next Step**: Describe the outcome of the student's action (e.g., "The CT scan shows a large pulmonary embolism.") and present the next clinical question (e.g., "Given this new information, what is your immediate management plan?").
 4.  **Retain the Topic**: The 'topic' field in the output MUST be set to "{{{topic}}}".
-5.  **Conclude if Necessary**: If the student has successfully managed the case or reached a logical conclusion, set 'isCompleted' to true, provide a final 'summary' of the case and key learning points, and suggest next steps. For 'nextSteps', suggest generating notes on the case topic or MCQs. Example: { "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate study notes" }.
+5.  **Conclude if Necessary**: If the student has successfully managed the case or reached a logical conclusion, set 'isCompleted' to true, provide a final 'summary' of the case and key learning points.
+6.  **Suggest Next Steps**: CRITICAL: If the case is completed, you MUST suggest 1-2 next steps for the 'nextSteps' field. Format as a JSON array of objects, each with "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'theorycoach-generator', 'mcq'). Example: [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate study notes" }].
 {{else}}
 You are starting a new case.
 Topic: {{{topic}}}

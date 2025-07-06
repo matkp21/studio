@@ -44,7 +44,7 @@ const studyTimetablePrompt = ai.definePrompt({
 
 3.  **Confirm Understanding**: In the 'performanceAnalysis' field of your response, provide a brief summary of the weak points from the user's context that you prioritized in the schedule. For example: "The schedule prioritizes clinical application in Neurology and complex pharmacology based on the provided context."
 
-4.  **Suggest Next Steps**: Based on the generated timetable, suggest a logical next step. For example, suggest generating study notes for the first major topic in Week 1. Format this as a 'nextSteps' array of objects, where each object has "tool", "topic", and "reason". Example: { "tool": "theorycoach-generator", "topic": "Cardiology Basics", "reason": "Start Week 1 with notes" }.
+4.  **Suggest Next Steps**: CRITICAL: You must suggest 1-2 logical next steps based on the generated timetable. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "Cardiology Basics", "reason": "Start Week 1 with notes" }].
 
 Ensure the final output is a valid JSON object with 'performanceAnalysis', 'timetable', and 'nextSteps' fields.
 `,
@@ -64,7 +64,7 @@ const studyTimetableFlow = ai.defineFlow(
       // In a real scenario, this would involve more complex logic to generate a timetable
       // based on subjects, exam date, and study hours.
       // For now, we'll rely on the LLM's ability to structure this based on the prompt.
-      const { output } = await studyTimetablePrompt(input);
+      const { output } = await createStudyTimetablePrompt(input);
 
       if (!output || !output.timetable || !output.performanceAnalysis) {
         console.error('MedicoStudyTimetablePrompt did not return a valid timetable and analysis for:', input.examName);

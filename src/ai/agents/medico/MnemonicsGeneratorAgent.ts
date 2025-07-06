@@ -28,14 +28,13 @@ Given the topic or list: {{{topic}}}
 
 Generate a creative and easy-to-remember mnemonic.
 Also, provide a brief explanation of what each part of the mnemonic stands for.
-Suggest a logical next step, like creating flashcards with the mnemonic.
+CRITICAL: You must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'flashcards'). Example: [{ "tool": "flashcards", "topic": "{{{topic}}}", "reason": "Create a flashcard for this mnemonic" }].
 
 Format the output as JSON conforming to the MedicoMnemonicsGeneratorOutputSchema.
 The 'mnemonic' field should contain the mnemonic itself.
 The 'explanation' field should detail its components.
 The 'topicGenerated' field should reflect the input topic.
 The 'imageUrl' field can be omitted or set to null as image generation is currently disabled.
-The 'nextSteps' field should contain suggestions like: { "tool": "flashcards", "topic": "{{{topic}}}", "reason": "Create a flashcard for this mnemonic" }.
 
 Example for topic "Cranial Nerves (Order)":
 Mnemonic: "Oh Oh Oh To Touch And Feel Very Good Velvet, Ah Heaven"

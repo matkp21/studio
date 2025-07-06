@@ -55,14 +55,13 @@ For each MCQ:
 3.  Ensure one option is clearly the correct answer.
 4.  The other three options should be plausible distractors, relevant to the topic but incorrect.
 5.  Provide a brief explanation for why the correct answer is correct and, if relevant, why common distractors are incorrect.
-6.  Suggest a logical next step, like generating study notes for deeper understanding.
+6.  **Suggest Next Steps**: CRITICAL: After generating all MCQs, you must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate study notes" }].
 
 Format the output as JSON conforming to the MedicoMCQGeneratorOutput schema.
-The root output must be an object containing an 'mcqs' array, a 'topicGenerated' string, and an optional 'nextSteps' array.
+The root output must be an object containing an 'mcqs' array, a 'topicGenerated' string, and a 'nextSteps' array.
 Each object within the 'mcqs' array must conform to the MCQSchema.
-The 'nextSteps' field should contain suggestions like: { "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate study notes" }.
 
-Example of a single MCQ object:
+Example of a single MCQ object in the 'mcqs' array:
 {
   "question": "Which of the following is the most common cause of community-acquired pneumonia in adults?",
   "options": [
