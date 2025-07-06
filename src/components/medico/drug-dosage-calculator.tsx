@@ -1,4 +1,3 @@
-
 // src/components/medico/drug-dosage-calculator.tsx
 "use client";
 
@@ -118,7 +117,7 @@ ${calculationResult.warnings?.map(w => `- ${w}`).join('\n') || 'N/A'}
         topic: `Dosage Calculation: ${form.getValues('drugName')}`,
         userId: user.uid,
         notes: notesContent,
-        warnings: calculationResult.warnings || [], // FIX: Ensure warnings is not undefined
+        warnings: calculationResult.warnings || [],
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "This dosage calculation has been saved as a note." });
@@ -287,7 +286,7 @@ ${calculationResult.warnings?.map(w => `- ${w}`).join('\n') || 'N/A'}
                 <div className="flex flex-wrap gap-2">
                   {calculationResult.nextSteps.map((step, index) => (
                     <Button key={index} variant="outline" size="sm" asChild>
-                      <Link href={`/medico?tool=${step.tool}&topic=${encodeURIComponent(step.topic)}`}>
+                      <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
                         {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
                       </Link>
                     </Button>

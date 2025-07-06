@@ -4,12 +4,12 @@
 import { MedicoDashboard } from '@/components/medico/medico-dashboard';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState, Suspense } from 'react'; // Added Suspense
+import React, { useEffect, useState } from 'react';
 import { PageWrapper } from '@/components/layout/page-wrapper';
 import { Loader2 } from 'lucide-react';
 import { MedicoHubAnimation } from '@/components/medico/medico-hub-animation'; 
 
-function MedicoPageContent() {
+export default function MedicoPage() {
   const { userRole } = useProMode();
   const router = useRouter();
   const [isLoadingRole, setIsLoadingRole] = useState(true);
@@ -66,19 +66,4 @@ function MedicoPageContent() {
       </div>
     </PageWrapper>
   );
-}
-
-
-export default function MedicoPage() {
-  return (
-    <Suspense fallback={
-      <PageWrapper title="Loading...">
-        <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
-          <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        </div>
-      </PageWrapper>
-    }>
-      <MedicoPageContent />
-    </Suspense>
-  )
 }

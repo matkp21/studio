@@ -1,4 +1,3 @@
-
 // src/components/medico/anatomy-visualizer.tsx
 "use client";
 
@@ -85,7 +84,7 @@ ${anatomyData.relatedStructures?.map(s => `- ${s}`).join('\n') || 'N/A'}
         topic: `Anatomy: ${form.getValues('anatomicalStructure')}`,
         userId: user.uid,
         notes: notesContent,
-        imageUrl: anatomyData.imageUrl || null, // FIX: Ensure imageUrl is not undefined
+        imageUrl: anatomyData.imageUrl || null,
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "This anatomy description has been saved as a note." });
@@ -184,7 +183,7 @@ ${anatomyData.relatedStructures?.map(s => `- ${s}`).join('\n') || 'N/A'}
                 <div className="flex flex-wrap gap-2">
                   {anatomyData.nextSteps.map((step, index) => (
                     <Button key={index} variant="outline" size="sm" asChild>
-                      <Link href={`/medico?tool=${step.tool}&topic=${encodeURIComponent(step.topic)}`}>
+                      <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
                         {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
                       </Link>
                     </Button>

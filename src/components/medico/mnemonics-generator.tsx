@@ -1,4 +1,3 @@
-
 // src/components/medico/mnemonics-generator.tsx
 "use client";
 
@@ -74,8 +73,8 @@ export function MnemonicsGenerator() {
         topic: generatedMnemonic.topicGenerated,
         userId: user.uid,
         mnemonic: generatedMnemonic.mnemonic,
-        explanation: generatedMnemonic.explanation || null, // FIX: Ensure explanation is not undefined
-        imageUrl: generatedMnemonic.imageUrl || null, // FIX: Ensure imageUrl is not undefined
+        explanation: generatedMnemonic.explanation || null,
+        imageUrl: generatedMnemonic.imageUrl || null,
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "Your generated mnemonic has been saved." });
@@ -194,7 +193,7 @@ export function MnemonicsGenerator() {
                     <div className="flex flex-wrap gap-2">
                         {generatedMnemonic.nextSteps.map((step, index) => (
                             <Button key={index} variant="outline" size="sm" asChild>
-                                <Link href={`/medico?tool=${step.tool}&topic=${encodeURIComponent(step.topic)}`}>
+                                <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
                                     {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
                                 </Link>
                             </Button>

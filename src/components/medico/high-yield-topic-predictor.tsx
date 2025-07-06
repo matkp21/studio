@@ -1,4 +1,3 @@
-
 // src/components/medico/high-yield-topic-predictor.tsx
 "use client";
 
@@ -105,7 +104,7 @@ ${predictionResult.rationale || 'N/A'}
         topic: `High-Yield Topics: ${form.getValues('examType')}`,
         userId: user.uid,
         notes: notesContent,
-        rationale: predictionResult.rationale || null, // FIX: Ensure rationale is not undefined
+        rationale: predictionResult.rationale || null,
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "This topic prediction has been saved as a note." });
@@ -226,7 +225,7 @@ ${predictionResult.rationale || 'N/A'}
                     <div className="flex flex-wrap gap-2">
                         {predictionResult.nextSteps.map((step, index) => (
                             <Button key={index} variant="outline" size="sm" asChild>
-                                <Link href={`/medico?tool=${step.tool}&topic=${encodeURIComponent(step.topic)}`}>
+                                <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
                                     {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
                                 </Link>
                             </Button>
