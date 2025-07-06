@@ -73,11 +73,16 @@ const analyzeImageFlow = ai.defineFlow(
     outputSchema: AnalyzeImageOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    if (!output) {
-      console.error("Image analysis prompt did not return an output for image:", input.imageDataUri ? input.imageDataUri.substring(0,50) + "..." : "undefined");
-      return { annotations: [] };
+    try {
+        const {output} = await prompt(input);
+        if (!output) {
+        console.error("Image analysis prompt did not return an output for image:", input.imageDataUri ? input.imageDataUri.substring(0,50) + "..." : "undefined");
+        return { annotations: [] };
+        }
+        return output;
+    } catch (err) {
+        console.error(`[ImageAnalyzerAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+        throw new Error('An unexpected error occurred during image analysis. Please try again.');
     }
-    return output;
   }
 );

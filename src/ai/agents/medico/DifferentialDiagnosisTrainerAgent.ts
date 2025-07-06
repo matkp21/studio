@@ -59,13 +59,18 @@ const differentialDiagnosisTrainerFlow = ai.defineFlow(
     outputSchema: MedicoDDTrainerOutputSchema,
   },
   async (input) => {
-    const { output } = await differentialDiagnosisTrainerPrompt(input);
+    try {
+      const { output } = await differentialDiagnosisTrainerPrompt(input);
 
-    if (!output || !output.prompt || !output.updatedCaseSummary) {
-      console.error('MedicoDDTrainerPrompt did not return valid output for:', input);
-      throw new Error('Failed to process the training step. The AI model did not return the expected output.');
+      if (!output || !output.prompt || !output.updatedCaseSummary) {
+        console.error('MedicoDDTrainerPrompt did not return valid output for:', input);
+        throw new Error('Failed to process the training step. The AI model did not return the expected output.');
+      }
+      // Firestore saving logic for user's training history could go here
+      return output;
+    } catch (err) {
+      console.error(`[DifferentialDiagnosisTrainerAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred during the DDx training session. Please try again.');
     }
-    // Firestore saving logic for user's training history could go here
-    return output;
   }
 );

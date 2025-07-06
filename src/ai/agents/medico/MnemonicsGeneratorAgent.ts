@@ -56,17 +56,22 @@ const mnemonicsGeneratorFlow = ai.defineFlow(
     outputSchema: MedicoMnemonicsGeneratorOutputSchema,
   },
   async (input) => {
-    // Step 1: Generate the mnemonic text and explanation
-    const { output } = await mnemonicsGeneratorPrompt(input);
+    try {
+      // Step 1: Generate the mnemonic text and explanation
+      const { output } = await mnemonicsGeneratorPrompt(input);
 
-    if (!output || !output.mnemonic) {
-      console.error('MedicoMnemonicsGeneratorPrompt did not return a valid mnemonic for topic:', input.topic);
-      throw new Error('Failed to generate mnemonic. The AI model did not return the expected output.');
+      if (!output || !output.mnemonic) {
+        console.error('MedicoMnemonicsGeneratorPrompt did not return a valid mnemonic for topic:', input.topic);
+        throw new Error('Failed to generate mnemonic. The AI model did not return the expected output.');
+      }
+      
+      // Step 2: Image generation is disabled. Ensure the field is not present.
+      output.imageUrl = undefined;
+      
+      return output;
+    } catch (err) {
+      console.error(`[MnemonicsGeneratorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while generating the mnemonic. Please try again.');
     }
-    
-    // Step 2: Image generation is disabled. Ensure the field is not present.
-    output.imageUrl = undefined;
-    
-    return output;
   }
 );

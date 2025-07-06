@@ -73,23 +73,28 @@ const virtualPatientRoundsFlow = ai.defineFlow(
     outputSchema: MedicoVirtualRoundsOutputSchema,
   },
   async (input) => {
-    // Complex logic for managing patient state, different scenarios, etc.
-    // would go here. This is a simplified version.
-    const effectiveInput = {
-      ...input,
-      caseId: input.caseId || `vround-pat-${Date.now()}`, // Generate a new caseId if not provided
-    };
+    try {
+      // Complex logic for managing patient state, different scenarios, etc.
+      // would go here. This is a simplified version.
+      const effectiveInput = {
+        ...input,
+        caseId: input.caseId || `vround-pat-${Date.now()}`, // Generate a new caseId if not provided
+      };
 
-    const { output } = await virtualPatientRoundsPrompt(effectiveInput);
+      const { output } = await virtualPatientRoundsPrompt(effectiveInput);
 
-    if (!output || !output.caseId || !output.patientSummary || !output.currentObservation || !output.nextPrompt) {
-      console.error('MedicoVirtualRoundsPrompt did not return a valid round step for input:', input);
-      throw new Error('Failed to process virtual patient round. The AI model did not return the expected output.');
+      if (!output || !output.caseId || !output.patientSummary || !output.currentObservation || !output.nextPrompt) {
+        console.error('MedicoVirtualRoundsPrompt did not return a valid round step for input:', input);
+        throw new Error('Failed to process virtual patient round. The AI model did not return the expected output.');
+      }
+
+      // In a real app, save/update patient case state in Firestore using output.caseId
+      // await db.collection('virtual_rounds_cases').doc(output.caseId).set(output, { merge: true });
+
+      return output;
+    } catch (err) {
+      console.error(`[VirtualPatientRoundsAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred during the virtual round. Please try again.');
     }
-
-    // In a real app, save/update patient case state in Firestore using output.caseId
-    // await db.collection('virtual_rounds_cases').doc(output.caseId).set(output, { merge: true });
-
-    return output;
   }
 );

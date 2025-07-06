@@ -35,7 +35,7 @@ Provide a structured interpretation covering:
 
 Format the output as JSON conforming to the DiagnoBotOutputSchema.
 - The 'interpretation' field should be a detailed, well-structured text in Markdown.
-- The 'likelyDifferentials' field should be an array of possible conditions suggested by the labs.
+- The 'likelyDifferentials' field should be an array of possible conditions suggested by the lab results.
 - 'nextSteps' should contain suggestions like: { "tool": "pathomind", "topic": "[One of the likely differentials]", "reason": "Explain pathophysiology" }.
 `,
   config: {
@@ -50,13 +50,18 @@ const diagnoBotFlow = ai.defineFlow(
     outputSchema: DiagnoBotOutputSchema,
   },
   async (input) => {
-    const { output } = await diagnoBotPrompt(input);
+    try {
+        const { output } = await diagnoBotPrompt(input);
 
-    if (!output || !output.interpretation) {
-      console.error('DiagnoBotPrompt did not return a valid interpretation for:', input.labResults);
-      throw new Error('Failed to interpret lab results. The AI model did not return the expected output.');
+        if (!output || !output.interpretation) {
+        console.error('DiagnoBotPrompt did not return a valid interpretation for:', input.labResults);
+        throw new Error('Failed to interpret lab results. The AI model did not return the expected output.');
+        }
+        
+        return output;
+    } catch (err) {
+        console.error(`[DiagnoBotAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+        throw new Error('An unexpected error occurred while interpreting lab results. Please try again.');
     }
-    
-    return output;
   }
 );

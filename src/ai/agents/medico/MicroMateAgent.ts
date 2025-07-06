@@ -49,13 +49,18 @@ const microMateFlow = ai.defineFlow(
     outputSchema: MicroMateOutputSchema,
   },
   async (input) => {
-    const { output } = await microMatePrompt(input);
+    try {
+        const { output } = await microMatePrompt(input);
 
-    if (!output || !output.characteristics) {
-      console.error('MicroMatePrompt did not return valid information for:', input.microorganism);
-      throw new Error('Failed to get microbe information. The AI model did not return the expected output.');
+        if (!output || !output.characteristics) {
+        console.error('MicroMatePrompt did not return valid information for:', input.microorganism);
+        throw new Error('Failed to get microbe information. The AI model did not return the expected output.');
+        }
+        
+        return output;
+    } catch (err) {
+        console.error(`[MicroMateAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+        throw new Error('An unexpected error occurred while fetching microbe information. Please try again.');
     }
-    
-    return output;
   }
 );

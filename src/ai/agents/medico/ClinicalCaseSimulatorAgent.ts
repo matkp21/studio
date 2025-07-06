@@ -71,24 +71,29 @@ const clinicalCaseFlow = ai.defineFlow(
     outputSchema: MedicoClinicalCaseOutputSchema,
   },
   async (input) => {
-    // Complex logic for managing case state, retrieving case data, evaluating responses, etc.
-    // would go here. For now, this is a simplified version.
-    // If input.caseId is null/undefined, we need to generate a new caseId.
-    const effectiveInput = {
-      ...input,
-      caseId: input.caseId || `case-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-    };
+    try {
+      // Complex logic for managing case state, retrieving case data, evaluating responses, etc.
+      // would go here. For now, this is a simplified version.
+      // If input.caseId is null/undefined, we need to generate a new caseId.
+      const effectiveInput = {
+        ...input,
+        caseId: input.caseId || `case-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      };
 
-    const { output } = await clinicalCasePrompt(effectiveInput);
+      const { output } = await clinicalCasePrompt(effectiveInput);
 
-    if (!output || !output.prompt || !output.caseId) {
-      console.error('MedicoClinicalCasePrompt did not return a valid case step for input:', input);
-      throw new Error('Failed to process clinical case simulation. The AI model did not return the expected output.');
+      if (!output || !output.prompt || !output.caseId) {
+        console.error('MedicoClinicalCasePrompt did not return a valid case step for input:', input);
+        throw new Error('Failed to process clinical case simulation. The AI model did not return the expected output.');
+      }
+
+      // In a real app, save/update case state in Firestore using output.caseId
+      // await db.collection('clinical_cases').doc(output.caseId).set(output, { merge: true });
+
+      return output;
+    } catch (err) {
+      console.error(`[ClinicalCaseSimulatorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred during the case simulation. Please try again.');
     }
-
-    // In a real app, save/update case state in Firestore using output.caseId
-    // await db.collection('clinical_cases').doc(output.caseId).set(output, { merge: true });
-
-    return output;
   }
 );

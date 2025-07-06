@@ -87,13 +87,18 @@ const mcqGeneratorFlow = ai.defineFlow(
     outputSchema: MedicoMCQGeneratorOutputSchema,
   },
   async (input) => {
-    const { output } = await mcqGeneratorPrompt(input);
-    if (!output || !output.mcqs || output.mcqs.length === 0) {
-      console.error('MedicoMCQGeneratorPrompt did not return valid MCQs for topic:', input.topic);
-      throw new Error('Failed to generate MCQs. The AI model did not return the expected output or returned an empty set. Please try a different topic or adjust the count.');
+    try {
+      const { output } = await mcqGeneratorPrompt(input);
+      if (!output || !output.mcqs || output.mcqs.length === 0) {
+        console.error('MedicoMCQGeneratorPrompt did not return valid MCQs for topic:', input.topic);
+        throw new Error('Failed to generate MCQs. The AI model did not return the expected output or returned an empty set. Please try a different topic or adjust the count.');
+      }
+      // Firestore saving logic would go here, e.g.:
+      // await saveMCQsToFirestore(input.topic, output.mcqs);
+      return {...output, topicGenerated: input.topic };
+    } catch (err) {
+      console.error(`[MCQGeneratorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while generating MCQs. Please try again.');
     }
-    // Firestore saving logic would go here, e.g.:
-    // await saveMCQsToFirestore(input.topic, output.mcqs);
-    return {...output, topicGenerated: input.topic };
   }
 );

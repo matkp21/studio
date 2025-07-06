@@ -61,11 +61,16 @@ const dischargeSummaryFlow = ai.defineFlow(
     outputSchema: DischargeSummaryOutputSchema,
   },
   async (input: DischargeSummaryInput) => {
-    const { output } = await dischargeSummaryPrompt(input);
-    if (!output) {
-      console.error('DischargeSummaryPrompt did not return an output for input:', input);
-      throw new Error('Failed to generate discharge summary draft. The AI model did not return the expected output.');
+    try {
+      const { output } = await dischargeSummaryPrompt(input);
+      if (!output) {
+        console.error('DischargeSummaryPrompt did not return an output for input:', input);
+        throw new Error('Failed to generate discharge summary draft. The AI model did not return the expected output.');
+      }
+      return output;
+    } catch (err) {
+      console.error(`[DischargeSummaryGeneratorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while generating the discharge summary. Please try again.');
     }
-    return output;
   }
 );

@@ -116,36 +116,41 @@ const symptomAnalyzerFlow = ai.defineFlow(
     outputSchema: SymptomAnalyzerOutputSchema,
   },
   async (input: SymptomAnalyzerInput) => {
-    const {output} = await prompt(input);
-    
-    const defaultDisclaimer = "This information is for informational purposes only and not a substitute for professional medical advice. Always consult with a qualified healthcare provider for any health concerns or before making any decisions related to your health or treatment.";
-    const consultProfessionalMessage = "It is crucial to consult a healthcare professional for an accurate diagnosis and appropriate treatment plan.";
+    try {
+        const {output} = await prompt(input);
+        
+        const defaultDisclaimer = "This information is for informational purposes only and not a substitute for professional medical advice. Always consult with a qualified healthcare provider for any health concerns or before making any decisions related to your health or treatment.";
+        const consultProfessionalMessage = "It is crucial to consult a healthcare professional for an accurate diagnosis and appropriate treatment plan.";
 
-    if (!output) {
-      console.error("Symptom analyzer prompt did not return an output.");
-      return { 
-        diagnoses: [{ name: "Could not determine potential diagnoses at this time. Please consult a medical professional.", confidence: "Unknown", rationale: "AI model did not return expected output." }],
-        suggestedInvestigations: [],
-        suggestedManagement: [consultProfessionalMessage],
-        disclaimer: defaultDisclaimer
-      };
-    }
-    
-    const finalOutput = { ...output };
+        if (!output) {
+        console.error("Symptom analyzer prompt did not return an output.");
+        return { 
+            diagnoses: [{ name: "Could not determine potential diagnoses at this time. Please consult a medical professional.", confidence: "Unknown", rationale: "AI model did not return expected output." }],
+            suggestedInvestigations: [],
+            suggestedManagement: [consultProfessionalMessage],
+            disclaimer: defaultDisclaimer
+        };
+        }
+        
+        const finalOutput = { ...output };
 
-    // Ensure disclaimer is always present
-    if (!finalOutput.disclaimer) {
-      finalOutput.disclaimer = defaultDisclaimer;
-    }
+        // Ensure disclaimer is always present
+        if (!finalOutput.disclaimer) {
+        finalOutput.disclaimer = defaultDisclaimer;
+        }
 
-    // Ensure "consult a professional" is in management suggestions
-    if (!finalOutput.suggestedManagement) {
-        finalOutput.suggestedManagement = [];
-    }
-    if (!finalOutput.suggestedManagement.some(m => m.toLowerCase().includes("consult a healthcare professional") || m.toLowerCase().includes("consult a medical professional"))) {
-        finalOutput.suggestedManagement.push(consultProfessionalMessage);
-    }
+        // Ensure "consult a professional" is in management suggestions
+        if (!finalOutput.suggestedManagement) {
+            finalOutput.suggestedManagement = [];
+        }
+        if (!finalOutput.suggestedManagement.some(m => m.toLowerCase().includes("consult a healthcare professional") || m.toLowerCase().includes("consult a medical professional"))) {
+            finalOutput.suggestedManagement.push(consultProfessionalMessage);
+        }
 
-    return finalOutput;
+        return finalOutput;
+    } catch (err) {
+        console.error(`[SymptomAnalyzerAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+        throw new Error('An unexpected error occurred during symptom analysis. Please try again.');
+    }
   }
 );

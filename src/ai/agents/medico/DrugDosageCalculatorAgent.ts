@@ -61,24 +61,29 @@ const drugDosageCalculatorFlow = ai.defineFlow(
     outputSchema: MedicoDrugDosageOutputSchema,
   },
   async (input) => {
-    // More complex validation or lookups could happen here in a real app
-    // e.g., checking drug name against a database, fetching standard concentrations.
-    const { output } = await drugDosageCalculatorPrompt(input);
+    try {
+      // More complex validation or lookups could happen here in a real app
+      // e.g., checking drug name against a database, fetching standard concentrations.
+      const { output } = await drugDosageCalculatorPrompt(input);
 
-    if (!output || !output.calculatedDose || !output.calculationExplanation) {
-      console.error('MedicoDrugDosageCalculatorPrompt did not return a valid calculation for:', input.drugName);
-      throw new Error('Failed to calculate drug dosage. The AI model did not return the expected output.');
-    }
-    
-    // Ensure educational warning is always present
-    if (!output.warnings) {
-        output.warnings = [];
-    }
-    const educationalWarning = "THIS IS FOR EDUCATIONAL PRACTICE. ALWAYS VERIFY WITH OFFICIAL SOURCES AND SENIOR CLINICIANS IN ACTUAL CLINICAL SETTINGS.";
-    if (!output.warnings.includes(educationalWarning)) {
-        output.warnings.push(educationalWarning);
-    }
+      if (!output || !output.calculatedDose || !output.calculationExplanation) {
+        console.error('MedicoDrugDosageCalculatorPrompt did not return a valid calculation for:', input.drugName);
+        throw new Error('Failed to calculate drug dosage. The AI model did not return the expected output.');
+      }
+      
+      // Ensure educational warning is always present
+      if (!output.warnings) {
+          output.warnings = [];
+      }
+      const educationalWarning = "THIS IS FOR EDUCATIONAL PRACTICE. ALWAYS VERIFY WITH OFFICIAL SOURCES AND SENIOR CLINICIANS IN ACTUAL CLINICAL SETTINGS.";
+      if (!output.warnings.includes(educationalWarning)) {
+          output.warnings.push(educationalWarning);
+      }
 
-    return output;
+      return output;
+    } catch (err) {
+      console.error(`[DrugDosageCalculatorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred during dosage calculation. Please try again.');
+    }
   }
 );

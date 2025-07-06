@@ -50,13 +50,18 @@ const flashcardGeneratorFlow = ai.defineFlow(
     outputSchema: MedicoFlashcardGeneratorOutputSchema,
   },
   async (input) => {
-    const { output } = await flashcardGeneratorPrompt(input);
+    try {
+      const { output } = await flashcardGeneratorPrompt(input);
 
-    if (!output || !output.flashcards || output.flashcards.length === 0) {
-      console.error('MedicoFlashcardGeneratorPrompt did not return valid flashcards for topic:', input.topic);
-      throw new Error('Failed to generate flashcards. The AI model did not return the expected output or returned an empty set.');
+      if (!output || !output.flashcards || output.flashcards.length === 0) {
+        console.error('MedicoFlashcardGeneratorPrompt did not return valid flashcards for topic:', input.topic);
+        throw new Error('Failed to generate flashcards. The AI model did not return the expected output or returned an empty set.');
+      }
+      // Firestore saving logic could go here
+      return { ...output, topicGenerated: input.topic };
+    } catch (err) {
+      console.error(`[FlashcardGeneratorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while generating flashcards. Please try again.');
     }
-    // Firestore saving logic could go here
-    return { ...output, topicGenerated: input.topic };
   }
 );

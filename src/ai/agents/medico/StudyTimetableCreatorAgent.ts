@@ -1,3 +1,4 @@
+
 // src/ai/agents/medico/StudyTimetableCreatorAgent.ts
 'use server';
 /**
@@ -57,16 +58,21 @@ const studyTimetableFlow = ai.defineFlow(
     outputSchema: MedicoStudyTimetableOutputSchema,
   },
   async (input) => {
-    // In a real scenario, this would involve more complex logic to generate a timetable
-    // based on subjects, exam date, and study hours.
-    // For now, we'll rely on the LLM's ability to structure this based on the prompt.
-    const { output } = await studyTimetablePrompt(input);
+    try {
+      // In a real scenario, this would involve more complex logic to generate a timetable
+      // based on subjects, exam date, and study hours.
+      // For now, we'll rely on the LLM's ability to structure this based on the prompt.
+      const { output } = await studyTimetablePrompt(input);
 
-    if (!output || !output.timetable || !output.performanceAnalysis) {
-      console.error('MedicoStudyTimetablePrompt did not return a valid timetable and analysis for:', input.examName);
-      throw new Error('Failed to generate study timetable. The AI model did not return the expected output.');
+      if (!output || !output.timetable || !output.performanceAnalysis) {
+        console.error('MedicoStudyTimetablePrompt did not return a valid timetable and analysis for:', input.examName);
+        throw new Error('Failed to generate study timetable. The AI model did not return the expected output.');
+      }
+      // Firestore saving logic could go here
+      return output;
+    } catch (err) {
+      console.error(`[StudyTimetableCreatorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while generating the study timetable. Please try again.');
     }
-    // Firestore saving logic could go here
-    return output;
   }
 );

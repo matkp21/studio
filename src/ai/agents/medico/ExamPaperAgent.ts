@@ -1,3 +1,4 @@
+
 // src/ai/agents/medico/ExamPaperAgent.ts
 'use server';
 /**
@@ -56,11 +57,16 @@ const examPaperFlow = ai.defineFlow(
     outputSchema: MedicoExamPaperOutputSchema,
   },
   async (input) => {
-    const { output } = await examPaperPrompt(input);
-    if (!output || (!output.mcqs?.length && !output.essays?.length)) {
-      console.error('MedicoExamPaperPrompt did not return valid content for exam:', input.examType);
-      throw new Error('Failed to generate exam paper. The AI model did not return the expected output. Please try a different exam type or adjust the parameters.');
+    try {
+      const { output } = await examPaperPrompt(input);
+      if (!output || (!output.mcqs?.length && !output.essays?.length)) {
+        console.error('MedicoExamPaperPrompt did not return valid content for exam:', input.examType);
+        throw new Error('Failed to generate exam paper. The AI model did not return the expected output. Please try a different exam type or adjust the parameters.');
+      }
+      return {...output, topicGenerated: input.examType };
+    } catch (err) {
+      console.error(`[ExamPaperAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while generating the exam paper. Please try again.');
     }
-    return {...output, topicGenerated: input.examType };
   }
 );

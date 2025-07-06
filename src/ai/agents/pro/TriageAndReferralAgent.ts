@@ -41,40 +41,45 @@ const triageAndReferralFlow = ai.defineFlow(
     outputSchema: TriageAndReferralOutputSchema,
   },
   async (input) => {
-    // Step 1: Call the Symptom Analyzer Agent
-    console.log("Starting triage analysis for:", input.symptoms);
-    const analysisResult = await analyzeSymptoms(input);
+    try {
+      // Step 1: Call the Symptom Analyzer Agent
+      console.log("Starting triage analysis for:", input.symptoms);
+      const analysisResult = await analyzeSymptoms(input);
 
-    // Step 2: Check the result for a high-confidence diagnosis
-    const highConfidenceDiagnosis = analysisResult.diagnoses.find(
-      (d) => d.confidence === 'High'
-    );
-    
-    let referralDraftResult: z.infer<typeof DischargeSummaryOutputSchema> | undefined = undefined;
+      // Step 2: Check the result for a high-confidence diagnosis
+      const highConfidenceDiagnosis = analysisResult.diagnoses.find(
+        (d) => d.confidence === 'High'
+      );
+      
+      let referralDraftResult: z.infer<typeof DischargeSummaryOutputSchema> | undefined = undefined;
 
-    // Step 3: If a high-confidence diagnosis exists, call the Discharge Summary Agent to draft a referral
-    if (highConfidenceDiagnosis) {
-        console.log(`High-confidence diagnosis found: ${highConfidenceDiagnosis.name}. Generating referral draft.`);
-        // Construct a new input for the summary generator based on the analysis
-        const summaryInput = {
-            primaryDiagnosis: highConfidenceDiagnosis.name,
-            keySymptomsOrProcedure: input.symptoms,
-            additionalContext: `Patient Age: ${input.patientContext?.age || 'N/A'}, Sex: ${input.patientContext?.sex || 'N/A'}. Rationale for referral: ${highConfidenceDiagnosis.rationale || 'High confidence on initial analysis.'}`,
-            // These fields are required by the schema but can be empty for a referral draft
-            patientName: "Patient", 
-            admissionNumber: "N/A"
-        };
-        
-        // This simulates generating a referral letter by using the discharge summary agent's capabilities
-        referralDraftResult = await generateDischargeSummary(summaryInput);
-    } else {
-        console.log("No high-confidence diagnosis found. Skipping referral draft.");
+      // Step 3: If a high-confidence diagnosis exists, call the Discharge Summary Agent to draft a referral
+      if (highConfidenceDiagnosis) {
+          console.log(`High-confidence diagnosis found: ${highConfidenceDiagnosis.name}. Generating referral draft.`);
+          // Construct a new input for the summary generator based on the analysis
+          const summaryInput = {
+              primaryDiagnosis: highConfidenceDiagnosis.name,
+              keySymptomsOrProcedure: input.symptoms,
+              additionalContext: `Patient Age: ${input.patientContext?.age || 'N/A'}, Sex: ${input.patientContext?.sex || 'N/A'}. Rationale for referral: ${highConfidenceDiagnosis.rationale || 'High confidence on initial analysis.'}`,
+              // These fields are required by the schema but can be empty for a referral draft
+              patientName: "Patient", 
+              admissionNumber: "N/A"
+          };
+          
+          // This simulates generating a referral letter by using the discharge summary agent's capabilities
+          referralDraftResult = await generateDischargeSummary(summaryInput);
+      } else {
+          console.log("No high-confidence diagnosis found. Skipping referral draft.");
+      }
+
+      // Step 4: Return the combined output
+      return {
+        analysis: analysisResult,
+        referralDraft: referralDraftResult,
+      };
+    } catch (err) {
+      console.error(`[TriageAndReferralAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred during the triage process. Please try again.');
     }
-
-    // Step 4: Return the combined output
-    return {
-      analysis: analysisResult,
-      referralDraft: referralDraftResult,
-    };
   }
 );

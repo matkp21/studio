@@ -57,20 +57,25 @@ const anatomyVisualizerFlow = ai.defineFlow(
     outputSchema: MedicoAnatomyVisualizerOutputSchema,
   },
   async (input) => {
-    const { output } = await anatomyVisualizerPrompt(input);
+    try {
+      const { output } = await anatomyVisualizerPrompt(input);
 
-    if (!output || !output.description) {
-      console.error('MedicoAnatomyVisualizerPrompt did not return a valid description for:', input.anatomicalStructure);
-      throw new Error('Failed to get anatomy description. The AI model did not return the expected output.');
+      if (!output || !output.description) {
+        console.error('MedicoAnatomyVisualizerPrompt did not return a valid description for:', input.anatomicalStructure);
+        throw new Error('Failed to get anatomy description. The AI model did not return the expected output.');
+      }
+
+      // If an image generation tool were used:
+      // if (output.requiresImage) {
+      //   const imageResult = await generateAnatomyImage({ structure: input.anatomicalStructure });
+      //   output.imageUrl = imageResult.url;
+      // }
+      
+      // Firestore saving logic could go here
+      return output;
+    } catch (err) {
+      console.error(`[AnatomyVisualizerAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while fetching the anatomy description. Please try again.');
     }
-
-    // If an image generation tool were used:
-    // if (output.requiresImage) {
-    //   const imageResult = await generateAnatomyImage({ structure: input.anatomicalStructure });
-    //   output.imageUrl = imageResult.url;
-    // }
-    
-    // Firestore saving logic could go here
-    return output;
   }
 );

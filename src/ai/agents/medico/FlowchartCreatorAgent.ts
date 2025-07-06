@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow for generating medical flowcharts for medico users.
@@ -69,18 +70,23 @@ const flowchartCreatorFlow = ai.defineFlow(
     outputSchema: MedicoFlowchartCreatorOutputSchema,
   },
   async (input) => {
-    const { output } = await flowchartCreatorPrompt(input);
+    try {
+        const { output } = await flowchartCreatorPrompt(input);
 
-    if (!output || !output.nodes || output.nodes.length === 0 || !output.edges) {
-      console.error('MedicoFlowchartCreatorPrompt did not return valid flowchart data for topic:', input.topic);
-      throw new Error('Failed to generate flowchart. The AI model did not return a valid flowchart structure. Please try a different topic.');
+        if (!output || !output.nodes || output.nodes.length === 0 || !output.edges) {
+        console.error('MedicoFlowchartCreatorPrompt did not return valid flowchart data for topic:', input.topic);
+        throw new Error('Failed to generate flowchart. The AI model did not return a valid flowchart structure. Please try a different topic.');
+        }
+        // Sanitize to prevent saving undefined node types, which causes rendering issues.
+        output.nodes = output.nodes.map(node => ({
+        ...node,
+        type: node.type || 'symptom' // Default to a valid type if missing
+        }));
+
+        return output;
+    } catch (err) {
+        console.error(`[FlowchartCreatorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+        throw new Error('An unexpected error occurred while generating the flowchart. Please try again.');
     }
-    // Sanitize to prevent saving undefined node types, which causes rendering issues.
-    output.nodes = output.nodes.map(node => ({
-      ...node,
-      type: node.type || 'symptom' // Default to a valid type if missing
-    }));
-
-    return output;
   }
 );

@@ -68,14 +68,19 @@ const progressTrackerFlow = ai.defineFlow(
     outputSchema: MedicoProgressTrackerOutputSchema,
   },
   async (input) => {
-    const { output } = await progressTrackerPrompt(input);
+    try {
+      const { output } = await progressTrackerPrompt(input);
 
-    if (!output || !output.progressUpdateMessage) {
-      console.error('MedicoProgressTrackerPrompt did not return a valid progress update for:', input);
-      throw new Error('Failed to track progress. The AI model did not return the expected output.');
+      if (!output || !output.progressUpdateMessage) {
+        console.error('MedicoProgressTrackerPrompt did not return a valid progress update for:', input);
+        throw new Error('Failed to track progress. The AI model did not return the expected output.');
+      }
+      // In a real app, you would now use this output to update Firestore.
+      // e.g., db.collection('user_progress').doc(userId).update({ ... });
+      return output;
+    } catch (err) {
+      console.error(`[ProgressTrackerAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while tracking progress. Please try again.');
     }
-    // In a real app, you would now use this output to update Firestore.
-    // e.g., db.collection('user_progress').doc(userId).update({ ... });
-    return output;
   }
 );

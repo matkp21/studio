@@ -46,12 +46,17 @@ const guidelineRetrievalFlow = ai.defineFlow(
     outputSchema: GuidelineRetrievalOutputSchema,
   },
   async input => {
-    const {output} = await guidelineRetrievalPrompt(input);
-    if (!output) {
-      console.error("Guideline retrieval prompt did not return an output for query:", input.query);
-      return { results: [] };
+    try {
+      const {output} = await guidelineRetrievalPrompt(input);
+      if (!output) {
+        console.error("Guideline retrieval prompt did not return an output for query:", input.query);
+        return { results: [] };
+      }
+      // The prompt now asks the LLM to format the output as per the schema.
+      return output;
+    } catch (err) {
+      console.error(`[GuidelineRetrievalAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while retrieving guidelines. Please try again.');
     }
-    // The prompt now asks the LLM to format the output as per the schema.
-    return output;
   }
 );

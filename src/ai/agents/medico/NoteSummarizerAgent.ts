@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow for summarizing uploaded text or image content into various formats.
@@ -58,13 +59,18 @@ const noteSummarizerFlow = ai.defineFlow(
     outputSchema: MedicoNoteSummarizerOutputSchema,
   },
   async (input) => {
-    const { output } = await noteSummarizerPrompt(input);
+    try {
+      const { output } = await noteSummarizerPrompt(input);
 
-    if (!output || !output.summary) {
-      console.error('MedicoNoteSummarizerPrompt did not return a valid summary for the provided text.');
-      throw new Error('Failed to generate summary. The AI model did not return the expected output.');
+      if (!output || !output.summary) {
+        console.error('MedicoNoteSummarizerPrompt did not return a valid summary for the provided text.');
+        throw new Error('Failed to generate summary. The AI model did not return the expected output.');
+      }
+
+      return output;
+    } catch (err) {
+      console.error(`[NoteSummarizerAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred during note summarization. Please try again.');
     }
-
-    return output;
   }
 );

@@ -48,17 +48,22 @@ const highYieldTopicPredictorFlow = ai.defineFlow(
     outputSchema: MedicoTopicPredictorOutputSchema,
   },
   async (input) => {
-    // In a real application, this might involve querying a database of past papers,
-    // analyzing syllabus documents, or using more sophisticated prediction models.
-    // For now, we rely on the LLM's general knowledge.
-    const { output } = await highYieldTopicPredictorPrompt(input);
+    try {
+      // In a real application, this might involve querying a database of past papers,
+      // analyzing syllabus documents, or using more sophisticated prediction models.
+      // For now, we rely on the LLM's general knowledge.
+      const { output } = await highYieldTopicPredictorPrompt(input);
 
-    if (!output || !output.predictedTopics || output.predictedTopics.length === 0) {
-      console.error('MedicoTopicPredictorPrompt did not return valid topics for:', input.examType);
-      throw new Error('Failed to predict high-yield topics. The AI model did not return the expected output or an empty set.');
+      if (!output || !output.predictedTopics || output.predictedTopics.length === 0) {
+        console.error('MedicoTopicPredictorPrompt did not return valid topics for:', input.examType);
+        throw new Error('Failed to predict high-yield topics. The AI model did not return the expected output or an empty set.');
+      }
+      
+      // Firestore saving logic (e.g., for logging predictions) could go here
+      return output;
+    } catch (err) {
+      console.error(`[HighYieldTopicPredictorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while predicting topics. Please try again.');
     }
-    
-    // Firestore saving logic (e.g., for logging predictions) could go here
-    return output;
   }
 );

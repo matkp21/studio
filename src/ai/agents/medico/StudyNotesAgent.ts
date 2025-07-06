@@ -1,3 +1,4 @@
+
 // src/ai/agents/medico/StudyNotesAgent.ts
 'use server';
 /**
@@ -81,13 +82,18 @@ const studyNotesFlow = ai.defineFlow(
     outputSchema: StudyNotesGeneratorOutputSchema,
   },
   async (input) => {
-    const { output } = await studyNotesPrompt(input);
-    if (!output || !output.notes) {
-      console.error('StudyNotesPrompt did not return an output for topic:', input.topic);
-      throw new Error('Failed to generate study notes. The AI model did not return the expected output. Please try a different topic or rephrase.');
+    try {
+      const { output } = await studyNotesPrompt(input);
+      if (!output || !output.notes) {
+        console.error('StudyNotesPrompt did not return an output for topic:', input.topic);
+        throw new Error('Failed to generate study notes. The AI model did not return the expected output. Please try a different topic or rephrase.');
+      }
+      // Firestore saving logic could go here in a real application, e.g.:
+      // await saveStudyNotesToFirestore(input.topic, output);
+      return output;
+    } catch (err) {
+      console.error(`[StudyNotesAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while generating study notes. Please try again.');
     }
-    // Firestore saving logic could go here in a real application, e.g.:
-    // await saveStudyNotesToFirestore(input.topic, output);
-    return output;
   }
 );
