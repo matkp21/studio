@@ -1,4 +1,4 @@
-
+// src/ai/agents/medico/MCQGeneratorAgent.ts
 'use server';
 /**
  * @fileOverview A Genkit flow for generating Multiple Choice Questions (MCQs) on medical topics for medico users.
@@ -18,23 +18,8 @@ export type MedicoMCQGeneratorInput = z.infer<typeof MedicoMCQGeneratorInputSche
 export type MedicoMCQGeneratorOutput = z.infer<typeof MedicoMCQGeneratorOutputSchema>;
 export type MCQSchema = z.infer<typeof SingleMCQSchema>; // For easier usage in chat component
 
-// Simple in-memory cache - DISABLED to ensure fresh prompts are always used
-// const mcqCache = new Map<string, MedicoMCQGeneratorOutput>();
-
 export async function generateMCQs(input: MedicoMCQGeneratorInput): Promise<MedicoMCQGeneratorOutput> {
-  // const cacheKey = JSON.stringify(input);
-  // if (mcqCache.has(cacheKey)) {
-  //   console.log(`[Cache HIT] Serving cached MCQs for: ${input.topic}`);
-  //   return mcqCache.get(cacheKey)!;
-  // }
-
-  // console.log(`[Cache MISS] Generating new MCQs for: ${input.topic}`);
   const result = await mcqGeneratorFlow(input);
-  
-  // if (result) {
-  //   mcqCache.set(cacheKey, result);
-  // }
-
   return result;
 }
 
@@ -55,7 +40,7 @@ For each MCQ:
 3.  Ensure one option is clearly the correct answer.
 4.  The other three options should be plausible distractors, relevant to the topic but incorrect.
 5.  Provide a brief explanation for why the correct answer is correct and, if relevant, why common distractors are incorrect.
-6.  **Suggest Next Steps**: CRITICAL: After generating all MCQs, you must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate study notes" }].
+6.  **Next Steps**: CRITICAL: You must provide a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Review notes for weak areas" }].
 
 Format the output as JSON conforming to the MedicoMCQGeneratorOutput schema.
 The root output must be an object containing an 'mcqs' array, a 'topicGenerated' string, and a 'nextSteps' array.
@@ -92,8 +77,6 @@ const mcqGeneratorFlow = ai.defineFlow(
         console.error('MedicoMCQGeneratorPrompt did not return valid MCQs for topic:', input.topic);
         throw new Error('Failed to generate MCQs. The AI model did not return the expected output or returned an empty set. Please try a different topic or adjust the count.');
       }
-      // Firestore saving logic would go here, e.g.:
-      // await saveMCQsToFirestore(input.topic, output.mcqs);
       return {...output, topicGenerated: input.topic };
     } catch (err) {
       console.error(`[MCQGeneratorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
