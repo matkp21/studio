@@ -58,7 +58,7 @@ For each MCQ:
 6.  Suggest a logical next step, like generating study notes for deeper understanding.
 
 Format the output as JSON conforming to the MedicoMCQGeneratorOutput schema.
-The root output must be an object containing an 'mcqs' array, a 'topicGenerated' string, and a 'nextSteps' array.
+The root output must be an object containing an 'mcqs' array, a 'topicGenerated' string, and an optional 'nextSteps' array.
 Each object within the 'mcqs' array must conform to the MCQSchema.
 The 'nextSteps' field should contain suggestions like: { "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate study notes" }.
 
