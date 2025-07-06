@@ -31,7 +31,7 @@ Clinical Scenario: "{{{symptoms}}}"
 ---
 1.  **Acknowledge the Scenario**: Start by acknowledging the clinical presentation.
 2.  **Ask the First Question**: Your primary task is to prompt the student for their first step. Ask them: "What is the first and most important question you would ask this patient, or what is the first physical examination you would perform?"
-3.  **Initial State**: The 'feedback' should be null. The 'isCompleted' flag must be false. The 'updatedCaseSummary' should contain the initial scenario. The 'prompt' for the student should be the question you are asking them.
+3.  **Initial State**: The 'feedback' and 'nextSteps' fields should be null. The 'isCompleted' flag must be false. The 'updatedCaseSummary' should contain the initial scenario. The 'prompt' for the student should be the question you are asking them.
 {{else}}
 You are continuing a session.
 Case Summary so far: "{{{currentCaseSummary}}}"
@@ -42,7 +42,7 @@ Student's last response (their question or action): "{{{userResponse}}}"
 3.  **Simulate a Patient's Answer**: Provide a realistic patient answer to the student's question.
 4.  **Update the Case Summary**: In 'updatedCaseSummary', append the new information (the student's question and the patient's answer) to the 'currentCaseSummary'.
 5.  **Prompt for Next Step**: In the 'prompt' field, ask the student for their next question, action, or if they are ready to suggest some differential diagnoses. (e.g., "Excellent. What would you like to ask or check next?").
-6.  **Check for Completion**: If the student provides a list of differential diagnoses, evaluate them, provide final feedback, set 'isCompleted' to true, and end the session.
+6.  **Check for Completion**: If the student provides a list of differential diagnoses, evaluate them, provide final feedback, set 'isCompleted' to true, and suggest 'nextSteps' such as generating study notes on the final diagnosis. Example: { "tool": "theorycoach-generator", "topic": "[Final Diagnosis]", "reason": "Generate study notes" }.
 {{/if}}
 
 Format your entire output as JSON conforming to the MedicoDDTrainerOutputSchema.

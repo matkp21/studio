@@ -12,7 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, CalendarDays, Wand2, Lightbulb, Save } from 'lucide-react';
+import { Loader2, CalendarDays, Wand2, Lightbulb, Save, ArrowRight } from 'lucide-react';
 import { createStudyTimetable, type MedicoStudyTimetableInput, type MedicoStudyTimetableOutput } from '@/ai/agents/medico/StudyTimetableCreatorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { DatePicker } from '@/components/ui/date-picker';
@@ -21,6 +21,7 @@ import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
+import Link from 'next/link';
 
 const formSchema = z.object({
   examName: z.string().min(3, { message: "Exam name must be at least 3 characters." }).max(100, { message: "Exam name too long."}),
@@ -264,10 +265,24 @@ ${generatedTimetable.performanceAnalysis || 'N/A'}
               </div>
             </ScrollArea>
           </CardContent>
-          <CardFooter className="p-4 border-t">
+          <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
             <Button onClick={handleSaveToLibrary} disabled={!user}>
               <Save className="mr-2 h-4 w-4"/> Save to Library
             </Button>
+             {generatedTimetable.nextSteps && generatedTimetable.nextSteps.length > 0 && (
+                <div className="w-full">
+                    <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
+                    <div className="flex flex-wrap gap-2">
+                        {generatedTimetable.nextSteps.map((step, index) => (
+                            <Button key={index} variant="outline" size="sm" asChild>
+                                <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
+                                    {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
+                                </Link>
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+              )}
           </CardFooter>
         </Card>
       )}

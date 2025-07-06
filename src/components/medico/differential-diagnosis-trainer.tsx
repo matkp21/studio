@@ -9,13 +9,17 @@ import { z } from 'zod';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, Brain, Send, FilePlus, RotateCcw } from 'lucide-react';
+import { Loader2, Brain, Send, FilePlus, RotateCcw, Save, ArrowRight } from 'lucide-react';
 import { trainDifferentialDiagnosis, type MedicoDDTrainerInput, type MedicoDDTrainerOutput } from '@/ai/agents/medico/DifferentialDiagnosisTrainerAgent';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
+import Link from 'next/link';
 
 const newCaseFormSchema = z.object({
   symptoms: z.string().min(10, { message: "Symptoms description must be at least 10 characters." }).max(1000, { message: "Description too long."}),
@@ -32,6 +36,8 @@ export function DifferentialDiagnosisTrainer() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useProMode();
+
 
   const newCaseForm = useForm<NewCaseFormValues>({
     resolver: zodResolver(newCaseFormSchema),
@@ -81,7 +87,7 @@ export function DifferentialDiagnosisTrainer() {
             // The topic is the initial symptoms string.
             const topic = result.updatedCaseSummary.split('\n')[0]; // A bit hacky, but should work.
             const progressResult = await trackProgress({
-                activityType: 'case_sim_completed', // Treat it like a case
+                activityType: 'case_sim_completed', // Treat as a case
                 topic: topic || 'DDx Session'
             });
             toast({
@@ -109,6 +115,36 @@ export function DifferentialDiagnosisTrainer() {
     newCaseForm.reset();
     responseForm.reset();
   }
+
+  const handleSaveToLibrary = async () => {
+    if (!caseData || !caseData.isCompleted || !user) {
+      toast({ title: "Cannot Save", description: "Only completed sessions can be saved.", variant: "destructive" });
+      return;
+    }
+    const notesContent = `
+## DDx Training Summary
+**Scenario:** ${newCaseForm.getValues('symptoms')}
+
+**Interaction Log:**
+${caseData.updatedCaseSummary}
+
+**Final Feedback:**
+${caseData.feedback || 'N/A'}
+    `;
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'notes',
+        topic: `DDx Training: ${newCaseForm.getValues('symptoms').substring(0, 30)}...`,
+        userId: user.uid,
+        notes: notesContent,
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "This training session has been saved." });
+    } catch (e) {
+      console.error("Firestore save error:", e);
+      toast({ title: "Save Failed", description: "Could not save to library.", variant: "destructive" });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -221,6 +257,27 @@ export function DifferentialDiagnosisTrainer() {
               </Form>
             )}
           </CardContent>
+           {caseData.isCompleted && (
+            <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
+              <Button onClick={handleSaveToLibrary} disabled={!user}>
+                <Save className="mr-2 h-4 w-4"/> Save Session Summary
+              </Button>
+              {caseData.nextSteps && caseData.nextSteps.length > 0 && (
+                <div className="w-full">
+                  <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {caseData.nextSteps.map((step, index) => (
+                      <Button key={index} variant="outline" size="sm" asChild>
+                        <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
+                          {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
+                        </Link>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardFooter>
+          )}
         </Card>
       )}
     </div>

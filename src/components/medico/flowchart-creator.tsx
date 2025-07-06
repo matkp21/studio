@@ -1,3 +1,4 @@
+
 // src/components/medico/flowchart-creator.tsx
 "use client";
 
@@ -184,38 +185,41 @@ const FlowchartEditor = () => {
                     </div>
                 </Card>
                 <Toolbar onAddNode={addNode} onUndo={undo} onRedo={redo} canUndo={canUndo} canRedo={canRedo} onExport={handleExport} onClear={handleClear} onSave={handleSave} />
-                {aiResult?.nextSteps && aiResult.nextSteps.length > 0 && (
-                  <Card className="p-2 mb-4">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-semibold text-primary">Next Steps:</h4>
-                       <div className="flex flex-wrap gap-2">
-                        {aiResult.nextSteps.map((step, index) => (
-                          <Button key={index} variant="outline" size="sm" asChild>
-                            <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
-                              {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
-                            </Link>
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  </Card>
-                )}
-                <div ref={flowRef} className="flex-grow rounded-lg border bg-background shadow-inner">
-                    <ReactFlow
-                        nodes={nodes}
-                        edges={edges}
-                        onNodesChange={onNodesChange}
-                        onEdgesChange={onEdgesChange}
-                        onConnect={onConnect}
-                        nodeTypes={nodeTypes}
-                        fitView
-                        className="medico-layout-background" // Use consistent background
-                    >
-                        <Controls />
-                        <MiniMap nodeStrokeWidth={3} zoomable pannable />
-                        <Background variant="dots" gap={12} size={1} />
-                    </ReactFlow>
-                </div>
+                
+                <Card className="flex-grow flex flex-col rounded-lg border bg-background shadow-inner">
+                  <div ref={flowRef} className="flex-grow">
+                      <ReactFlow
+                          nodes={nodes}
+                          edges={edges}
+                          onNodesChange={onNodesChange}
+                          onEdgesChange={onEdgesChange}
+                          onConnect={onConnect}
+                          nodeTypes={nodeTypes}
+                          fitView
+                          className="medico-layout-background" // Use consistent background
+                      >
+                          <Controls />
+                          <MiniMap nodeStrokeWidth={3} zoomable pannable />
+                          <Background variant="dots" gap={12} size={1} />
+                      </ReactFlow>
+                  </div>
+                   {aiResult?.nextSteps && aiResult.nextSteps.length > 0 && (
+                      <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
+                        <div className="w-full">
+                          <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {aiResult.nextSteps.map((step, index) => (
+                              <Button key={index} variant="outline" size="sm" asChild>
+                                <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
+                                  {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
+                                </Link>
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      </CardFooter>
+                    )}
+                </Card>
             </div>
         </div>
     );

@@ -36,7 +36,7 @@ Based on the patient's history (assume you have access to it, not fully provided
 2. Provide the 'currentObservation' resulting from the student's action.
 3. Give the 'nextPrompt' to guide the student (e.g., "What investigations would you order next?", "How would you manage this finding?").
 4. Retain the topic: The 'topic' field MUST be set to "{{{patientFocus}}}".
-5. Update 'isCompleted' if this encounter is finished.
+5. Update 'isCompleted' if this encounter is finished. If it is, also suggest 'nextSteps', like generating study notes for the case topic. Example: { "tool": "theorycoach-generator", "topic": "{{{patientFocus}}}", "reason": "Generate study notes" }.
 {{else}}
 New Virtual Round / New Patient.
 Focus for new patient (if any): "{{{patientFocus}}}"
@@ -48,6 +48,7 @@ Initiate a new virtual patient encounter.
 4. Provide the 'nextPrompt' for the student's first action (e.g., "What are your initial thoughts or questions for this patient?").
 5. Set 'isCompleted' to false.
 6. Set the output 'topic' to be the same as the input 'patientFocus'.
+7. 'nextSteps' should be null on case initiation.
 
 Example for a new patient (focus: "Pediatric Asthma Exacerbation"):
   Case ID: "vround-pat-123"

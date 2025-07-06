@@ -42,9 +42,11 @@ const studyTimetablePrompt = ai.definePrompt({
 
 2.  **Structure**: The output for the 'timetable' field should be a clear, organized timetable, ideally in a week-by-week Markdown format. It should be detailed and actionable.
 
-3.  **Confirm Understanding**: In the 'performanceAnalysis' field of your response, provide a brief summary of the weak points from the user's context that you prioritized in the schedule. This confirms you understood the request. For example: "The schedule prioritizes clinical application in Neurology and complex pharmacology based on the provided context."
+3.  **Confirm Understanding**: In the 'performanceAnalysis' field of your response, provide a brief summary of the weak points from the user's context that you prioritized in the schedule. For example: "The schedule prioritizes clinical application in Neurology and complex pharmacology based on the provided context."
 
-Ensure the final output is a valid JSON object with 'performanceAnalysis' and 'timetable' fields.
+4.  **Suggest Next Steps**: Based on the generated timetable, suggest a logical next step. For example, suggest generating study notes for the first major topic in Week 1. Format this as a 'nextSteps' array of objects, where each object has "tool", "topic", and "reason". Example: { "tool": "theorycoach-generator", "topic": "Cardiology Basics", "reason": "Start Week 1 with notes" }.
+
+Ensure the final output is a valid JSON object with 'performanceAnalysis', 'timetable', and 'nextSteps' fields.
 `,
   config: {
     temperature: 0.5, // For some creativity in scheduling
