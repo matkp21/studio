@@ -1,19 +1,22 @@
-
 // src/components/medico/progress-tracker.tsx
 "use client";
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, BarChart2, CheckCircle, Target, Lightbulb } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Award, BarChart2, CheckCircle, Target, Lightbulb, Save, ArrowRight } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts"
 import { useTheme } from '@/contexts/theme-provider';
+import type { MedicoProgressTrackerOutput } from '@/ai/agents/medico/ProgressTrackerAgent';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 // More detailed placeholder data for demonstration
-const sampleProgressData = {
-  overallCompletion: 65,
+const sampleProgressData: MedicoProgressTrackerOutput & { subjects: any[], achievements: any[] } = {
+  progressUpdateMessage: "Welcome to your progress dashboard! This is a sample view.",
+  updatedTopicProgress: { topic: "Overall", newProgressPercentage: 65 },
   subjects: [
     { name: 'Pediatrics', progress: 75, quizzesCompleted: 5, notesReviewed: 12 },
     { name: 'Surgery', progress: 50, quizzesCompleted: 3, notesReviewed: 8 },
@@ -26,6 +29,9 @@ const sampleProgressData = {
     { id: 'ach2', name: 'Surgery Note Taker', icon: CheckCircle, unlocked: true },
     { id: 'ach3', name: 'Study Streak: 7 Days', icon: Target, unlocked: false },
     { id: 'ach4', name: 'Pharmacology Powerhouse', icon: Award, unlocked: false },
+  ],
+  nextSteps: [
+    { tool: 'mcq', topic: 'Pharmacology', reason: 'Practice weak subject' }
   ]
 };
 
@@ -49,8 +55,8 @@ export function ProgressTracker() {
             <CardTitle className="text-xl">Overall Progress</CardTitle>
           </CardHeader>
           <CardContent>
-             <Label className="text-sm font-medium">Overall Syllabus Completion: {progressData.overallCompletion}%</Label>
-             <Progress value={progressData.overallCompletion} className="w-full mt-2 h-4 rounded-full" />
+             <Label className="text-sm font-medium">Overall Syllabus Completion: {progressData.updatedTopicProgress?.newProgressPercentage}%</Label>
+             <Progress value={progressData.updatedTopicProgress?.newProgressPercentage} className="w-full mt-2 h-4 rounded-full" />
           </CardContent>
         </Card>
 
@@ -97,6 +103,22 @@ export function ProgressTracker() {
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
+          {progressData.nextSteps && progressData.nextSteps.length > 0 && (
+            <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
+              <div className="w-full">
+                <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
+                <div className="flex flex-wrap gap-2">
+                  {progressData.nextSteps.map((step, index) => (
+                    <Button key={index} variant="outline" size="sm" asChild>
+                      <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
+                        {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
+                      </Link>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </CardFooter>
+          )}
         </Card>
 
         <Card className="lg:col-span-1 shadow-md rounded-xl">

@@ -153,7 +153,7 @@ ${anatomyData.relatedStructures?.map(s => `- ${s}`).join('\n') || 'N/A'}
               <div className="p-4 space-y-3">
                 {anatomyData.imageUrl && (
                   <div className="relative aspect-video w-full max-w-md mx-auto border rounded-lg overflow-hidden bg-muted/30 mb-3">
-                    <Image src={anatomyData.imageUrl} alt={`Diagram of ${form.getValues("anatomicalStructure")}`} layout="fill" objectFit="contain" data-ai-hint="anatomical diagram" />
+                    <Image src={anatomyData.imageUrl} alt={`Diagram of ${form.getValues("anatomicalStructure")}`} fill objectFit="contain" data-ai-hint="anatomical diagram" />
                   </div>
                 )}
                 <div>

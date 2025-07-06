@@ -1,4 +1,3 @@
-
 // src/components/medico/virtual-patient-rounds.tsx
 "use client";
 
@@ -10,13 +9,17 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, Users, Send, FilePlus, RotateCcw, UserCheck } from 'lucide-react';
+import { Loader2, Users, Send, FilePlus, RotateCcw, UserCheck, Save, ArrowRight } from 'lucide-react';
 import { conductVirtualRound, type MedicoVirtualRoundsInput, type MedicoVirtualRoundsOutput } from '@/ai/agents/medico/VirtualPatientRoundsAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
+import Link from 'next/link';
 
 const newRoundFormSchema = z.object({
   patientFocus: z.string().optional().describe('Specific patient type or condition for new round.'),
@@ -33,6 +36,7 @@ export function VirtualPatientRounds() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useProMode();
 
   const newRoundForm = useForm<NewRoundFormValues>({
     resolver: zodResolver(newRoundFormSchema),
@@ -107,6 +111,31 @@ export function VirtualPatientRounds() {
     newRoundForm.reset();
     actionForm.reset();
   }
+  
+  const handleSaveToLibrary = async () => {
+    if (!roundData || !roundData.isCompleted || !user) {
+      toast({ title: "Cannot Save", description: "Only completed rounds can be saved.", variant: "destructive" });
+      return;
+    }
+    const notesContent = `
+## Patient Round Summary: ${roundData.topic || 'Completed Round'}
+${roundData.patientSummary}
+    `;
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'notes',
+        topic: `Virtual Round: ${roundData.topic || 'Completed Round'}`,
+        userId: user.uid,
+        notes: notesContent,
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "This round summary has been saved as a note." });
+    } catch (e) {
+      console.error("Firestore save error:", e);
+      toast({ title: "Save Failed", description: "Could not save to library.", variant: "destructive" });
+    }
+  };
+
 
   return (
     <div className="space-y-6">
@@ -210,6 +239,27 @@ export function VirtualPatientRounds() {
               </Form>
             )}
           </CardContent>
+          {roundData.isCompleted && (
+            <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
+              <Button onClick={handleSaveToLibrary} disabled={!user}>
+                <Save className="mr-2 h-4 w-4"/> Save Round Summary
+              </Button>
+              {roundData.nextSteps && roundData.nextSteps.length > 0 && (
+                <div className="w-full">
+                  <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {roundData.nextSteps.map((step, index) => (
+                      <Button key={index} variant="outline" size="sm" asChild>
+                        <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
+                          {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
+                        </Link>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardFooter>
+          )}
         </Card>
       )}
     </div>

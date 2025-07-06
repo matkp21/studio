@@ -1,4 +1,3 @@
-
 // src/components/medico/clinical-case-simulator.tsx
 "use client";
 
@@ -10,13 +9,17 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, CaseUpper, Send, FilePlus, RotateCcw } from 'lucide-react';
+import { Loader2, CaseUpper, Send, FilePlus, RotateCcw, Save, ArrowRight } from 'lucide-react';
 import { simulateClinicalCase, type MedicoClinicalCaseInput, type MedicoClinicalCaseOutput } from '@/ai/agents/medico/ClinicalCaseSimulatorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
+import Link from 'next/link';
 
 const newCaseFormSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).max(150, { message: "Topic too long."}),
@@ -33,6 +36,7 @@ export function ClinicalCaseSimulator() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useProMode();
 
   const newCaseForm = useForm<NewCaseFormValues>({
     resolver: zodResolver(newCaseFormSchema),
@@ -107,6 +111,31 @@ export function ClinicalCaseSimulator() {
     newCaseForm.reset();
     responseForm.reset();
   }
+
+  const handleSaveToLibrary = async () => {
+    if (!caseData || !caseData.isCompleted || !user) {
+      toast({ title: "Cannot Save", description: "Only completed cases can be saved.", variant: "destructive" });
+      return;
+    }
+    const notesContent = `
+## Case Summary: ${caseData.topic || 'Clinical Case'}
+${caseData.summary}
+    `;
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'notes',
+        topic: `Case Simulation: ${caseData.topic || 'Completed Case'}`,
+        userId: user.uid,
+        notes: notesContent,
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "This case summary has been saved as a note." });
+    } catch (e) {
+      console.error("Firestore save error:", e);
+      toast({ title: "Save Failed", description: "Could not save to library.", variant: "destructive" });
+    }
+  };
+
 
   return (
     <div className="space-y-6">
@@ -207,6 +236,27 @@ export function ClinicalCaseSimulator() {
               </Form>
             )}
           </CardContent>
+          {caseData.isCompleted && (
+            <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
+              <Button onClick={handleSaveToLibrary} disabled={!user}>
+                <Save className="mr-2 h-4 w-4"/> Save Case Summary
+              </Button>
+              {caseData.nextSteps && caseData.nextSteps.length > 0 && (
+                <div className="w-full">
+                  <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {caseData.nextSteps.map((step, index) => (
+                      <Button key={index} variant="outline" size="sm" asChild>
+                        <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
+                          {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
+                        </Link>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardFooter>
+          )}
         </Card>
       )}
     </div>
