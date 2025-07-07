@@ -33,6 +33,7 @@ import { TheoryCoach } from '@/components/medico/theory-coach';
 
 // Define the full list of tools
 export const allMedicoToolsList: MedicoTool[] = [
+  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
   { id: 'pathomind', title: 'PathoMind', description: 'Explain any disease pathophysiology with diagrams.', icon: BrainCircuit, component: PathoMindExplainer },
   { id: 'next-tool', title: 'AI-Recommended Next Tool', description: 'Let AI suggest the best tool for your current study goal, based on your recent activity and progress.', icon: Wand2, comingSoon: true },
   { id: 'next-module', title: 'AI-Recommended Module', description: 'Based on your performance, AI can recommend the next topic or module for you to focus on.', icon: Wand2, comingSoon: true },
@@ -60,7 +61,6 @@ export const allMedicoToolsList: MedicoTool[] = [
   { id: 'diagnobot', title: 'DiagnoBot', description: 'Interpret labs, ECGs, X-rays, etc.', icon: TestTubeDiagonal, component: DiagnoBot },
   { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds, comingSoon: false },
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator },
-  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
 ];
 
 export const frequentlyUsedMedicoToolIds: ActiveToolId[] = [
