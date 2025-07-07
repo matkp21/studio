@@ -27,13 +27,7 @@ Your primary task is to generate a JSON object containing a detailed summary of 
 
 The JSON object you generate MUST have fields for 'characteristics', 'virulenceFactors', 'diseasesCaused', 'labDiagnosis', and 'nextSteps'.
 
-Provide a detailed summary covering:
-1.  **Key Characteristics**: (e.g., Gram stain, shape, aerobic/anaerobic).
-2.  **Virulence Factors**: Key mechanisms it uses to cause disease.
-3.  **Diseases Caused**: Common diseases associated with this organism.
-4.  **Lab Diagnosis**: Standard methods for identifying the organism in a lab.
-
-Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys. The 'toolId' value must be a valid tool ID from the Medico Hub.
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions.
 
 Example for 'nextSteps':
 [
@@ -52,8 +46,16 @@ Example for 'nextSteps':
     "cta": "Get Drug Info"
   }
 ]
+---
 
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
+**Instructions for microbe info generation:**
+Provide a detailed summary covering:
+1.  **Key Characteristics**: (e.g., Gram stain, shape, aerobic/anaerobic).
+2.  **Virulence Factors**: Key mechanisms it uses to cause disease.
+3.  **Diseases Caused**: Common diseases associated with this organism.
+4.  **Lab Diagnosis**: Standard methods for identifying the organism in a lab.
+
+Format the entire output as a valid JSON object.
 `,
   config: {
     temperature: 0.3, // Factual and detailed

@@ -47,6 +47,24 @@ Your task is to generate a JSON object with 'prompt', 'feedback', 'updatedCaseSu
 5.  **Prompt for Next Step**: In the 'prompt' field, ask the student for their next question, action, or if they are ready to suggest some differential diagnoses. (e.g., "Excellent. What would you like to ask or check next?").
 6.  **Check for Completion**: If the student provides a list of differential diagnoses, evaluate them, provide final feedback, and set 'isCompleted' to true.
 7.  **Suggest Next Steps**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. Format it as a JSON array of objects, each with "title", "description", "toolId", "prefilledTopic", and "cta".
+
+Example for 'nextSteps' on completion:
+[
+  {
+    "title": "Review Related Topic",
+    "description": "Generate study notes for a key differential to solidify your knowledge.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "[A key differential from the case]",
+    "cta": "Generate Notes"
+  },
+  {
+    "title": "Try Another Case",
+    "description": "Start a new interactive clinical case simulation on a similar topic.",
+    "toolId": "cases",
+    "prefilledTopic": "[A key differential from the case]",
+    "cta": "Start New Case"
+  }
+]
 {{/if}}
 
 Format your entire output as JSON conforming to the MedicoDDTrainerOutputSchema.

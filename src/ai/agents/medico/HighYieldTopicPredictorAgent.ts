@@ -26,15 +26,35 @@ const highYieldTopicPredictorPrompt = ai.definePrompt({
 
 The JSON object you generate MUST have 'predictedTopics', 'rationale', and a 'nextSteps' field.
 
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate a relevant suggestion for each predicted topic.
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Generate Study Notes",
+    "description": "Create detailed notes for the first predicted topic to start studying.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "{{predictedTopics.0}}",
+    "cta": "Generate Notes for {{predictedTopics.0}}"
+  },
+  {
+    "title": "Create a Study Plan",
+    "description": "Generate a personalized study timetable incorporating these high-yield topics.",
+    "toolId": "timetable",
+    "prefilledTopic": "{{examType}}",
+    "cta": "Create Timetable"
+  }
+]
+---
+
+**Instructions for prediction:**
 Exam Type: "{{{examType}}}"
 {{#if subject}}And specific subject: "{{{subject}}}"{{/if}}
 
-Instructions:
 1.  **'predictedTopics'**: Predict a list of 5-10 high-yield topics that are most likely to be important for this exam. If a subject is specified, focus topics within that subject. Otherwise, provide general high-yield topics for the exam. This should be an array of strings.
 2.  **'rationale'**: Provide a brief rationale for your predictions (e.g., based on past exam trends, curriculum weightage, clinical importance). This should be a single string.
-3.  **'nextSteps'**: CRITICAL: You must suggest a next step for each predicted topic. This must be a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys. The 'toolId' value must be a valid ID like 'theorycoach-generator'. Create one such object for each topic you predicted.
 
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate a relevant suggestion for each predicted topic.
+Format the entire output as a valid JSON object.
 `,
   config: {
     temperature: 0.4, // More analytical and based on patterns

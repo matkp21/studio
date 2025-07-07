@@ -26,11 +26,32 @@ const mnemonicsGeneratorPrompt = ai.definePrompt({
 
 The JSON object you generate MUST have a 'mnemonic' field, an 'explanation' field, a 'topicGenerated' field, and a 'nextSteps' field.
 
-The mnemonic should be creative and easy-to-remember. The explanation should detail what each part of the mnemonic stands for.
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions.
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Create Flashcards",
+    "description": "Create flashcards for the items covered by this mnemonic to reinforce learning.",
+    "toolId": "flashcards",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Create Flashcards"
+  },
+  {
+    "title": "Generate Study Notes",
+    "description": "Generate detailed notes to understand the clinical context behind the topic.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Generate Notes"
+  }
+]
+---
+
+**Instructions for mnemonic generation:**
+The mnemonic should be creative and easy-to-remember for the topic: {{{topic}}}.
+The explanation should detail what each part of the mnemonic stands for.
 The 'topicGenerated' field must be set to "{{{topic}}}".
 The 'imageUrl' field can be omitted or set to null as image generation is currently disabled.
-
-Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
 
 Example for topic "Cranial Nerves (Order)":
 Mnemonic: "Oh Oh Oh To Touch And Feel Very Good Velvet, Ah Heaven"
@@ -39,7 +60,7 @@ Explanation:
   Oh: Optic (II)
   ...
 
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
+Format the entire output as a valid JSON object.
 `,
   config: {
     temperature: 0.7, // Creative for mnemonics

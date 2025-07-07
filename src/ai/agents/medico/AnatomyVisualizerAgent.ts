@@ -26,14 +26,7 @@ const anatomyVisualizerPrompt = ai.definePrompt({
 
 The JSON object you generate MUST have a 'description' field and a 'nextSteps' field.
 
-Provide a detailed description covering:
-1.  **Location**: Where is the structure found in the body?
-2.  **Key Features/Parts**: What are its main components?
-3.  **Primary Functions**: What does it do?
-4.  **Important Clinical Correlations**: Why is it important in medicine (common diseases, injuries, procedures)?
-5.  **Related Structures**: List a few anatomically or functionally related structures.
-
-Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys. The 'toolId' value must be a valid tool ID from the Medico Hub.
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions.
 
 Example for 'nextSteps':
 [
@@ -52,8 +45,17 @@ Example for 'nextSteps':
     "cta": "Create Flashcards"
   }
 ]
+---
 
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
+**Instructions for description generation:**
+Provide a detailed description covering:
+1.  **Location**: Where is the structure found in the body?
+2.  **Key Features/Parts**: What are its main components?
+3.  **Primary Functions**: What does it do?
+4.  **Important Clinical Correlations**: Why is it important in medicine (common diseases, injuries, procedures)?
+5.  **Related Structures**: List a few anatomically or functionally related structures.
+
+Format the entire output as a valid JSON object.
 `,
   config: {
     temperature: 0.3, // Factual and detailed

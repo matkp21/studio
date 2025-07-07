@@ -39,6 +39,25 @@ Your task is to generate a JSON object with the following fields: 'caseId', 'top
 4.  **Retain the Topic**: The 'topic' field in the output MUST be set to "{{{topic}}}".
 5.  **Conclude if Necessary**: If the student has successfully managed the case or reached a logical conclusion, set 'isCompleted' to true, provide a final 'summary' of the case and key learning points.
 6.  **Suggest Next Steps**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. Format it as a JSON array of objects, each with "title", "description", "toolId", "prefilledTopic", and "cta".
+
+Example for 'nextSteps' on completion:
+[
+  {
+    "title": "Review Pathophysiology",
+    "description": "Understand the underlying pathophysiology of {{{topic}}}.",
+    "toolId": "pathomind",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Explain Pathophysiology"
+  },
+  {
+    "title": "Practice MCQs",
+    "description": "Test your knowledge on {{{topic}}} with practice questions.",
+    "toolId": "mcq",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Generate MCQs"
+  }
+]
+
 {{else}}
 You are starting a new case.
 Topic: {{{topic}}}

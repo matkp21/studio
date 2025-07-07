@@ -38,6 +38,25 @@ Your task is to generate a JSON object with the following fields: 'caseId', 'top
 4. Retain the topic: The 'topic' field MUST be set to "{{{patientFocus}}}".
 5. Update 'isCompleted' if this encounter is finished.
 6. **Suggest Next Steps**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. Format it as a JSON array of objects, each with "title", "description", "toolId", "prefilledTopic", and "cta".
+
+Example for 'nextSteps' on completion:
+[
+  {
+    "title": "Review Topic",
+    "description": "Generate study notes for the case topic to consolidate your learning.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "{{{patientFocus}}}",
+    "cta": "Generate Notes"
+  },
+  {
+    "title": "Practice Another Case",
+    "description": "Start a new interactive case simulation on a related topic.",
+    "toolId": "cases",
+    "prefilledTopic": "{{{patientFocus}}}",
+    "cta": "Start New Simulation"
+  }
+]
+
 {{else}}
 New Virtual Round / New Patient.
 Focus for new patient (if any): "{{{patientFocus}}}"

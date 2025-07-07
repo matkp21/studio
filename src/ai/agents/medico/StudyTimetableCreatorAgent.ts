@@ -28,6 +28,28 @@ Your primary task is to generate a JSON object containing a personalized study t
 
 The JSON object you generate MUST have 'performanceAnalysis', 'timetable', and 'nextSteps' fields.
 
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions based on the subjects provided.
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Predict High-Yield Topics",
+    "description": "Identify the most important topics to focus on for your {{{examName}}} exam.",
+    "toolId": "topics",
+    "prefilledTopic": "{{{examName}}}",
+    "cta": "Predict Topics"
+  },
+  {
+    "title": "Start Studying",
+    "description": "Generate study notes for the first subject in your plan.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "{{subjects.0}}",
+    "cta": "Generate Notes for {{subjects.0}}"
+  }
+]
+---
+
+**Instructions for timetable generation:**
 **Student's Goal:**
 - Exam Name: {{{examName}}}
 - Exam Date: {{{examDate}}}
@@ -39,14 +61,11 @@ The JSON object you generate MUST have 'performanceAnalysis', 'timetable', and '
 {{{performanceContext}}}
 {{/if}}
 
-**Your Task:**
 1.  **Analyze & Prioritize**: Use the student's provided performance context to create a structured, realistic, and personalized study timetable. Allocate more time, more frequent revision sessions, and targeted practice for the weak areas identified in the context. If no context is provided, create a balanced schedule.
 2.  **Structure**: The output for the 'timetable' field should be a clear, organized timetable, ideally in a week-by-week Markdown format. It should be detailed and actionable.
 3.  **Confirm Understanding**: In the 'performanceAnalysis' field of your response, provide a brief summary of the weak points from the user's context that you prioritized in the schedule. For example: "The schedule prioritizes clinical application in Neurology and complex pharmacology based on the provided context."
-4.  **Suggest Next Steps**: Format this as a JSON array for the 'nextSteps' field. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta".
 
-Ensure the final output is a valid JSON object with 'performanceAnalysis', 'timetable', and 'nextSteps' fields.
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
+Ensure the final output is a valid JSON object.
 `,
   config: {
     temperature: 0.5, // For some creativity in scheduling

@@ -27,10 +27,7 @@ Your primary task is to generate a JSON object containing a detailed explanation
 
 The JSON object you generate MUST have an 'explanation' field, a 'diagram' field, and a 'nextSteps' field.
 
-Instructions:
-1. Provide a clear, step-by-step explanation of the pathophysiology in the 'explanation' field. Structure the explanation logically, from initial triggers to clinical manifestations.
-2. Generate a simple Mermaid.js flowchart (graph TD) in the 'diagram' field that visually summarizes the key steps of the pathophysiological process.
-3. Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions.
 
 Example for 'nextSteps':
 [
@@ -49,12 +46,17 @@ Example for 'nextSteps':
     "cta": "Create Flashcards"
   }
 ]
+---
+
+**Instructions for explanation and diagram generation:**
+1. Provide a clear, step-by-step explanation of the pathophysiology in the 'explanation' field. Structure the explanation logically, from initial triggers to clinical manifestations.
+2. Generate a simple Mermaid.js flowchart (graph TD) in the 'diagram' field that visually summarizes the key steps of the pathophysiological process.
 
 Example for 'Myocardial Infarction':
 Explanation: "Coronary artery plaque rupture leads to thrombus formation..."
 Diagram: "graph TD; A[Plaque Rupture] --> B[Thrombus Formation]; B --> C[Occlusion of Artery]; C --> D[Myocardial Ischemia]; D --> E[Cell Death / Infarction];"
 
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
+Format the entire output as a valid JSON object.
 `,
   config: {
     temperature: 0.4, // Factual and structured

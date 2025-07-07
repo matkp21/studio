@@ -28,17 +28,36 @@ Your primary task is to generate a structured JSON object representing a flowcha
 
 The JSON object you generate MUST have 'nodes', 'edges', 'topicGenerated', and a 'nextSteps' field.
 
-Instructions for the flowchart:
-- Generate 'nodes' and 'edges' arrays compatible with the React Flow library.
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions.
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Generate Study Notes",
+    "description": "Create detailed notes for {{{topic}}} to understand the context behind the flowchart.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Generate Notes"
+  },
+  {
+    "title": "Test Your Knowledge",
+    "description": "Generate MCQs to test your recall on the steps in this flowchart.",
+    "toolId": "mcq",
+    "prefilledTopic": "{{{topic}}} management pathway",
+    "cta": "Generate MCQs"
+  }
+]
+---
+
+**Instructions for the flowchart:**
+- Generate 'nodes' and 'edges' arrays compatible with the React Flow library for the topic: {{{topic}}}.
 - Use the custom node types: 'symptom', 'test', 'decision', 'treatment'. Each of these must be a string and is a required field for each node.
 - Each node must have a unique 'id' (string), a valid 'type' (string), a 'position' {x, y}, and 'data' {label}.
 - Each edge must have a unique 'id' (string), a 'source' node id, and a 'target' node id.
 - Arrange the node positions logically in a top-down manner. Start with x=250, y=25 for the first node and increment y by ~125 for subsequent nodes. Use different x positions for branches.
 - The 'topicGenerated' field should reflect the input topic.
 
-Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
-
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
+Format the entire output as a valid JSON object.
 `,
   config: {
     temperature: 0.3, // For structured, factual output

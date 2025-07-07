@@ -27,6 +27,28 @@ Your primary task is to generate a JSON object containing a calculated drug dosa
 
 The JSON object you generate MUST have a 'calculatedDose' field, a 'calculationExplanation' field, a 'warnings' field, and a 'nextSteps' field.
 
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions.
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Study Drug Profile",
+    "description": "Get detailed pharmacology information for {{{drugName}}}.",
+    "toolId": "pharmagenie",
+    "prefilledTopic": "{{{drugName}}}",
+    "cta": "Get Drug Info"
+  },
+  {
+    "title": "Create Flashcards",
+    "description": "Create flashcards for the indications and side effects of {{{drugName}}}.",
+    "toolId": "flashcards",
+    "prefilledTopic": "Pharmacology of {{{drugName}}}",
+    "cta": "Create Flashcards"
+  }
+]
+---
+
+**Instructions for dosage calculation:**
 Calculate the drug dosage based on the following complete clinical context:
 Drug Name: {{{drugName}}}
 Patient Weight (kg): {{{patientWeightKg}}}
@@ -35,7 +57,6 @@ Patient Weight (kg): {{{patientWeightKg}}}
 {{#if indication}}Indication: {{{indication}}}{{/if}}
 {{#if concentrationAvailable}}Concentration Available: {{{concentrationAvailable}}}{{/if}}
 
-Instructions:
 1.  **Cross-reference Pharmacopeia Data**: Using your knowledge of standard drug data (conceptually like OpenFDA or RxNorm), determine the standard dosing for the specified drug and indication.
 2.  **Adjust for Context**: Adjust the dose based on all provided patient context. Pay special attention to weight (for pediatric or weight-based dosing), age, and renal function (e.g., dose reduction for impaired eGFR). The specified indication is also critical for determining the correct dosage regimen.
 3.  **Calculate Final Dose**: Clearly state the final calculated dose per kg or total dose as appropriate in the 'calculatedDose' field. If a liquid formulation is implied or stated by 'concentrationAvailable', calculate the volume to be administered.
@@ -43,9 +64,7 @@ Instructions:
 5.  **Provide Clinical Warnings**: List important 'warnings' or common considerations. This MUST include any dose adjustments made due to renal function and other critical points like maximum dose, common side effects, etc.
 6.  **Educational Disclaimer**: Emphasize that this is for educational practice and real clinical decisions require consulting official pharmacopoeias and senior clinicians.
 
-Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
-
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
+Format the entire output as a valid JSON object.
 `,
   config: {
     temperature: 0.2, // Very precise for calculations

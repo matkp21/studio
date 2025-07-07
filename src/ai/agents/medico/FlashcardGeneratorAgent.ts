@@ -27,6 +27,28 @@ const flashcardGeneratorPrompt = ai.definePrompt({
 
 The JSON object you generate MUST have 'flashcards', 'topicGenerated', and a 'nextSteps' field.
 
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions based on the topic.
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Test Your Knowledge",
+    "description": "Generate MCQs to test your recall on {{{topic}}}.",
+    "toolId": "mcq",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Generate 5 MCQs"
+  },
+  {
+    "title": "Get the Full Picture",
+    "description": "Generate structured study notes to understand the core concepts of {{{topic}}}.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Generate Study Notes"
+  }
+]
+---
+
+**Instructions for flashcard generation:**
 Topic: {{{topic}}}
 Difficulty: {{{difficulty}}}
 Exam Style: {{{examType}}}
@@ -36,9 +58,7 @@ For each flashcard, create a 'front' (question or term) and a 'back' (answer or 
 The flashcards should be concise and focus on key, high-yield information relevant to the topic, difficulty, and exam style.
 The 'topicGenerated' field must be set to "{{{topic}}}".
 
-Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
-
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
+Format the entire output as a valid JSON object.
 `,
   config: {
     temperature: 0.4, // Factual and concise

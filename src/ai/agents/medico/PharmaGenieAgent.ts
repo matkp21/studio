@@ -27,13 +27,7 @@ Your primary task is to generate a JSON object containing a detailed summary of 
 
 The JSON object you generate MUST have fields for 'drugClass', 'mechanismOfAction', 'indications', 'sideEffects', and 'nextSteps'.
 
-Provide a detailed summary covering:
-1.  **Drug Class**: The pharmacological class of the drug.
-2.  **Mechanism of Action**: How the drug works at a physiological and molecular level.
-3.  **Key Indications**: The primary medical uses for the drug (as an array of strings).
-4.  **Common Side Effects**: Important and common adverse effects (as an array of strings).
-
-Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys. The 'toolId' value must be a valid tool ID from the Medico Hub.
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions.
 
 Example for 'nextSteps':
 [
@@ -52,8 +46,16 @@ Example for 'nextSteps':
     "cta": "Practice Dosage Calculation"
   }
 ]
+---
 
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
+**Instructions for drug info generation:**
+Provide a detailed summary covering:
+1.  **Drug Class**: The pharmacological class of the drug.
+2.  **Mechanism of Action**: How the drug works at a physiological and molecular level.
+3.  **Key Indications**: The primary medical uses for the drug (as an array of strings).
+4.  **Common Side Effects**: Important and common adverse effects (as an array of strings).
+
+Format the entire output as a valid JSON object.
 `,
   config: {
     temperature: 0.3, // Factual and structured

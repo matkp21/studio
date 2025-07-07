@@ -29,11 +29,32 @@ const studyNotesPrompt = ai.definePrompt({
 
 The JSON object you generate MUST have four fields: 'notes', 'summaryPoints', 'diagram', and 'nextSteps'.
 
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions based on the topic.
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Test Your Knowledge",
+    "description": "Generate MCQs to test your recall on {{{topic}}}.",
+    "toolId": "mcq",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Generate 5 MCQs"
+  },
+  {
+    "title": "Create Flashcards",
+    "description": "Create flashcards for the key points of {{{topic}}}.",
+    "toolId": "flashcards",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Create Flashcards"
+  }
+]
+---
+
+**Instructions for notes generation:**
 Topic/Question: {{{topic}}}
 Desired Answer Length: {{{answerLength}}}
 
-Instructions:
-1.  **'notes' field**: Generate comprehensive notes on the topic using Markdown. Strictly follow this 11-point format, using Markdown headings (e.g., '## 1. Definition'):
+1.  **'notes' field**: Generate comprehensive notes on the topic. Strictly follow this 11-point format, using Markdown headings (e.g., '## 1. Definition'):
     1.  **Definition**: Provide a clear, concise definition.
     2.  **Relevant Anatomy / Physiology**: Briefly mention if critical to understanding the topic.
     3.  **Etiology / Risk Factors**: List the causes and risk factors.
@@ -50,12 +71,8 @@ Instructions:
 
 3.  **'diagram' field**: Place the Mermaid.js syntax generated in step 10 into this field as a single string. If no diagram is relevant, this can be null.
 
-4.  **'nextSteps' field**: You must provide a JSON array for this field. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta".
-
 Constraint: For a '10-mark' answer, the 'notes' content should be around 500 words. For a '5-mark' answer, around 250 words.
 Ensure the entire response is a single valid JSON object conforming to the StudyNotesGeneratorOutputSchema.
-
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.3, // Factual for notes

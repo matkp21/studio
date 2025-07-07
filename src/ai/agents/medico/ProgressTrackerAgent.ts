@@ -31,19 +31,39 @@ Your primary task is to generate a JSON object containing an encouraging progres
 
 The JSON object you generate MUST have 'progressUpdateMessage', 'newAchievements', 'updatedTopicProgress', and a 'nextSteps' field.
 
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions based on the activity.
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Review Another Topic",
+    "description": "Generate study notes for a related topic to broaden your knowledge.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "[Suggest a related topic to {{{topic}}}]",
+    "cta": "Generate Notes"
+  },
+  {
+    "title": "Predict High-Yield Topics",
+    "description": "See what other topics are important for your upcoming exams.",
+    "toolId": "topics",
+    "prefilledTopic": "USMLE Step 1",
+    "cta": "Predict Topics"
+  }
+]
+---
+
+**Instructions for progress update:**
 Activity Details:
 Activity Type: {{{activityType}}}
 Topic: {{{topic}}}
 {{#if score}}Score: {{{score}}}%{{/if}}
 
-Instructions:
 1.  Based on this activity, provide an encouraging 'progressUpdateMessage'.
 2.  If the score is high (e.g., > 85%), award a conceptual achievement in the 'newAchievements' array (e.g., "Cardiology Whiz", "Pharmacology Pro").
 3.  Calculate a new conceptual progress percentage for the topic in 'updatedTopicProgress', assuming they started at a lower percentage.
-4.  For 'nextSteps', if they did poorly on a quiz (score < 60), suggest they generate study notes. If they did well, suggest they try a different tool or topic. Format 'nextSteps' as a JSON array of objects, each with "title", "description", "toolId", "prefilledTopic", and "cta".
+4.  For 'nextSteps', if they did poorly on a quiz (score < 60), suggest they generate study notes. If they did well, suggest they try a different tool or topic.
 
 Format the entire output as JSON conforming to the MedicoProgressTrackerOutputSchema.
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.7, // More creative for gamified messages

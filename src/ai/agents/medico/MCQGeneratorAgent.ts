@@ -31,6 +31,28 @@ const mcqGeneratorPrompt = ai.definePrompt({
 
 The JSON object you generate MUST have an 'mcqs' array, a 'topicGenerated' string, and a 'nextSteps' field.
 
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions based on the topic.
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Deepen Understanding",
+    "description": "Generate structured study notes to review the core concepts of {{{topic}}}.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Generate Study Notes"
+  },
+  {
+    "title": "Visualize It",
+    "description": "Create a flowchart to understand the clinical pathway or algorithm for {{{topic}}}.",
+    "toolId": "flowcharts",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Create Flowchart"
+  }
+]
+---
+
+**Instructions for quiz generation:**
 Generate a quiz based on the following criteria:
 Topic: {{{topic}}}
 Difficulty: {{{difficulty}}}
@@ -45,10 +67,7 @@ For each MCQ:
 5.  Provide a brief explanation for why the correct answer is correct and, if relevant, why common distractors are incorrect.
 6. The 'topicGenerated' field must be set to "{{{topic}}}".
 
-Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
 Ensure the final output is a single valid JSON object.
-
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.5, // A bit of creativity for plausible distractors but still medically sound

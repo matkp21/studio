@@ -27,15 +27,7 @@ Your primary task is to generate a JSON object containing a structured interpret
 
 The JSON object you generate MUST have an 'interpretation' field, a 'likelyDifferentials' field, and a 'nextSteps' field.
 
-Lab Results to interpret:
-"{{{labResults}}}"
-
-Provide a structured interpretation covering:
-1.  **Abnormal Values**: Clearly list which values are high, low, or abnormal.
-2.  **Potential Implications**: Explain what these abnormalities could suggest (e.g., "Elevated WBC may indicate infection or inflammation").
-3.  **Likely Differentials**: List a few possible differential diagnoses suggested by the lab results in the 'likelyDifferentials' field (an array of strings).
-
-Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys. The 'toolId' value must be a valid tool ID from the Medico Hub.
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions.
 
 Example for 'nextSteps':
 [
@@ -54,8 +46,18 @@ Example for 'nextSteps':
     "cta": "Generate Notes"
   }
 ]
+---
 
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
+**Instructions for lab interpretation:**
+Lab Results to interpret:
+"{{{labResults}}}"
+
+Provide a structured interpretation covering:
+1.  **Abnormal Values**: Clearly list which values are high, low, or abnormal.
+2.  **Potential Implications**: Explain what these abnormalities could suggest (e.g., "Elevated WBC may indicate infection or inflammation").
+3.  **Likely Differentials**: List a few possible differential diagnoses suggested by the lab results in the 'likelyDifferentials' field (an array of strings).
+
+Format the entire output as a valid JSON object.
 `,
   config: {
     temperature: 0.3, // Factual for data interpretation

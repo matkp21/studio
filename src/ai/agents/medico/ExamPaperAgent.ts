@@ -28,11 +28,32 @@ const examPaperPrompt = ai.definePrompt({
 
 The JSON object you generate MUST have 'mcqs', 'essays', 'topicGenerated', and a 'nextSteps' field.
 
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate at least two relevant suggestions based on the exam type.
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Predict High-Yield Topics",
+    "description": "Analyze trends and predict high-yield topics for the {{{examType}}} exam.",
+    "toolId": "topics",
+    "prefilledTopic": "{{{examType}}}",
+    "cta": "Predict Topics"
+  },
+  {
+    "title": "Create a Study Plan",
+    "description": "Generate a personalized study timetable to prepare for the {{{examType}}}.",
+    "toolId": "timetable",
+    "prefilledTopic": "{{{examType}}}",
+    "cta": "Create Timetable"
+  }
+]
+---
+
+**Instructions for exam paper generation:**
 Exam Type: {{{examType}}}
 {{#if year}}Focus Year (for pattern analysis): {{{year}}}{{/if}}
 Number of MCQs to generate: {{{count}}}
 
-Instructions:
 1.  Based on the exam type (and year if provided), generate a realistic mock paper.
 2.  Create a clear and unambiguous set of Multiple Choice Questions (MCQs). For each MCQ:
     - Provide exactly four distinct options. One option must have 'isCorrect' set to true.
@@ -41,9 +62,7 @@ Instructions:
 3.  Generate 2-3 essay-style questions that are typical for this kind of exam. For each essay, provide a brief outline of the expected answer.
 4.  The 'topicGenerated' field MUST be set to "{{{examType}}}".
 
-Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
-
-CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
+Format the entire output as a valid JSON object.
 `,
   config: {
     temperature: 0.6, // More creative for varied questions
