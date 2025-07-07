@@ -28,7 +28,6 @@ import { PathoMindExplainer } from '@/components/medico/pathomind-explainer';
 import { PharmaGenie } from '@/components/medico/pharma-genie';
 import { MicroMate } from '@/components/medico/micro-mate';
 import { DiagnoBot } from '@/components/medico/diagno-bot';
-import { TheoryCoach } from '@/components/medico/theory-coach';
 
 
 // Define the full list of tools
@@ -40,7 +39,6 @@ export const allMedicoToolsList: MedicoTool[] = [
   { id: 'exams', title: 'Mock Exam Suite', description: 'Take full-length mock exams, get detailed analytics, and compete on leaderboards.', icon: Trophy, component: MockExamSuite, comingSoon: false },
   { id: 'challenges', title: 'Gamified Case Challenges', description: 'Solve timed clinical scenarios and compete on leaderboards.', icon: Swords, component: GamifiedCaseChallenges, comingSoon: false },
   { id: 'q-bank', title: 'Exam Paper Generator', description: "Generate mock exam papers simulating previous years, with MCQs and essay questions.", icon: BookCopy, component: SolvedQuestionPapersViewer },
-  { id: 'theorycoach', title: 'Theory Coach', description: 'Get detailed explanations of complex medical theories, including analogies and key points.', icon: Lightbulb, component: TheoryCoach },
   { id: 'theorycoach-generator', title: 'Study Notes Generator', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: StudyNotesGenerator },
   { id: 'summarizer', title: 'Smart Note Summarizer', description: 'Upload notes (PDF/TXT/JPEG) and get AI-powered summaries in various formats.', icon: FileText, component: NoteSummarizer },
   { id: 'videos', title: 'Video Lecture Library', description: 'Search and find relevant medical video lectures from YouTube.', icon: Youtube, href: '/medico/videos' },
@@ -71,7 +69,7 @@ export const frequentlyUsedMedicoToolIds: ActiveToolId[] = [
   'challenges', 
   'q-bank', 
   'mcq', 
-  'theorycoach', 
+  'theorycoach-generator', 
   'library', 
   'topicExplorer'
 ];

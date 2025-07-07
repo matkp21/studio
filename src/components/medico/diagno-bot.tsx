@@ -1,4 +1,3 @@
-
 // src/components/medico/diagno-bot.tsx
 
 "use client";

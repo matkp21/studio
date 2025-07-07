@@ -1,4 +1,3 @@
-
 // src/components/medico/pathomind-explainer.tsx
 "use client";
 

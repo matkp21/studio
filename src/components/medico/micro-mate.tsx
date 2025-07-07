@@ -1,4 +1,3 @@
-
 // src/components/medico/micro-mate.tsx
 
 "use client";

@@ -172,7 +172,7 @@ export function MnemonicsGenerator() {
                  <h4 className="font-semibold text-md mb-1 text-yellow-700 dark:text-yellow-400">Visual Aid:</h4>
                   {generatedMnemonic.imageUrl ? (
                      <div className="relative aspect-square w-full border rounded-lg overflow-hidden bg-muted/30">
-                        <Image src={generatedMnemonic.imageUrl} alt={`Visual for ${generatedMnemonic.topicGenerated}`} layout="fill" objectFit="contain" data-ai-hint="medical mnemonic diagram"/>
+                        <Image src={generatedMnemonic.imageUrl} alt={`Visual for ${generatedMnemonic.topicGenerated}`} fill objectFit="contain" data-ai-hint="medical mnemonic diagram"/>
                     </div>
                   ) : (
                     <div className="aspect-square w-full border border-dashed rounded-lg flex flex-col items-center justify-center text-muted-foreground bg-muted/20">
@@ -188,15 +188,23 @@ export function MnemonicsGenerator() {
                 <Save className="mr-2 h-4 w-4"/> Save to Library
               </Button>
               {generatedMnemonic.nextSteps && generatedMnemonic.nextSteps.length > 0 && (
-                <div className="w-full">
-                    <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
-                    <div className="flex flex-wrap gap-2">
+                <div className="w-full space-y-3">
+                    <h4 className="font-semibold text-md text-primary">Recommended Next Steps:</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {generatedMnemonic.nextSteps.map((step, index) => (
-                            <Button key={index} variant="outline" size="sm" asChild>
-                                <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
-                                    {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
-                                </Link>
-                            </Button>
+                            <Card key={index} className="bg-card/50 hover:bg-card/90 transition-colors">
+                                <CardHeader className="p-3 pb-1">
+                                    <CardTitle className="text-sm">{step.title}</CardTitle>
+                                    <CardDescription className="text-xs">{step.description}</CardDescription>
+                                </CardHeader>
+                                <CardFooter className="p-3 pt-1">
+                                    <Button variant="outline" size="xs" asChild className="w-full">
+                                        <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
+                                            {step.cta} <ArrowRight className="ml-2 h-3 w-3"/>
+                                        </Link>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
                         ))}
                     </div>
                 </div>
