@@ -1,3 +1,4 @@
+
 // src/ai/agents/medico/StudyNotesAgent.ts
 'use server';
 /**
@@ -26,11 +27,13 @@ const studyNotesPrompt = ai.definePrompt({
   input: { schema: StudyNotesGeneratorInputSchema },
   output: { schema: StudyNotesGeneratorOutputSchema },
   prompt: `You are an AI medical expert creating a structured, exam-ready study note for an MBBS student.
-Given the medical topic/question: {{{topic}}}
-Desired answer length: {{{answerLength}}}
+Your primary task is to generate a comprehensive JSON output with four fields: 'notes', 'summaryPoints', 'diagram', and 'nextSteps'.
+Your secondary, but MANDATORY task, is to generate the 'nextSteps' array. This field is critical for the app's functionality and must not be omitted.
 
-Your task is to generate a comprehensive JSON output with four fields: 'notes', 'summaryPoints', 'diagram', and 'nextSteps'.
+Topic/Question: {{{topic}}}
+Desired Answer Length: {{{answerLength}}}
 
+Instructions:
 1.  **'notes' field**: Generate comprehensive notes on the topic using Markdown. Strictly follow this 11-point format, using Markdown headings (e.g., '## 1. Definition'):
     1.  **Definition**: Provide a clear, concise definition.
     2.  **Relevant Anatomy / Physiology**: Briefly mention if critical to understanding the topic.
@@ -48,7 +51,7 @@ Your task is to generate a comprehensive JSON output with four fields: 'notes', 
 
 3.  **'diagram' field**: Place the Mermaid.js syntax generated in step 10 into this field as a single string. If no diagram is relevant, this can be null.
 
-4.  **'nextSteps' field**: CRITICAL: You must provide a JSON array for this field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'mcq', 'flashcards'). Example: [{ "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge" }, { "tool": "flashcards", "topic": "{{{topic}}}", "reason": "Create flashcards" }].
+4.  **'nextSteps' field (MANDATORY)**: You must provide a JSON array for this field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'mcq', 'flashcards'). Example: [{ "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge" }, { "tool": "flashcards", "topic": "{{{topic}}}", "reason": "Create flashcards" }].
 
 Constraint: For a '10-mark' answer, the 'notes' content should be around 500 words. For a '5-mark' answer, around 250 words.
 Ensure the entire response is a single valid JSON object conforming to the StudyNotesGeneratorOutputSchema.

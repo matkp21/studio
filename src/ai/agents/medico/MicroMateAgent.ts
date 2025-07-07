@@ -24,17 +24,18 @@ const microMatePrompt = ai.definePrompt({
   input: { schema: MicroMateInputSchema },
   output: { schema: MicroMateOutputSchema },
   prompt: `You are MicroMate, an AI expert in microbiology for medical students.
-Given the microorganism: {{{microorganism}}}
+Your primary task is to provide a detailed summary of the microorganism: {{{microorganism}}}
+Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'mcq' or 'flashcards'. This field is critical for the app's functionality and must not be omitted.
 
 Provide a detailed summary covering:
 1.  **Key Characteristics**: (e.g., Gram stain, shape, aerobic/anaerobic).
 2.  **Virulence Factors**: Key mechanisms it uses to cause disease.
 3.  **Diseases Caused**: Common diseases associated with this organism.
 4.  **Lab Diagnosis**: Standard methods for identifying the organism in a lab.
-5.  **Next Steps**: CRITICAL: You must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'mcq', 'flashcards'). Example: [{ "tool": "mcq", "topic": "{{{microorganism}}}", "reason": "Generate MCQs for {{{microorganism}}}" }].
 
 Format the output as JSON conforming to the MicroMateOutputSchema.
 The fields 'characteristics', 'virulenceFactors', 'diseasesCaused', and 'labDiagnosis' should be detailed strings.
+Example for 'nextSteps': [{ "tool": "mcq", "topic": "{{{microorganism}}}", "reason": "Generate MCQs for {{{microorganism}}}" }]
 `,
   config: {
     temperature: 0.3, // Factual and detailed

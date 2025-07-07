@@ -28,17 +28,21 @@ const progressTrackerPrompt = ai.definePrompt({
   input: { schema: MedicoProgressTrackerInputSchema },
   output: { schema: MedicoProgressTrackerOutputSchema },
   prompt: `You are an AI assistant that provides gamified feedback for a medical student's study progress.
-A student has just completed an activity.
+Your primary task is to generate an encouraging progress update message based on a completed activity. Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. This field is critical for the app's functionality and must not be omitted.
+
+Activity Details:
 Activity Type: {{{activityType}}}
 Topic: {{{topic}}}
 {{#if score}}Score: {{{score}}}%{{/if}}
 
-Based on this activity, provide an encouraging progress update message.
-If the score is high (e.g., > 85%), award a conceptual achievement like "Cardiology Whiz" or "Pharmacology Pro".
-Calculate a new conceptual progress percentage for the topic, assuming they started at a lower percentage.
-CRITICAL: You must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. If they did poorly on a quiz (score < 60), suggest they generate study notes. If they did well, suggest they try a different tool or topic. Example: [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Review weak areas" }].
+Instructions:
+1.  Based on this activity, provide an encouraging 'progressUpdateMessage'.
+2.  If the score is high (e.g., > 85%), award a conceptual achievement in the 'newAchievements' array (e.g., "Cardiology Whiz", "Pharmacology Pro").
+3.  Calculate a new conceptual progress percentage for the topic in 'updatedTopicProgress', assuming they started at a lower percentage.
+4.  For 'nextSteps', if they did poorly on a quiz (score < 60), suggest they generate study notes. If they did well, suggest they try a different tool or topic.
+Example for 'nextSteps': [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Review weak areas" }]
 
-Format the output as JSON conforming to the MedicoProgressTrackerOutputSchema.
+Format the entire output as JSON conforming to the MedicoProgressTrackerOutputSchema.
 
 Example for a high score:
 {
@@ -53,6 +57,7 @@ Example for a high score:
 Example for a regular review:
 {
   "progressUpdateMessage": "Great job reviewing your notes on Pharmacology! Consistent review is key to retention.",
+  "newAchievements": [],
   "updatedTopicProgress": {
     "topic": "Pharmacology",
     "newProgressPercentage": 55

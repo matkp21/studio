@@ -1,3 +1,4 @@
+
 import { config } from 'dotenv';
 config();
 
@@ -6,11 +7,11 @@ import '@/ai/schemas/guideline-retrieval-schemas.ts'; // Ensure schemas are part
 import '@/ai/agents/ImageAnalyzerAgent.ts';
 import '@/ai/agents/SymptomAnalyzerAgent.ts';
 import '@/ai/agents/ChatAgent.ts';
+
+// Medico tool imports:
 import '@/ai/agents/medico/StudyNotesAgent.ts'; 
 import '@/ai/agents/medico/MCQGeneratorAgent.ts'; 
 import '@/ai/agents/medico/ExamPaperAgent.ts';
-
-// New Medico tool imports:
 import '@/ai/agents/medico/StudyTimetableCreatorAgent.ts';
 import '@/ai/agents/medico/FlashcardGeneratorAgent.ts';
 import '@/ai/agents/medico/ClinicalCaseSimulatorAgent.ts';
@@ -27,8 +28,6 @@ import '@/ai/agents/medico/PathoMindAgent.ts';
 import '@/ai/agents/medico/PharmaGenieAgent.ts';
 import '@/ai/agents/medico/MicroMateAgent.ts';
 import '@/ai/agents/medico/DiagnoBotAgent.ts';
-// Mock Exam Suite and Gamified Cases do not have dedicated agents, they use existing ones or sample data.
-
 
 // Professional tools
 import '@/ai/agents/pro/DischargeSummaryGeneratorAgent.ts';

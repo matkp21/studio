@@ -43,7 +43,7 @@ Student's last response (their question or action): "{{{userResponse}}}"
 4.  **Update the Case Summary**: In 'updatedCaseSummary', append the new information (the student's question and the patient's answer) to the 'currentCaseSummary'.
 5.  **Prompt for Next Step**: In the 'prompt' field, ask the student for their next question, action, or if they are ready to suggest some differential diagnoses. (e.g., "Excellent. What would you like to ask or check next?").
 6.  **Check for Completion**: If the student provides a list of differential diagnoses, evaluate them, provide final feedback, and set 'isCompleted' to true.
-7.  **Suggest Next Steps**: CRITICAL: If the session is completed, you MUST suggest 1-2 next steps for the 'nextSteps' field. Format as a JSON array of objects, each with "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "[Final Diagnosis]", "reason": "Generate study notes" }].
+7.  **Suggest Next Steps (MANDATORY on completion)**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. This is critical. Format it as a JSON array of objects, each with "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'theorycoach-generator'). This field must not be omitted on session completion. Example: [{ "tool": "theorycoach-generator", "topic": "[Final Diagnosis]", "reason": "Generate study notes" }].
 {{/if}}
 
 Format your entire output as JSON conforming to the MedicoDDTrainerOutputSchema.

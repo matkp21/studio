@@ -24,17 +24,17 @@ const pathoMindPrompt = ai.definePrompt({
   input: { schema: PathoMindInputSchema },
   output: { schema: PathoMindOutputSchema },
   prompt: `You are PathoMind, an AI expert in pathology and physiology.
-Given the medical topic: {{{topic}}}
+Your primary task is to explain the pathophysiology of the medical topic: {{{topic}}}
+Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'theorycoach-generator'. This field is critical for the app's functionality and must not be omitted.
 
-Provide a clear, step-by-step explanation of the pathophysiology.
-Structure the explanation logically, from initial triggers to clinical manifestations.
-Additionally, generate a simple Mermaid.js flowchart (graph TD) that visually summarizes the key steps of the pathophysiological process.
-Finally, you must suggest a next step.
+Instructions:
+1. Provide a clear, step-by-step explanation of the pathophysiology. Structure the explanation logically, from initial triggers to clinical manifestations.
+2. Generate a simple Mermaid.js flowchart (graph TD) that visually summarizes the key steps of the pathophysiological process.
 
 Format the output as JSON conforming to the PathoMindOutputSchema.
 - The 'explanation' field should be a detailed, well-structured text.
 - The 'diagram' field should contain only the Mermaid.js syntax for the flowchart.
-- **Next Steps**: CRITICAL: You must provide a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate comprehensive notes" }].
+Example for 'nextSteps': [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate comprehensive notes" }]
 
 Example for 'Myocardial Infarction':
 Explanation: "Coronary artery plaque rupture leads to thrombus formation..."

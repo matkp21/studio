@@ -28,8 +28,8 @@ const anatomyVisualizerPrompt = ai.definePrompt({
   input: { schema: MedicoAnatomyVisualizerInputSchema },
   output: { schema: MedicoAnatomyVisualizerOutputSchema },
   // tools: [generateAnatomyImage], // If image generation tool was defined
-  prompt: `You are an AI medical educator specializing in anatomy.
-Given the anatomical structure: {{{anatomicalStructure}}}
+  prompt: `You are an AI medical educator specializing in anatomy. Your primary task is to provide a detailed description of the anatomical structure: {{{anatomicalStructure}}}
+Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'theorycoach-generator' or 'mcq'. This field is critical for the app's functionality and must not be omitted.
 
 Provide a detailed description covering:
 1.  **Location**: Where is the structure found in the body?
@@ -37,10 +37,10 @@ Provide a detailed description covering:
 3.  **Primary Functions**: What does it do?
 4.  **Important Clinical Correlations**: Why is it important in medicine (common diseases, injuries, procedures)?
 5.  **Related Structures**: List a few anatomically or functionally related structures.
-6.  **Next Steps**: CRITICAL: You must suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'theorycoach-generator' or 'mcq'. Example: [{ "tool": "theorycoach-generator", "topic": "Anatomy of the {{{anatomicalStructure}}}", "reason": "Generate study notes" }].
 
 Format the entire output as JSON conforming to the MedicoAnatomyVisualizerOutputSchema.
 'imageUrl' can be omitted or set to null if image generation is not used/available.
+Example for 'nextSteps': [{ "tool": "theorycoach-generator", "topic": "Anatomy of the {{{anatomicalStructure}}}", "reason": "Generate study notes" }]
 `,
   config: {
     temperature: 0.3, // Factual and detailed

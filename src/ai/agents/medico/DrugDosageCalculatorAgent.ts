@@ -24,6 +24,7 @@ const drugDosageCalculatorPrompt = ai.definePrompt({
   input: { schema: MedicoDrugDosageInputSchema },
   output: { schema: MedicoDrugDosageOutputSchema },
   prompt: `You are an AI tool designed for medical students to practice drug dosage calculations. THIS IS FOR EDUCATIONAL PURPOSES ONLY AND NOT FOR ACTUAL CLINICAL USE.
+Your primary task is to calculate a drug dosage based on the provided clinical context. Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'flashcards'. This field is critical for the app's functionality and must not be omitted.
 
 Calculate the drug dosage based on the following complete clinical context:
 Drug Name: {{{drugName}}}
@@ -40,13 +41,13 @@ Instructions:
 4.  **Show Your Work**: Provide a step-by-step 'calculationExplanation' that clearly shows how you arrived at the final dose, including any adjustments made for patient context.
 5.  **Provide Clinical Warnings**: List important 'warnings' or common considerations. This MUST include any dose adjustments made due to renal function and other critical points like maximum dose, common side effects, etc.
 6.  **Educational Disclaimer**: Emphasize that this is for educational practice and real clinical decisions require consulting official pharmacopoeias and senior clinicians.
-7.  **Suggest Next Steps**: CRITICAL: You must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'flashcards'). Example: [{ "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }].
 
 Format the output as JSON conforming to the MedicoDrugDosageOutputSchema.
 'calculatedDose' should be a string (e.g., "500 mg", "7.5 ml").
 'calculationExplanation' must be provided.
 'warnings' is an array of strings.
 If critical information is missing to make a safe calculation, 'calculatedDose' can state "Insufficient information" and the explanation should detail what's missing.
+Example for 'nextSteps': [{ "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }]
 `,
   config: {
     temperature: 0.2, // Very precise for calculations

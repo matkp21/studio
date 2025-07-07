@@ -1,25 +1,26 @@
+
 // src/components/medico/theory-coach.tsx
 "use client";
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lightbulb, BookOpen, ChevronRight, Loader2 } from 'lucide-react';
+import { Lightbulb, BookOpen, ChevronRight, Loader2, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
-import { RecommendedTools } from './recommended-tools';
-import type { ActiveToolId } from '@/types/medico-tools';
+import type { NextStepSuggestion } from '@/ai/schemas/medico-tools-schemas';
 
-// Mock AI response structure
+// Mock AI response structure now aligns with real agent outputs
 interface TheoryConcept {
   name: string;
   explanation: string;
   analogy: string;
   key_points: string[];
-  recommended_tools: ActiveToolId[];
+  nextSteps: NextStepSuggestion[];
 }
 
 const mockAIResponse: TheoryConcept = {
@@ -32,7 +33,12 @@ const mockAIResponse: TheoryConcept = {
     "Primary symptom is chest pain (angina pectoris).",
     "Diagnosis involves ECG, cardiac markers (Troponin), and coronary angiography."
   ],
-  recommended_tools: ['mcq', 'cases', 'flashcards', 'diagnobot']
+  nextSteps: [
+    { tool: 'mcq', topic: 'Myocardial Infarction', reason: 'Test your MI knowledge' },
+    { tool: 'cases', topic: 'Chest Pain Differential Diagnosis', reason: 'Simulate a case' },
+    { tool: 'flashcards', topic: 'Cardiac Enzymes', reason: 'Create flashcards' },
+    { tool: 'diagnobot', topic: 'ECG in Myocardial Infarction', reason: 'Practice ECG Interpretation' }
+  ]
 };
 
 export function TheoryCoach() {
@@ -174,11 +180,22 @@ export function TheoryCoach() {
                 </motion.div>
               </motion.div>
               
-              <RecommendedTools 
-                toolIds={aiResponse.recommended_tools}
-                title="Solidify Your Knowledge"
-                description="Now that you've covered the theory, try these tools to reinforce your understanding."
-              />
+               <CardFooter className="p-0 pt-6 mt-6 border-t flex flex-col items-start gap-4">
+                  {aiResponse.nextSteps && aiResponse.nextSteps.length > 0 && (
+                    <div className="w-full">
+                        <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {aiResponse.nextSteps.map((step, index) => (
+                                <Button key={index} variant="outline" size="sm" asChild>
+                                    <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
+                                        {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
+                                    </Link>
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+                  )}
+              </CardFooter>
             </>
           )}
         </CardContent>

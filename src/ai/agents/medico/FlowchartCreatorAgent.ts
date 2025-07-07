@@ -25,15 +25,16 @@ const flowchartCreatorPrompt = ai.definePrompt({
   input: { schema: MedicoFlowchartCreatorInputSchema },
   output: { schema: MedicoFlowchartCreatorOutputSchema },
   prompt: `You are an AI assistant that creates educational flowcharts for medical students.
-Given the topic: {{{topic}}}
+Your primary task is to generate a structured JSON object representing a flowchart for the topic: {{{topic}}}.
+Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'mcq'. This field is critical for the app's functionality and must not be omitted.
 
-Generate a structured JSON object representing the flowchart. This JSON should contain 'nodes' and 'edges' arrays compatible with the React Flow library.
-- Use the custom node types: 'symptom', 'test', 'decision', 'treatment'.
-- Each node must have a unique 'id', a valid 'type', a 'position' {x, y}, and 'data' {label}.
-- Each edge must have a unique 'id', a 'source' node id, and a 'target' node id.
+Instructions for the flowchart:
+- Generate 'nodes' and 'edges' arrays compatible with the React Flow library.
+- Use the custom node types: 'symptom', 'test', 'decision', 'treatment'. Each of these must be a string and is a required field for each node.
+- Each node must have a unique 'id' (string), a valid 'type' (string), a 'position' {x, y}, and 'data' {label}.
+- Each edge must have a unique 'id' (string), a 'source' node id, and a 'target' node id.
 - Arrange the node positions logically in a top-down manner. Start with x=250, y=25 for the first node and increment y by ~125 for subsequent nodes. Use different x positions for branches.
 - The 'topicGenerated' field should reflect the input topic.
-- **Next Steps**: CRITICAL: You must suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'mcq'). Example: [{ "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge on this flowchart" }].
 
 Example of the required JSON output format for the topic "Basic Life Support":
 {
@@ -71,22 +72,23 @@ const flowchartCreatorFlow = ai.defineFlow(
   },
   async (input) => {
     try {
-        const { output } = await flowchartCreatorPrompt(input);
+      const { output } = await flowchartCreatorPrompt(input);
 
-        if (!output || !output.nodes || output.nodes.length === 0 || !output.edges) {
+      if (!output || !output.nodes || output.nodes.length === 0 || !output.edges) {
         console.error('MedicoFlowchartCreatorPrompt did not return valid flowchart data for topic:', input.topic);
         throw new Error('Failed to generate flowchart. The AI model did not return a valid flowchart structure. Please try a different topic.');
-        }
-        // Sanitize to prevent saving undefined node types, which causes rendering issues.
-        output.nodes = output.nodes.map(node => ({
+      }
+      
+      // Sanitize to prevent undefined node types, which causes rendering issues.
+      output.nodes = output.nodes.map(node => ({
         ...node,
         type: node.type || 'symptom' // Default to a valid type if missing
-        }));
+      }));
 
-        return output;
+      return output;
     } catch (err) {
-        console.error(`[FlowchartCreatorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
-        throw new Error('An unexpected error occurred while generating the flowchart. Please try again.');
+      console.error(`[FlowchartCreatorAgent] Error: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error('An unexpected error occurred while generating the flowchart. Please try again.');
     }
   }
 );

@@ -25,20 +25,22 @@ const flashcardGeneratorPrompt = ai.definePrompt({
   input: { schema: MedicoFlashcardGeneratorInputSchema },
   output: { schema: MedicoFlashcardGeneratorOutputSchema },
   prompt: `You are an AI assistant skilled in creating educational flashcards for medical students.
-Given the topic: {{{topic}}}
+Your primary task is to generate flashcards based on the provided topic. Your secondary, but MANDATORY task, is to suggest a logical next study step. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'mcq'. This field is critical for the app's functionality and must not be omitted.
+
+Topic: {{{topic}}}
 Difficulty: {{{difficulty}}}
 Exam Style: {{{examType}}}
 Number of flashcards to generate: {{{count}}}
 
 For each flashcard, create a 'front' (question or term) and a 'back' (answer or definition).
 The flashcards should be concise and focus on key, high-yield information relevant to the topic, difficulty, and exam style.
-After generating the flashcards, you must suggest a logical next step.
 
 Format the output as JSON conforming to the MedicoFlashcardGeneratorOutput schema.
 The output must include:
 1. 'flashcards': An array of flashcard objects, each with 'front' and 'back' string properties.
 2. 'topicGenerated': The topic for which these flashcards were generated.
-3. 'nextSteps': CRITICAL: You must provide a JSON array for this field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'mcq'). Example: [{ "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge on these flashcards" }].
+3. 'nextSteps': The mandatory array of next step suggestions.
+Example for 'nextSteps': [{ "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge on these flashcards" }]
 `,
   config: {
     temperature: 0.4, // Factual and concise

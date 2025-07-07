@@ -24,18 +24,19 @@ const pharmaGeniePrompt = ai.definePrompt({
   input: { schema: PharmaGenieInputSchema },
   output: { schema: PharmaGenieOutputSchema },
   prompt: `You are PharmaGenie, an AI expert in pharmacology for medical students.
-Given the drug name: {{{drugName}}}
+Your primary task is to provide a detailed summary of the drug: {{{drugName}}}
+Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'flashcards'. This field is critical for the app's functionality and must not be omitted.
 
 Provide a detailed summary covering:
 1.  **Drug Class**: The pharmacological class of the drug.
 2.  **Mechanism of Action**: How the drug works at a physiological and molecular level.
 3.  **Key Indications**: The primary medical uses for the drug.
 4.  **Common Side Effects**: Important and common adverse effects.
-5.  **Next Steps**: CRITICAL: You must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'flashcards'). Example: [{ "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }].
 
 Format the output as JSON conforming to the PharmaGenieOutputSchema.
 - 'drugClass' and 'mechanismOfAction' should be detailed strings.
 - 'indications' and 'sideEffects' should be arrays of strings.
+Example for 'nextSteps': [{ "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }]
 `,
   config: {
     temperature: 0.3, // Factual and structured

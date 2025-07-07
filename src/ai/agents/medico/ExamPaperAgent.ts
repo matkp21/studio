@@ -26,6 +26,8 @@ const examPaperPrompt = ai.definePrompt({
   input: { schema: MedicoExamPaperInputSchema },
   output: { schema: MedicoExamPaperOutputSchema },
   prompt: `You are an expert medical examiner, tasked with creating a mock exam paper for a medical student.
+Your primary task is to generate the exam paper content. Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'theorycoach-generator'. This field is critical for the app's functionality and must not be omitted.
+
 Exam Type: {{{examType}}}
 {{#if year}}Focus Year (for pattern analysis): {{{year}}}{{/if}}
 Number of MCQs to generate: {{{count}}}
@@ -37,12 +39,12 @@ Instructions:
     - The other three options should be plausible distractors with 'isCorrect' set to false.
     - Provide a brief explanation for the correct answer.
 3.  Generate 2-3 essay-style questions that are typical for this kind of exam. For each essay, provide a brief outline of the expected answer.
-4.  **Suggest Next Steps**: CRITICAL: You must suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "{{{examType}}}", "reason": "Review weak areas from this exam" }].
 
 Format the output as JSON conforming to the MedicoExamPaperOutputSchema.
-The root output must be an object containing 'mcqs', 'essays', 'topicGenerated', and optional 'nextSteps' fields.
+The root output must be an object containing 'mcqs', 'essays', 'topicGenerated', and a 'nextSteps' array.
 Each object in the 'mcqs' array must conform to the MCQSchema, including the 'isCorrect' boolean for each option.
 Each object in the 'essays' array must have 'question' and 'answer_outline' strings.
+Example for 'nextSteps': [{ "tool": "theorycoach-generator", "topic": "{{{examType}}}", "reason": "Review weak areas from this exam" }]
 `,
   config: {
     temperature: 0.6, // More creative for varied questions

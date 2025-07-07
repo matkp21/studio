@@ -24,13 +24,15 @@ const highYieldTopicPredictorPrompt = ai.definePrompt({
   input: { schema: MedicoTopicPredictorInputSchema },
   output: { schema: MedicoTopicPredictorOutputSchema },
   prompt: `You are an AI expert in medical exam preparation and curriculum analysis.
-Given the exam type: "{{{examType}}}"
+Your MANDATORY task is to generate a JSON object with 'predictedTopics', 'rationale', and 'nextSteps' for the given exam. The 'nextSteps' field is critical and must not be omitted.
+
+Exam Type: "{{{examType}}}"
 {{#if subject}}And specific subject: "{{{subject}}}"{{/if}}
 
-Your task is to generate a JSON object with 'predictedTopics', 'rationale', and 'nextSteps'.
+Instructions:
 1.  **'predictedTopics'**: Predict a list of 5-10 high-yield topics that are most likely to be important for this exam. If a subject is specified, focus topics within that subject. Otherwise, provide general high-yield topics for the exam. This should be an array of strings.
 2.  **'rationale'**: Provide a brief rationale for your predictions (e.g., based on past exam trends, curriculum weightage, clinical importance). This should be a single string.
-3.  **'nextSteps'**: CRITICAL: You MUST suggest a next step for each predicted topic. This must be a JSON array of objects. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid ID like 'theorycoach-generator'. Example for one topic: [{ "tool": "theorycoach-generator", "topic": "Myocardial Infarction", "reason": "Generate notes for Myocardial Infarction" }]. Create one such object for each topic you predicted.
+3.  **'nextSteps'**: CRITICAL: You must suggest a next step for each predicted topic. This must be a JSON array of objects. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid ID like 'theorycoach-generator'. Create one such object for each topic you predicted. Example: [{ "tool": "theorycoach-generator", "topic": "Myocardial Infarction", "reason": "Generate notes for Myocardial Infarction" }].
 
 Format the output as JSON conforming to the MedicoTopicPredictorOutputSchema.
 `,

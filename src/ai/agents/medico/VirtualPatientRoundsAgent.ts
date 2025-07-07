@@ -37,7 +37,7 @@ Based on the patient's history (assume you have access to it, not fully provided
 3. Give the 'nextPrompt' to guide the student (e.g., "What investigations would you order next?", "How would you manage this finding?").
 4. Retain the topic: The 'topic' field MUST be set to "{{{patientFocus}}}".
 5. Update 'isCompleted' if this encounter is finished.
-6. **Suggest Next Steps**: CRITICAL: If the round is completed, you MUST suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "{{{patientFocus}}}", "reason": "Generate study notes" }].
+6. **Suggest Next Steps (MANDATORY on completion)**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. This is critical. Format it as a JSON array of objects, each with "tool", "topic", and "reason". The 'tool' ID must be a valid tool ID (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "{{{patientFocus}}}", "reason": "Generate study notes" }]. This field must not be omitted on round completion.
 {{else}}
 New Virtual Round / New Patient.
 Focus for new patient (if any): "{{{patientFocus}}}"
@@ -62,6 +62,7 @@ Example for a new patient (focus: "Pediatric Asthma Exacerbation"):
 
 Format the output as JSON conforming to the MedicoVirtualRoundsOutputSchema.
 All fields ('caseId', 'patientSummary', 'currentObservation', 'nextPrompt', 'isCompleted') must be provided.
+'nextSteps' is mandatory if 'isCompleted' is true.
 `,
   config: {
     temperature: 0.6, // For varied patient scenarios and responses

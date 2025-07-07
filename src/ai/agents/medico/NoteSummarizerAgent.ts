@@ -27,13 +27,13 @@ const noteSummarizerPrompt = ai.definePrompt({
   input: { schema: MedicoNoteSummarizerInputSchema },
   output: { schema: MedicoNoteSummarizerOutputSchema },
   prompt: `You are an expert at summarizing medical notes for students.
-Summarize the provided content into the requested format: {{{format}}}.
+Your primary task is to summarize the provided content into the requested format: {{{format}}}.
+Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'flashcards'. This field is critical for the app's functionality and must not be omitted.
 
 The summary should be concise, accurate, and focus on the most high-yield information for a medical student.
 - If the requested format is a 'flowchart', generate the summary using Mermaid.js syntax.
 - If the requested format is a 'table', use Markdown table syntax.
 - If the requested format is 'bullet' or 'diagram', use standard bullet points or a textual description suitable for generating a diagram.
-- **Next Steps**: CRITICAL: You must suggest 1-2 logical next steps. Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' ID should be valid (e.g., 'flashcards'). Example: [{ "tool": "flashcards", "topic": "Summary of provided notes", "reason": "Create flashcards from this summary" }].
 
 {{#if text}}
 Text to summarize:
@@ -45,6 +45,7 @@ Image to summarize: {{media url=imageDataUri}}
 {{/if}}
 
 Format the output as JSON conforming to the MedicoNoteSummarizerOutputSchema.
+Example for 'nextSteps': [{ "tool": "flashcards", "topic": "Summary of provided notes", "reason": "Create flashcards from this summary" }]
 `,
   config: {
     temperature: 0.2, // Factual and structured
