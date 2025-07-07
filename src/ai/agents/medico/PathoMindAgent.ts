@@ -25,7 +25,10 @@ const pathoMindPrompt = ai.definePrompt({
   output: { schema: PathoMindOutputSchema },
   prompt: `You are PathoMind, an AI expert in pathology and physiology.
 Your primary task is to explain the pathophysiology of the medical topic: {{{topic}}}
-Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'theorycoach-generator'. This field is critical for the app's functionality and must not be omitted.
+
+You MUST also provide a 'nextSteps' field. This field is critical for the app's functionality and must not be omitted.
+Format it as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
+The 'toolId' value must be a valid tool ID from the Medico Hub.
 
 Instructions:
 1. Provide a clear, step-by-step explanation of the pathophysiology. Structure the explanation logically, from initial triggers to clinical manifestations.
@@ -34,7 +37,24 @@ Instructions:
 Format the output as JSON conforming to the PathoMindOutputSchema.
 - The 'explanation' field should be a detailed, well-structured text.
 - The 'diagram' field should contain only the Mermaid.js syntax for the flowchart.
-Example for 'nextSteps': [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Generate comprehensive notes" }]
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Generate Study Notes",
+    "description": "Create a comprehensive, structured note for {{{topic}}} covering clinical features and management.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "{{{topic}}}",
+    "cta": "Generate Comprehensive Notes"
+  },
+  {
+    "title": "Test Your Understanding",
+    "description": "Create flashcards based on this pathophysiological process to reinforce your learning.",
+    "toolId": "flashcards",
+    "prefilledTopic": "Pathophysiology of {{{topic}}}",
+    "cta": "Create Flashcards"
+  }
+]
 
 Example for 'Myocardial Infarction':
 Explanation: "Coronary artery plaque rupture leads to thrombus formation..."

@@ -19,17 +19,15 @@ export async function getAnatomyDescription(input: MedicoAnatomyVisualizerInput)
   return anatomyVisualizerFlow(input);
 }
 
-// Placeholder for image generation - in a real app, this might call another flow or service.
-// For now, we'll focus on textual description.
-// const generateAnatomyImage = ai.defineTool(...);
-
 const anatomyVisualizerPrompt = ai.definePrompt({
   name: 'medicoAnatomyVisualizerPrompt',
   input: { schema: MedicoAnatomyVisualizerInputSchema },
   output: { schema: MedicoAnatomyVisualizerOutputSchema },
-  // tools: [generateAnatomyImage], // If image generation tool was defined
-  prompt: `You are an AI medical educator specializing in anatomy. Your primary task is to provide a detailed description of the anatomical structure: {{{anatomicalStructure}}}
-Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'theorycoach-generator' or 'mcq'. This field is critical for the app's functionality and must not be omitted.
+  prompt: `You are an AI medical educator specializing in anatomy. Your primary task is to provide a detailed description of the anatomical structure: {{{anatomicalStructure}}}.
+
+You MUST also provide a 'nextSteps' field. This field is critical for the app's functionality and must not be omitted.
+Format it as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
+The 'toolId' value must be a valid tool ID from the Medico Hub.
 
 Provide a detailed description covering:
 1.  **Location**: Where is the structure found in the body?
@@ -40,7 +38,23 @@ Provide a detailed description covering:
 
 Format the entire output as JSON conforming to the MedicoAnatomyVisualizerOutputSchema.
 'imageUrl' can be omitted or set to null if image generation is not used/available.
-Example for 'nextSteps': [{ "tool": "theorycoach-generator", "topic": "Anatomy of the {{{anatomicalStructure}}}", "reason": "Generate study notes" }]
+Example for 'nextSteps':
+[
+  {
+    "title": "Test Your Knowledge",
+    "description": "Generate MCQs to test your recall on the anatomy of the {{{anatomicalStructure}}}.",
+    "toolId": "mcq",
+    "prefilledTopic": "Anatomy of the {{{anatomicalStructure}}}",
+    "cta": "Generate 5 MCQs"
+  },
+  {
+    "title": "Create Flashcards",
+    "description": "Create flashcards for the key features and clinical correlations of the {{{anatomicalStructure}}}.",
+    "toolId": "flashcards",
+    "prefilledTopic": "Key clinical correlations of {{{anatomicalStructure}}}",
+    "cta": "Create Flashcards"
+  }
+]
 `,
   config: {
     temperature: 0.3, // Factual and detailed
@@ -61,14 +75,7 @@ const anatomyVisualizerFlow = ai.defineFlow(
         console.error('MedicoAnatomyVisualizerPrompt did not return a valid description for:', input.anatomicalStructure);
         throw new Error('Failed to get anatomy description. The AI model did not return the expected output.');
       }
-
-      // If an image generation tool were used:
-      // if (output.requiresImage) {
-      //   const imageResult = await generateAnatomyImage({ structure: input.anatomicalStructure });
-      //   output.imageUrl = imageResult.url;
-      // }
       
-      // Firestore saving logic could go here
       return output;
     } catch (err) {
       console.error(`[AnatomyVisualizerAgent] Error: ${err instanceof Error ? err.message : String(err)}`);

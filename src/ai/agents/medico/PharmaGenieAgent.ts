@@ -25,7 +25,10 @@ const pharmaGeniePrompt = ai.definePrompt({
   output: { schema: PharmaGenieOutputSchema },
   prompt: `You are PharmaGenie, an AI expert in pharmacology for medical students.
 Your primary task is to provide a detailed summary of the drug: {{{drugName}}}
-Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'flashcards'. This field is critical for the app's functionality and must not be omitted.
+
+You MUST also provide a 'nextSteps' field. This field is critical for the app's functionality and must not be omitted.
+Format it as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
+The 'toolId' value must be a valid tool ID from the Medico Hub.
 
 Provide a detailed summary covering:
 1.  **Drug Class**: The pharmacological class of the drug.
@@ -36,7 +39,24 @@ Provide a detailed summary covering:
 Format the output as JSON conforming to the PharmaGenieOutputSchema.
 - 'drugClass' and 'mechanismOfAction' should be detailed strings.
 - 'indications' and 'sideEffects' should be arrays of strings.
-Example for 'nextSteps': [{ "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }]
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Create Flashcards",
+    "description": "Generate flashcards for the mechanism of action and key side effects of {{{drugName}}}.",
+    "toolId": "flashcards",
+    "prefilledTopic": "{{{drugName}}} pharmacology",
+    "cta": "Create Flashcards"
+  },
+  {
+    "title": "Practice Dosage",
+    "description": "Use the dosage calculator to practice calculating a common dose for {{{drugName}}}.",
+    "toolId": "dosage",
+    "prefilledTopic": "{{{drugName}}}",
+    "cta": "Practice Dosage Calculation"
+  }
+]
 `,
   config: {
     temperature: 0.3, // Factual and structured

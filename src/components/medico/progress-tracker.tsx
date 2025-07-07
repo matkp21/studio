@@ -1,3 +1,4 @@
+
 // src/components/medico/progress-tracker.tsx
 "use client";
 
@@ -31,7 +32,13 @@ const sampleProgressData: MedicoProgressTrackerOutput & { subjects: any[], achie
     { id: 'ach4', name: 'Pharmacology Powerhouse', icon: Award, unlocked: false },
   ],
   nextSteps: [
-    { tool: 'mcq', topic: 'Pharmacology', reason: 'Practice weak subject' }
+    {
+        "title": "Tackle a Weak Area",
+        "description": "Generate practice MCQs for Pharmacology to improve your score.",
+        "toolId": "mcq",
+        "prefilledTopic": "Pharmacology",
+        "cta": "Practice Pharmacology MCQs"
+    }
   ]
 };
 
@@ -105,17 +112,25 @@ export function ProgressTracker() {
           </CardContent>
           {progressData.nextSteps && progressData.nextSteps.length > 0 && (
             <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
-              <div className="w-full">
-                <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
-                <div className="flex flex-wrap gap-2">
-                  {progressData.nextSteps.map((step, index) => (
-                    <Button key={index} variant="outline" size="sm" asChild>
-                      <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
-                        {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
-                      </Link>
-                    </Button>
-                  ))}
-                </div>
+              <div className="w-full space-y-3">
+                  <h4 className="font-semibold text-md text-primary">Recommended Next Steps:</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {progressData.nextSteps.map((step, index) => (
+                          <Card key={index} className="bg-card/50 hover:bg-card/90 transition-colors">
+                              <CardHeader className="p-3 pb-1">
+                                  <CardTitle className="text-sm">{step.title}</CardTitle>
+                                  <CardDescription className="text-xs">{step.description}</CardDescription>
+                              </CardHeader>
+                              <CardFooter className="p-3 pt-1">
+                                  <Button variant="outline" size="xs" asChild className="w-full">
+                                      <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
+                                          {step.cta} <ArrowRight className="ml-2 h-3 w-3"/>
+                                      </Link>
+                                  </Button>
+                              </CardFooter>
+                          </Card>
+                      ))}
+                  </div>
               </div>
             </CardFooter>
           )}

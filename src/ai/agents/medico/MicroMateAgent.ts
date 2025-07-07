@@ -25,7 +25,10 @@ const microMatePrompt = ai.definePrompt({
   output: { schema: MicroMateOutputSchema },
   prompt: `You are MicroMate, an AI expert in microbiology for medical students.
 Your primary task is to provide a detailed summary of the microorganism: {{{microorganism}}}
-Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'mcq' or 'flashcards'. This field is critical for the app's functionality and must not be omitted.
+
+You MUST also provide a 'nextSteps' field. This field is critical for the app's functionality and must not be omitted.
+Format it as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
+The 'toolId' value must be a valid tool ID from the Medico Hub.
 
 Provide a detailed summary covering:
 1.  **Key Characteristics**: (e.g., Gram stain, shape, aerobic/anaerobic).
@@ -35,7 +38,24 @@ Provide a detailed summary covering:
 
 Format the output as JSON conforming to the MicroMateOutputSchema.
 The fields 'characteristics', 'virulenceFactors', 'diseasesCaused', and 'labDiagnosis' should be detailed strings.
-Example for 'nextSteps': [{ "tool": "mcq", "topic": "{{{microorganism}}}", "reason": "Generate MCQs for {{{microorganism}}}" }]
+
+Example for 'nextSteps':
+[
+  {
+    "title": "Test Your Knowledge",
+    "description": "Generate MCQs to test your recall on {{{microorganism}}} and the diseases it causes.",
+    "toolId": "mcq",
+    "prefilledTopic": "{{{microorganism}}}",
+    "cta": "Generate 5 MCQs"
+  },
+  {
+    "title": "Study Pharmacology",
+    "description": "Explore the antibiotics used to treat infections caused by {{{microorganism}}}.",
+    "toolId": "pharmagenie",
+    "prefilledTopic": "Antibiotics for {{{microorganism}}}",
+    "cta": "Get Drug Info"
+  }
+]
 `,
   config: {
     temperature: 0.3, // Factual and detailed

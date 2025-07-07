@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
-import type { NextStepSuggestion } from '@/ai/schemas/medico-tools-schemas';
+import type { MedicoNextStep } from '@/ai/schemas/medico-tools-schemas';
 
 // Mock AI response structure now aligns with real agent outputs
 interface TheoryConcept {
@@ -20,7 +20,7 @@ interface TheoryConcept {
   explanation: string;
   analogy: string;
   key_points: string[];
-  nextSteps: NextStepSuggestion[];
+  nextSteps: MedicoNextStep[];
 }
 
 const mockAIResponse: TheoryConcept = {
@@ -34,10 +34,20 @@ const mockAIResponse: TheoryConcept = {
     "Diagnosis involves ECG, cardiac markers (Troponin), and coronary angiography."
   ],
   nextSteps: [
-    { tool: 'mcq', topic: 'Myocardial Infarction', reason: 'Test your MI knowledge' },
-    { tool: 'cases', topic: 'Chest Pain Differential Diagnosis', reason: 'Simulate a case' },
-    { tool: 'flashcards', topic: 'Cardiac Enzymes', reason: 'Create flashcards' },
-    { tool: 'diagnobot', topic: 'ECG in Myocardial Infarction', reason: 'Practice ECG Interpretation' }
+    { 
+        title: "Test Your Knowledge",
+        description: "Generate practice MCQs on the clinical features and diagnosis of MI.",
+        toolId: 'mcq', 
+        prefilledTopic: 'Myocardial Infarction', 
+        cta: "Generate 5 MCQs"
+    },
+    { 
+        title: "Explore Pathophysiology",
+        description: "Deep dive into the cellular mechanisms of myocardial ischemia and necrosis.",
+        toolId: 'pathomind', 
+        prefilledTopic: 'Pathophysiology of Myocardial Infarction',
+        cta: "Explain Pathophysiology"
+    },
   ]
 };
 
@@ -182,15 +192,23 @@ export function TheoryCoach() {
               
                <CardFooter className="p-0 pt-6 mt-6 border-t flex flex-col items-start gap-4">
                   {aiResponse.nextSteps && aiResponse.nextSteps.length > 0 && (
-                    <div className="w-full">
-                        <h4 className="font-semibold text-md mb-2 text-primary">Recommended Next Steps:</h4>
-                        <div className="flex flex-wrap gap-2">
+                    <div className="w-full space-y-3">
+                        <h4 className="font-semibold text-md text-primary">Recommended Next Steps:</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {aiResponse.nextSteps.map((step, index) => (
-                                <Button key={index} variant="outline" size="sm" asChild>
-                                    <Link href={`/medico/${step.tool}?topic=${encodeURIComponent(step.topic)}`}>
-                                        {step.reason} <ArrowRight className="ml-2 h-4 w-4"/>
-                                    </Link>
-                                </Button>
+                                <Card key={index} className="bg-card/50 hover:bg-card/90 transition-colors">
+                                    <CardHeader className="p-3 pb-1">
+                                        <CardTitle className="text-sm">{step.title}</CardTitle>
+                                        <CardDescription className="text-xs">{step.description}</CardDescription>
+                                    </CardHeader>
+                                    <CardFooter className="p-3 pt-1">
+                                        <Button variant="outline" size="xs" asChild className="w-full">
+                                            <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
+                                                {step.cta} <ArrowRight className="ml-2 h-3 w-3"/>
+                                            </Link>
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
                             ))}
                         </div>
                     </div>
