@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview The MicroMate agent, for providing information on microorganisms.
@@ -24,11 +23,9 @@ const microMatePrompt = ai.definePrompt({
   input: { schema: MicroMateInputSchema },
   output: { schema: MicroMateOutputSchema },
   prompt: `You are MicroMate, an AI expert in microbiology for medical students.
-Your primary task is to provide a detailed summary of the microorganism: {{{microorganism}}}
+Your primary task is to generate a JSON object containing a detailed summary of the microorganism {{{microorganism}}} AND a list of relevant next study steps.
 
-You MUST also provide a 'nextSteps' field. This field is critical for the app's functionality and must not be omitted.
-Format it as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
-The 'toolId' value must be a valid tool ID from the Medico Hub.
+The JSON object you generate MUST have fields for 'characteristics', 'virulenceFactors', 'diseasesCaused', 'labDiagnosis', and 'nextSteps'. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 Provide a detailed summary covering:
 1.  **Key Characteristics**: (e.g., Gram stain, shape, aerobic/anaerobic).
@@ -36,8 +33,7 @@ Provide a detailed summary covering:
 3.  **Diseases Caused**: Common diseases associated with this organism.
 4.  **Lab Diagnosis**: Standard methods for identifying the organism in a lab.
 
-Format the output as JSON conforming to the MicroMateOutputSchema.
-The fields 'characteristics', 'virulenceFactors', 'diseasesCaused', and 'labDiagnosis' should be detailed strings.
+Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys. The 'toolId' value must be a valid tool ID from the Medico Hub.
 
 Example for 'nextSteps':
 [

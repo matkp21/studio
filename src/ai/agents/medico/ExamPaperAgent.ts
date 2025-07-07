@@ -1,4 +1,3 @@
-
 // src/ai/agents/medico/ExamPaperAgent.ts
 'use server';
 /**
@@ -25,8 +24,9 @@ const examPaperPrompt = ai.definePrompt({
   name: 'medicoExamPaperPrompt',
   input: { schema: MedicoExamPaperInputSchema },
   output: { schema: MedicoExamPaperOutputSchema },
-  prompt: `You are an expert medical examiner, tasked with creating a mock exam paper for a medical student.
-Your primary task is to generate the exam paper content. Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'theorycoach-generator'. This field is critical for the app's functionality and must not be omitted.
+  prompt: `You are an expert medical examiner. Your primary task is to generate a JSON object containing a mock exam paper AND a list of relevant next study steps.
+
+The JSON object you generate MUST have 'mcqs', 'essays', 'topicGenerated', and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 Exam Type: {{{examType}}}
 {{#if year}}Focus Year (for pattern analysis): {{{year}}}{{/if}}
@@ -39,12 +39,9 @@ Instructions:
     - The other three options should be plausible distractors with 'isCorrect' set to false.
     - Provide a brief explanation for the correct answer.
 3.  Generate 2-3 essay-style questions that are typical for this kind of exam. For each essay, provide a brief outline of the expected answer.
+4.  The 'topicGenerated' field MUST be set to "{{{examType}}}".
 
-Format the output as JSON conforming to the MedicoExamPaperOutputSchema.
-The root output must be an object containing 'mcqs', 'essays', 'topicGenerated', and a 'nextSteps' array.
-Each object in the 'mcqs' array must conform to the MCQSchema, including the 'isCorrect' boolean for each option.
-Each object in the 'essays' array must have 'question' and 'answer_outline' strings.
-Example for 'nextSteps': [{ "tool": "theorycoach-generator", "topic": "{{{examType}}}", "reason": "Review weak areas from this exam" }]
+Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
 `,
   config: {
     temperature: 0.6, // More creative for varied questions

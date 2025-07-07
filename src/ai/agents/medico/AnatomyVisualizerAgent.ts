@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A Genkit flow for providing descriptions of anatomical structures for medico users.
@@ -23,11 +22,9 @@ const anatomyVisualizerPrompt = ai.definePrompt({
   name: 'medicoAnatomyVisualizerPrompt',
   input: { schema: MedicoAnatomyVisualizerInputSchema },
   output: { schema: MedicoAnatomyVisualizerOutputSchema },
-  prompt: `You are an AI medical educator specializing in anatomy. Your primary task is to provide a detailed description of the anatomical structure: {{{anatomicalStructure}}}.
+  prompt: `You are an AI medical educator specializing in anatomy. Your primary task is to generate a JSON object containing a detailed anatomical description AND a list of relevant next study steps for the structure: {{{anatomicalStructure}}}.
 
-You MUST also provide a 'nextSteps' field. This field is critical for the app's functionality and must not be omitted.
-Format it as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
-The 'toolId' value must be a valid tool ID from the Medico Hub.
+The JSON object you generate MUST have a 'description' field and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 Provide a detailed description covering:
 1.  **Location**: Where is the structure found in the body?
@@ -36,8 +33,8 @@ Provide a detailed description covering:
 4.  **Important Clinical Correlations**: Why is it important in medicine (common diseases, injuries, procedures)?
 5.  **Related Structures**: List a few anatomically or functionally related structures.
 
-Format the entire output as JSON conforming to the MedicoAnatomyVisualizerOutputSchema.
-'imageUrl' can be omitted or set to null if image generation is not used/available.
+Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys. The 'toolId' value must be a valid tool ID from the Medico Hub.
+
 Example for 'nextSteps':
 [
   {

@@ -1,4 +1,3 @@
-
 // src/ai/agents/medico/StudyNotesAgent.ts
 'use server';
 /**
@@ -26,9 +25,9 @@ const studyNotesPrompt = ai.definePrompt({
   name: 'medicoStudyNotesPrompt',
   input: { schema: StudyNotesGeneratorInputSchema },
   output: { schema: StudyNotesGeneratorOutputSchema },
-  prompt: `You are an AI medical expert creating a structured, exam-ready study note for an MBBS student.
-Your primary task is to generate a comprehensive JSON output with four fields: 'notes', 'summaryPoints', 'diagram', and 'nextSteps'.
-Your secondary, but MANDATORY task, is to generate the 'nextSteps' array. This field is critical for the app's functionality and must not be omitted.
+  prompt: `You are an AI medical expert. Your primary task is to generate a comprehensive JSON object containing structured study notes AND a list of relevant next study steps for a medical student.
+
+The JSON object you generate MUST have four fields: 'notes', 'summaryPoints', 'diagram', and 'nextSteps'. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 Topic/Question: {{{topic}}}
 Desired Answer Length: {{{answerLength}}}
@@ -51,7 +50,7 @@ Instructions:
 
 3.  **'diagram' field**: Place the Mermaid.js syntax generated in step 10 into this field as a single string. If no diagram is relevant, this can be null.
 
-4.  **'nextSteps' field (MANDATORY)**: You must provide a JSON array for this field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'mcq', 'flashcards'). Example: [{ "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge" }, { "tool": "flashcards", "topic": "{{{topic}}}", "reason": "Create flashcards" }].
+4.  **'nextSteps' field (MANDATORY)**: You must provide a JSON array for this field. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta".
 
 Constraint: For a '10-mark' answer, the 'notes' content should be around 500 words. For a '5-mark' answer, around 250 words.
 Ensure the entire response is a single valid JSON object conforming to the StudyNotesGeneratorOutputSchema.

@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A Genkit flow for predicting high-yield medical topics for medico users.
@@ -23,8 +22,9 @@ const highYieldTopicPredictorPrompt = ai.definePrompt({
   name: 'medicoTopicPredictorPrompt',
   input: { schema: MedicoTopicPredictorInputSchema },
   output: { schema: MedicoTopicPredictorOutputSchema },
-  prompt: `You are an AI expert in medical exam preparation and curriculum analysis.
-Your MANDATORY task is to generate a JSON object with 'predictedTopics', 'rationale', and 'nextSteps' for the given exam. The 'nextSteps' field is critical and must not be omitted.
+  prompt: `You are an AI expert in medical exam preparation. Your primary task is to generate a JSON object with 'predictedTopics', 'rationale', and 'nextSteps' for the given exam.
+
+The JSON object you generate MUST have 'predictedTopics', 'rationale', and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 Exam Type: "{{{examType}}}"
 {{#if subject}}And specific subject: "{{{subject}}}"{{/if}}
@@ -32,9 +32,7 @@ Exam Type: "{{{examType}}}"
 Instructions:
 1.  **'predictedTopics'**: Predict a list of 5-10 high-yield topics that are most likely to be important for this exam. If a subject is specified, focus topics within that subject. Otherwise, provide general high-yield topics for the exam. This should be an array of strings.
 2.  **'rationale'**: Provide a brief rationale for your predictions (e.g., based on past exam trends, curriculum weightage, clinical importance). This should be a single string.
-3.  **'nextSteps'**: CRITICAL: You must suggest a next step for each predicted topic. This must be a JSON array of objects. Each object MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid ID like 'theorycoach-generator'. Create one such object for each topic you predicted. Example: [{ "tool": "theorycoach-generator", "topic": "Myocardial Infarction", "reason": "Generate notes for Myocardial Infarction" }].
-
-Format the output as JSON conforming to the MedicoTopicPredictorOutputSchema.
+3.  **'nextSteps'**: CRITICAL: You must suggest a next step for each predicted topic. This must be a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys. The 'toolId' value must be a valid ID like 'theorycoach-generator'. Create one such object for each topic you predicted.
 `,
   config: {
     temperature: 0.4, // More analytical and based on patterns

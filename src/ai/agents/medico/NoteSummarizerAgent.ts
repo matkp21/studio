@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A Genkit flow for summarizing uploaded text or image content into various formats.
@@ -27,10 +26,12 @@ const noteSummarizerPrompt = ai.definePrompt({
   input: { schema: MedicoNoteSummarizerInputSchema },
   output: { schema: MedicoNoteSummarizerOutputSchema },
   prompt: `You are an expert at summarizing medical notes for students.
-Your primary task is to summarize the provided content into the requested format: {{{format}}}.
-Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'flashcards'. This field is critical for the app's functionality and must not be omitted.
+Your primary task is to generate a JSON object containing a summary of the provided content AND a list of relevant next study steps.
+
+The JSON object you generate MUST have a 'summary' field, a 'format' field, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 The summary should be concise, accurate, and focus on the most high-yield information for a medical student.
+- The 'format' field must be set to the requested format: {{{format}}}.
 - If the requested format is a 'flowchart', generate the summary using Mermaid.js syntax.
 - If the requested format is a 'table', use Markdown table syntax.
 - If the requested format is 'bullet' or 'diagram', use standard bullet points or a textual description suitable for generating a diagram.
@@ -44,8 +45,7 @@ Summarize the content from this image. This could be a picture of a textbook pag
 Image to summarize: {{media url=imageDataUri}}
 {{/if}}
 
-Format the output as JSON conforming to the MedicoNoteSummarizerOutputSchema.
-Example for 'nextSteps': [{ "tool": "flashcards", "topic": "Summary of provided notes", "reason": "Create flashcards from this summary" }]
+Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
 `,
   config: {
     temperature: 0.2, // Factual and structured

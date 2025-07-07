@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A Genkit flow for helping medico users practice differential diagnosis through an interactive, iterative questioning process.
@@ -23,12 +22,14 @@ const differentialDiagnosisTrainerPrompt = ai.definePrompt({
   name: 'medicoDDTrainerPrompt',
   input: { schema: MedicoDDTrainerInputSchema },
   output: { schema: MedicoDDTrainerOutputSchema },
-  prompt: `You are an AI medical education tool designed to help students practice the process of differential diagnosis.
+  prompt: `You are an AI medical education tool. Your primary task is to generate a JSON object representing the next step in a differential diagnosis training session.
 
 {{#if isNewCase}}
 You are starting a new session.
 Clinical Scenario: "{{{symptoms}}}"
 ---
+Your task is to generate a JSON object with 'prompt', 'updatedCaseSummary', and 'isCompleted' fields.
+
 1.  **Acknowledge the Scenario**: Start by acknowledging the clinical presentation.
 2.  **Ask the First Question**: Your primary task is to prompt the student for their first step. Ask them: "What is the first and most important question you would ask this patient, or what is the first physical examination you would perform?"
 3.  **Initial State**: The 'feedback' and 'nextSteps' fields should be null. The 'isCompleted' flag must be false. The 'updatedCaseSummary' should contain the initial scenario. The 'prompt' for the student should be the question you are asking them.
@@ -37,13 +38,15 @@ You are continuing a session.
 Case Summary so far: "{{{currentCaseSummary}}}"
 Student's last response (their question or action): "{{{userResponse}}}"
 ---
+Your task is to generate a JSON object with 'prompt', 'feedback', 'updatedCaseSummary', 'isCompleted', and potentially 'nextSteps'.
+
 1.  **Evaluate Student's Response**: Critically evaluate the student's question or action. Is it relevant? Is it well-timed? Is it specific enough?
 2.  **Provide Constructive Feedback**: In the 'feedback' field, explain why the student's response was good, or how it could be improved. (e.g., "Good question, that helps rule out cardiac causes. However, asking about associated symptoms first might be more efficient.").
 3.  **Simulate a Patient's Answer**: Provide a realistic patient answer to the student's question.
 4.  **Update the Case Summary**: In 'updatedCaseSummary', append the new information (the student's question and the patient's answer) to the 'currentCaseSummary'.
 5.  **Prompt for Next Step**: In the 'prompt' field, ask the student for their next question, action, or if they are ready to suggest some differential diagnoses. (e.g., "Excellent. What would you like to ask or check next?").
 6.  **Check for Completion**: If the student provides a list of differential diagnoses, evaluate them, provide final feedback, and set 'isCompleted' to true.
-7.  **Suggest Next Steps (MANDATORY on completion)**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. This is critical. Format it as a JSON array of objects, each with "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'theorycoach-generator'). This field must not be omitted on session completion. Example: [{ "tool": "theorycoach-generator", "topic": "[Final Diagnosis]", "reason": "Generate study notes" }].
+7.  **Suggest Next Steps (MANDATORY on completion)**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. This is critical. Format it as a JSON array of objects, each with "title", "description", "toolId", "prefilledTopic", and "cta". This field must not be omitted on session completion.
 {{/if}}
 
 Format your entire output as JSON conforming to the MedicoDDTrainerOutputSchema.

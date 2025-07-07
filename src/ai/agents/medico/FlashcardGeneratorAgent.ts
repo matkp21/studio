@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A Genkit flow for generating flashcards on medical topics for medico users.
@@ -24,8 +23,9 @@ const flashcardGeneratorPrompt = ai.definePrompt({
   name: 'medicoFlashcardGeneratorPrompt',
   input: { schema: MedicoFlashcardGeneratorInputSchema },
   output: { schema: MedicoFlashcardGeneratorOutputSchema },
-  prompt: `You are an AI assistant skilled in creating educational flashcards for medical students.
-Your primary task is to generate flashcards based on the provided topic. Your secondary, but MANDATORY task, is to suggest a logical next study step. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'mcq'. This field is critical for the app's functionality and must not be omitted.
+  prompt: `You are an AI assistant skilled in creating educational flashcards. Your primary task is to generate a JSON object containing a set of flashcards AND a list of relevant next study steps.
+
+The JSON object you generate MUST have 'flashcards', 'topicGenerated', and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 Topic: {{{topic}}}
 Difficulty: {{{difficulty}}}
@@ -34,13 +34,9 @@ Number of flashcards to generate: {{{count}}}
 
 For each flashcard, create a 'front' (question or term) and a 'back' (answer or definition).
 The flashcards should be concise and focus on key, high-yield information relevant to the topic, difficulty, and exam style.
+The 'topicGenerated' field must be set to "{{{topic}}}".
 
-Format the output as JSON conforming to the MedicoFlashcardGeneratorOutput schema.
-The output must include:
-1. 'flashcards': An array of flashcard objects, each with 'front' and 'back' string properties.
-2. 'topicGenerated': The topic for which these flashcards were generated.
-3. 'nextSteps': The mandatory array of next step suggestions.
-Example for 'nextSteps': [{ "tool": "mcq", "topic": "{{{topic}}}", "reason": "Test your knowledge on these flashcards" }]
+Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
 `,
   config: {
     temperature: 0.4, // Factual and concise

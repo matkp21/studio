@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview The DiagnoBot agent, for interpreting clinical data.
@@ -24,11 +23,9 @@ const diagnoBotPrompt = ai.definePrompt({
   input: { schema: DiagnoBotInputSchema },
   output: { schema: DiagnoBotOutputSchema },
   prompt: `You are DiagnoBot, an AI expert in interpreting clinical laboratory data for medical students.
-Your primary task is to provide a structured interpretation of the given lab results.
+Your primary task is to generate a JSON object containing a structured interpretation of the given lab results AND a list of relevant next study steps.
 
-You MUST also provide a 'nextSteps' field. This field is critical for the app's functionality and must not be omitted.
-Format it as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
-The 'toolId' value must be a valid tool ID from the Medico Hub.
+The JSON object you generate MUST have an 'interpretation' field, a 'likelyDifferentials' field, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 Lab Results to interpret:
 "{{{labResults}}}"
@@ -36,11 +33,9 @@ Lab Results to interpret:
 Provide a structured interpretation covering:
 1.  **Abnormal Values**: Clearly list which values are high, low, or abnormal.
 2.  **Potential Implications**: Explain what these abnormalities could suggest (e.g., "Elevated WBC may indicate infection or inflammation").
-3.  **Likely Differentials**: List a few possible differential diagnoses suggested by the lab results.
+3.  **Likely Differentials**: List a few possible differential diagnoses suggested by the lab results in the 'likelyDifferentials' field (an array of strings).
 
-Format the output as JSON conforming to the DiagnoBotOutputSchema.
-- The 'interpretation' field should be a detailed, well-structured text in Markdown.
-- The 'likelyDifferentials' field should be an array of possible conditions suggested by the lab results.
+Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys. The 'toolId' value must be a valid tool ID from the Medico Hub.
 
 Example for 'nextSteps':
 [

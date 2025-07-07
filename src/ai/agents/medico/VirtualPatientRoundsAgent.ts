@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A Genkit flow for simulating virtual patient rounds for medico users.
@@ -24,25 +23,27 @@ const virtualPatientRoundsPrompt = ai.definePrompt({
   name: 'medicoVirtualRoundsPrompt',
   input: { schema: MedicoVirtualRoundsInputSchema },
   output: { schema: MedicoVirtualRoundsOutputSchema },
-  prompt: `You are an AI medical preceptor conducting a virtual patient round with a medical student.
+  prompt: `You are an AI medical preceptor conducting a virtual patient round with a medical student. Your primary task is to generate a JSON object representing the next step in the round.
 
 {{#if caseId}}
 Current Patient Case ID: {{{caseId}}}
 Current Topic: {{{patientFocus}}}
 Student's last action/query: "{{{userAction}}}"
 ---
-Based on the patient's history (assume you have access to it, not fully provided in this simplified prompt) and the student's last action:
+Your task is to generate a JSON object with the following fields: 'caseId', 'topic', 'patientSummary', 'currentObservation', 'nextPrompt', 'isCompleted', and potentially 'nextSteps'.
+
 1. Update the 'patientSummary'.
 2. Provide the 'currentObservation' resulting from the student's action.
 3. Give the 'nextPrompt' to guide the student (e.g., "What investigations would you order next?", "How would you manage this finding?").
 4. Retain the topic: The 'topic' field MUST be set to "{{{patientFocus}}}".
 5. Update 'isCompleted' if this encounter is finished.
-6. **Suggest Next Steps (MANDATORY on completion)**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. This is critical. Format it as a JSON array of objects, each with "tool", "topic", and "reason". The 'tool' ID must be a valid tool ID (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "{{{patientFocus}}}", "reason": "Generate study notes" }]. This field must not be omitted on round completion.
+6. **Suggest Next Steps (MANDATORY on completion)**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. This is critical. Format it as a JSON array of objects, each with "title", "description", "toolId", "prefilledTopic", and "cta". This field must not be omitted on round completion.
 {{else}}
 New Virtual Round / New Patient.
 Focus for new patient (if any): "{{{patientFocus}}}"
 ---
-Initiate a new virtual patient encounter.
+Your task is to generate a JSON object with 'caseId', 'topic', 'patientSummary', 'currentObservation', 'nextPrompt', and 'isCompleted' fields.
+
 1. Assign a new unique 'caseId' (e.g., "vround-pat-{{timestamp_id}}").
 2. Create an initial 'patientSummary' (e.g., "65-year-old male admitted with chest pain...").
 3. Set 'currentObservation' to an initial presentation point.

@@ -1,4 +1,3 @@
-
 // src/ai/agents/medico/MCQGeneratorAgent.ts
 'use server';
 /**
@@ -28,8 +27,9 @@ const mcqGeneratorPrompt = ai.definePrompt({
   name: 'medicoMCQGeneratorPrompt',
   input: { schema: MedicoMCQGeneratorInputSchema },
   output: { schema: MedicoMCQGeneratorOutputSchema },
-  prompt: `You are an AI expert in medical education, tasked with creating Multiple Choice Questions (MCQs) for medical students preparing for exams.
-Your primary task is to generate a quiz. Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'theorycoach-generator'. This field is critical for the app's functionality and must not be omitted.
+  prompt: `You are an AI expert in medical education. Your primary task is to generate a JSON object containing a quiz AND a list of relevant next study steps.
+
+The JSON object you generate MUST have an 'mcqs' array, a 'topicGenerated' string, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 Generate a quiz based on the following criteria:
 Topic: {{{topic}}}
@@ -43,24 +43,10 @@ For each MCQ:
 3.  Ensure one option is clearly the correct answer.
 4.  The other three options should be plausible distractors, relevant to the topic but incorrect.
 5.  Provide a brief explanation for why the correct answer is correct and, if relevant, why common distractors are incorrect.
+6. The 'topicGenerated' field must be set to "{{{topic}}}".
 
-Format the output as JSON conforming to the MedicoMCQGeneratorOutput schema.
-The root output must be an object containing an 'mcqs' array, a 'topicGenerated' string, and a 'nextSteps' array.
-Each object within the 'mcqs' array must conform to the MCQSchema.
-
-Example of a single MCQ object in the 'mcqs' array:
-{
-  "question": "Which of the following is the most common cause of community-acquired pneumonia in adults?",
-  "options": [
-    { "text": "Haemophilus influenzae", "isCorrect": false },
-    { "text": "Streptococcus pneumoniae", "isCorrect": true },
-    { "text": "Mycoplasma pneumoniae", "isCorrect": false },
-    { "text": "Klebsiella pneumoniae", "isCorrect": false }
-  ],
-  "explanation": "Streptococcus pneumoniae is the most common bacterial cause of community-acquired pneumonia (CAP) in adults, responsible for a significant percentage of cases."
-}
-Example for 'nextSteps': [{ "tool": "theorycoach-generator", "topic": "{{{topic}}}", "reason": "Review notes for weak areas" }]
-Ensure the final output is a valid JSON object.
+Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
+Ensure the final output is a single valid JSON object.
 `,
   config: {
     temperature: 0.5, // A bit of creativity for plausible distractors but still medically sound

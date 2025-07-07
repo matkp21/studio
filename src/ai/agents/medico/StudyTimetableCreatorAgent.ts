@@ -1,4 +1,3 @@
-
 // src/ai/agents/medico/StudyTimetableCreatorAgent.ts
 'use server';
 /**
@@ -25,7 +24,9 @@ const studyTimetablePrompt = ai.definePrompt({
   input: { schema: MedicoStudyTimetableInputSchema },
   output: { schema: MedicoStudyTimetableOutputSchema },
   prompt: `You are an expert AI academic advisor for medical students.
-Your primary task is to create a personalized study timetable. Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. This field is critical and must not be omitted.
+Your primary task is to generate a JSON object containing a personalized study timetable, a rationale for its structure, AND a list of relevant next study steps.
+
+The JSON object you generate MUST have 'performanceAnalysis', 'timetable', and 'nextSteps' fields. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 **Student's Goal:**
 - Exam Name: {{{examName}}}
@@ -40,12 +41,9 @@ Your primary task is to create a personalized study timetable. Your secondary, b
 
 **Your Task:**
 1.  **Analyze & Prioritize**: Use the student's provided performance context to create a structured, realistic, and personalized study timetable. Allocate more time, more frequent revision sessions, and targeted practice for the weak areas identified in the context. If no context is provided, create a balanced schedule.
-
 2.  **Structure**: The output for the 'timetable' field should be a clear, organized timetable, ideally in a week-by-week Markdown format. It should be detailed and actionable.
-
 3.  **Confirm Understanding**: In the 'performanceAnalysis' field of your response, provide a brief summary of the weak points from the user's context that you prioritized in the schedule. For example: "The schedule prioritizes clinical application in Neurology and complex pharmacology based on the provided context."
-
-4.  **Suggest Next Steps (MANDATORY)**: Format this as a JSON array for the 'nextSteps' field. Each object MUST have "tool", "topic", and "reason". The 'tool' ID should be valid (e.g., 'theorycoach-generator'). Example: [{ "tool": "theorycoach-generator", "topic": "Cardiology Basics", "reason": "Start Week 1 with notes" }].
+4.  **Suggest Next Steps (MANDATORY)**: Format this as a JSON array for the 'nextSteps' field. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta".
 
 Ensure the final output is a valid JSON object with 'performanceAnalysis', 'timetable', and 'nextSteps' fields.
 `,

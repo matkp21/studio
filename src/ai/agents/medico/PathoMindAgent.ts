@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview The PathoMind agent, responsible for explaining disease pathophysiology.
@@ -24,19 +23,14 @@ const pathoMindPrompt = ai.definePrompt({
   input: { schema: PathoMindInputSchema },
   output: { schema: PathoMindOutputSchema },
   prompt: `You are PathoMind, an AI expert in pathology and physiology.
-Your primary task is to explain the pathophysiology of the medical topic: {{{topic}}}
+Your primary task is to generate a JSON object containing a detailed explanation of the pathophysiology of the medical topic "{{{topic}}}", a Mermaid.js diagram summarizing the process, AND a list of relevant next study steps.
 
-You MUST also provide a 'nextSteps' field. This field is critical for the app's functionality and must not be omitted.
-Format it as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
-The 'toolId' value must be a valid tool ID from the Medico Hub.
+The JSON object you generate MUST have an 'explanation' field, a 'diagram' field, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 Instructions:
-1. Provide a clear, step-by-step explanation of the pathophysiology. Structure the explanation logically, from initial triggers to clinical manifestations.
-2. Generate a simple Mermaid.js flowchart (graph TD) that visually summarizes the key steps of the pathophysiological process.
-
-Format the output as JSON conforming to the PathoMindOutputSchema.
-- The 'explanation' field should be a detailed, well-structured text.
-- The 'diagram' field should contain only the Mermaid.js syntax for the flowchart.
+1. Provide a clear, step-by-step explanation of the pathophysiology in the 'explanation' field. Structure the explanation logically, from initial triggers to clinical manifestations.
+2. Generate a simple Mermaid.js flowchart (graph TD) in the 'diagram' field that visually summarizes the key steps of the pathophysiological process.
+3. Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
 
 Example for 'nextSteps':
 [
@@ -68,9 +62,8 @@ Diagram: "graph TD; A[Plaque Rupture] --> B[Thrombus Formation]; B --> C[Occlusi
 const pathoMindFlow = ai.defineFlow(
   {
     name: 'medicoPathoMindFlow',
-    inputSchema: PathoMindInputSchema,
-    outputSchema: PathoMindOutputSchema,
-  },
+    inputSchema: PathoMindInputSchema },
+  outputSchema: PathoMindOutputSchema,
   async (input) => {
     try {
         const { output } = await pathoMindPrompt(input);

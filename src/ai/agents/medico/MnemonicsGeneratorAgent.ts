@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A Genkit flow for generating mnemonics for medical topics for medico users.
@@ -23,18 +22,15 @@ const mnemonicsGeneratorPrompt = ai.definePrompt({
   name: 'medicoMnemonicsGeneratorPrompt',
   input: { schema: MedicoMnemonicsGeneratorInputSchema },
   output: { schema: MedicoMnemonicsGeneratorOutputSchema },
-  prompt: `You are an AI expert in creating catchy and effective mnemonics for medical students.
-Your primary task is to generate a creative and easy-to-remember mnemonic for the topic or list: {{{topic}}}
-Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'flashcards'. This field is critical for the app's functionality and must not be omitted.
+  prompt: `You are an AI expert in creating mnemonics for medical students. Your primary task is to generate a JSON object containing a mnemonic, its explanation, AND a list of relevant next study steps for the topic: {{{topic}}}.
 
-Also, provide a brief explanation of what each part of the mnemonic stands for.
+The JSON object you generate MUST have a 'mnemonic' field, an 'explanation' field, a 'topicGenerated' field, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
-Format the output as JSON conforming to the MedicoMnemonicsGeneratorOutputSchema.
-The 'mnemonic' field should contain the mnemonic itself.
-The 'explanation' field should detail its components.
-The 'topicGenerated' field should reflect the input topic.
+The mnemonic should be creative and easy-to-remember. The explanation should detail what each part of the mnemonic stands for.
+The 'topicGenerated' field must be set to "{{{topic}}}".
 The 'imageUrl' field can be omitted or set to null as image generation is currently disabled.
-Example for 'nextSteps': [{ "tool": "flashcards", "topic": "{{{topic}}}", "reason": "Create a flashcard for this mnemonic" }]
+
+Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
 
 Example for topic "Cranial Nerves (Order)":
 Mnemonic: "Oh Oh Oh To Touch And Feel Very Good Velvet, Ah Heaven"

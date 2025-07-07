@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A Genkit flow for calculating drug dosages (educational purposes) for medico users.
@@ -24,7 +23,9 @@ const drugDosageCalculatorPrompt = ai.definePrompt({
   input: { schema: MedicoDrugDosageInputSchema },
   output: { schema: MedicoDrugDosageOutputSchema },
   prompt: `You are an AI tool designed for medical students to practice drug dosage calculations. THIS IS FOR EDUCATIONAL PURPOSES ONLY AND NOT FOR ACTUAL CLINICAL USE.
-Your primary task is to calculate a drug dosage based on the provided clinical context. Your secondary, but MANDATORY task, is to suggest 1-2 logical next study steps. Format this as a JSON array for the 'nextSteps' field. Each object in the array MUST have "tool", "topic", and "reason" keys. The 'tool' value must be a valid tool ID like 'flashcards'. This field is critical for the app's functionality and must not be omitted.
+Your primary task is to generate a JSON object containing a calculated drug dosage, a step-by-step explanation, clinical warnings, AND a list of relevant next study steps.
+
+The JSON object you generate MUST have a 'calculatedDose' field, a 'calculationExplanation' field, a 'warnings' field, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 Calculate the drug dosage based on the following complete clinical context:
 Drug Name: {{{drugName}}}
@@ -37,17 +38,12 @@ Patient Weight (kg): {{{patientWeightKg}}}
 Instructions:
 1.  **Cross-reference Pharmacopeia Data**: Using your knowledge of standard drug data (conceptually like OpenFDA or RxNorm), determine the standard dosing for the specified drug and indication.
 2.  **Adjust for Context**: Adjust the dose based on all provided patient context. Pay special attention to weight (for pediatric or weight-based dosing), age, and renal function (e.g., dose reduction for impaired eGFR). The specified indication is also critical for determining the correct dosage regimen.
-3.  **Calculate Final Dose**: Clearly state the final calculated dose per kg or total dose as appropriate. If a liquid formulation is implied or stated by 'concentrationAvailable', calculate the volume to be administered.
+3.  **Calculate Final Dose**: Clearly state the final calculated dose per kg or total dose as appropriate in the 'calculatedDose' field. If a liquid formulation is implied or stated by 'concentrationAvailable', calculate the volume to be administered.
 4.  **Show Your Work**: Provide a step-by-step 'calculationExplanation' that clearly shows how you arrived at the final dose, including any adjustments made for patient context.
 5.  **Provide Clinical Warnings**: List important 'warnings' or common considerations. This MUST include any dose adjustments made due to renal function and other critical points like maximum dose, common side effects, etc.
 6.  **Educational Disclaimer**: Emphasize that this is for educational practice and real clinical decisions require consulting official pharmacopoeias and senior clinicians.
 
-Format the output as JSON conforming to the MedicoDrugDosageOutputSchema.
-'calculatedDose' should be a string (e.g., "500 mg", "7.5 ml").
-'calculationExplanation' must be provided.
-'warnings' is an array of strings.
-If critical information is missing to make a safe calculation, 'calculatedDose' can state "Insufficient information" and the explanation should detail what's missing.
-Example for 'nextSteps': [{ "tool": "flashcards", "topic": "{{{drugName}}}", "reason": "Create flashcards for {{{drugName}}}" }]
+Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
 `,
   config: {
     temperature: 0.2, // Very precise for calculations

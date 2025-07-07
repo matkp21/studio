@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview The PharmaGenie agent, for providing drug information.
@@ -24,21 +23,17 @@ const pharmaGeniePrompt = ai.definePrompt({
   input: { schema: PharmaGenieInputSchema },
   output: { schema: PharmaGenieOutputSchema },
   prompt: `You are PharmaGenie, an AI expert in pharmacology for medical students.
-Your primary task is to provide a detailed summary of the drug: {{{drugName}}}
+Your primary task is to generate a JSON object containing a detailed summary of the drug {{{drugName}}} AND a list of relevant next study steps.
 
-You MUST also provide a 'nextSteps' field. This field is critical for the app's functionality and must not be omitted.
-Format it as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
-The 'toolId' value must be a valid tool ID from the Medico Hub.
+The JSON object you generate MUST have fields for 'drugClass', 'mechanismOfAction', 'indications', 'sideEffects', and 'nextSteps'. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
 
 Provide a detailed summary covering:
 1.  **Drug Class**: The pharmacological class of the drug.
 2.  **Mechanism of Action**: How the drug works at a physiological and molecular level.
-3.  **Key Indications**: The primary medical uses for the drug.
-4.  **Common Side Effects**: Important and common adverse effects.
+3.  **Key Indications**: The primary medical uses for the drug (as an array of strings).
+4.  **Common Side Effects**: Important and common adverse effects (as an array of strings).
 
-Format the output as JSON conforming to the PharmaGenieOutputSchema.
-- 'drugClass' and 'mechanismOfAction' should be detailed strings.
-- 'indications' and 'sideEffects' should be arrays of strings.
+Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys. The 'toolId' value must be a valid tool ID from the Medico Hub.
 
 Example for 'nextSteps':
 [
