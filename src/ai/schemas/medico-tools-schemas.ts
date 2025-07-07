@@ -1,4 +1,3 @@
-
 // src/ai/schemas/medico-tools-schemas.ts
 
 /**
@@ -139,7 +138,7 @@ export const MedicoClinicalCaseOutputSchema = z.object({
   feedback: z.string().optional().describe('Feedback on the user s previous response.'),
   isCompleted: z.boolean().default(false).describe('Indicates if the case simulation has ended.'),
   summary: z.string().optional().describe('Summary of the case if completed.'),
-  nextSteps: z.array(MedicoNextStepSchema).optional().describe("A list of recommended next steps or tools to use."),
+  nextSteps: z.array(MedicoNextStepSchema).describe("A list of recommended next steps or tools to use."),
 });
 export type MedicoClinicalCaseOutput = z.infer<typeof MedicoClinicalCaseOutputSchema>;
 
@@ -186,7 +185,7 @@ export const MedicoDDTrainerOutputSchema = z.object({
   feedback: z.string().optional().describe('Feedback on the student s previous response.'),
   isCompleted: z.boolean().default(false).describe('Indicates if the training session has ended.'),
   updatedCaseSummary: z.string().describe("The new summary of the case including the latest interaction."),
-  nextSteps: z.array(MedicoNextStepSchema).optional().describe("A list of recommended next steps or tools to use."),
+  nextSteps: z.array(MedicoNextStepSchema).describe("A list of recommended next steps or tools to use."),
 });
 export type MedicoDDTrainerOutput = z.infer<typeof MedicoDDTrainerOutputSchema>;
 
@@ -206,7 +205,7 @@ export const MedicoVirtualRoundsOutputSchema = z.object({
   nextPrompt: z.string().describe('Guidance or question for the student s next step in the round.'),
   isCompleted: z.boolean().default(false).describe('Indicates if this patient encounter in the round is completed.'),
   topic: z.string().optional().describe('The topic/focus of the round.'),
-  nextSteps: z.array(MedicoNextStepSchema).optional().describe("A list of recommended next steps or tools to use."),
+  nextSteps: z.array(MedicoNextStepSchema).describe("A list of recommended next steps or tools to use."),
 });
 export type MedicoVirtualRoundsOutput = z.infer<typeof MedicoVirtualRoundsOutputSchema>;
 
@@ -288,7 +287,7 @@ export const MedicoProgressTrackerOutputSchema = z.object({
     topic: z.string(),
     newProgressPercentage: z.number(),
   }).optional().describe("The updated progress percentage for the specific topic."),
-  nextSteps: z.array(MedicoNextStepSchema).optional().describe("A list of recommended next steps or tools to use."),
+  nextSteps: z.array(MedicoNextStepSchema).describe("A list of recommended next steps or tools to use."),
 });
 export type MedicoProgressTrackerOutput = z.infer<typeof MedicoProgressTrackerOutputSchema>;
 
