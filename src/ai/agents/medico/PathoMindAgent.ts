@@ -62,8 +62,9 @@ Diagram: "graph TD; A[Plaque Rupture] --> B[Thrombus Formation]; B --> C[Occlusi
 const pathoMindFlow = ai.defineFlow(
   {
     name: 'medicoPathoMindFlow',
-    inputSchema: PathoMindInputSchema },
-  outputSchema: PathoMindOutputSchema,
+    inputSchema: PathoMindInputSchema,
+    outputSchema: PathoMindOutputSchema,
+  },
   async (input) => {
     try {
         const { output } = await pathoMindPrompt(input);
