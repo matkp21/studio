@@ -37,7 +37,7 @@ Your task is to generate a JSON object with the following fields: 'caseId', 'top
 3. Give the 'nextPrompt' to guide the student (e.g., "What investigations would you order next?", "How would you manage this finding?").
 4. Retain the topic: The 'topic' field MUST be set to "{{{patientFocus}}}".
 5. Update 'isCompleted' if this encounter is finished.
-6. **Suggest Next Steps (MANDATORY on completion)**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. This is critical. Format it as a JSON array of objects, each with "title", "description", "toolId", "prefilledTopic", and "cta". This field must not be omitted on round completion.
+6. **Suggest Next Steps**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. Format it as a JSON array of objects, each with "title", "description", "toolId", "prefilledTopic", and "cta".
 {{else}}
 New Virtual Round / New Patient.
 Focus for new patient (if any): "{{{patientFocus}}}"
@@ -62,8 +62,7 @@ Example for a new patient (focus: "Pediatric Asthma Exacerbation"):
 {{/if}}
 
 Format the output as JSON conforming to the MedicoVirtualRoundsOutputSchema.
-All fields ('caseId', 'patientSummary', 'currentObservation', 'nextPrompt', 'isCompleted') must be provided.
-'nextSteps' is mandatory if 'isCompleted' is true.
+CRITICAL: The 'nextSteps' field is mandatory if 'isCompleted' is true and must not be omitted.
 `,
   config: {
     temperature: 0.6, // For varied patient scenarios and responses

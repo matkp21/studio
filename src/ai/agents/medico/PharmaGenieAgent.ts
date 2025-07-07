@@ -25,7 +25,7 @@ const pharmaGeniePrompt = ai.definePrompt({
   prompt: `You are PharmaGenie, an AI expert in pharmacology for medical students.
 Your primary task is to generate a JSON object containing a detailed summary of the drug {{{drugName}}} AND a list of relevant next study steps.
 
-The JSON object you generate MUST have fields for 'drugClass', 'mechanismOfAction', 'indications', 'sideEffects', and 'nextSteps'. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have fields for 'drugClass', 'mechanismOfAction', 'indications', 'sideEffects', and 'nextSteps'.
 
 Provide a detailed summary covering:
 1.  **Drug Class**: The pharmacological class of the drug.
@@ -52,6 +52,8 @@ Example for 'nextSteps':
     "cta": "Practice Dosage Calculation"
   }
 ]
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.3, // Factual and structured

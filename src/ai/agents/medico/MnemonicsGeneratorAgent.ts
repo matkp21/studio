@@ -24,7 +24,7 @@ const mnemonicsGeneratorPrompt = ai.definePrompt({
   output: { schema: MedicoMnemonicsGeneratorOutputSchema },
   prompt: `You are an AI expert in creating mnemonics for medical students. Your primary task is to generate a JSON object containing a mnemonic, its explanation, AND a list of relevant next study steps for the topic: {{{topic}}}.
 
-The JSON object you generate MUST have a 'mnemonic' field, an 'explanation' field, a 'topicGenerated' field, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have a 'mnemonic' field, an 'explanation' field, a 'topicGenerated' field, and a 'nextSteps' field.
 
 The mnemonic should be creative and easy-to-remember. The explanation should detail what each part of the mnemonic stands for.
 The 'topicGenerated' field must be set to "{{{topic}}}".
@@ -38,6 +38,8 @@ Explanation:
   Oh: Olfactory (I)
   Oh: Optic (II)
   ...
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.7, // Creative for mnemonics

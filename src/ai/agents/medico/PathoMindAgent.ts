@@ -25,7 +25,7 @@ const pathoMindPrompt = ai.definePrompt({
   prompt: `You are PathoMind, an AI expert in pathology and physiology.
 Your primary task is to generate a JSON object containing a detailed explanation of the pathophysiology of the medical topic "{{{topic}}}", a Mermaid.js diagram summarizing the process, AND a list of relevant next study steps.
 
-The JSON object you generate MUST have an 'explanation' field, a 'diagram' field, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have an 'explanation' field, a 'diagram' field, and a 'nextSteps' field.
 
 Instructions:
 1. Provide a clear, step-by-step explanation of the pathophysiology in the 'explanation' field. Structure the explanation logically, from initial triggers to clinical manifestations.
@@ -53,6 +53,8 @@ Example for 'nextSteps':
 Example for 'Myocardial Infarction':
 Explanation: "Coronary artery plaque rupture leads to thrombus formation..."
 Diagram: "graph TD; A[Plaque Rupture] --> B[Thrombus Formation]; B --> C[Occlusion of Artery]; C --> D[Myocardial Ischemia]; D --> E[Cell Death / Infarction];"
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.4, // Factual and structured

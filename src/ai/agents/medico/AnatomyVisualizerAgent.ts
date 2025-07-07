@@ -24,7 +24,7 @@ const anatomyVisualizerPrompt = ai.definePrompt({
   output: { schema: MedicoAnatomyVisualizerOutputSchema },
   prompt: `You are an AI medical educator specializing in anatomy. Your primary task is to generate a JSON object containing a detailed anatomical description AND a list of relevant next study steps for the structure: {{{anatomicalStructure}}}.
 
-The JSON object you generate MUST have a 'description' field and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have a 'description' field and a 'nextSteps' field.
 
 Provide a detailed description covering:
 1.  **Location**: Where is the structure found in the body?
@@ -52,6 +52,8 @@ Example for 'nextSteps':
     "cta": "Create Flashcards"
   }
 ]
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.3, // Factual and detailed

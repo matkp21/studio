@@ -28,7 +28,7 @@ const noteSummarizerPrompt = ai.definePrompt({
   prompt: `You are an expert at summarizing medical notes for students.
 Your primary task is to generate a JSON object containing a summary of the provided content AND a list of relevant next study steps.
 
-The JSON object you generate MUST have a 'summary' field, a 'format' field, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have a 'summary' field, a 'format' field, and a 'nextSteps' field.
 
 The summary should be concise, accurate, and focus on the most high-yield information for a medical student.
 - The 'format' field must be set to the requested format: {{{format}}}.
@@ -46,6 +46,8 @@ Image to summarize: {{media url=imageDataUri}}
 {{/if}}
 
 Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.2, // Factual and structured

@@ -27,7 +27,7 @@ const studyNotesPrompt = ai.definePrompt({
   output: { schema: StudyNotesGeneratorOutputSchema },
   prompt: `You are an AI medical expert. Your primary task is to generate a comprehensive JSON object containing structured study notes AND a list of relevant next study steps for a medical student.
 
-The JSON object you generate MUST have four fields: 'notes', 'summaryPoints', 'diagram', and 'nextSteps'. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have four fields: 'notes', 'summaryPoints', 'diagram', and 'nextSteps'.
 
 Topic/Question: {{{topic}}}
 Desired Answer Length: {{{answerLength}}}
@@ -50,10 +50,12 @@ Instructions:
 
 3.  **'diagram' field**: Place the Mermaid.js syntax generated in step 10 into this field as a single string. If no diagram is relevant, this can be null.
 
-4.  **'nextSteps' field (MANDATORY)**: You must provide a JSON array for this field. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta".
+4.  **'nextSteps' field**: You must provide a JSON array for this field. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta".
 
 Constraint: For a '10-mark' answer, the 'notes' content should be around 500 words. For a '5-mark' answer, around 250 words.
 Ensure the entire response is a single valid JSON object conforming to the StudyNotesGeneratorOutputSchema.
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.3, // Factual for notes

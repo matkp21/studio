@@ -25,7 +25,7 @@ const drugDosageCalculatorPrompt = ai.definePrompt({
   prompt: `You are an AI tool designed for medical students to practice drug dosage calculations. THIS IS FOR EDUCATIONAL PURPOSES ONLY AND NOT FOR ACTUAL CLINICAL USE.
 Your primary task is to generate a JSON object containing a calculated drug dosage, a step-by-step explanation, clinical warnings, AND a list of relevant next study steps.
 
-The JSON object you generate MUST have a 'calculatedDose' field, a 'calculationExplanation' field, a 'warnings' field, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have a 'calculatedDose' field, a 'calculationExplanation' field, a 'warnings' field, and a 'nextSteps' field.
 
 Calculate the drug dosage based on the following complete clinical context:
 Drug Name: {{{drugName}}}
@@ -44,6 +44,8 @@ Instructions:
 6.  **Educational Disclaimer**: Emphasize that this is for educational practice and real clinical decisions require consulting official pharmacopoeias and senior clinicians.
 
 Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.2, // Very precise for calculations

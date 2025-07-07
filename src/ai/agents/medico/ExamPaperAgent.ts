@@ -26,7 +26,7 @@ const examPaperPrompt = ai.definePrompt({
   output: { schema: MedicoExamPaperOutputSchema },
   prompt: `You are an expert medical examiner. Your primary task is to generate a JSON object containing a mock exam paper AND a list of relevant next study steps.
 
-The JSON object you generate MUST have 'mcqs', 'essays', 'topicGenerated', and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have 'mcqs', 'essays', 'topicGenerated', and a 'nextSteps' field.
 
 Exam Type: {{{examType}}}
 {{#if year}}Focus Year (for pattern analysis): {{{year}}}{{/if}}
@@ -42,6 +42,8 @@ Instructions:
 4.  The 'topicGenerated' field MUST be set to "{{{examType}}}".
 
 Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.6, // More creative for varied questions

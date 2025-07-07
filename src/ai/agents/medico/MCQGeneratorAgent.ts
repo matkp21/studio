@@ -29,7 +29,7 @@ const mcqGeneratorPrompt = ai.definePrompt({
   output: { schema: MedicoMCQGeneratorOutputSchema },
   prompt: `You are an AI expert in medical education. Your primary task is to generate a JSON object containing a quiz AND a list of relevant next study steps.
 
-The JSON object you generate MUST have an 'mcqs' array, a 'topicGenerated' string, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have an 'mcqs' array, a 'topicGenerated' string, and a 'nextSteps' field.
 
 Generate a quiz based on the following criteria:
 Topic: {{{topic}}}
@@ -47,6 +47,8 @@ For each MCQ:
 
 Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
 Ensure the final output is a single valid JSON object.
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.5, // A bit of creativity for plausible distractors but still medically sound

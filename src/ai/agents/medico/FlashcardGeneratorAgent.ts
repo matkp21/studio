@@ -25,7 +25,7 @@ const flashcardGeneratorPrompt = ai.definePrompt({
   output: { schema: MedicoFlashcardGeneratorOutputSchema },
   prompt: `You are an AI assistant skilled in creating educational flashcards. Your primary task is to generate a JSON object containing a set of flashcards AND a list of relevant next study steps.
 
-The JSON object you generate MUST have 'flashcards', 'topicGenerated', and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have 'flashcards', 'topicGenerated', and a 'nextSteps' field.
 
 Topic: {{{topic}}}
 Difficulty: {{{difficulty}}}
@@ -37,6 +37,8 @@ The flashcards should be concise and focus on key, high-yield information releva
 The 'topicGenerated' field must be set to "{{{topic}}}".
 
 Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.4, // Factual and concise

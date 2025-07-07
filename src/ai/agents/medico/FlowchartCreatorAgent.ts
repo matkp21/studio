@@ -26,7 +26,7 @@ const flowchartCreatorPrompt = ai.definePrompt({
   prompt: `You are an AI assistant that creates educational flowcharts for medical students.
 Your primary task is to generate a structured JSON object representing a flowchart AND a list of relevant next study steps for the topic: {{{topic}}}.
 
-The JSON object you generate MUST have 'nodes', 'edges', 'topicGenerated', and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have 'nodes', 'edges', 'topicGenerated', and a 'nextSteps' field.
 
 Instructions for the flowchart:
 - Generate 'nodes' and 'edges' arrays compatible with the React Flow library.
@@ -37,6 +37,8 @@ Instructions for the flowchart:
 - The 'topicGenerated' field should reflect the input topic.
 
 Format the 'nextSteps' field as a JSON array of objects. Each object MUST have "title", "description", "toolId", "prefilledTopic", and "cta" keys.
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.3, // For structured, factual output

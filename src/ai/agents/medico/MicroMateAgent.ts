@@ -25,7 +25,7 @@ const microMatePrompt = ai.definePrompt({
   prompt: `You are MicroMate, an AI expert in microbiology for medical students.
 Your primary task is to generate a JSON object containing a detailed summary of the microorganism {{{microorganism}}} AND a list of relevant next study steps.
 
-The JSON object you generate MUST have fields for 'characteristics', 'virulenceFactors', 'diseasesCaused', 'labDiagnosis', and 'nextSteps'. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have fields for 'characteristics', 'virulenceFactors', 'diseasesCaused', 'labDiagnosis', and 'nextSteps'.
 
 Provide a detailed summary covering:
 1.  **Key Characteristics**: (e.g., Gram stain, shape, aerobic/anaerobic).
@@ -52,6 +52,8 @@ Example for 'nextSteps':
     "cta": "Get Drug Info"
   }
 ]
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.3, // Factual and detailed

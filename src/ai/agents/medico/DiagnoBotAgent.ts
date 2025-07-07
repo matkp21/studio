@@ -25,7 +25,7 @@ const diagnoBotPrompt = ai.definePrompt({
   prompt: `You are DiagnoBot, an AI expert in interpreting clinical laboratory data for medical students.
 Your primary task is to generate a JSON object containing a structured interpretation of the given lab results AND a list of relevant next study steps.
 
-The JSON object you generate MUST have an 'interpretation' field, a 'likelyDifferentials' field, and a 'nextSteps' field. The 'nextSteps' field is critical for the app's functionality and must not be omitted.
+The JSON object you generate MUST have an 'interpretation' field, a 'likelyDifferentials' field, and a 'nextSteps' field.
 
 Lab Results to interpret:
 "{{{labResults}}}"
@@ -54,6 +54,8 @@ Example for 'nextSteps':
     "cta": "Generate Notes"
   }
 ]
+
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.3, // Factual for data interpretation

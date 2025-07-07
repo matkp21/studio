@@ -29,7 +29,7 @@ const progressTrackerPrompt = ai.definePrompt({
   prompt: `You are an AI assistant that provides gamified feedback for a medical student's study progress.
 Your primary task is to generate a JSON object containing an encouraging progress update message based on a completed activity AND a list of relevant next study steps.
 
-The JSON object you generate MUST have 'progressUpdateMessage', 'newAchievements', 'updatedTopicProgress', and a 'nextSteps' field. The 'nextSteps' field is critical.
+The JSON object you generate MUST have 'progressUpdateMessage', 'newAchievements', 'updatedTopicProgress', and a 'nextSteps' field.
 
 Activity Details:
 Activity Type: {{{activityType}}}
@@ -43,6 +43,7 @@ Instructions:
 4.  For 'nextSteps', if they did poorly on a quiz (score < 60), suggest they generate study notes. If they did well, suggest they try a different tool or topic. Format 'nextSteps' as a JSON array of objects, each with "title", "description", "toolId", "prefilledTopic", and "cta".
 
 Format the entire output as JSON conforming to the MedicoProgressTrackerOutputSchema.
+CRITICAL: The 'nextSteps' field is mandatory and must not be omitted. Generate at least two relevant suggestions.
 `,
   config: {
     temperature: 0.7, // More creative for gamified messages
