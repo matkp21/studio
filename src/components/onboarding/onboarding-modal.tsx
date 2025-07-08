@@ -278,7 +278,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
       <DialogContent className="sm:max-w-md md:max-w-lg rounded-xl shadow-2xl p-0 overflow-hidden bg-card border-border/50">
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentStepContent.key}
+            key={currentStepKey} // Add key here for re-mounting on change
             variants={modalVariants}
             initial="hidden"
             animate="visible"

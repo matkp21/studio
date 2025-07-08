@@ -60,6 +60,8 @@ interface CommunityLibraryItem extends BaseLibraryItem {
   authorId: string;
   authorName: string;
   status: 'pending' | 'approved' | 'rejected';
+  subject?: string;
+  system?: string;
 }
 
 type CombinedLibraryItem = MyLibraryItem | CommunityLibraryItem;
@@ -210,16 +212,14 @@ export default function StudyLibraryPage() {
   };
   
   const filterItems = useCallback((items: CombinedLibraryItem[]) => {
+    if (!selectedSubject && !selectedSystem) {
+      return items;
+    }
     return items.filter(item => {
-        // Only MyLibraryItem has subject/system, so we cast and check
-        if ('subject' in item || 'system' in item) {
-            const myItem = item as MyLibraryItem;
-            const subjectMatch = !selectedSubject || myItem.subject === selectedSubject;
-            const systemMatch = !selectedSystem || myItem.system === selectedSystem;
-            return subjectMatch && systemMatch;
-        }
-        // For Community items or items without these fields, don't filter them out unless a filter is active
-        return !selectedSubject && !selectedSystem;
+        // Properties can be on the root for both MyLibraryItem and CommunityLibraryItem
+        const subjectMatch = !selectedSubject || (item.hasOwnProperty('subject') && (item as MyLibraryItem).subject === selectedSubject);
+        const systemMatch = !selectedSystem || (item.hasOwnProperty('system') && (item as MyLibraryItem).system === selectedSystem);
+        return subjectMatch && systemMatch;
     });
   }, [selectedSubject, selectedSystem]);
 

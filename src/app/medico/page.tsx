@@ -40,7 +40,7 @@ export default function MedicoPage() {
     );
   }
   
-  if (userRole !== 'medico' && !showMedicoAnimation) {
+  if (userRole !== 'medico') {
     return (
       <PageWrapper title="Access Denied">
         <div className="text-center">
@@ -55,15 +55,5 @@ export default function MedicoPage() {
     return <MedicoHubAnimation onAnimationComplete={() => setShowMedicoAnimation(false)} />;
   }
   
-  if (userRole === 'medico' && !isLoadingRole && !showMedicoAnimation) {
-    return <MedicoDashboard />;
-  }
-
-  return (
-    <PageWrapper title="Verifying Access...">
-      <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    </PageWrapper>
-  );
+  return <MedicoDashboard />;
 }

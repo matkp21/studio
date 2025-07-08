@@ -24,8 +24,6 @@ import { useTheme } from '@/contexts/theme-provider';
 import { Badge } from '@/components/ui/badge';
 import { AnimatedTagline } from '@/components/layout/animated-tagline';
 import WelcomeDisplay from '@/components/welcome/welcome-display'; 
-import { ProSuiteAnimation } from '@/components/pro/pro-suite-animation';
-import { MedicoHubAnimation } from '@/components/medico/medico-hub-animation';
 import type { NotificationItem } from '@/types/notifications';
 import { useToast } from '@/hooks/use-toast';
 import { NotificationPanelCompact } from './notification-panel-compact'; // Import new panel
@@ -90,7 +88,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [currentDisplayState, setCurrentDisplayState] = useState<'loading' | 'onboarding' | 'proAnim' | 'medicoAnim' | 'genericWelcome' | 'app'>('loading');
+  // Simplified state machine for initial display
+  const [displayState, setDisplayState] = useState<'loading' | 'onboarding' | 'welcome' | 'app'>('loading');
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -111,17 +110,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
       const welcomeShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
 
       if (!onboardingComplete) {
-        setCurrentDisplayState('onboarding');
+        setDisplayState('onboarding');
       } else if (!welcomeShownThisSession && !['/login', '/signup'].includes(pathname)) {
-        if (userRole === 'pro') {
-          setCurrentDisplayState('proAnim');
-        } else if (userRole === 'medico') {
-          setCurrentDisplayState('medicoAnim');
-        } else { 
-          setCurrentDisplayState('genericWelcome');
-        }
+        // Show the generic welcome screen for all roles. Role-specific animations are now on their respective pages.
+        setDisplayState('welcome');
       } else {
-        setCurrentDisplayState('app');
+        setDisplayState('app');
       }
     }
   }, [userRole, selectUserRole, pathname]);
@@ -209,45 +203,32 @@ export function AppLayout({ children }: { children: ReactNode }) {
       if (roleFromStorage && roleFromStorage !== userRole) {
           selectUserRole(roleFromStorage); 
       }
-      if (roleFromStorage === 'pro') {
-          setCurrentDisplayState('proAnim');
-      } else if (roleFromStorage === 'medico') {
-          setCurrentDisplayState('medicoAnim');
-      } else {
-          setCurrentDisplayState('genericWelcome');
-      }
+      // After onboarding, always go to the generic welcome screen.
+      setDisplayState('welcome');
     }
   };
   
-  const handleAnimationComplete = () => {
+  const handleWelcomeComplete = () => {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('welcomeDisplayShown', 'true');
     }
-    setCurrentDisplayState('app');
+    setDisplayState('app');
   };
 
   if (['/login', '/signup'].includes(pathname)) {
-    return <>{children}</>; // Render only children for auth pages
+    return <>{children}</>; 
   }
 
-  if (currentDisplayState === 'loading') {
+  if (displayState === 'loading') {
     return <div className="fixed inset-0 bg-background flex items-center justify-center"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
   }
 
-  if (currentDisplayState === 'onboarding') {
+  if (displayState === 'onboarding') {
     return <OnboardingModal isOpen={true} onClose={handleOnboardingClose} />;
   }
 
-  if (currentDisplayState === 'proAnim') {
-    return <ProSuiteAnimation onAnimationComplete={handleAnimationComplete} />;
-  }
-
-  if (currentDisplayState === 'medicoAnim') {
-    return <MedicoHubAnimation onAnimationComplete={handleAnimationComplete} />;
-  }
-
-  if (currentDisplayState === 'genericWelcome') {
-    return <WelcomeDisplay onDisplayComplete={handleAnimationComplete} />;
+  if (displayState === 'welcome') {
+    return <WelcomeDisplay onDisplayComplete={handleWelcomeComplete} />;
   }
   
   return (
@@ -307,7 +288,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             {isNotificationPanelOpen && (
                 <div ref={notificationPanelRef}>
                     <NotificationPanelCompact
-                    notifications={notifications.slice(0, 7)} // Show recent or unread, adjust logic as needed
+                    notifications={notifications.slice(0, 7)}
                     hasUnreadNotifications={unreadCount > 0}
                     onClose={() => setIsNotificationPanelOpen(false)}
                     onMarkAllAsRead={handleMarkAllAsRead}
@@ -388,7 +369,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
                         <DropdownMenuSubContent>
-                        <DropdownMenuRadioGroup value={userRole || ''} onValueChange={(role) => { selectUserRole(role as UserRole); setIsAccountMenuOpen(false); setCurrentDisplayState('loading'); setIsNotificationPanelOpen(false); }}>
+                        <DropdownMenuRadioGroup value={userRole || ''} onValueChange={(role) => { selectUserRole(role as UserRole); setIsAccountMenuOpen(false); setDisplayState('loading'); setIsNotificationPanelOpen(false); }}>
                             <DropdownMenuRadioItem value="pro" className="flex items-center gap-2 cursor-pointer">
                                 <BriefcaseMedical className="h-4 w-4 text-purple-500" />
                                 <span className={cn(userRole === 'pro' && "firebase-gradient-text-active-role font-semibold")}>Professional</span>

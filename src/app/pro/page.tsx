@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { PageWrapper } from '@/components/layout/page-wrapper';
 import { Loader2 } from 'lucide-react';
-import { ProSuiteAnimation } from '@/components/pro/pro-suite-animation'; // Import the animation component
+import { ProSuiteAnimation } from '@/components/pro/pro-suite-animation'; 
 
 export default function ProPage() {
   const { userRole } = useProMode();
@@ -16,15 +16,18 @@ export default function ProPage() {
   const [showProAnimation, setShowProAnimation] = useState(false);
 
   useEffect(() => {
-    if (userRole !== null) { // userRole is determined
+    if (userRole !== null) { 
       if (userRole === 'pro') {
-        setShowProAnimation(true); // Start animation if user is pro
+        const animationShown = sessionStorage.getItem('proSuiteAnimationShown');
+        if (!animationShown) {
+          setShowProAnimation(true);
+          sessionStorage.setItem('proSuiteAnimationShown', 'true');
+        }
       } else {
-        router.push('/'); // Redirect if not pro
+        router.push('/'); 
       }
-      setIsLoadingRole(false); // Role loading is complete
+      setIsLoadingRole(false); 
     }
-    // If userRole is still null, ProModeProvider is likely still loading it from localStorage
   }, [userRole, router]);
 
   if (isLoadingRole) {
@@ -37,8 +40,7 @@ export default function ProPage() {
     );
   }
 
-  // If role is not pro and we are past the initial role loading (and not showing animation for pro)
-  if (userRole !== 'pro' && !showProAnimation) { 
+  if (userRole !== 'pro') { 
     return (
       <PageWrapper title="Access Denied">
         <div className="text-center">
@@ -49,22 +51,9 @@ export default function ProPage() {
     );
   }
 
-  if (showProAnimation && userRole === 'pro') {
+  if (showProAnimation) {
     return <ProSuiteAnimation onAnimationComplete={() => setShowProAnimation(false)} />;
   }
 
-  // Render dashboard if role is pro, not loading role, and animation is complete
-  if (userRole === 'pro' && !isLoadingRole && !showProAnimation) {
-    return <ProModeDashboard />;
-  }
-  
-  // Fallback (e.g. if userRole becomes non-pro after animation started, or some other edge case)
-  // This should ideally not be reached if redirection logic is robust.
-  return (
-    <PageWrapper title="Verifying Access...">
-      <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    </PageWrapper>
-  );
+  return <ProModeDashboard />;
 }
