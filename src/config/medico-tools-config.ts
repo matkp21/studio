@@ -69,6 +69,5 @@ export const frequentlyUsedMedicoToolIds: ActiveToolId[] = [
   'q-bank', 
   'mcq', 
   'theorycoach-generator', 
-  'library', 
-  'topicExplorer'
+  'library'
 ];
