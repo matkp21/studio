@@ -34,8 +34,6 @@ import { DiagnoBot } from '@/components/medico/diagno-bot';
 export const allMedicoToolsList: MedicoTool[] = [
   { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker, comingSoon: false },
   { id: 'pathomind', title: 'PathoMind', description: 'Explain any disease pathophysiology with diagrams.', icon: BrainCircuit, component: PathoMindExplainer },
-  { id: 'next-tool', title: 'AI-Recommended Next Tool', description: 'Let AI suggest the best tool for your current study goal, based on your recent activity and progress.', icon: Wand2, comingSoon: true },
-  { id: 'next-module', title: 'AI-Recommended Module', description: 'Based on your performance, AI can recommend the next topic or module for you to focus on.', icon: Wand2, comingSoon: true },
   { id: 'exams', title: 'Mock Exam Suite', description: 'Take full-length mock exams, get detailed analytics, and compete on leaderboards.', icon: Trophy, component: MockExamSuite, comingSoon: false },
   { id: 'challenges', title: 'Gamified Case Challenges', description: 'Solve timed clinical scenarios and compete on leaderboards.', icon: Swords, component: GamifiedCaseChallenges, comingSoon: false },
   { id: 'q-bank', title: 'Exam Paper Generator', description: "Generate mock exam papers simulating previous years, with MCQs and essay questions.", icon: BookCopy, component: SolvedQuestionPapersViewer },
@@ -62,8 +60,6 @@ export const allMedicoToolsList: MedicoTool[] = [
 
 export const frequentlyUsedMedicoToolIds: ActiveToolId[] = [
   'pathomind', 
-  'next-tool',
-  'next-module',
   'exams', 
   'challenges', 
   'q-bank', 
