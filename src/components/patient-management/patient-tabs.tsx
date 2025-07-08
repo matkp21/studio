@@ -1,4 +1,4 @@
-
+// src/components/patient-management/patient-tabs.tsx
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"; // Added Dialog components
 import { DischargeSummaryGenerator } from '@/components/pro/discharge-summary-generator'; // Added DischargeSummaryGenerator
 import { ScrollArea } from "../ui/scroll-area";
+import { PatientTimeline } from "./patient-timeline"; // Import the new component
 
 
 interface RoundNote {
@@ -63,7 +64,7 @@ export function PatientTabs() {
       date: roundDate,
       notes: roundNoteText,
     };
-    setRoundNotes(prev => [newNote, ...prev]);
+    setRoundNotes(prev => [newNote, ...prev].sort((a, b) => b.date.getTime() - a.date.getTime()));
     setRoundPatientName('');
     setRoundAdmissionOpdNumber(''); 
     setRoundNoteText('');
@@ -72,7 +73,7 @@ export function PatientTabs() {
   const handleAddReminder = () => {
     if (!reminderPatientName || !reminderText || !reminderDateTime || !isClient) return;
     const newReminder: Reminder = {
-      id: Date.now().toString(),
+      id: `rem-${Date.now().toString()}`,
       patientName: reminderPatientName,
       text: reminderText,
       dateTime: reminderDateTime,
@@ -233,11 +234,7 @@ export function PatientTabs() {
             <CardDescription>View a chronological timeline of patient events and notes.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-center min-h-[200px] flex flex-col items-center justify-center bg-muted/50 rounded-lg p-8">
-              <ListFilter className="h-16 w-16 mb-4 text-primary/70" />
-              <p className="text-lg font-semibold">Patient Timeline Feature Coming Soon!</p>
-              <p className="text-sm">This section is under active development. Stay tuned for updates.</p>
-            </div>
+            <PatientTimeline roundNotes={roundNotes} reminders={reminders} />
           </CardContent>
         </Card>
       </TabsContent>

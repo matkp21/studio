@@ -1,4 +1,3 @@
-
 // src/components/pro/on-call-handover-assistant.tsx
 "use client";
 
@@ -8,9 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Users, Lightbulb, Edit3, ClipboardCopy, SendHorizonal, AlertTriangle, ShieldCheck, UserPlus } from 'lucide-react';
+import { Users, Lightbulb, Edit3, ClipboardCopy, Wand2, Loader2, AlertTriangle, ShieldCheck, UserPlus } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Checkbox } from '@/components/ui/checkbox';
+import { generateHandoverSummary, type OnCallHandoverInput } from '@/ai/agents/pro/OnCallHandoverAssistantAgent';
+import { useToast } from '@/hooks/use-toast';
+import { MarkdownRenderer } from '../markdown/markdown-renderer';
+import { ScrollArea } from '../ui/scroll-area';
 
 interface HandoverPatient {
   id: string;
@@ -19,7 +21,7 @@ interface HandoverPatient {
   diagnosis: string;
   currentIssues: string;
   tasksPending: string[];
-  ifThenScenarios: string[]; // e.g., "If BP < 90/60, give 500ml Saline stat."
+  ifThenScenarios: string[]; 
   escalationContact: string;
 }
 
@@ -27,6 +29,9 @@ export function OnCallHandoverAssistant() {
   const [patientsToHandover, setPatientsToHandover] = useState<HandoverPatient[]>([]);
   const [currentPatient, setCurrentPatient] = useState<Partial<HandoverPatient>>({});
   const [showForm, setShowForm] = useState(false);
+  const [generatedSummary, setGeneratedSummary] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleAddPatientToHandover = () => {
     if (currentPatient.name && currentPatient.wardBed && currentPatient.diagnosis) {
@@ -34,38 +39,40 @@ export function OnCallHandoverAssistant() {
       setCurrentPatient({});
       setShowForm(false);
     } else {
-      alert("Please fill in at least Name, Ward/Bed, and Diagnosis for the patient.");
+      toast({ title: "Incomplete Details", description: "Please fill in at least Name, Ward/Bed, and Diagnosis.", variant: "destructive"});
     }
   };
   
-  const generateHandoverSummary = () => {
+  const handleGenerateSummary = async () => {
     if (patientsToHandover.length === 0) {
-        alert("No patients added to handover list.");
-        return "";
+      toast({ title: "No Patients", description: "Please add at least one patient to the handover list.", variant: "destructive" });
+      return;
     }
-    let summary = `**On-Call Handover Summary - ${new Date().toLocaleString()}**\n\n`;
-    patientsToHandover.forEach(p => {
-        summary += `------------------------------------\n`;
-        summary += `**Patient:** ${p.name} (${p.wardBed})\n`;
-        summary += `**Diagnosis:** ${p.diagnosis}\n`;
-        summary += `**Current Issues/Watchpoints:**\n${p.currentIssues || 'N/A'}\n`;
-        if (p.tasksPending.length > 0) {
-            summary += `**Pending Tasks:**\n${p.tasksPending.map(t => `- ${t}`).join('\n')}\n`;
-        }
-        if (p.ifThenScenarios.length > 0) {
-            summary += `**If/Then Scenarios:**\n${p.ifThenScenarios.map(s => `- ${s}`).join('\n')}\n`;
-        }
-        summary += `**Escalation Contact:** ${p.escalationContact || 'Standard protocol'}\n`;
-    });
-    summary += `------------------------------------\nEnd of Handover.`;
-    return summary;
+    setIsLoading(true);
+    setGeneratedSummary(null);
+    try {
+      const input: OnCallHandoverInput = {
+        patients: patientsToHandover.map(p => ({
+          ...p,
+          // Ensure arrays are not undefined for the agent
+          tasksPending: p.tasksPending || [],
+          ifThenScenarios: p.ifThenScenarios || [],
+        }))
+      };
+      const result = await generateHandoverSummary(input);
+      setGeneratedSummary(result.summaryText);
+      toast({ title: "Handover Summary Drafted", description: "AI has generated a structured handover document." });
+    } catch (error) {
+       toast({ title: "Generation Failed", description: (error as Error).message || "An unknown error occurred.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const copySummaryToClipboard = () => {
-    const summary = generateHandoverSummary();
-    if (summary) {
-      navigator.clipboard.writeText(summary);
-      alert("Handover summary copied to clipboard!");
+    if (generatedSummary) {
+      navigator.clipboard.writeText(generatedSummary);
+      toast({ title: "Copied to Clipboard", description: "Handover summary copied."});
     }
   };
 
@@ -74,9 +81,9 @@ export function OnCallHandoverAssistant() {
     <div className="space-y-6">
       <Alert variant="default" className="border-indigo-500/50 bg-indigo-500/10">
             <Lightbulb className="h-5 w-5 text-indigo-600" />
-            <AlertTitle className="font-semibold text-indigo-700 dark:text-indigo-500">Conceptual Tool</AlertTitle>
+            <AlertTitle className="font-semibold text-indigo-700 dark:text-indigo-500">Intelligent Handover Assistant</AlertTitle>
             <AlertDescription className="text-indigo-600/90 dark:text-indigo-500/90 text-xs">
-            This interface represents the On-Call Handover Assistant. A full version would integrate with patient data, allow structured input for "if-then" scenarios, and facilitate communication pathways for escalation.
+            Build your patient list, then let the AI generate a clear, structured handover document in Markdown format. This ensures critical information is communicated effectively.
             </AlertDescription>
       </Alert>
 
@@ -84,14 +91,14 @@ export function OnCallHandoverAssistant() {
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2">
             <Users className="h-6 w-6 text-purple-600" />
-            Intelligent On-Call Handover Assistant
+            On-Call Handover List
           </CardTitle>
-          <CardDescription>Structure clear, concise handovers with critical watchpoints and escalation plans.</CardDescription>
+          <CardDescription>Add patients to your handover list before generating the summary.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             {!showForm && (
                  <Button onClick={() => setShowForm(true)} className="w-full sm:w-auto rounded-lg group">
-                    <UserPlus className="mr-2 h-4 w-4"/> Add Patient to Handover List
+                    <UserPlus className="mr-2 h-4 w-4"/> Add Patient
                 </Button>
             )}
            
@@ -123,15 +130,34 @@ export function OnCallHandoverAssistant() {
                 </div>
             )}
         </CardContent>
-        <CardFooter className="flex justify-end gap-2 p-4 border-t">
-            <Button variant="outline" onClick={copySummaryToClipboard} disabled={patientsToHandover.length === 0} className="rounded-lg">
-                <ClipboardCopy className="mr-2 h-4 w-4"/> Copy Handover Summary
-            </Button>
-            <Button disabled={patientsToHandover.length === 0} className="rounded-lg bg-purple-600 hover:bg-purple-500">
-                <ShieldCheck className="mr-2 h-4 w-4"/> Finalize & Send (Conceptual)
+        <CardFooter className="flex justify-start gap-2 p-4 border-t">
+            <Button onClick={handleGenerateSummary} disabled={patientsToHandover.length === 0 || isLoading} className="rounded-lg group">
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4"/>}
+                Generate Handover Summary
             </Button>
         </CardFooter>
       </Card>
+      {generatedSummary && (
+        <Card className="mt-6 shadow-lg rounded-xl">
+            <CardHeader>
+                <CardTitle className="text-lg">AI-Generated Handover Summary</CardTitle>
+                <CardDescription>Review and edit the generated Markdown summary below.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ScrollArea className="h-[400px] border bg-background/50 rounded-lg p-4">
+                  <MarkdownRenderer content={generatedSummary} />
+                </ScrollArea>
+            </CardContent>
+            <CardFooter className="flex justify-end gap-2 p-4 border-t">
+                <Button variant="outline" onClick={copySummaryToClipboard} className="rounded-lg">
+                    <ClipboardCopy className="mr-2 h-4 w-4"/> Copy Summary
+                </Button>
+                <Button disabled className="rounded-lg bg-purple-600 hover:bg-purple-500">
+                    <ShieldCheck className="mr-2 h-4 w-4"/> Finalize & Send (Conceptual)
+                </Button>
+            </CardFooter>
+        </Card>
+      )}
     </div>
   );
 }

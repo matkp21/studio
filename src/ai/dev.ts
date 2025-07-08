@@ -31,7 +31,9 @@ import '@/ai/agents/medico/ProgressTrackerAgent.ts';
 
 // Professional tools
 import '@/ai/agents/pro/DischargeSummaryGeneratorAgent.ts';
-import '@/ai/agents/pro/TriageAndReferralAgent.ts'; // Import the new coordinator agent
+import '@/ai/agents/pro/TriageAndReferralAgent.ts'; 
+import '@/ai/agents/pro/PatientCommunicationDrafterAgent.ts';
+import '@/ai/agents/pro/OnCallHandoverAssistantAgent.ts';
 import '@/ai/schemas/pro-schemas.ts'; // Ensure pro schemas are included
 import '@/ai/schemas/symptom-analyzer-schemas.ts'; // Ensure symptom schemas are included
 import '@/ai/schemas/medico-tools-schemas.ts'; // Ensure medico schemas are included

@@ -1,8 +1,8 @@
-
+// src/ai/schemas/pro-schemas.ts
 /**
  * @fileOverview Defines Zod schemas for Professional Mode specific tools.
  */
-import { z } from 'zod'; // Use z from zod directly for schema definitions
+import { z } from 'zod';
 import { SymptomAnalyzerOutputSchema } from './symptom-analyzer-schemas';
 
 // Schema for Discharge Summary Generator
@@ -33,4 +33,37 @@ export const TriageAndReferralOutputSchema = z.object({
   referralDraft: DischargeSummaryOutputSchema.optional().describe("The drafted referral summary, generated only if a high-confidence diagnosis was found."),
 });
 
-// Add other Professional Mode tool schemas here as they are developed.
+// Schema for Patient Communication Drafter
+export const PatientCommunicationInputSchema = z.object({
+  patientName: z.string().optional().describe("Patient's name for personalization."),
+  communicationType: z.string().describe("The type of communication, e.g., 'Diagnosis Explanation', 'Treatment Plan Overview'."),
+  keyPoints: z.string().describe("The core clinical information to convey."),
+  tone: z.enum(['empathetic_clear', 'formal_concise', 'reassuring_simple']).describe("The desired tone of the message."),
+});
+export type PatientCommunicationInput = z.infer<typeof PatientCommunicationInputSchema>;
+
+export const PatientCommunicationOutputSchema = z.object({
+  draftedCommunication: z.string().describe("The AI-generated, patient-friendly communication draft."),
+});
+export type PatientCommunicationOutput = z.infer<typeof PatientCommunicationOutputSchema>;
+
+
+// Schema for On-Call Handover Assistant
+const HandoverPatientSchema = z.object({
+  name: z.string(),
+  wardBed: z.string(),
+  diagnosis: z.string(),
+  currentIssues: z.string(),
+  tasksPending: z.array(z.string()),
+  ifThenScenarios: z.array(z.string()),
+  escalationContact: z.string(),
+});
+export const OnCallHandoverInputSchema = z.object({
+  patients: z.array(HandoverPatientSchema),
+});
+export type OnCallHandoverInput = z.infer<typeof OnCallHandoverInputSchema>;
+
+export const OnCallHandoverOutputSchema = z.object({
+  summaryText: z.string().describe("A structured handover summary in Markdown format."),
+});
+export type OnCallHandoverOutput = z.infer<typeof OnCallHandoverOutputSchema>;
