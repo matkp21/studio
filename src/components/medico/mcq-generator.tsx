@@ -23,11 +23,16 @@ import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 
+const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "Ophthalmology", "ENT", "General Medicine", "General Surgery", "Obstetrics & Gynaecology", "Pediatrics", "Other"] as const;
+const systems = ["Cardiovascular", "Respiratory", "Gastrointestinal", "Neurological", "Musculoskeletal", "Endocrine", "Genitourinary", "Integumentary", "Hematological", "Immunological", "Other"] as const;
+
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
   count: z.coerce.number().int().min(1, {message: "Minimum 1 MCQ."}).max(10, {message: "Maximum 10 MCQs."}).default(5),
   difficulty: z.enum(['easy', 'medium', 'hard']).default('medium'),
   examType: z.enum(['university', 'neet-pg', 'usmle']).default('university'),
+  subject: z.enum(subjects).optional(),
+  system: z.enum(systems).optional(),
 });
 
 type McqFormValues = z.infer<typeof formSchema>;
@@ -77,6 +82,8 @@ export function McqGenerator({ initialTopic }: McqGeneratorProps) {
       count: 5,
       difficulty: 'medium',
       examType: 'university',
+      subject: undefined,
+      system: undefined,
     },
   });
 
@@ -87,7 +94,7 @@ export function McqGenerator({ initialTopic }: McqGeneratorProps) {
   }, [initialTopic, form]);
   
   const handleReset = () => {
-    form.reset({ topic: "", count: 5, difficulty: 'medium', examType: 'university' });
+    form.reset({ topic: "", count: 5, difficulty: 'medium', examType: 'university', subject: undefined, system: undefined });
     reset();
   }
 
@@ -100,10 +107,13 @@ export function McqGenerator({ initialTopic }: McqGeneratorProps) {
       toast({ title: "Cannot Save", description: "No content to save or user not logged in.", variant: "destructive" });
       return;
     }
+    const { subject, system } = form.getValues();
     try {
       await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
         type: 'mcqs',
         topic: generatedMcqs.topicGenerated,
+        subject: subject || null,
+        system: system || null,
         userId: user.uid,
         mcqs: generatedMcqs.mcqs,
         difficulty: form.getValues('difficulty'),
@@ -139,6 +149,40 @@ export function McqGenerator({ initialTopic }: McqGeneratorProps) {
               </FormItem>
             )}
           />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+                control={form.control}
+                name="subject"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel className="text-base">Subject (Optional)</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select Subject"/></SelectTrigger></FormControl>
+                    <SelectContent>
+                        {subjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                    </Select>
+                    <FormMessage/>
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="system"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel className="text-base">System (Optional)</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select System"/></SelectTrigger></FormControl>
+                    <SelectContent>
+                        {systems.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                    </Select>
+                    <FormMessage/>
+                </FormItem>
+                )}
+            />
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <FormField
               control={form.control}
@@ -280,32 +324,32 @@ export function McqGenerator({ initialTopic }: McqGeneratorProps) {
             </ScrollArea>
           </CardContent>
           <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
-            <Button onClick={handleSaveToLibrary} disabled={!user}>
+              <Button onClick={handleSaveToLibrary} disabled={!user}>
                 <Save className="mr-2 h-4 w-4"/> Save to Library
-            </Button>
-            {generatedMcqs.nextSteps && generatedMcqs.nextSteps.length > 0 && (
-              <div className="w-full space-y-3">
-                  <h4 className="font-semibold text-md text-primary">Recommended Next Steps:</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {generatedMcqs.nextSteps.map((step, index) => (
-                          <Card key={index} className="bg-card/50 hover:bg-card/90 transition-colors">
-                              <CardHeader className="p-3 pb-1">
-                                  <CardTitle className="text-sm">{step.title}</CardTitle>
-                                  <CardDescription className="text-xs">{step.description}</CardDescription>
-                              </CardHeader>
-                              <CardFooter className="p-3 pt-1">
-                                  <Button variant="outline" size="xs" asChild className="w-full">
-                                      <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
-                                          {step.cta} <ArrowRight className="ml-2 h-3 w-3"/>
-                                      </Link>
-                                  </Button>
-                              </CardFooter>
-                          </Card>
-                      ))}
-                  </div>
-              </div>
-            )}
-          </CardFooter>
+              </Button>
+              {generatedMcqs.nextSteps && generatedMcqs.nextSteps.length > 0 && (
+                <div className="w-full space-y-3">
+                    <h4 className="font-semibold text-md text-primary">Recommended Next Steps:</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {generatedMcqs.nextSteps.map((step, index) => (
+                            <Card key={index} className="bg-card/50 hover:bg-card/90 transition-colors">
+                                <CardHeader className="p-3 pb-1">
+                                    <CardTitle className="text-sm">{step.title}</CardTitle>
+                                    <CardDescription className="text-xs">{step.description}</CardDescription>
+                                </CardHeader>
+                                <CardFooter className="p-3 pt-1">
+                                    <Button variant="outline" size="xs" asChild className="w-full">
+                                        <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
+                                            {step.cta} <ArrowRight className="ml-2 h-3 w-3"/>
+                                        </Link>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+              )}
+            </CardFooter>
         </Card>
       )}
     </div>

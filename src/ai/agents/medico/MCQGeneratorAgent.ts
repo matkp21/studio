@@ -55,12 +55,14 @@ Example for 'nextSteps':
 **Instructions for quiz generation:**
 Generate a quiz based on the following criteria:
 Topic: {{{topic}}}
+{{#if subject}}Subject: {{{subject}}}{{/if}}
+{{#if system}}System: {{{system}}}{{/if}}
 Difficulty: {{{difficulty}}}
 Exam Style: {{{examType}}}
 Number of MCQs to generate: {{{count}}}
 
 For each MCQ:
-1.  Create a clear and unambiguous question based on the medical topic, tailored to the specified difficulty and exam style.
+1.  Create a clear and unambiguous question based on the medical topic, tailored to the specified difficulty, exam style, subject, and system.
 2.  Provide exactly four distinct options (A, B, C, D).
 3.  Ensure one option is clearly the correct answer.
 4.  The other three options should be plausible distractors, relevant to the topic but incorrect.

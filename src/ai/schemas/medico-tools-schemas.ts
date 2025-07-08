@@ -16,11 +16,16 @@ export const MedicoNextStepSchema = z.object({
 });
 export type MedicoNextStep = z.infer<typeof MedicoNextStepSchema>;
 
+const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "Ophthalmology", "ENT", "General Medicine", "General Surgery", "Obstetrics & Gynaecology", "Pediatrics", "Other"] as const;
+const systems = ["Cardiovascular", "Respiratory", "Gastrointestinal", "Neurological", "Musculoskeletal", "Endocrine", "Genitourinary", "Integumentary", "Hematological", "Immunological", "Other"] as const;
+
 
 // Schema for StudyNotesGenerator
 export const StudyNotesGeneratorInputSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).describe('The medical topic for which to generate study notes (e.g., "Diabetes Mellitus", "Thalassemia Major").'),
   answerLength: z.enum(['10-mark', '5-mark']).optional().describe('Desired length of the answer based on university exam marks.'),
+  subject: z.enum(subjects).optional().describe('The main subject this topic falls under (e.g., "Surgery", "Medicine").'),
+  system: z.enum(systems).optional().describe('The physiological system this topic relates to (e.g., "Cardiovascular", "Neurological").'),
 });
 export type StudyNotesGeneratorInput = z.infer<typeof StudyNotesGeneratorInputSchema>;
 
@@ -39,6 +44,8 @@ export const MedicoMCQGeneratorInputSchema = z.object({
   count: z.number().int().min(1).max(10).default(5).describe('The number of MCQs to generate (1-10). Default is 5.'),
   difficulty: z.enum(['easy', 'medium', 'hard']).default('medium').describe('The difficulty level of the questions.'),
   examType: z.enum(['university', 'neet-pg', 'usmle']).default('university').describe('The style of exam to pattern the questions after.'),
+  subject: z.enum(subjects).optional().describe('The main subject this topic falls under (e.g., "Surgery", "Medicine").'),
+  system: z.enum(systems).optional().describe('The physiological system this topic relates to (e.g., "Cardiovascular", "Neurological").'),
 });
 export type MedicoMCQGeneratorInput = z.infer<typeof MedicoMCQGeneratorInputSchema>;
 
