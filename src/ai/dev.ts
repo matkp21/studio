@@ -1,4 +1,3 @@
-
 import { config } from 'dotenv';
 config();
 
@@ -14,6 +13,15 @@ import '@/ai/agents/medico/MCQGeneratorAgent.ts';
 import '@/ai/agents/medico/ExamPaperAgent.ts';
 import '@/ai/agents/medico/StudyTimetableCreatorAgent.ts';
 import '@/ai/agents/medico/FlashcardGeneratorAgent.ts';
+import '@/ai/agents/medico/MnemonicsGeneratorAgent.ts';
+import '@/ai/agents/medico/FlowchartCreatorAgent.ts';
+import '@/ai/agents/medico/ClinicalCaseSimulatorAgent.ts';
+import '@/ai/agents/medico/DifferentialDiagnosisTrainerAgent.ts';
+import '@/ai/agents/medico/PathoMindAgent.ts';
+import '@/ai/agents/medico/PharmaGenieAgent.ts';
+import '@/ai/agents/medico/MicroMateAgent.ts';
+import '@/ai/agents/medico/DiagnoBotAgent.ts';
+
 
 // Professional tools
 import '@/ai/agents/pro/DischargeSummaryGeneratorAgent.ts';
