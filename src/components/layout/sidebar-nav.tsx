@@ -24,7 +24,6 @@ import {
   GraduationCap,
   BriefcaseMedical,
   Library,
-  BookOpenCheck,
   Info,
   HeartPulse,
   PillIcon,
@@ -71,14 +70,6 @@ const medicoLibraryItem = {
   ariaLabel: 'Open Study Library'
 };
 
-const academicCompanionItem = {
-  href: '/academic-companion',
-  label: 'Academic Companion',
-  icon: BookOpenCheck, // Using a valid icon here.
-  ariaLabel: 'Go to Core Academic Companion'
-};
-
-
 const proToolsNavItem = {
   href: '/pro',
   label: 'Clinical Suite',
@@ -105,9 +96,6 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
     }
     if (!navItems.find(item => item.href === '/medico/library')) {
       navItems.push(medicoLibraryItem);
-    }
-    if (!navItems.find(item => item.href === '/academic-companion')) {
-      navItems.push(academicCompanionItem);
     }
   } else if (userRole === 'pro') {
      if (!navItems.find(item => item.href === '/pro')) {
