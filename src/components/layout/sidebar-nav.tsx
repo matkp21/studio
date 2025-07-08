@@ -29,7 +29,6 @@ import {
   BellRing,
   Orbit,
   Library,
-  Waypoints, // Corrected: Replaced Network with a valid icon
 } from 'lucide-react';
 import {
   Tooltip,
@@ -72,13 +71,6 @@ const medicoLibraryItem = {
   ariaLabel: 'Open Study Library'
 };
 
-const medicoTopicExplorerItem = {
-  href: '/medico/topics',
-  label: 'Topic Explorer',
-  icon: Waypoints, // Corrected: Replaced Network with a valid icon
-  ariaLabel: 'Open Topic Explorer'
-};
-
 const proToolsNavItem = {
   href: '/pro',
   label: 'Clinical Suite',
@@ -105,9 +97,6 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
     }
     if (!navItems.find(item => item.href === '/medico/library')) {
       navItems.push(medicoLibraryItem);
-    }
-    if (!navItems.find(item => item.href === '/medico/topics')) {
-        navItems.push(medicoTopicExplorerItem);
     }
   } else if (userRole === 'pro') {
      if (!navItems.find(item => item.href === '/pro')) {
