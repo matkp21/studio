@@ -19,6 +19,7 @@ import { useProMode } from '@/contexts/pro-mode-context';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 import Link from 'next/link';
+import React from 'react';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).max(150, { message: "Topic too long."}),
@@ -26,7 +27,11 @@ const formSchema = z.object({
 
 type MnemonicFormValues = z.infer<typeof formSchema>;
 
-export function MnemonicsGenerator() {
+interface MnemonicGeneratorProps {
+  initialTopic?: string | null;
+}
+
+export function MnemonicsGenerator({ initialTopic }: MnemonicGeneratorProps) {
   const { toast } = useToast();
   const { user } = useProMode();
 
@@ -50,8 +55,14 @@ export function MnemonicsGenerator() {
 
   const form = useForm<MnemonicFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { topic: "" },
+    defaultValues: { topic: initialTopic || "" },
   });
+
+  React.useEffect(() => {
+    if (initialTopic) {
+      form.setValue('topic', initialTopic);
+    }
+  }, [initialTopic, form]);
 
   const onSubmit: SubmitHandler<MnemonicFormValues> = async (data) => {
     await runGenerateMnemonic(data);

@@ -11,6 +11,7 @@ import { McqGenerator } from '@/components/medico/mcq-generator';
 import { StudyTimetableCreator } from '@/components/medico/study-timetable-creator';
 import { FlashcardGenerator } from '@/components/medico/flashcard-generator';
 import { SolvedQuestionPapersViewer } from '@/components/medico/solved-question-papers-viewer';
+import { MnemonicsGenerator } from '@/components/medico/mnemonics-generator';
 
 // Define the full list of tools
 export const allMedicoToolsList: MedicoTool[] = [
@@ -19,9 +20,9 @@ export const allMedicoToolsList: MedicoTool[] = [
   { id: 'mcq', title: 'MCQ Generator', description: 'Create multiple-choice questions for exam practice.', icon: FileQuestion, component: McqGenerator },
   { id: 'flashcards', title: 'Flashcard Generator', description: 'Create digital flashcards for quick revision.', icon: Layers, component: FlashcardGenerator },
   { id: 'timetable', title: 'Study Timetable Creator', description: 'Plan personalized study schedules.', icon: CalendarClock, component: StudyTimetableCreator },
+  { id: 'mnemonics', title: 'Mnemonic Generator', description: 'Create memory aids with AI-generated visuals.', icon: Lightbulb, component: MnemonicsGenerator },
   { id: 'cases', title: 'Clinical Case Simulations', description: 'Practice with interactive patient scenarios.', icon: CaseUpper, comingSoon: true },
   { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Explore anatomical structures.', icon: Eye, comingSoon: true },
-  { id: 'mnemonics', title: 'Mnemonic Generator', description: 'Create memory aids with AI-generated visuals.', icon: Lightbulb, comingSoon: true },
   { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'List diagnoses based on symptoms with feedback.', icon: Brain, comingSoon: true },
   { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, comingSoon: true },
   { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study based on exam trends or user performance.', icon: TrendingUp, comingSoon: true },
@@ -33,4 +34,4 @@ export const allMedicoToolsList: MedicoTool[] = [
   { id: 'dictation', title: 'Smart Dictation', description: 'Use your voice to dictate notes, which AI can help structure.', icon: Mic, comingSoon: true },
 ];
 
-export const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['mcq', 'theorycoach-generator'];
+export const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['mcq', 'theorycoach-generator', 'flashcards', 'mnemonics'];
