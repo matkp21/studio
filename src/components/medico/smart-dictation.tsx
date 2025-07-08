@@ -1,3 +1,4 @@
+
 // src/components/medico/smart-dictation.tsx
 "use client";
 
@@ -6,12 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Mic, MicOff, Settings, Wand2, Loader2, FileText, AlertTriangle, Info } from 'lucide-react';
+import { Mic, MicOff, Settings, Wand2, Loader2, FileText, AlertTriangle, Info, BrainCircuit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { structureNote } from '@/ai/agents/medico/NoteStructurerAgent';
 
 interface DictationSegment {
   timestamp: Date;
@@ -24,7 +26,7 @@ export function SmartDictation() {
   const [finalizedTranscript, setFinalizedTranscript] = useState<DictationSegment[]>([]);
   const [isLoadingAi, setIsLoadingAi] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('general');
+  const [selectedTemplate, setSelectedTemplate] = useState<'general' | 'soap'>('general');
   const [hasMicPermission, setHasMicPermission] = useState<boolean | null>(null);
   
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -45,16 +47,7 @@ export function SmartDictation() {
             if (event.results[i].isFinal) {
               const finalText = event.results[i][0].transcript.trim();
               setFinalizedTranscript(prev => [...prev, { timestamp: new Date(), text: `${finalText}.` }]);
-              setTranscript(''); // Clear interim
-              // Simulate AI suggestion based on final text
-              // In a real app, this would call an AI service.
-              // For demo, let's just show a placeholder suggestion.
-              if (finalText.toLowerCase().includes("chest pain")) {
-                setAiSuggestions(prev => [...new Set([...prev, "Consider ECG and Troponin levels.", "Assess cardiac risk factors."])]);
-              } else if (finalText.toLowerCase().includes("fever")) {
-                 setAiSuggestions(prev => [...new Set([...prev, "Check temperature regularly.", "Consider blood cultures if sepsis suspected."])]);
-              }
-
+              setTranscript('');
             } else {
               interimTranscript += event.results[i][0].transcript;
             }
@@ -73,20 +66,14 @@ export function SmartDictation() {
         };
         
         recognitionInstance.onend = () => {
-          // If it stops unexpectedly and was meant to be listening, try to restart (with a delay)
-          // This is a basic auto-restart, might need more robust handling in a production app
-          if (isListening && recognitionRef.current) {
-            // recognitionRef.current.start();
-          } else {
             setIsListening(false);
-          }
         };
         recognitionRef.current = recognitionInstance;
       }
     } else {
       console.warn("Speech Recognition API not supported in this browser.");
     }
-  }, [toast]); // Removed isListening from deps to avoid re-creating recognition on state change
+  }, [toast]);
 
   const toggleListening = async () => {
     if (!recognitionRef.current) {
@@ -123,38 +110,38 @@ export function SmartDictation() {
       }
     }
   };
-
-  const handleApplySuggestion = (suggestion: string) => {
-    setFinalizedTranscript(prev => [...prev, { timestamp: new Date(), text: `${suggestion}` }]);
-    setAiSuggestions(prev => prev.filter(s => s !== suggestion));
-  };
   
-  const getSoapTemplate = (): DictationSegment[] => [
-    { timestamp: new Date(), text: "S (Subjective): \n\n" },
-    { timestamp: new Date(), text: "O (Objective): \n\n" },
-    { timestamp: new Date(), text: "A (Assessment): \n\n" },
-    { timestamp: new Date(), text: "P (Plan): \n\n" },
-  ];
-
-  const applyTemplate = () => {
-    if (selectedTemplate === 'soap') {
-        setFinalizedTranscript(getSoapTemplate());
-    } else {
-        setFinalizedTranscript([]); // Clear for general
-    }
-    setTranscript('');
-    setAiSuggestions([]);
-  };
-
   const combinedTranscript = finalizedTranscript.map(seg => seg.text).join(' ') + transcript;
+  
+  const handleStructureNote = async () => {
+    if (!combinedTranscript.trim()) {
+        toast({ title: "No Text", description: "There is no dictated text to structure.", variant: "destructive" });
+        return;
+    }
+    setIsLoadingAi(true);
+    try {
+        const result = await structureNote({ rawText: combinedTranscript, template: selectedTemplate });
+        const structuredSegment: DictationSegment = {
+            timestamp: new Date(),
+            text: result.structuredText,
+        };
+        setFinalizedTranscript([structuredSegment]); // Replace all previous segments with the single structured one
+        setTranscript(''); // Clear any interim transcript
+        toast({ title: "Note Structured!", description: `Your note has been formatted as a ${selectedTemplate.toUpperCase()} note.` });
+    } catch (err) {
+        toast({ title: "Structuring Failed", description: err instanceof Error ? err.message : "An unknown error occurred.", variant: "destructive" });
+    } finally {
+        setIsLoadingAi(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
       <Alert variant="default" className="border-orange-500/50 bg-orange-500/10">
         <Info className="h-5 w-5 text-orange-600" />
-        <AlertTitle className="font-semibold text-orange-700 dark:text-orange-500">Conceptual Dictation Tool</AlertTitle>
+        <AlertTitle className="font-semibold text-orange-700 dark:text-orange-500">Smart Dictation Tool</AlertTitle>
         <AlertDescription className="text-orange-600/90 dark:text-orange-500/90 text-xs">
-          This interface demonstrates a smart dictation tool. Actual AI-powered structuring and advanced medical terminology understanding would require significant backend processing. Basic client-side speech-to-text is used for this demo.
+          Use your voice to dictate notes. After dictating, use the "Structure with AI" button to organize your text into a clean format like a SOAP note. This uses client-side speech recognition.
         </AlertDescription>
       </Alert>
 
@@ -162,9 +149,9 @@ export function SmartDictation() {
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2">
             <Mic className="h-6 w-6 text-teal-600" />
-            Smart Dictation &amp; Note Assistant
+            Smart Dictation & Note Assistant
           </CardTitle>
-          <CardDescription>Dictate your clinical notes. The AI will assist with structuring and suggestions.</CardDescription>
+          <CardDescription>Dictate your clinical notes and let AI assist with structuring.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4 items-center">
@@ -173,20 +160,20 @@ export function SmartDictation() {
               {isListening ? 'Stop Dictation' : 'Start Dictation'}
             </Button>
             <div className="flex-grow w-full sm:w-auto">
-                <Label htmlFor="note-template" className="sr-only">Note Template</Label>
-                <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                <Label htmlFor="note-template" className="sr-only">Note Template for Structuring</Label>
+                <Select value={selectedTemplate} onValueChange={(v) => setSelectedTemplate(v as any)}>
                     <SelectTrigger id="note-template" className="w-full rounded-lg">
-                        <SelectValue placeholder="Select note template" />
+                        <SelectValue placeholder="Select template for AI structuring" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="general">General Note</SelectItem>
+                        <SelectItem value="general">General Cleanup</SelectItem>
                         <SelectItem value="soap">SOAP Note</SelectItem>
-                        {/* Add more templates here */}
                     </SelectContent>
                 </Select>
             </div>
-            <Button onClick={applyTemplate} variant="outline" className="w-full sm:w-auto rounded-lg text-sm">
-                <FileText className="mr-2 h-4 w-4"/>Apply Template
+            <Button onClick={handleStructureNote} variant="outline" className="w-full sm:w-auto rounded-lg text-sm" disabled={isLoadingAi || !combinedTranscript.trim()}>
+                {isLoadingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
+                Structure with AI
             </Button>
           </div>
           {hasMicPermission === false && (
@@ -210,48 +197,14 @@ export function SmartDictation() {
               <Textarea
                 id="dictation-output"
                 value={combinedTranscript}
-                readOnly={!isListening} // Allow editing if not actively listening to interim results
-                onChange={(e) => {
-                    // This allows manual edits to the latest finalized segment or the interim transcript
-                    if (!isListening) {
-                        const newText = e.target.value;
-                        const lastFinalizedIndex = finalizedTranscript.length -1;
-                        if (lastFinalizedIndex >= 0) {
-                            const allButLast = finalizedTranscript.slice(0, lastFinalizedIndex).map(s => s.text).join(' ');
-                            const potentiallyEditedLastSegment = newText.substring(allButLast.length).trimStart();
-                            
-                            const updatedFinalized = [...finalizedTranscript.slice(0, lastFinalizedIndex)];
-                            if (potentiallyEditedLastSegment) {
-                                updatedFinalized.push({timestamp: finalizedTranscript[lastFinalizedIndex].timestamp, text: potentiallyEditedLastSegment});
-                            }
-                            setFinalizedTranscript(updatedFinalized);
-                        } else {
-                             // If no finalized segments, it means we are editing the interim or an empty slate
-                             setTranscript(newText); // Or handle as a new finalized segment if appropriate
-                        }
-                    }
-                }}
-                placeholder={isListening ? "Listening..." : "Your dictated notes will appear here. You can also type."}
-                className="min-h-full resize-none border-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none text-sm"
+                readOnly
+                placeholder={isListening ? "Listening..." : "Your dictated notes will appear here."}
+                className="min-h-full resize-none border-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none text-sm whitespace-pre-wrap"
               />
             </ScrollArea>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col items-start gap-4 pt-4 border-t">
-            <div>
-                <h4 className="text-sm font-semibold mb-2 flex items-center gap-1.5 text-teal-700 dark:text-teal-400">
-                    <Wand2 className="h-4 w-4"/>AI Suggestions
-                </h4>
-                {isLoadingAi && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground"/>}
-                {!isLoadingAi && aiSuggestions.length === 0 && <p className="text-xs text-muted-foreground">No AI suggestions at the moment. Keep dictating!</p>}
-                <div className="flex flex-wrap gap-2">
-                    {aiSuggestions.map((suggestion, index) => (
-                    <Button key={index} variant="outline" size="sm" onClick={() => handleApplySuggestion(suggestion)} className="text-xs rounded-full border-teal-500/70 text-teal-600 hover:bg-teal-500/10">
-                        {suggestion}
-                    </Button>
-                    ))}
-                </div>
-            </div>
             <Button className="w-full sm:w-auto rounded-lg" onClick={() => toast({title: "Note Saved (Demo)", description: "Your clinical note has been saved."})}>
                 <FileText className="mr-2 h-4 w-4"/>Save Note
             </Button>

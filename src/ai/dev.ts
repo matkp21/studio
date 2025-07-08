@@ -1,3 +1,4 @@
+
 import { config } from 'dotenv';
 config();
 
@@ -27,6 +28,8 @@ import '@/ai/agents/medico/DrugDosageCalculatorAgent.ts';
 import '@/ai/agents/medico/NoteSummarizerAgent.ts';
 import '@/ai/agents/medico/VirtualPatientRoundsAgent.ts';
 import '@/ai/agents/medico/ProgressTrackerAgent.ts';
+import '@/ai/agents/medico/CaseChallengeGeneratorAgent.ts'; // Newly added
+import '@/ai/agents/medico/NoteStructurerAgent.ts'; // Newly added
 
 
 // Professional tools

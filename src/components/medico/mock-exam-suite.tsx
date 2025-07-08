@@ -1,3 +1,4 @@
+
 // src/components/medico/mock-exam-suite.tsx
 "use client";
 
@@ -6,57 +7,33 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Trophy, Clock, Loader2, PlayCircle, BarChart, CheckCircle, XCircle } from 'lucide-react';
+import { Trophy, Clock, Loader2, PlayCircle, BarChart, CheckCircle, XCircle, FilePlus, Wand2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
+import { generateExamPaper, type MedicoExamPaperInput, type MedicoExamPaperOutput } from '@/ai/agents/medico/ExamPaperAgent';
+import { useForm, type SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 
-interface Question {
-  id: string;
-  text: string;
-  options: string[];
-  correctAnswerIndex: number;
-}
+type Question = MedicoExamPaperOutput['mcqs'][number];
 
 interface Exam {
   id: string;
   title: string;
-  description: string;
   timeLimitMinutes: number;
   questions: Question[];
 }
 
-const sampleExams: Exam[] = [
-  { 
-    id: 'exam1', title: 'Weekly Med-Surg Challenge', description: 'A 20-question challenge covering key General Medicine and Surgery topics.', 
-    timeLimitMinutes: 20, 
-    questions: Array.from({ length: 20 }, (_, i) => ({
-      id: `q${i+1}`,
-      text: `This is question ${i+1} about a common medical scenario. Which of the following is the most likely diagnosis?`,
-      options: ['Option A', 'Option B', 'Option C', 'Correct Answer D'],
-      correctAnswerIndex: 3,
-    }))
-  },
-  { 
-    id: 'exam2', title: 'Weekend Pharmacology Sprint', description: 'A rapid-fire 15-question test on drug mechanisms and side effects.', 
-    timeLimitMinutes: 10,
-    questions: Array.from({ length: 15 }, (_, i) => ({
-      id: `pq${i+1}`,
-      text: `What is the primary mechanism of action for Drug X in question ${i+1}?`,
-      options: ['Mechanism A', 'Correct Mechanism B', 'Mechanism C', 'Mechanism D'],
-      correctAnswerIndex: 1,
-    }))
-  },
-];
-
-const sampleLeaderboard = [
-    { rank: 1, name: 'MedicoPro', score: 1850, time: '18:32' },
-    { rank: 2, name: 'AnatomyAce', score: 1820, time: '19:10' },
-    { rank: 3, name: 'SutureSelf', score: 1790, time: '19:45' },
-    { rank: 4, name: 'FutureMD', score: 1750, time: '20:01' },
-];
+const formSchema = z.object({
+  examType: z.string().min(3, { message: "Exam type must be at least 3 characters." }).max(100),
+  count: z.coerce.number().int().min(5, "Minimum 5 MCQs.").max(20, "Maximum 20 MCQs.").default(10),
+});
+type ExamFormValues = z.infer<typeof formSchema>;
 
 
 export function MockExamSuite() {
@@ -66,8 +43,24 @@ export function MockExamSuite() {
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
   const [examResult, setExamResult] = useState<{ score: number; correct: number; total: number } | null>(null);
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const startExam = (exam: Exam) => {
+  const form = useForm<ExamFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { examType: "Final MBBS Prof Mock", count: 10 },
+  });
+
+  const startExam = useCallback((examData: MedicoExamPaperOutput) => {
+    if (!examData.mcqs || examData.mcqs.length === 0) {
+      toast({ title: "No MCQs Generated", description: "The AI did not generate any multiple-choice questions for this exam.", variant: "destructive" });
+      return;
+    }
+    const exam: Exam = {
+      id: `exam-${Date.now()}`,
+      title: examData.topicGenerated,
+      timeLimitMinutes: examData.mcqs.length, // 1 minute per MCQ
+      questions: examData.mcqs,
+    };
     setActiveExam(exam);
     setTimeLeft(exam.timeLimitMinutes * 60);
     setExamResult(null);
@@ -76,13 +69,26 @@ export function MockExamSuite() {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(newTimerId);
-          handleSubmitExam(true); // Auto-submit when time runs out
+          handleSubmitExam(true);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     setTimerId(newTimerId);
+  }, []);
+
+  const handleGenerateAndStart: SubmitHandler<ExamFormValues> = async (data) => {
+    setIsLoading(true);
+    try {
+      const input: MedicoExamPaperInput = { examType: data.examType, count: data.count };
+      const examData = await generateExamPaper(input);
+      startExam(examData);
+    } catch (err) {
+      toast({ title: "Failed to Generate Exam", description: err instanceof Error ? err.message : "An unknown error occurred.", variant: 'destructive' });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   const handleAnswerChange = (questionId: string, answerIndex: number) => {
@@ -95,7 +101,8 @@ export function MockExamSuite() {
 
     let correctCount = 0;
     activeExam.questions.forEach(q => {
-        if (userAnswers[q.id] === q.correctAnswerIndex) {
+        const correctIndex = q.options.findIndex(opt => opt.isCorrect);
+        if (userAnswers[q.question] === correctIndex) {
             correctCount++;
         }
     });
@@ -144,24 +151,26 @@ export function MockExamSuite() {
                         <h3 className="text-2xl font-bold">Exam Finished!</h3>
                         <p className="text-4xl font-bold text-primary">{examResult.score}%</p>
                         <p>You answered {examResult.correct} out of {examResult.total} questions correctly.</p>
-                        <Button onClick={resetExam} className="rounded-lg">Back to Exam List</Button>
+                        <Button onClick={resetExam} className="rounded-lg">Back to Exam Setup</Button>
                     </div>
                 ) : (
-                    <div className="space-y-4">
-                        {activeExam.questions.map((q, index) => (
-                            <div key={q.id} className="p-3 border rounded-lg">
-                                <p className="font-semibold text-sm mb-2">Q{index+1}: {q.text}</p>
-                                <RadioGroup onValueChange={(val) => handleAnswerChange(q.id, parseInt(val))} value={String(userAnswers[q.id])}>
-                                    {q.options.map((opt, i) => (
-                                        <div key={i} className="flex items-center space-x-2">
-                                            <RadioGroupItem value={String(i)} id={`${q.id}-opt${i}`} />
-                                            <Label htmlFor={`${q.id}-opt${i}`} className="text-sm font-normal">{opt}</Label>
-                                        </div>
-                                    ))}
-                                </RadioGroup>
-                            </div>
-                        ))}
-                    </div>
+                    <ScrollArea className="h-[60vh] p-1">
+                      <div className="space-y-4 p-2">
+                          {activeExam.questions.map((q, index) => (
+                              <div key={q.question} className="p-3 border rounded-lg">
+                                  <p className="font-semibold text-sm mb-2">Q{index+1}: {q.question}</p>
+                                  <RadioGroup onValueChange={(val) => handleAnswerChange(q.question, parseInt(val))} value={String(userAnswers[q.question])}>
+                                      {q.options.map((opt, i) => (
+                                          <div key={i} className="flex items-center space-x-2">
+                                              <RadioGroupItem value={String(i)} id={`${q.question}-opt${i}`} />
+                                              <Label htmlFor={`${q.question}-opt${i}`} className="text-sm font-normal">{opt.text}</Label>
+                                          </div>
+                                      ))}
+                                  </RadioGroup>
+                              </div>
+                          ))}
+                      </div>
+                    </ScrollArea>
                 )}
             </CardContent>
             <CardFooter className="border-t pt-4">
@@ -173,45 +182,44 @@ export function MockExamSuite() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="shadow-md rounded-xl">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Trophy className="h-6 w-6 text-primary"/>Mock Exam Challenges</CardTitle>
-                <CardDescription>Select a timed exam, test your knowledge, and climb the leaderboard.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ul className="space-y-2">
-                    {sampleExams.map(exam => (
-                        <li key={exam.id} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors flex justify-between items-center">
-                            <div>
-                                <p className="font-semibold">{exam.title}</p>
-                                <p className="text-xs text-muted-foreground">{exam.description}</p>
-                            </div>
-                            <Button size="sm" onClick={() => startExam(exam)} className="rounded-md">
-                                <PlayCircle className="mr-2 h-4 w-4"/>Start
-                            </Button>
-                        </li>
-                    ))}
-                </ul>
-            </CardContent>
-        </Card>
-        <Card className="shadow-md rounded-xl">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><BarChart className="h-6 w-6 text-yellow-500"/>Leaderboard</CardTitle>
-                <CardDescription>Top performers in the weekly challenges. (Demo)</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ul className="space-y-1">
-                    {sampleLeaderboard.map(entry => (
-                        <li key={entry.rank} className="flex justify-between items-center p-2 rounded-md hover:bg-muted/50 text-sm">
-                            <span className="font-medium">#{entry.rank} {entry.name}</span>
-                            <span className="text-muted-foreground">{entry.score} pts ({entry.time})</span>
-                        </li>
-                    ))}
-                </ul>
-            </CardContent>
-        </Card>
-      </div>
+      <Card className="shadow-md rounded-xl">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Trophy className="h-6 w-6 text-primary"/>Generate Mock Exam</CardTitle>
+          <CardDescription>Create a timed mock exam with AI-generated questions to simulate real test conditions.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleGenerateAndStart)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="examType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Exam Type / Topic</FormLabel>
+                    <Input placeholder="e.g., USMLE Step 1 Pharmacology, Final MBBS Prof" {...field} />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="count"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Number of MCQs</FormLabel>
+                    <Input type="number" {...field} />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full rounded-lg" disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                Generate & Start Exam
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

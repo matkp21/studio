@@ -1,3 +1,4 @@
+
 // src/components/medico/gamified-case-challenges.tsx
 "use client";
 
@@ -11,22 +12,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { generateCaseChallenge, type MedicoCaseChallengeGeneratorOutput } from '@/ai/agents/medico/CaseChallengeGeneratorAgent';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
-interface Challenge {
-  id: string;
-  title: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  description: string;
-  caseDetails: string;
-  correctAnswer: string;
-  timeLimitSeconds: number;
-}
-
-const sampleChallenges: Challenge[] = [
-  { id: 'c1', title: 'The Feverish Traveler', difficulty: 'Easy', description: 'Diagnose a patient returning from abroad with a high fever.', caseDetails: 'A 32-year-old male presents with a 5-day history of high-grade fever, headache, myalgia, and retro-orbital pain. He recently returned from a trip to Southeast Asia. On examination, he has a petechial rash.', correctAnswer: 'Dengue Fever', timeLimitSeconds: 120 },
-  { id: 'c2', title: 'The Acute Abdomen Puzzle', difficulty: 'Medium', description: 'A classic surgical case presenting with abdominal pain.', caseDetails: 'A 22-year-old female presents with a 12-hour history of periumbilical pain that has now localized to the right iliac fossa. She has nausea and loss of appetite. On examination, there is tenderness at McBurney\'s point.', correctAnswer: 'Acute Appendicitis', timeLimitSeconds: 90 },
-  { id: 'c3', title: 'The Breathless Senior', difficulty: 'Hard', description: 'A complex case with multiple comorbidities.', caseDetails: 'An 80-year-old female with a history of hypertension and congestive heart failure presents with worsening shortness of breath over 3 days. She has bilateral pitting edema up to her knees and crackles on lung auscultation.', correctAnswer: 'Acute Decompensated Heart Failure', timeLimitSeconds: 60 },
-];
+type Challenge = MedicoCaseChallengeGeneratorOutput;
 
 const sampleLeaderboard = [
   { rank: 1, name: 'Dr. Ace', score: 2850 },
@@ -45,8 +34,10 @@ export function GamifiedCaseChallenges() {
   const [result, setResult] = useState<'correct' | 'incorrect' | null>(null);
   const [score, setScore] = useState<number | null>(null);
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Medium');
 
-  const startChallenge = (challenge: Challenge) => {
+  const startChallenge = useCallback((challenge: Challenge) => {
     setActiveChallenge(challenge);
     setTimeLeft(challenge.timeLimitSeconds);
     setResult(null);
@@ -63,9 +54,25 @@ export function GamifiedCaseChallenges() {
       });
     }, 1000);
     setTimerId(newTimerId);
+  }, []);
+  
+  const handleFetchChallenge = async () => {
+    setIsLoading(true);
+    try {
+      const challengeData = await generateCaseChallenge({ difficulty: selectedDifficulty });
+      startChallenge(challengeData);
+    } catch (err) {
+      toast({
+        title: "Failed to Generate Challenge",
+        description: err instanceof Error ? err.message : "An unknown error occurred.",
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  const handleTimeUp = () => {
+  const handleTimeUp = useCallback(() => {
      if (timerId) clearInterval(timerId);
      setResult('incorrect');
      setScore(0);
@@ -74,7 +81,7 @@ export function GamifiedCaseChallenges() {
         description: "You ran out of time for this challenge.",
         variant: 'destructive',
      });
-  }
+  }, [timerId, toast]);
 
   const handleSubmitAnswer = () => {
     if (!activeChallenge) return;
@@ -167,26 +174,30 @@ export function GamifiedCaseChallenges() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="shadow-md rounded-xl">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Target className="h-6 w-6 text-primary"/>Available Challenges</CardTitle>
-                <CardDescription>Select a case to test your diagnostic skills against the clock.</CardDescription>
+                <CardTitle className="flex items-center gap-2"><Target className="h-6 w-6 text-primary"/>Start a New Challenge</CardTitle>
+                <CardDescription>Select a difficulty and the AI will generate a unique case for you to solve.</CardDescription>
             </CardHeader>
-            <CardContent>
-                <ul className="space-y-2">
-                    {sampleChallenges.map(challenge => (
-                        <li key={challenge.id} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors flex justify-between items-center">
-                            <div>
-                                <p className="font-semibold">{challenge.title}</p>
-                                <p className="text-xs text-muted-foreground">{challenge.description}</p>
-                            </div>
-                            <Button size="sm" onClick={() => startChallenge(challenge)} className="rounded-md">
-                                <PlayCircle className="mr-2 h-4 w-4"/>Start
-                            </Button>
-                        </li>
-                    ))}
-                </ul>
+            <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="difficulty-select">Difficulty</Label>
+                  <Select value={selectedDifficulty} onValueChange={(v) => setSelectedDifficulty(v as any)}>
+                    <SelectTrigger id="difficulty-select" className="w-full mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Easy">Easy</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Hard">Hard</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button onClick={handleFetchChallenge} disabled={isLoading} className="w-full rounded-lg">
+                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <PlayCircle className="mr-2 h-4 w-4"/>}
+                  Generate & Start Challenge
+                </Button>
             </CardContent>
         </Card>
         <Card className="shadow-md rounded-xl">

@@ -1,3 +1,4 @@
+
 // src/ai/schemas/medico-tools-schemas.ts
 
 /**
@@ -351,3 +352,33 @@ export const MedicoProgressTrackerOutputSchema = z.object({
   nextSteps: z.array(NextStepSchema).optional().describe("Suggested next actions to continue studying."),
 });
 export type MedicoProgressTrackerOutput = z.infer<typeof MedicoProgressTrackerOutputSchema>;
+
+// Schema for Case Challenge Generator
+export const MedicoCaseChallengeGeneratorInputSchema = z.object({
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']).describe("The difficulty level for the case."),
+  topic: z.string().optional().describe("An optional topic to focus the case challenge on."),
+});
+export type MedicoCaseChallengeGeneratorInput = z.infer<typeof MedicoCaseChallengeGeneratorInputSchema>;
+
+export const MedicoCaseChallengeGeneratorOutputSchema = z.object({
+  id: z.string().describe("A unique ID for the generated challenge."),
+  title: z.string().describe("The title of the challenge."),
+  difficulty: z.string().describe("The difficulty level of the case."),
+  description: z.string().describe("A brief, one-sentence description of the case."),
+  caseDetails: z.string().describe("The detailed clinical presentation for the user to solve."),
+  correctAnswer: z.string().describe("The single correct primary diagnosis."),
+  timeLimitSeconds: z.number().int().positive().describe("The time limit in seconds to solve the challenge."),
+});
+export type MedicoCaseChallengeGeneratorOutput = z.infer<typeof MedicoCaseChallengeGeneratorOutputSchema>;
+
+// Schema for Note Structurer Agent
+export const MedicoNoteStructurerInputSchema = z.object({
+  rawText: z.string().describe("The raw, unstructured text from dictation."),
+  template: z.enum(['soap', 'general']).describe("The desired note template (e.g., SOAP)."),
+});
+export type MedicoNoteStructurerInput = z.infer<typeof MedicoNoteStructurerInputSchema>;
+
+export const MedicoNoteStructurerOutputSchema = z.object({
+  structuredText: z.string().describe("The AI-formatted and structured note content."),
+});
+export type MedicoNoteStructurerOutput = z.infer<typeof MedicoNoteStructurerOutputSchema>;
