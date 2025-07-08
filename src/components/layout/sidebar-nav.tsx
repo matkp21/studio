@@ -48,7 +48,6 @@ const baseNavItems = [
   { href: '/medications', label: 'Medications', icon: PillIcon, ariaLabel: 'Manage Medications' },
   { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye, ariaLabel: 'Open AR Viewer' },
   { href: '/explorer', label: '3D Explorer', icon: Orbit, ariaLabel: 'Open 3D Interactive Explorer' },
-  // Notifications will be added dynamically below
 ];
 
 const patientManagementNavItem = {
@@ -75,7 +74,7 @@ const medicoLibraryItem = {
 const academicCompanionItem = {
   href: '/academic-companion',
   label: 'Academic Companion',
-  icon: BookOpenCheck, // Using a valid icon
+  icon: BookOpenCheck, // Using a valid icon here.
   ariaLabel: 'Go to Core Academic Companion'
 };
 
