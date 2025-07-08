@@ -29,7 +29,7 @@ import {
   BellRing,
   Orbit,
   Library,
-  Network,
+  Waypoints, // Corrected: Replaced Network with a valid icon
 } from 'lucide-react';
 import {
   Tooltip,
@@ -75,7 +75,7 @@ const medicoLibraryItem = {
 const medicoTopicExplorerItem = {
   href: '/medico/topics',
   label: 'Topic Explorer',
-  icon: Network,
+  icon: Waypoints, // Corrected: Replaced Network with a valid icon
   ariaLabel: 'Open Topic Explorer'
 };
 
