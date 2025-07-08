@@ -1,3 +1,4 @@
+
 // src/components/medications/medication-list-item.tsx
 "use client";
 
@@ -86,7 +87,7 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, on
       <CardContent className="p-4 text-sm space-y-3 flex-grow">
         {medication.photoUrl && (
           <div className="mb-2 border rounded-lg overflow-hidden aspect-video relative bg-muted/40">
-            <Image src={medication.photoUrl} alt={`${medication.name} photo`} layout="fill" objectFit="contain" data-ai-hint="medication pill bottle" />
+            <Image src={medication.photoUrl} alt={`${medication.name} photo`} fill className="object-contain" data-ai-hint="medication pill bottle" />
           </div>
         )}
         {!medication.photoUrl && (

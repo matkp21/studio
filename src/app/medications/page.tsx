@@ -1,3 +1,4 @@
+
 // src/app/medications/page.tsx
 "use client";
 
@@ -22,83 +23,70 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle as AlertTitleComponent } from '@/components/ui/alert';
 import { MedicationManagementAnimation } from '@/components/medications/medication-management-animation';
-import { format, addHours, addDays, setHours, setMinutes, setSeconds, isFuture, parse, getDay, nextDay } from 'date-fns';
+import { format, addHours, addDays, setHours, setMinutes, setSeconds, isFuture, getDay, nextDay, parse } from 'date-fns';
 import { daysOfWeek } from '@/types/medication';
 import { Card, CardHeader, CardTitle as CardTitleComponent, CardDescription as CardDescriptionComponent, CardContent } from '@/components/ui/card';
 
 
-// Helper function to calculate upcoming conceptual doses
 const getUpcomingDoses = (medication: Medication, count: number = 5): Date[] => {
-  if (!medication.schedule) return [];
+    if (!medication.schedule) return [];
 
-  const upcoming: Date[] = [];
-  const now = new Date();
-  let { type, times, intervalHours, daysOfWeek: scheduledDays, specificDate, customInstructions } = medication.schedule;
+    const upcoming: Date[] = [];
+    const now = new Date();
+    const { type, times, intervalHours, daysOfWeek: scheduledDays, specificDate } = medication.schedule;
 
-  if (type === "Specific date (one-time)") {
-    if (specificDate && isFuture(new Date(specificDate))) {
-      upcoming.push(new Date(specificDate));
+    if (type === 'Specific date (one-time)') {
+        if (specificDate && isFuture(specificDate)) {
+            upcoming.push(specificDate);
+        }
+        return upcoming;
     }
-    return upcoming;
-  }
 
-  if (type === "As needed (PRN)" || type === "Other (custom)") {
-    return [];
-  }
-  
-  let startDate = now;
-  if (type === "Every X hours" && medication.prescriptionDate) {
-      const prescriptionTime = new Date(medication.prescriptionDate);
-      let baseTime = setHours(setMinutes(setSeconds(new Date(medication.prescriptionDate), 0), prescriptionTime.getMinutes()), prescriptionTime.getHours());
-      if (baseTime < now) {
-          while(baseTime < now) {
-            baseTime = addHours(baseTime, intervalHours || 24);
-          }
-      }
-      startDate = baseTime;
-  }
+    if (type === 'As needed (PRN)' || type === 'Other (custom)') {
+        return [];
+    }
 
-  for (let i = 0; i < count * (type === "Every X hours" ? 1 : (scheduledDays?.length || 1) * (times?.length || 1) + 7); i++) {
-    if (upcoming.length >= count) break;
+    if (type === 'Every X hours' && intervalHours) {
+        let lastTaken = medication.log?.filter(l => l.status === 'taken').sort((a,b) => b.date.getTime() - a.date.getTime())[0]?.date;
+        let startDate = lastTaken || medication.prescriptionDate || now;
+        
+        while (upcoming.length < count) {
+            startDate = addHours(startDate, intervalHours);
+            if (isFuture(startDate)) {
+                upcoming.push(startDate);
+            }
+            if (upcoming.length >= 50) break; // Safety break
+        }
+        return upcoming.slice(0, count);
+    }
+    
+    // For daily, twice daily, etc.
+    if (times && times.length > 0) {
+        let searchDate = new Date();
+        // Start from yesterday to catch all of today's times
+        searchDate.setDate(searchDate.getDate() - 1); 
 
-    let potentialDoseDate: Date | null = null;
+        for (let i = 0; i < 14; i++) { // Search up to 2 weeks ahead
+            const currentDayIndex = getDay(searchDate); // 0 for Sunday, 1 for Monday etc.
 
-    if (type === "Every X hours" && intervalHours) {
-        potentialDoseDate = addHours(startDate, i * intervalHours);
-    } else if (times && times.length > 0) {
-        for (const timeStr of times) {
-            const [hour, minute] = timeStr.split(':').map(Number);
-            let candidateDate = setSeconds(setMinutes(setHours(addDays(now, Math.floor(i / times.length)), hour), minute), 0);
-            
-            if (type === "Specific days of week" && scheduledDays && scheduledDays.length > 0) {
-                const dayMap = {"Sun":0, "Mon":1, "Tue":2, "Wed":3, "Thu":4, "Fri":5, "Sat":6};
-                
-                let iterationDay = candidateDate;
-                for(let k=0; k<7; k++) {
-                    const currentDayJsIndex = getDay(iterationDay);
-                    if (scheduledDays.some(d => dayMap[d] === currentDayJsIndex)) {
-                        let finalCandidate = setSeconds(setMinutes(setHours(new Date(iterationDay),hour),minute),0);
-                        if (isFuture(finalCandidate) && !upcoming.find(d => d.getTime() === finalCandidate.getTime())) {
-                           potentialDoseDate = finalCandidate;
-                           break; 
-                        }
+            const isScheduledDay = !scheduledDays || scheduledDays.length === 0 || scheduledDays.includes(daysOfWeek[currentDayIndex]);
+
+            if (isScheduledDay) {
+                for (const timeStr of times) {
+                    const [hour, minute] = timeStr.split(':').map(Number);
+                    const potentialDoseDate = setSeconds(setMinutes(setHours(new Date(searchDate), hour), minute), 0);
+
+                    if (isFuture(potentialDoseDate) && !upcoming.some(d => d.getTime() === potentialDoseDate.getTime())) {
+                        upcoming.push(potentialDoseDate);
                     }
-                    iterationDay = addDays(iterationDay, 1); 
                 }
-                 if(potentialDoseDate) break; 
-            } else { 
-                 potentialDoseDate = candidateDate;
             }
-             if (potentialDoseDate && isFuture(potentialDoseDate) && !upcoming.find(d => d.getTime() === potentialDoseDate.getTime())) {
-                upcoming.push(potentialDoseDate);
-                if (upcoming.length >= count) break;
-            }
+            if (upcoming.length >= count) break;
+            searchDate = addDays(searchDate, 1);
         }
     }
-    if (type !== "Every X hours" && type !== "Specific days of week" && i > 7 && upcoming.length === 0) break;
-  }
-  
-  return upcoming.sort((a,b) => a.getTime() - b.getTime()).slice(0, count);
+
+    return upcoming.sort((a, b) => a.getTime() - b.getTime()).slice(0, count);
 };
 
 // Sample drug info database for API simulation

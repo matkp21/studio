@@ -1,3 +1,4 @@
+
 // src/components/explorer/model-selection-card.tsx
 "use client";
 
@@ -42,11 +43,11 @@ export function ModelSelectionCard({ model }: ModelSelectionCardProps) {
            <Image 
             src={model.posterSrc || "https://placehold.co/600x400.png"} 
             alt={`${model.title} preview`} 
-            fill // Changed from layout="fill" objectFit="cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Added sizes prop
-            className="object-cover group-hover:scale-105 transition-transform duration-300" // Ensure object-cover is used
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
             data-ai-hint={model.dataAiHint || "3d model preview"}
-            priority={false} // Set to true for LCP images, false otherwise
+            priority={false}
           />
         </div>
         <Button asChild variant="outline" size="sm" className="w-full rounded-lg group-hover:bg-primary group-hover:text-primary-foreground transition-colors">

@@ -52,14 +52,10 @@ const prompt = ai.definePrompt({
   input: {schema: SymptomAnalyzerInputSchema},
   output: {schema: SymptomAnalyzerOutputSchema},
   prompt: `You are an AI medical expert. Based on the symptoms and patient context provided, generate:
-1.  A list of potential differential diagnoses. For each diagnosis, include:
-    - 'name': The name of the condition.
-    - 'confidence': Your qualitative confidence level (High, Medium, Low, or Possible).
-    - 'rationale': Brief supporting evidence or reasoning, and mention any red flag symptoms associated with urgent/serious differentials.
-2.  A prioritized list of suggested investigations for the top few likely diagnoses. For each investigation, include:
-    - 'name': The name of the investigation (e.g., "Chest X-ray (PA and Lateral)").
-    - 'rationale': A brief rationale for why this test is suggested (e.g., "To confirm lung consolidation if pneumonia suspected.").
-3.  A list of suggested initial management steps or considerations for the most likely diagnoses. Mention if specific guidelines (e.g., WHO, NICE) should be consulted.
+1.  A list of potential differential diagnoses. For each diagnosis, include 'name', 'confidence', and 'rationale'.
+2.  A prioritized list of suggested investigations for the top likely diagnoses.
+3.  A list of suggested initial management steps.
+4.  A list of suggested next steps. These should be actionable suggestions for the user, like using a specific study tool. For example, if a likely diagnosis is "Myocardial Infarction", a next step could be to generate study notes for it.
 
 Symptoms: {{{symptoms}}}
 {{#if patientContext}}
@@ -71,38 +67,23 @@ Patient Context:
 
 Output Format:
 Ensure your output strictly adheres to the SymptomAnalyzerOutputSchema JSON structure.
-'diagnoses' should be an array of objects, each with 'name', optional 'confidence', and optional 'rationale'.
-'suggestedInvestigations' should be an array of objects, each with 'name' and optional 'rationale'.
-'suggestedManagement' should be an array of strings.
-
-Example for a single diagnosis object in the 'diagnoses' array:
-{
-  "name": "Community-Acquired Pneumonia",
-  "confidence": "High",
-  "rationale": "Supported by cough, fever, and reported crackles. Red flags: severe dyspnea, SpO2 <90%."
-}
-Example for diagnoses array:
+The 'nextSteps' field is mandatory. Generate at least one relevant suggestion.
+Example for 'nextSteps' on a diagnosis of Pneumonia:
 [
-  { "name": "Community-Acquired Pneumonia", "confidence": "High", "rationale": "Supported by cough, fever, and reported crackles. Red flags: severe dyspnea, SpO2 <90%." },
-  { "name": "Acute Bronchitis", "confidence": "Medium", "rationale": "Cough present, but fever might be low grade or absent. Usually viral." },
-  { "name": "Pulmonary Embolism", "confidence": "Low", "rationale": "Consider if sudden onset dyspnea, pleuritic chest pain, or risk factors present. Red flags: Unilateral leg swelling, hemoptysis." }
-]
-
-Example for a single investigation object in 'suggestedInvestigations':
-{
-  "name": "Chest X-ray (PA and Lateral)",
-  "rationale": "To confirm lung consolidation if pneumonia suspected."
-}
-Example for suggestedInvestigations array:
-[
-  { "name": "Chest X-ray (PA and Lateral)", "rationale": "To confirm lung consolidation if pneumonia suspected." },
-  { "name": "Sputum for Gram Stain & Culture", "rationale": "To identify causative organism in suspected respiratory infection." }
-]
-
-Example for suggestedManagement:
-[
-  "Consider empirical antibiotics (e.g., Amoxicillin-Clavulanate or Doxycycline) based on local guidelines and patient allergies if bacterial pneumonia is highly suspected.",
-  "Oxygen therapy if SpO2 < 92%."
+  {
+    "title": "Review Pneumonia",
+    "description": "Generate comprehensive study notes on Community-Acquired Pneumonia to understand its pathophysiology and management.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "Community-Acquired Pneumonia",
+    "cta": "Generate Study Notes"
+  },
+  {
+    "title": "Practice Questions",
+    "description": "Test your knowledge with MCQs on respiratory infections.",
+    "toolId": "mcq",
+    "prefilledTopic": "Respiratory Infections",
+    "cta": "Generate MCQs"
+  }
 ]
 
 Always include a disclaimer that this information is for informational purposes only and not a substitute for professional medical advice.

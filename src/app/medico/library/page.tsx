@@ -1,3 +1,4 @@
+
 // src/app/medico/library/page.tsx
 "use client";
 
@@ -51,6 +52,8 @@ interface MyLibraryItem extends BaseLibraryItem {
   imageUrl?: string;
   flowchartData?: string;
   flashcards?: MedicoFlashcard[];
+  subject?: string;
+  system?: string;
 }
 
 interface CommunityLibraryItem extends BaseLibraryItem {
@@ -58,6 +61,8 @@ interface CommunityLibraryItem extends BaseLibraryItem {
   authorId: string;
   authorName: string;
   status: 'pending' | 'approved' | 'rejected';
+  subject?: string;
+  system?: string;
 }
 
 type CombinedLibraryItem = MyLibraryItem | CommunityLibraryItem;
@@ -124,6 +129,9 @@ const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: Libra
 };
 
 
+const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "Ophthalmology", "ENT", "General Medicine", "General Surgery", "Obstetrics & Gynaecology", "Pediatrics", "Other"] as const;
+const systems = ["Cardiovascular", "Respiratory", "Gastrointestinal", "Neurological", "Musculoskeletal", "Endocrine", "Genitourinary", "Integumentary", "Hematological", "Immunological", "Other"] as const;
+
 export default function StudyLibraryPage() {
   const { user, loading: authLoading } = useProMode();
   const { toast } = useToast();
@@ -139,6 +147,10 @@ export default function StudyLibraryPage() {
   const [uploadType, setUploadType] = useState<'communityNote' | 'communityMnemonic'>('communityNote');
   const [uploadContent, setUploadContent] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  
+  const [selectedSubject, setSelectedSubject] = useState<string>('');
+  const [selectedSystem, setSelectedSystem] = useState<string>('');
+
 
   const fetchUserData = useCallback(async (uid: string) => {
     setIsDataLoading(true);
@@ -199,6 +211,19 @@ export default function StudyLibraryPage() {
       toast({ title: "Error", description: "Could not update bookmark.", variant: "destructive" });
     }
   };
+  
+  const filterItems = useCallback((items: CombinedLibraryItem[]) => {
+    if (!selectedSubject && !selectedSystem) {
+      return items;
+    }
+    return items.filter(item => {
+        // Properties can be on the root for both MyLibraryItem and CommunityLibraryItem
+        const subjectMatch = !selectedSubject || (item.hasOwnProperty('subject') && (item as MyLibraryItem).subject === selectedSubject);
+        const systemMatch = !selectedSystem || (item.hasOwnProperty('system') && (item as MyLibraryItem).system === selectedSystem);
+        return subjectMatch && systemMatch;
+    });
+  }, [selectedSubject, selectedSystem]);
+
 
   const bookmarkedItems = useMemo(() => {
     const allItems = [...myLibraryItems, ...communityItems];
@@ -321,12 +346,17 @@ export default function StudyLibraryPage() {
     if (isDataLoading) {
         return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
     }
-    if (items.length === 0) {
-        return <p className="text-center text-muted-foreground p-8">{tabName} is empty.</p>;
+
+    const filteredItems = filterItems(items);
+
+    if (filteredItems.length === 0) {
+        const hasFilters = selectedSubject || selectedSystem;
+        return <p className="text-center text-muted-foreground p-8">{hasFilters ? `No items match your filters in ${tabName}.` : `${tabName} is empty.`}</p>;
     }
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {items.map(item => (
+            {filteredItems.map(item => (
                 <LibraryCard 
                     key={item.id} 
                     item={item}
@@ -402,6 +432,23 @@ export default function StudyLibraryPage() {
           </Dialog>
         </CardHeader>
         <CardContent>
+          <div className="flex flex-col sm:flex-row gap-2 mb-4 p-2 border bg-muted/50 rounded-lg">
+             <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                <SelectTrigger className="flex-1"><SelectValue placeholder="Filter by Subject..." /></SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="">All Subjects</SelectItem>
+                    {subjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+             </Select>
+              <Select value={selectedSystem} onValueChange={setSelectedSystem}>
+                <SelectTrigger className="flex-1"><SelectValue placeholder="Filter by System..." /></SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="">All Systems</SelectItem>
+                    {systems.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+             </Select>
+             <Button variant="ghost" onClick={() => { setSelectedSubject(''); setSelectedSystem(''); }} className="text-xs">Clear Filters</Button>
+          </div>
           <Tabs defaultValue="my-library" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="my-library"><BookOpen className="mr-2 h-4 w-4"/>My Library</TabsTrigger>

@@ -5,6 +5,14 @@
  */
 import { z } from 'zod';
 
+const NextStepSchema = z.object({
+  title: z.string().describe("The title of the suggested next step."),
+  description: z.string().describe("A brief description of what this step entails."),
+  toolId: z.string().describe("The unique ID of the tool to be used for this step (e.g., 'mcq', 'flashcards')."),
+  prefilledTopic: z.string().describe("The topic to pre-fill in the suggested tool."),
+  cta: z.string().describe("The call-to-action text for the button (e.g., 'Generate MCQs')."),
+});
+
 export const PatientContextSchema = z.object({
   age: z.number().int().positive().optional().describe('Patient age in years.'),
   sex: z.enum(['male', 'female', 'other']).optional().describe('Patient biological sex.'),
@@ -34,6 +42,6 @@ export const SymptomAnalyzerOutputSchema = z.object({
   diagnoses: z.array(DiagnosisItemSchema).describe('A list of potential differential diagnoses, each with a name, optional confidence, and optional rationale.'),
   suggestedInvestigations: z.array(InvestigationSchema).optional().describe('A list of suggested investigations for the top likely diagnoses, each with a name and optional rationale.'),
   suggestedManagement: z.array(z.string()).optional().describe('A list of suggested initial management steps or considerations.'),
+  nextSteps: z.array(NextStepSchema).optional().describe('A list of suggested next steps for the user, such as using a study tool.'),
   disclaimer: z.string().optional().describe('A standard disclaimer advising consultation with a medical professional.'),
 });
-

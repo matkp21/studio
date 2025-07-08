@@ -1,3 +1,4 @@
+
 // src/components/medico/mnemonics-generator.tsx
 "use client";
 
@@ -183,7 +184,7 @@ export function MnemonicsGenerator({ initialTopic }: MnemonicGeneratorProps) {
                  <h4 className="font-semibold text-md mb-1 text-yellow-700 dark:text-yellow-400">Visual Aid:</h4>
                   {generatedMnemonic.imageUrl ? (
                      <div className="relative aspect-square w-full border rounded-lg overflow-hidden bg-muted/30">
-                        <Image src={generatedMnemonic.imageUrl} alt={`Visual for ${generatedMnemonic.topicGenerated}`} fill objectFit="contain" data-ai-hint="medical mnemonic diagram"/>
+                        <Image src={generatedMnemonic.imageUrl} alt={`Visual for ${generatedMnemonic.topicGenerated}`} fill className="object-contain" data-ai-hint="medical mnemonic diagram"/>
                     </div>
                   ) : (
                     <div className="aspect-square w-full border border-dashed rounded-lg flex flex-col items-center justify-center text-muted-foreground bg-muted/20">
