@@ -29,8 +29,7 @@ import {
   BellRing,
   Orbit,
   Library,
-  Waypoints, // Changed from Network
-  BookOpenCheck, // Added new icon
+  BookOpenCheck,
 } from 'lucide-react';
 import {
   Tooltip,
@@ -73,13 +72,6 @@ const medicoLibraryItem = {
   ariaLabel: 'Open Study Library'
 };
 
-const medicoTopicExplorerItem = {
-  href: '/medico/topics',
-  label: 'Topic Explorer',
-  icon: Waypoints, // Changed from Network
-  ariaLabel: 'Explore curriculum topics'
-};
-
 const academicCompanionItem = {
   href: '/academic-companion',
   label: 'Academic Companion',
@@ -113,9 +105,6 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
     }
     if (!navItems.find(item => item.href === '/medico/library')) {
       navItems.push(medicoLibraryItem);
-    }
-     if (!navItems.find(item => item.href === '/medico/topics')) {
-      navItems.push(medicoTopicExplorerItem);
     }
     if (!navItems.find(item => item.href === '/academic-companion')) {
       navItems.push(academicCompanionItem);
