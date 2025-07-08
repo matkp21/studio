@@ -26,7 +26,6 @@ export type ActiveToolId =
   | 'pharmagenie'
   | 'micromate'
   | 'diagnobot'
-  | 'topicExplorer'
   | null;
 
 export interface MedicoTool {
