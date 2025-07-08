@@ -2,7 +2,7 @@
 import type { MedicoTool, ActiveToolId } from '@/types/medico-tools';
 import {
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
-  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, FlaskConical, Microscope, TestTubeDiagonal
+  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, FlaskConical, Microscope, TestTubeDiagonal, Swords
 } from 'lucide-react';
 
 // Component Imports
@@ -23,7 +23,11 @@ import { HighYieldTopicPredictor } from '@/components/medico/high-yield-topic-pr
 import { AnatomyVisualizer } from '@/components/medico/anatomy-visualizer';
 import { DrugDosageCalculator } from '@/components/medico/drug-dosage-calculator';
 import { NoteSummarizer } from '@/components/medico/note-summarizer';
-
+import { VirtualPatientRounds } from '@/components/medico/virtual-patient-rounds';
+import { ProgressTracker } from '@/components/medico/progress-tracker';
+import { SmartDictation } from '@/components/medico/smart-dictation';
+import { GamifiedCaseChallenges } from '@/components/medico/gamified-case-challenges';
+import { MockExamSuite } from '@/components/medico/mock-exam-suite';
 
 // Define the full list of tools
 export const allMedicoToolsList: MedicoTool[] = [
@@ -44,10 +48,12 @@ export const allMedicoToolsList: MedicoTool[] = [
   { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Explore anatomical structures.', icon: Eye, component: AnatomyVisualizer },
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, component: DrugDosageCalculator },
   { id: 'summarizer', title: 'Smart Note Summarizer', description: 'Upload notes (PDF/TXT) and get AI-powered summaries.', icon: FileText, component: NoteSummarizer },
-  { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, comingSoon: true },
-  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, comingSoon: true },
-  { id: 'videos', title: 'Video Lecture Library', description: 'Search and find relevant medical video lectures.', icon: Youtube, comingSoon: true },
-  { id: 'dictation', title: 'Smart Dictation', description: 'Use your voice to dictate notes, which AI can help structure.', icon: Mic, comingSoon: true },
+  { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, component: VirtualPatientRounds },
+  { id: 'progress', title: 'Progress Tracker', description: 'Track study progress with rewards (gamification).', icon: Award, component: ProgressTracker },
+  { id: 'videos', title: 'Video Lecture Library', description: 'Search and find relevant medical video lectures.', icon: Youtube, href: '/medico/videos' },
+  { id: 'dictation', title: 'Smart Dictation', description: 'Use your voice to dictate notes, which AI can help structure.', icon: Mic, component: SmartDictation },
+  { id: 'challenges', title: 'Gamified Case Challenges', description: 'Solve timed diagnostic challenges and compete on leaderboards.', icon: Swords, component: GamifiedCaseChallenges },
+  { id: 'exams', title: 'Mock Exam Suite', description: 'Take full-length mock exams with MCQs and essays.', icon: Trophy, component: MockExamSuite },
 ];
 
 export const frequentlyUsedMedicoToolIds: ActiveToolId[] = ['mcq', 'theorycoach-generator', 'flashcards', 'mnemonics', 'pathomind', 'pharmagenie'];

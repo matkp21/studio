@@ -21,6 +21,12 @@ import '@/ai/agents/medico/PathoMindAgent.ts';
 import '@/ai/agents/medico/PharmaGenieAgent.ts';
 import '@/ai/agents/medico/MicroMateAgent.ts';
 import '@/ai/agents/medico/DiagnoBotAgent.ts';
+import '@/ai/agents/medico/HighYieldTopicPredictorAgent.ts';
+import '@/ai/agents/medico/AnatomyVisualizerAgent.ts';
+import '@/ai/agents/medico/DrugDosageCalculatorAgent.ts';
+import '@/ai/agents/medico/NoteSummarizerAgent.ts';
+import '@/ai/agents/medico/VirtualPatientRoundsAgent.ts';
+import '@/ai/agents/medico/ProgressTrackerAgent.ts';
 
 
 // Professional tools
