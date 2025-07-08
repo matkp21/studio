@@ -2,7 +2,7 @@
 import type { MedicoTool, ActiveToolId } from '@/types/medico-tools';
 import {
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
-  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords, Trophy, Library, CalendarDays, BrainCircuit, FlaskConical, Microscope, TestTubeDiagonal, Network, Wand2 
+  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, Swords, Trophy, Library, CalendarDays, BrainCircuit, FlaskConical, Microscope, TestTubeDiagonal, Wand2 
 } from 'lucide-react';
 
 // Component Imports
@@ -43,7 +43,6 @@ export const allMedicoToolsList: MedicoTool[] = [
   { id: 'summarizer', title: 'Smart Note Summarizer', description: 'Upload notes (PDF/TXT/JPEG) and get AI-powered summaries in various formats.', icon: FileText, component: NoteSummarizer },
   { id: 'videos', title: 'Video Lecture Library', description: 'Search and find relevant medical video lectures from YouTube.', icon: Youtube, href: '/medico/videos' },
   { id: 'library', title: 'Knowledge Hub', description: 'Access your personal collection of saved notes, MCQs, and community-contributed study materials.', icon: Library, href: '/medico/library' },
-  { id: 'topicExplorer', title: 'Topic Explorer', description: 'Browse curriculum topics by subject and system.', icon: Network, href: '/medico/topics' },
   { id: 'dictation', title: 'Smart Dictation', description: 'Use your voice to dictate notes, which AI can help structure.', icon: Mic, component: SmartDictation },
   { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study based on exam trends or user performance.', icon: TrendingUp, component: HighYieldTopicPredictor },
   { id: 'flowcharts', title: 'Flowchart Creator', description: 'Generate flowcharts for medical topics to aid revision.', icon: Workflow, component: FlowchartCreator },
