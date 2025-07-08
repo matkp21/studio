@@ -6,7 +6,7 @@ import { PageWrapper } from '@/components/layout/page-wrapper';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
-import { FileQuestion, NotebookText, Network } from 'lucide-react';
+import { FileQuestion, NotebookText, Waypoints } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface Topic {
@@ -103,7 +103,7 @@ export default function TopicExplorerPage() {
       <Card className="shadow-lg rounded-xl border-border/50">
         <CardHeader>
           <CardTitle className="text-2xl flex items-center gap-2">
-            <Network className="h-7 w-7 text-primary" />
+            <Waypoints className="h-7 w-7 text-primary" />
             Browse Topics
           </CardTitle>
           <CardDescription>
