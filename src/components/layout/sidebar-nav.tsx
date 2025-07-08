@@ -30,6 +30,7 @@ import {
   Orbit,
   Library,
   Waypoints, // Changed from Network
+  BookOpenCheck, // Added new icon
 } from 'lucide-react';
 import {
   Tooltip,
@@ -79,6 +80,13 @@ const medicoTopicExplorerItem = {
   ariaLabel: 'Explore curriculum topics'
 };
 
+const academicCompanionItem = {
+  href: '/academic-companion',
+  label: 'Academic Companion',
+  icon: BookOpenCheck,
+  ariaLabel: 'Go to Core Academic Companion'
+};
+
 const proToolsNavItem = {
   href: '/pro',
   label: 'Clinical Suite',
@@ -108,6 +116,9 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
     }
      if (!navItems.find(item => item.href === '/medico/topics')) {
       navItems.push(medicoTopicExplorerItem);
+    }
+    if (!navItems.find(item => item.href === '/academic-companion')) {
+      navItems.push(academicCompanionItem);
     }
   } else if (userRole === 'pro') {
      if (!navItems.find(item => item.href === '/pro')) {
@@ -331,5 +342,3 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
     </TooltipProvider>
   );
 }
-
-    
