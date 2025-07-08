@@ -23,13 +23,13 @@ import {
   LogOut,
   GraduationCap,
   BriefcaseMedical,
+  Library,
+  BookOpenCheck,
   Info,
   HeartPulse,
   PillIcon,
   BellRing,
   Orbit,
-  Library,
-  BookOpenCheck,
 } from 'lucide-react';
 import {
   Tooltip,
@@ -78,6 +78,7 @@ const academicCompanionItem = {
   icon: BookOpenCheck,
   ariaLabel: 'Go to Core Academic Companion'
 };
+
 
 const proToolsNavItem = {
   href: '/pro',
