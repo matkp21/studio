@@ -23,9 +23,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 import Link from 'next/link';
 
+const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "Ophthalmology", "ENT", "General Medicine", "General Surgery", "Obstetrics & Gynaecology", "Pediatrics", "Other"] as const;
+const systems = ["Cardiovascular", "Respiratory", "Gastrointestinal", "Neurological", "Musculoskeletal", "Endocrine", "Genitourinary", "Integumentary", "Hematological", "Immunological", "Other"] as const;
+
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, {message: "Topic too long."}),
   answerLength: z.enum(['10-mark', '5-mark']).default('10-mark'),
+  subject: z.enum(subjects).optional(),
+  system: z.enum(systems).optional(),
 });
 
 type StudyNotesFormValues = z.infer<typeof formSchema>;
@@ -68,6 +73,8 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
     defaultValues: {
       topic: initialTopic || "",
       answerLength: '10-mark',
+      subject: undefined,
+      system: undefined,
     },
   });
 
@@ -78,7 +85,7 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
   }, [initialTopic, form]);
 
   const handleReset = () => {
-    form.reset({ topic: "", answerLength: "10-mark" });
+    form.reset({ topic: "", answerLength: "10-mark", subject: undefined, system: undefined });
     reset();
   }
   
@@ -96,10 +103,13 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
         toast({ title: "Cannot Save", description: "No content to save or user not logged in.", variant: "destructive" });
         return;
     }
+    const { topic, subject, system } = form.getValues();
     try {
         await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
             type: 'notes',
-            topic: form.getValues('topic'),
+            topic: topic,
+            subject: subject || null,
+            system: system || null,
             userId: user.uid,
             notes: generatedAnswer.notes,
             summaryPoints: generatedAnswer.summaryPoints || [],
@@ -135,23 +145,57 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
               </FormItem>
             )}
           />
-           <FormField
-            control={form.control}
-            name="answerLength"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-base">Answer Length</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl><SelectTrigger className="rounded-lg"><SelectValue/></SelectTrigger></FormControl>
-                  <SelectContent>
-                    <SelectItem value="10-mark">10-Mark Answer (~500 words)</SelectItem>
-                    <SelectItem value="5-mark">5-Mark Answer (~250 words)</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage/>
-              </FormItem>
-            )}
-           />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormField
+                control={form.control}
+                name="answerLength"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel className="text-base">Answer Length</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl><SelectTrigger className="rounded-lg"><SelectValue/></SelectTrigger></FormControl>
+                    <SelectContent>
+                        <SelectItem value="10-mark">10-Mark Answer (~500 words)</SelectItem>
+                        <SelectItem value="5-mark">5-Mark Answer (~250 words)</SelectItem>
+                    </SelectContent>
+                    </Select>
+                    <FormMessage/>
+                </FormItem>
+                )}
+            />
+             <FormField
+                control={form.control}
+                name="subject"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel className="text-base">Subject (Optional)</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select Subject"/></SelectTrigger></FormControl>
+                    <SelectContent>
+                        {subjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                    </Select>
+                    <FormMessage/>
+                </FormItem>
+                )}
+            />
+             <FormField
+                control={form.control}
+                name="system"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel className="text-base">System (Optional)</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl><SelectTrigger className="rounded-lg"><SelectValue placeholder="Select System"/></SelectTrigger></FormControl>
+                    <SelectContent>
+                         {systems.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                    </Select>
+                    <FormMessage/>
+                </FormItem>
+                )}
+            />
+          </div>
           <div className="flex gap-2">
             <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
                 {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
