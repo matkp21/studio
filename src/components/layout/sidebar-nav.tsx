@@ -1,4 +1,3 @@
-
 // src/components/layout/sidebar-nav.tsx
 "use client";
 
@@ -76,7 +75,7 @@ const medicoLibraryItem = {
 const academicCompanionItem = {
   href: '/academic-companion',
   label: 'Academic Companion',
-  icon: BookOpenCheck,
+  icon: BookOpenCheck, // Using a valid icon
   ariaLabel: 'Go to Core Academic Companion'
 };
 
