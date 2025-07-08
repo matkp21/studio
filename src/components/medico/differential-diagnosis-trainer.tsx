@@ -30,7 +30,11 @@ const responseFormSchema = z.object({
 });
 type ResponseFormValues = z.infer<typeof responseFormSchema>;
 
-export function DifferentialDiagnosisTrainer() {
+interface DifferentialDiagnosisTrainerProps {
+    initialTopic?: string | null;
+}
+
+export function DifferentialDiagnosisTrainer({ initialTopic }: DifferentialDiagnosisTrainerProps) {
   const [caseData, setCaseData] = useState<MedicoDDTrainerOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +44,7 @@ export function DifferentialDiagnosisTrainer() {
 
   const newCaseForm = useForm<NewCaseFormValues>({
     resolver: zodResolver(newCaseFormSchema),
-    defaultValues: { symptoms: "" },
+    defaultValues: { symptoms: initialTopic || "" },
   });
 
   const responseForm = useForm<ResponseFormValues>({

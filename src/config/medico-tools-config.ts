@@ -14,6 +14,7 @@ import { SolvedQuestionPapersViewer } from '@/components/medico/solved-question-
 import { MnemonicsGenerator } from '@/components/medico/mnemonics-generator';
 import { FlowchartCreator } from '@/components/medico/flowchart-creator';
 import { ClinicalCaseSimulator } from '@/components/medico/clinical-case-simulator';
+import { DifferentialDiagnosisTrainer } from '@/components/medico/differential-diagnosis-trainer';
 
 // Define the full list of tools
 export const allMedicoToolsList: MedicoTool[] = [
@@ -25,8 +26,8 @@ export const allMedicoToolsList: MedicoTool[] = [
   { id: 'mnemonics', title: 'Mnemonic Generator', description: 'Create memory aids with AI-generated visuals.', icon: Lightbulb, component: MnemonicsGenerator },
   { id: 'flowcharts', title: 'Flowchart Creator', description: 'Generate flowcharts for medical topics to aid revision.', icon: Workflow, component: FlowchartCreator },
   { id: 'cases', title: 'Clinical Case Simulations', description: 'Practice with interactive patient scenarios.', icon: CaseUpper, component: ClinicalCaseSimulator },
+  { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'List diagnoses based on symptoms with feedback.', icon: Brain, component: DifferentialDiagnosisTrainer },
   { id: 'anatomy', title: 'Interactive Anatomy Visualizer', description: 'Explore anatomical structures.', icon: Eye, comingSoon: true },
-  { id: 'ddx', title: 'Differential Diagnosis Trainer', description: 'List diagnoses based on symptoms with feedback.', icon: Brain, comingSoon: true },
   { id: 'rounds', title: 'Virtual Patient Rounds', description: 'Simulate ward rounds with patient cases.', icon: Users, comingSoon: true },
   { id: 'topics', title: 'High-Yield Topic Predictor', description: 'Suggest priority topics for study based on exam trends or user performance.', icon: TrendingUp, comingSoon: true },
   { id: 'dosage', title: 'Drug Dosage Calculator', description: 'Practice calculating drug doses.', icon: Calculator, comingSoon: true },
