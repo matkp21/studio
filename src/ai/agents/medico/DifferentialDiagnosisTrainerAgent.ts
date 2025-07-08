@@ -48,6 +48,8 @@ Your task is to generate a JSON object with 'prompt', 'feedback', 'updatedCaseSu
 6.  **Check for Completion**: If the student provides a list of differential diagnoses, evaluate them, provide final feedback, and set 'isCompleted' to true.
 7.  **Suggest Next Steps**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. Format it as a JSON array of objects, each with "title", "description", "toolId", "prefilledTopic", and "cta".
 
+**CRITICAL: The 'nextSteps' field MUST be present if 'isCompleted' is true. This field must not be omitted on session completion.**
+
 Example for 'nextSteps' on completion:
 [
   {
@@ -68,7 +70,6 @@ Example for 'nextSteps' on completion:
 {{/if}}
 
 Format your entire output as JSON conforming to the MedicoDDTrainerOutputSchema.
-CRITICAL: The 'nextSteps' field MUST be present if 'isCompleted' is true. This field must not be omitted on session completion.
 `,
   config: {
     temperature: 0.5, // Balanced for accuracy and educational breadth

@@ -39,6 +39,8 @@ Your task is to generate a JSON object with the following fields: 'caseId', 'top
 5. Update 'isCompleted' if this encounter is finished.
 6. **Suggest Next Steps**: If 'isCompleted' is true, you MUST provide a 'nextSteps' field. Format it as a JSON array of objects, each with "title", "description", "toolId", "prefilledTopic", and "cta".
 
+**CRITICAL: The 'nextSteps' field is mandatory if 'isCompleted' is true and must not be omitted.**
+
 Example for 'nextSteps' on completion:
 [
   {
@@ -81,7 +83,6 @@ Example for a new patient (focus: "Pediatric Asthma Exacerbation"):
 {{/if}}
 
 Format the output as JSON conforming to the MedicoVirtualRoundsOutputSchema.
-CRITICAL: The 'nextSteps' field is mandatory if 'isCompleted' is true and must not be omitted.
 `,
   config: {
     temperature: 0.6, // For varied patient scenarios and responses
