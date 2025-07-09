@@ -20,6 +20,7 @@ import { firestore } from '@/lib/firebase';
 import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MermaidRenderer } from '@/components/markdown/mermaid-renderer';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }).max(150),
@@ -146,16 +147,13 @@ export function PathoMindExplainer() {
               </div>
               <div className="lg:col-span-1">
                 <h4 className="font-semibold mb-2">Process Diagram</h4>
-                <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
-                  <div className="p-4 text-sm">
+                <div className="h-[400px] p-1 border bg-background rounded-lg">
+                  <div className="p-4 text-sm h-full">
                     {explanationData.diagram ? (
-                      <>
-                        <Alert className="mb-2"><AlertDescription>Copy this code into a Mermaid.js renderer to view the diagram.</AlertDescription></Alert>
-                        <pre className="p-2 bg-muted rounded-md overflow-x-auto"><code>{explanationData.diagram}</code></pre>
-                      </>
-                    ) : <p className="text-muted-foreground">No diagram was generated for this topic.</p>}
+                       <MermaidRenderer chart={explanationData.diagram} />
+                    ) : <p className="text-muted-foreground text-center py-8">No diagram was generated for this topic.</p>}
                   </div>
-                </ScrollArea>
+                </div>
               </div>
             </div>
           </CardContent>

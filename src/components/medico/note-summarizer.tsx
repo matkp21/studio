@@ -21,6 +21,7 @@ import { firestore } from '@/lib/firebase';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MermaidRenderer } from '@/components/markdown/mermaid-renderer';
 
 const formSchema = z.object({
   file: z.instanceof(File, { message: "Please upload a file." })
@@ -217,11 +218,17 @@ export function NoteSummarizer() {
                  <CardDescription>Format: <span className="font-semibold capitalize">{summaryResult.format}</span>. You can copy the content below.</CardDescription>
             </CardHeader>
              <CardContent>
-                <ScrollArea className="h-auto max-h-[400px] p-1 border bg-background rounded-lg">
-                    <pre className="p-4 whitespace-pre-wrap text-sm font-sans">
-                        <code>{summaryResult.summary}</code>
-                    </pre>
-                </ScrollArea>
+                <div className="h-auto max-h-[400px] p-1 border bg-background rounded-lg">
+                    {summaryResult.format === 'flowchart' ? (
+                        <MermaidRenderer chart={summaryResult.summary} />
+                    ) : (
+                      <ScrollArea className="h-full max-h-[380px]">
+                        <pre className="p-4 whitespace-pre-wrap text-sm font-sans">
+                            <code>{summaryResult.summary}</code>
+                        </pre>
+                      </ScrollArea>
+                    )}
+                </div>
             </CardContent>
              <CardFooter className="p-4 border-t flex items-center justify-between">
               <Button onClick={handleSaveToLibrary} disabled={!user}>
