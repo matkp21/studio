@@ -70,7 +70,7 @@ export type MedicoMCQGeneratorOutput = z.infer<typeof MedicoMCQGeneratorOutputSc
 
 // Schema for Exam Paper Generator
 export const MedicoExamPaperInputSchema = z.object({
-  examType: z.string().min(3, { message: "Exam type must be at least 3 characters." }).describe('The name of the examination (e.g., "USMLE Step 1", "Final MBBS Prof").'),
+  examType: z.string().min(3, { message: "Exam type must be at least 3 characters." }).describe('The name of the examination (e.g., "Final MBBS Prof").'),
   year: z.string().optional().describe('Optional focus year for pattern analysis (e.g., "2023").'),
   count: z.number().int().min(1).max(20).default(10).describe('The number of MCQs to generate (1-20). Default is 10.'),
 });
