@@ -1,3 +1,4 @@
+
 // src/components/medico/mcq-generator.tsx
 "use client";
 

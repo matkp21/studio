@@ -1,3 +1,4 @@
+
 // src/components/medico/high-yield-topic-predictor.tsx
 "use client";
 

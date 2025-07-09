@@ -1,3 +1,4 @@
+
 // src/components/medico/differential-diagnosis-trainer.tsx
 "use client";
 

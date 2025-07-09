@@ -1,3 +1,4 @@
+
 // src/components/medico/clinical-case-simulator.tsx
 "use client";
 
@@ -93,7 +94,7 @@ export function ClinicalCaseSimulator() {
                 description: "This activity has been added to your progress."
             });
         } catch (progressError) {
-            console.warn("Could not track progress:", progressError);
+            console.warn("Could not track progress for case simulation:", progressError);
         }
       }
     } catch (err) {
