@@ -25,8 +25,8 @@ const formSchema = z.object({
   file: z.instanceof(File, { message: "Please upload a file." })
     .refine(file => file.size > 0, "File cannot be empty.")
     .refine(file => file.size < 5 * 1024 * 1024, "File size must be less than 5MB.")
-    .refine(file => ["text/plain", "image/jpeg"].includes(file.type), "Only .txt and .jpeg files are supported."),
-  format: z.enum(['bullet', 'flowchart', 'table']).default('bullet'),
+    .refine(file => ["text/plain", "image/jpeg", "image/png"].includes(file.type), "Only .txt, .jpeg, and .png files are supported."),
+  format: z.enum(['bullet', 'flowchart', 'table', 'diagram']).default('bullet'),
 });
 
 type SummarizerFormValues = z.infer<typeof formSchema>;
@@ -67,7 +67,7 @@ export function NoteSummarizer() {
           throw new Error("Document content is too short to summarize effectively.");
         }
         input = { text, format: data.format };
-      } else if (fileType === 'image/jpeg') {
+      } else if (fileType === 'image/jpeg' || fileType === 'image/png') {
         const reader = new FileReader();
         const dataUriPromise = new Promise<string>((resolve, reject) => {
             reader.onerror = reject;
@@ -152,12 +152,12 @@ export function NoteSummarizer() {
                     <Input
                       id="file-upload-summarizer"
                       type="file"
-                      accept=".txt,.jpeg,.jpg"
+                      accept=".txt,.jpeg,.jpg,.png"
                       onChange={(e) => field.onChange(e.target.files?.[0])}
                       className="rounded-lg text-base py-2.5 border-border/70 focus:border-primary file:text-sm file:font-medium"
                     />
                   </FormControl>
-                  <FormDescription className="text-xs">Supports .txt and .jpeg files up to 5MB.</FormDescription>
+                  <FormDescription className="text-xs">Supports .txt, .jpeg, and .png files up to 5MB.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
