@@ -20,10 +20,11 @@ import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
-import { Accordion } from '@/components/ui/accordion';
-import type { MCQSchema, MedicoFlashcard, EssayQuestion, StructuredAnswer } from '@/ai/schemas/medico-tools-schemas';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import type { MCQSchema, MedicoFlashcard, EssayQuestion } from '@/ai/schemas/medico-tools-schemas';
 import { LibraryCard, type BaseLibraryItem } from './library-card';
 import { StructuredAnswerDetails } from './structured-answer-details';
+import { cn } from '@/lib/utils';
 
 // Redefine types locally for this specific page's needs
 type LibraryItemType = 'notes' | 'mcqs' | 'summary' | 'mnemonic' | 'communityNote' | 'communityMnemonic' | 'flowchart' | 'flashcards' | 'examPaper';
@@ -259,17 +260,7 @@ export default function StudyLibraryPage() {
             <CardTitle className="text-2xl flex items-center gap-2 text-primary"><Library className="h-7 w-7" />Knowledge Hub</CardTitle>
             <CardDescription>Your personal and community-driven study library.</CardDescription>
             </div>
-             <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-            <DialogTrigger asChild><Button className="mt-4 sm:mt-0 rounded-lg group"><UploadCloud className="mr-2 h-4 w-4"/>Contribute</Button></DialogTrigger>
-            <DialogContent><DialogHeader><DialogTitle>Contribute to the Community Library</DialogTitle><DialogDescription>Share your notes or mnemonics.</DialogDescription></DialogHeader>
-                <div className="space-y-4 py-2">
-                    <div><Label htmlFor="upload-topic">Topic</Label><Input id="upload-topic" value={uploadTopic} onChange={(e) => setUploadTopic(e.target.value)} /></div>
-                    <div><Label htmlFor="upload-type">Type</Label><Select value={uploadType} onValueChange={(v) => setUploadType(v as any)}><SelectTrigger id="upload-type"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="communityNote">Note</SelectItem><SelectItem value="communityMnemonic">Mnemonic</SelectItem></SelectContent></Select></div>
-                    <div><Label htmlFor="upload-content">Content</Label><Textarea id="upload-content" value={uploadContent} onChange={(e) => setUploadContent(e.target.value)} /></div>
-                </div>
-                <CardFooter className="p-0 pt-4"><Button onClick={handleUploadSubmit} disabled={isUploading} className="w-full">{isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Submit for Review</Button></CardFooter>
-            </DialogContent>
-          </Dialog>
+             <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}><DialogTrigger asChild><Button className="mt-4 sm:mt-0 rounded-lg group"><UploadCloud className="mr-2 h-4 w-4"/>Contribute</Button></DialogTrigger><DialogContent><DialogHeader><DialogTitle>Contribute to the Community Library</DialogTitle><DialogDescription>Share your notes or mnemonics.</DialogDescription></DialogHeader><div className="space-y-4 py-2"><div><Label htmlFor="upload-topic">Topic</Label><Input id="upload-topic" value={uploadTopic} onChange={(e) => setUploadTopic(e.target.value)} /></div><div><Label htmlFor="upload-type">Type</Label><Select value={uploadType} onValueChange={(v) => setUploadType(v as any)}><SelectTrigger id="upload-type"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="communityNote">Note</SelectItem><SelectItem value="communityMnemonic">Mnemonic</SelectItem></SelectContent></Select></div><div><Label htmlFor="upload-content">Content</Label><Textarea id="upload-content" value={uploadContent} onChange={(e) => setUploadContent(e.target.value)} /></div></div><CardFooter className="p-0 pt-4"><Button onClick={handleUploadSubmit} disabled={isUploading} className="w-full">{isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Submit for Review</Button></CardFooter></DialogContent></Dialog>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-2 mb-4 p-2 border bg-muted/50 rounded-lg">
