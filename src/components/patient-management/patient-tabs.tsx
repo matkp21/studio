@@ -2,24 +2,20 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; // Added CardFooter
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import { useState, useEffect } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Clock, PlusCircle, Trash2, ListFilter, Activity, BellPlus, BriefcaseMedical, FilePlus, ClipboardEdit } from "lucide-react"; // Added ClipboardEdit
+import { useState, useEffect, useCallback } from "react";
+import { Clock, Trash2, ListFilter, Activity, BellPlus, BriefcaseMedical, FilePlus, ClipboardEdit } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"; // Added Dialog components
-import { DischargeSummaryGenerator } from '@/components/pro/discharge-summary-generator'; // Added DischargeSummaryGenerator
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DischargeSummaryGenerator } from '@/components/pro/discharge-summary-generator';
 import { ScrollArea } from "../ui/scroll-area";
-import { PatientTimeline } from "./patient-timeline"; // Import the new component
+import { PatientTimeline } from "./patient-timeline";
+import { AddRoundNoteForm } from './AddRoundNoteForm';
+import { AddReminderForm } from './AddReminderForm';
 
-
-interface RoundNote {
+export interface RoundNote {
   id: string;
   date: Date;
   notes: string;
@@ -27,7 +23,7 @@ interface RoundNote {
   admissionOpdNumber?: string; 
 }
 
-interface Reminder {
+export interface Reminder {
   id: string;
   text: string;
   dateTime: Date;
@@ -38,50 +34,30 @@ export function PatientTabs() {
   const [roundNotes, setRoundNotes] = useState<RoundNote[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
   
-  const [roundPatientName, setRoundPatientName] = useState('');
-  const [roundAdmissionOpdNumber, setRoundAdmissionOpdNumber] = useState(''); 
-  const [roundNoteText, setRoundNoteText] = useState('');
-  const [roundDate, setRoundDate] = useState<Date | undefined>(new Date());
-
-  const [reminderPatientName, setReminderPatientName] = useState('');
-  const [reminderText, setReminderText] = useState('');
-  const [reminderDateTime, setReminderDateTime] = useState<Date | undefined>(new Date());
-  
   const [isClient, setIsClient] = useState(false);
-  const [showDischargeModal, setShowDischargeModal] = useState(false); // State for discharge summary modal
+  const [showDischargeModal, setShowDischargeModal] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-
-  const handleAddRoundNote = () => {
-    if (!roundPatientName || !roundNoteText || !roundDate || !isClient) return;
+  const handleAddRoundNote = useCallback((noteData: Omit<RoundNote, 'id'>) => {
+    if (!isClient) return;
     const newNote: RoundNote = {
       id: Date.now().toString(),
-      patientName: roundPatientName,
-      admissionOpdNumber: roundAdmissionOpdNumber, 
-      date: roundDate,
-      notes: roundNoteText,
+      ...noteData
     };
     setRoundNotes(prev => [newNote, ...prev].sort((a, b) => b.date.getTime() - a.date.getTime()));
-    setRoundPatientName('');
-    setRoundAdmissionOpdNumber(''); 
-    setRoundNoteText('');
-  };
+  }, [isClient]);
 
-  const handleAddReminder = () => {
-    if (!reminderPatientName || !reminderText || !reminderDateTime || !isClient) return;
+  const handleAddReminder = useCallback((reminderData: Omit<Reminder, 'id'>) => {
+    if (!isClient) return;
     const newReminder: Reminder = {
       id: `rem-${Date.now().toString()}`,
-      patientName: reminderPatientName,
-      text: reminderText,
-      dateTime: reminderDateTime,
+      ...reminderData,
     };
     setReminders(prev => [newReminder, ...prev].sort((a,b) => a.dateTime.getTime() - b.dateTime.getTime()));
-    setReminderPatientName('');
-    setReminderText('');
-  };
+  }, [isClient]);
 
   const deleteRoundNote = (id: string) => { 
     setRoundNotes(prev => prev.filter(note => note.id !== id));
@@ -126,50 +102,7 @@ export function PatientTabs() {
             <CardDescription>Log notes from patient rounds.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="round-patient-name">Patient Name</Label>
-                <Input id="round-patient-name" placeholder="Enter patient name" value={roundPatientName} onChange={e => setRoundPatientName(e.target.value)} className="rounded-lg"/>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="round-admission-opd">Admission/OPD No.</Label>
-                <Input id="round-admission-opd" placeholder="e.g., A123 / OPD456" value={roundAdmissionOpdNumber} onChange={e => setRoundAdmissionOpdNumber(e.target.value)} className="rounded-lg"/>
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="round-date">Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="round-date"
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal rounded-lg",
-                        !roundDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {roundDate ? format(roundDate, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 rounded-xl">
-                    <Calendar
-                      mode="single"
-                      selected={roundDate}
-                      onSelect={setRoundDate}
-                      initialFocus
-                      aria-label="Select round date"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="round-notes">Notes</Label>
-              <Textarea id="round-notes" placeholder="Enter round notes..." value={roundNoteText} onChange={e => setRoundNoteText(e.target.value)} className="min-h-[100px] rounded-lg" />
-            </div>
-            <Button onClick={handleAddRoundNote} className="w-full rounded-lg py-3 text-base group" aria-label="Add new round note">
-              <PlusCircle className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-90" /> Add Round Note
-            </Button>
+            <AddRoundNoteForm onAddNote={handleAddRoundNote} />
             
             <div className="mt-6 space-y-4 max-h-[400px] overflow-y-auto p-1">
               {roundNotes.length === 0 && (
@@ -246,79 +179,7 @@ export function PatientTabs() {
             <CardDescription>Create reminders for patient care tasks.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label htmlFor="reminder-patient-name">Patient Name</Label>
-                    <Input id="reminder-patient-name" placeholder="Enter patient name" value={reminderPatientName} onChange={e => setReminderPatientName(e.target.value)} className="rounded-lg" />
-                </div>
-                <div className="space-y-2">
-                <Label htmlFor="reminder-datetime-trigger">Date & Time</Label>
-                <Popover>
-                    <PopoverTrigger asChild>
-                    <Button
-                        id="reminder-datetime-trigger"
-                        variant={"outline"}
-                        className={cn(
-                        "w-full justify-start text-left font-normal rounded-lg",
-                        !reminderDateTime && "text-muted-foreground"
-                        )}
-                    >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {reminderDateTime ? format(reminderDateTime, "PPP HH:mm") : <span>Pick date and time</span>}
-                    </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 rounded-xl">
-                    <Calendar
-                        mode="single"
-                        selected={reminderDateTime}
-                        onSelect={(date) => {
-                            if(date && reminderDateTime) {
-                                const newDate = new Date(date);
-                                newDate.setHours(reminderDateTime.getHours());
-                                newDate.setMinutes(reminderDateTime.getMinutes());
-                                setReminderDateTime(newDate);
-                            } else {
-                                setReminderDateTime(date);
-                            }
-                        }}
-                        initialFocus
-                        aria-label="Select reminder date"
-                    />
-                    <div className="p-2 border-t border-border/50">
-                        <Label htmlFor="reminder-time" className="text-sm">Time</Label>
-                        <Input type="time" id="reminder-time" className="rounded-md mt-1"
-                            value={reminderDateTime ? format(reminderDateTime, "HH:mm") : ""}
-                            onChange={e => {
-                                if (reminderDateTime) {
-                                    const [hours, minutes] = e.target.value.split(':');
-                                    const newDate = new Date(reminderDateTime);
-                                    newDate.setHours(parseInt(hours, 10));
-                                    newDate.setMinutes(parseInt(minutes, 10));
-                                    setReminderDateTime(newDate);
-                                } else {
-                                  const newDate = new Date();
-                                  const [hours, minutes] = e.target.value.split(':');
-                                  newDate.setHours(parseInt(hours, 10));
-                                  newDate.setMinutes(parseInt(minutes, 10));
-                                  newDate.setSeconds(0);
-                                  newDate.setMilliseconds(0);
-                                  setReminderDateTime(newDate);
-                                }
-                            }}
-                            aria-label="Select reminder time"
-                            />
-                    </div>
-                    </PopoverContent>
-                </Popover>
-                </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="reminder-text">Reminder Details</Label>
-              <Textarea id="reminder-text" placeholder="e.g., Administer medication, Check vitals" value={reminderText} onChange={e => setReminderText(e.target.value)} className="rounded-lg" />
-            </div>
-            <Button onClick={handleAddReminder} className="w-full rounded-lg py-3 text-base group" aria-label="Add new reminder">
-                <BellPlus className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:animate-pulse" /> Add Reminder
-            </Button>
+             <AddReminderForm onAddReminder={handleAddReminder} />
 
             <div className="mt-6 space-y-4 max-h-[400px] overflow-y-auto p-1">
               {reminders.length === 0 && <p className="text-muted-foreground text-center py-10">No reminders set yet. Add one above!</p>}
