@@ -210,4 +210,3 @@ ${anatomyData.relatedStructures?.map(s => `- ${s}`).join('\n') || 'N/A'}
     </div>
   );
 }
-```
