@@ -1,4 +1,3 @@
-
 // src/components/medico/mock-exam-suite.tsx
 "use client";
 
@@ -7,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Trophy, Clock, Loader2, PlayCircle, BarChart, CheckCircle, XCircle, FilePlus, Wand2 } from 'lucide-react';
+import { Trophy, Clock, Loader2, PlayCircle, BarChart, CheckCircle, XCircle, FilePlus, Wand2, Save } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
@@ -19,6 +18,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type Question = MedicoExamPaperOutput['mcqs'][number];
 
@@ -44,56 +47,12 @@ export function MockExamSuite() {
   const [examResult, setExamResult] = useState<{ score: number; correct: number; total: number } | null>(null);
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useProMode();
 
   const form = useForm<ExamFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { examType: "Final MBBS Prof Mock", count: 10 },
   });
-
-  const startExam = useCallback((examData: MedicoExamPaperOutput) => {
-    if (!examData.mcqs || examData.mcqs.length === 0) {
-      toast({ title: "No MCQs Generated", description: "The AI did not generate any multiple-choice questions for this exam.", variant: "destructive" });
-      return;
-    }
-    const exam: Exam = {
-      id: `exam-${Date.now()}`,
-      title: examData.topicGenerated,
-      timeLimitMinutes: examData.mcqs.length, // 1 minute per MCQ
-      questions: examData.mcqs,
-    };
-    setActiveExam(exam);
-    setTimeLeft(exam.timeLimitMinutes * 60);
-    setExamResult(null);
-    setUserAnswers({});
-    const newTimerId = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(newTimerId);
-          handleSubmitExam(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    setTimerId(newTimerId);
-  }, []);
-
-  const handleGenerateAndStart: SubmitHandler<ExamFormValues> = async (data) => {
-    setIsLoading(true);
-    try {
-      const input: MedicoExamPaperInput = { examType: data.examType, count: data.count };
-      const examData = await generateExamPaper(input);
-      startExam(examData);
-    } catch (err) {
-      toast({ title: "Failed to Generate Exam", description: err instanceof Error ? err.message : "An unknown error occurred.", variant: 'destructive' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const handleAnswerChange = (questionId: string, answerIndex: number) => {
-    setUserAnswers(prev => ({...prev, [questionId]: answerIndex}));
-  };
 
   const handleSubmitExam = useCallback((timeUp = false) => {
     if (!activeExam) return;
@@ -124,12 +83,84 @@ export function MockExamSuite() {
 
   }, [activeExam, timerId, userAnswers, toast]);
 
+
+  const startExam = useCallback((examData: MedicoExamPaperOutput) => {
+    if (!examData.mcqs || examData.mcqs.length === 0) {
+      toast({ title: "No MCQs Generated", description: "The AI did not generate any multiple-choice questions for this exam.", variant: "destructive" });
+      return;
+    }
+    const exam: Exam = {
+      id: `exam-${Date.now()}`,
+      title: examData.topicGenerated,
+      timeLimitMinutes: examData.mcqs.length, // 1 minute per MCQ
+      questions: examData.mcqs,
+    };
+    setActiveExam(exam);
+    setTimeLeft(exam.timeLimitMinutes * 60);
+    setExamResult(null);
+    setUserAnswers({});
+    const newTimerId = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(newTimerId);
+          handleSubmitExam(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    setTimerId(newTimerId);
+  }, [toast, handleSubmitExam]);
+
+  const handleGenerateAndStart: SubmitHandler<ExamFormValues> = async (data) => {
+    setIsLoading(true);
+    try {
+      const input: MedicoExamPaperInput = { examType: data.examType, count: data.count };
+      const examData = await generateExamPaper(input);
+      startExam(examData);
+    } catch (err) {
+      toast({ title: "Failed to Generate Exam", description: err instanceof Error ? err.message : "An unknown error occurred.", variant: 'destructive' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleAnswerChange = (questionId: string, answerIndex: number) => {
+    setUserAnswers(prev => ({...prev, [questionId]: answerIndex}));
+  };
+
   const resetExam = () => {
     if (timerId) clearInterval(timerId);
     setActiveExam(null);
     setExamResult(null);
     setUserAnswers({});
   };
+
+  const handleSaveToLibrary = async () => {
+    if (!activeExam || !user) {
+      toast({ title: "Cannot Save", description: "No active exam to save or user not logged in.", variant: "destructive" });
+      return;
+    }
+     const notesContent = `
+## Mock Exam: ${activeExam.title}
+This mock exam contained ${activeExam.questions.length} questions.
+(Questions and answers are stored in the data fields).
+    `;
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'examPaper',
+        topic: activeExam.title,
+        userId: user.uid,
+        mcqs: activeExam.questions,
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "This mock exam has been saved." });
+    } catch (e) {
+      console.error("Firestore save error:", e);
+      toast({ title: "Save Failed", description: "Could not save exam to library.", variant: "destructive" });
+    }
+  };
+
 
   if (activeExam) {
     return (
@@ -151,7 +182,12 @@ export function MockExamSuite() {
                         <h3 className="text-2xl font-bold">Exam Finished!</h3>
                         <p className="text-4xl font-bold text-primary">{examResult.score}%</p>
                         <p>You answered {examResult.correct} out of {examResult.total} questions correctly.</p>
-                        <Button onClick={resetExam} className="rounded-lg">Back to Exam Setup</Button>
+                        <div className="flex justify-center gap-2">
+                            <Button onClick={resetExam} className="rounded-lg">Back to Exam Setup</Button>
+                            <Button onClick={handleSaveToLibrary} variant="outline" disabled={!user}>
+                                <Save className="mr-2 h-4 w-4" /> Save Exam
+                            </Button>
+                        </div>
                     </div>
                 ) : (
                     <ScrollArea className="h-[60vh] p-1">
@@ -223,3 +259,4 @@ export function MockExamSuite() {
     </div>
   );
 }
+```

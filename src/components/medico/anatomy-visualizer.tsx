@@ -49,10 +49,6 @@ export function AnatomyVisualizer() {
     try {
       const result = await getAnatomyDescription(data as MedicoAnatomyVisualizerInput);
       setAnatomyData(result);
-      toast({
-        title: "Description Ready!",
-        description: `Details for "${data.anatomicalStructure}" retrieved.`,
-      });
     } catch (err) {
       console.error("Anatomy description error:", err);
       const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
@@ -214,3 +210,4 @@ ${anatomyData.relatedStructures?.map(s => `- ${s}`).join('\n') || 'N/A'}
     </div>
   );
 }
+```

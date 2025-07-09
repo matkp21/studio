@@ -26,16 +26,16 @@ const highYieldTopicPredictorPrompt = ai.definePrompt({
 
 The JSON object you generate MUST have 'predictedTopics', 'rationale', and a 'nextSteps' field.
 
-**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate a relevant suggestion for each predicted topic.
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.** Generate a relevant suggestion for at least one predicted topic.
 
 Example for 'nextSteps':
 [
   {
-    "title": "Generate Study Notes",
-    "description": "Create detailed notes for the first predicted topic to start studying.",
+    "title": "Generate Study Notes for [First Topic]",
+    "description": "Create detailed notes for one of the predicted topics to start studying.",
     "toolId": "theorycoach-generator",
-    "prefilledTopic": "{{predictedTopics.0}}",
-    "cta": "Generate Notes for {{predictedTopics.0}}"
+    "prefilledTopic": "[The First Topic from predictedTopics list]",
+    "cta": "Generate Notes"
   },
   {
     "title": "Create a Study Plan",
@@ -51,7 +51,7 @@ Example for 'nextSteps':
 Exam Type: "{{{examType}}}"
 {{#if subject}}And specific subject: "{{{subject}}}"{{/if}}
 
-1.  **'predictedTopics'**: Predict a list of 5-10 high-yield topics that are most likely to be important for this exam. If a subject is specified, focus topics within that subject. Otherwise, provide general high-yield topics for the exam. This should be an array of strings.
+1.  **'predictedTopics'**: Predict a list of 5-10 high-yield topics that are most likely to be important for this exam. If a subject is specified, focus topics within that subject. Otherwise, provide general high-yield topics for the exam. This should be an array of strings. If you cannot predict any topics, return an empty array.
 2.  **'rationale'**: Provide a brief rationale for your predictions (e.g., based on past exam trends, curriculum weightage, clinical importance). This should be a single string.
 
 Format the entire output as a valid JSON object.
@@ -76,7 +76,12 @@ const highYieldTopicPredictorFlow = ai.defineFlow(
 
       if (!output || !output.predictedTopics || output.predictedTopics.length === 0) {
         console.error('MedicoTopicPredictorPrompt did not return valid topics for:', input.examType);
-        throw new Error('Failed to predict high-yield topics. The AI model did not return the expected output or an empty set.');
+        // Still return the structure but with an empty array.
+        return {
+            predictedTopics: [],
+            rationale: "Could not predict topics based on the input. Please try a different exam type.",
+            nextSteps: [],
+        }
       }
       
       // Firestore saving logic (e.g., for logging predictions) could go here
@@ -87,3 +92,4 @@ const highYieldTopicPredictorFlow = ai.defineFlow(
     }
   }
 );
+```

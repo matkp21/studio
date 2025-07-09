@@ -54,24 +54,22 @@ export function HighYieldTopicPredictor() {
       };
       const result = await predictHighYieldTopics(input);
       setPredictionResult(result);
-      toast({
-        title: "Prediction Ready!",
-        description: `High-yield topics for "${data.examType}" ${data.subject ? `(${data.subject})` : ''} generated.`,
-      });
 
-       // Track progress
-      try {
-        await trackProgress({
-            activityType: 'notes_review',
-            topic: `Topic Prediction for ${data.examType}`
-        });
-        toast({
-            title: "Progress Tracked!",
-            description: "This activity has been added to your progress."
-        });
-      } catch (progressError) {
-          console.warn("Could not track progress for topic prediction:", progressError);
-      }
+       if (result.predictedTopics.length > 0) {
+            // Track progress only on successful prediction
+            try {
+                await trackProgress({
+                    activityType: 'notes_review', // Consider this a planning activity
+                    topic: `Topic Prediction for ${data.examType}`
+                });
+                toast({
+                    title: "Progress Tracked!",
+                    description: "This activity has been added to your progress."
+                });
+            } catch (progressError) {
+                console.warn("Could not track progress for topic prediction:", progressError);
+            }
+       }
 
     } catch (err) {
       console.error("High-yield topic prediction error:", err);
@@ -217,7 +215,7 @@ ${predictionResult.rationale || 'N/A'}
             </div>
           </CardContent>
           <CardFooter className="p-4 border-t flex items-center justify-between">
-            <Button onClick={handleSaveToLibrary} disabled={!user}>
+            <Button onClick={handleSaveToLibrary} disabled={!user || predictionResult.predictedTopics.length === 0}>
               <Save className="mr-2 h-4 w-4"/> Save as Note
             </Button>
              {predictionResult.nextSteps && predictionResult.nextSteps.length > 0 && (
@@ -256,3 +254,4 @@ ${predictionResult.rationale || 'N/A'}
     </div>
   );
 }
+```
