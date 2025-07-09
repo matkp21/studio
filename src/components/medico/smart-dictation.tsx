@@ -1,4 +1,3 @@
-
 // src/components/medico/smart-dictation.tsx
 "use client";
 
@@ -7,29 +6,44 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Mic, MicOff, Settings, Wand2, Loader2, FileText, AlertTriangle, Info, BrainCircuit } from 'lucide-react';
+import { Mic, MicOff, Settings, Wand2, Loader2, FileText, Info, BrainCircuit, Save, Trash2, Play, Pause, Square } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { structureNote } from '@/ai/agents/medico/NoteStructurerAgent';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { firestore, storage } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { formatDistanceToNow } from 'date-fns';
 
-interface DictationSegment {
-  timestamp: Date;
+
+interface SavedDictation {
+  id: string;
+  title: string;
   text: string;
+  audioUrl: string;
+  createdAt: Date;
 }
 
 export function SmartDictation() {
-  const [isListening, setIsListening] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const [finalizedTranscript, setFinalizedTranscript] = useState<DictationSegment[]>([]);
-  const [isLoadingAi, setIsLoadingAi] = useState(false);
-  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<'general' | 'soap'>('general');
   const [hasMicPermission, setHasMicPermission] = useState<boolean | null>(null);
-  
+  const [savedDictations, setSavedDictations] = useState<SavedDictation[]>([]);
+  const [currentAudio, setCurrentAudio] = useState<{ id: string; url: string } | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const { user } = useProMode();
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -40,33 +54,20 @@ export function SmartDictation() {
         recognitionInstance.continuous = true;
         recognitionInstance.interimResults = true;
         recognitionInstance.lang = 'en-US';
-
         recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
           let interimTranscript = '';
           for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-              const finalText = event.results[i][0].transcript.trim();
-              setFinalizedTranscript(prev => [...prev, { timestamp: new Date(), text: `${finalText}.` }]);
-              setTranscript('');
-            } else {
-              interimTranscript += event.results[i][0].transcript;
-            }
+             interimTranscript += event.results[i][0].transcript;
           }
           setTranscript(interimTranscript);
         };
-
         recognitionInstance.onerror = (event: SpeechRecognitionErrorEvent) => {
           console.error('Speech recognition error:', event.error);
-          toast({
-            variant: 'destructive',
-            title: 'Voice Input Error',
-            description: `Could not recognize speech: ${event.error}`,
-          });
-          setIsListening(false);
+          toast({ variant: 'destructive', title: 'Voice Input Error', description: `Could not recognize speech: ${event.error}` });
+          setIsRecording(false);
         };
-        
         recognitionInstance.onend = () => {
-            setIsListening(false);
+          setIsRecording(false);
         };
         recognitionRef.current = recognitionInstance;
       }
@@ -74,141 +75,205 @@ export function SmartDictation() {
       console.warn("Speech Recognition API not supported in this browser.");
     }
   }, [toast]);
+  
+  // Fetch saved dictations from Firestore
+  useEffect(() => {
+    if (user) {
+      setIsLoading(true);
+      const q = query(collection(firestore, `users/${user.uid}/dictations`), orderBy('createdAt', 'desc'));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const notes = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          createdAt: doc.data().createdAt.toDate(),
+        } as SavedDictation));
+        setSavedDictations(notes);
+        setIsLoading(false);
+      }, (error) => {
+        console.error("Error fetching dictations:", error);
+        toast({title: "Error", description: "Could not fetch saved dictations.", variant: "destructive"});
+        setIsLoading(false);
+      });
+      return () => unsubscribe();
+    }
+  }, [user, toast]);
 
-  const toggleListening = async () => {
+  const startRecording = async () => {
     if (!recognitionRef.current) {
         toast({title: "Dictation Not Supported", description: "Speech recognition is not available in your browser.", variant: "destructive"});
         return;
     }
-
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-      toast({ title: "Dictation Stopped" });
-    } else {
-      if (hasMicPermission === null || hasMicPermission === false) {
-        try {
-          await navigator.mediaDevices.getUserMedia({ audio: true });
-          setHasMicPermission(true);
-          toast({ title: "Microphone access granted."});
-          recognitionRef.current.start();
-          setIsListening(true);
-        } catch (err) {
-          setHasMicPermission(false);
-          toast({
-            variant: "destructive",
-            title: "Microphone Access Denied",
-            description: "Please enable microphone permissions for dictation.",
-          });
-          console.error("Mic permission error:", err);
-          return;
-        }
-      } else {
-         recognitionRef.current.start();
-         setIsListening(true);
-         toast({ title: "Dictation Started" });
-      }
-    }
-  };
-  
-  const combinedTranscript = finalizedTranscript.map(seg => seg.text).join(' ') + transcript;
-  
-  const handleStructureNote = async () => {
-    if (!combinedTranscript.trim()) {
-        toast({ title: "No Text", description: "There is no dictated text to structure.", variant: "destructive" });
-        return;
-    }
-    setIsLoadingAi(true);
+    
+    setTranscript('');
+    audioChunksRef.current = [];
+    
     try {
-        const result = await structureNote({ rawText: combinedTranscript, template: selectedTemplate });
-        const structuredSegment: DictationSegment = {
-            timestamp: new Date(),
-            text: result.structuredText,
-        };
-        setFinalizedTranscript([structuredSegment]); // Replace all previous segments with the single structured one
-        setTranscript(''); // Clear any interim transcript
-        toast({ title: "Note Structured!", description: `Your note has been formatted as a ${selectedTemplate.toUpperCase()} note.` });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setHasMicPermission(true);
+      
+      // Start Speech Recognition
+      recognitionRef.current.start();
+
+      // Start Media Recorder
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+      mediaRecorderRef.current.start();
+      
+      setIsRecording(true);
+      toast({ title: "Recording Started" });
+
     } catch (err) {
-        toast({ title: "Structuring Failed", description: err instanceof Error ? err.message : "An unknown error occurred.", variant: "destructive" });
-    } finally {
-        setIsLoadingAi(false);
+      setHasMicPermission(false);
+      toast({ variant: "destructive", title: "Microphone Access Denied", description: "Please enable microphone permissions for dictation and recording." });
     }
   };
+  
+  const stopRecording = () => {
+    if (recognitionRef.current) recognitionRef.current.stop();
+    if (mediaRecorderRef.current) mediaRecorderRef.current.stop();
+    setIsRecording(false);
+    toast({ title: "Recording Stopped" });
+  };
+  
+  const handleSaveNote = async () => {
+    if (!transcript.trim() && audioChunksRef.current.length === 0) {
+      toast({ title: "No Content", description: "There is nothing to save.", variant: "destructive" });
+      return;
+    }
+    if (!user) {
+      toast({ title: "Login Required", description: "You must be logged in to save.", variant: "destructive" });
+      return;
+    }
+    
+    setIsSaving(true);
+    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+    const dictationTitle = transcript.split(' ').slice(0, 5).join(' ') + '...';
+    
+    try {
+      // 1. Upload audio to Storage
+      const audioRef = ref(storage, `dictations/${user.uid}/${Date.now()}.webm`);
+      await uploadBytes(audioRef, audioBlob);
+      const audioUrl = await getDownloadURL(audioRef);
+
+      // 2. Save text and audio URL to Firestore
+      await addDoc(collection(firestore, `users/${user.uid}/dictations`), {
+        title: dictationTitle || "Untitled Dictation",
+        text: transcript,
+        audioUrl,
+        createdAt: serverTimestamp(),
+      });
+      
+      // 3. Reset state
+      setTranscript('');
+      audioChunksRef.current = [];
+      toast({ title: "Dictation Saved!", description: "Your note and audio have been saved to your library." });
+    } catch (error) {
+       console.error("Save error:", error);
+       toast({ title: "Save Failed", description: "Could not save your dictation.", variant: "destructive" });
+    } finally {
+        setIsSaving(false);
+    }
+  };
+
+  const handlePlayAudio = (id: string, url: string) => {
+    if (currentAudio?.id === id && isPlaying) {
+        audioRef.current?.pause();
+        setIsPlaying(false);
+    } else {
+        setCurrentAudio({id, url});
+        if(audioRef.current) {
+            audioRef.current.src = url;
+            audioRef.current.play().catch(e => console.error("Audio play error", e));
+            setIsPlaying(true);
+        }
+    }
+  };
+
+  const handleDeleteDictation = async (id: string) => {
+    if (!user) return;
+    try {
+        await deleteDoc(doc(firestore, `users/${user.uid}/dictations`, id));
+        toast({title: "Dictation Deleted"});
+        // Note: This does not delete the file from Storage to keep it simple.
+        // A production app would use a Cloud Function for that.
+    } catch (error) {
+        toast({title: "Delete Failed", description: "Could not delete the dictation.", variant: "destructive"});
+    }
+  }
 
   return (
     <div className="space-y-6">
-      <Alert variant="default" className="border-orange-500/50 bg-orange-500/10">
-        <Info className="h-5 w-5 text-orange-600" />
-        <AlertTitle className="font-semibold text-orange-700 dark:text-orange-500">Smart Dictation Tool</AlertTitle>
-        <AlertDescription className="text-orange-600/90 dark:text-orange-500/90 text-xs">
-          Use your voice to dictate notes. After dictating, use the "Structure with AI" button to organize your text into a clean format like a SOAP note. This uses client-side speech recognition.
-        </AlertDescription>
-      </Alert>
-
+      <audio ref={audioRef} onEnded={() => setIsPlaying(false)} onPause={() => setIsPlaying(false)} />
       <Card className="shadow-md rounded-xl border-teal-500/30 bg-gradient-to-br from-card via-card to-teal-500/5">
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2">
             <Mic className="h-6 w-6 text-teal-600" />
-            Smart Dictation & Note Assistant
+            Smart Dictation & Audio Notes
           </CardTitle>
-          <CardDescription>Dictate your clinical notes and let AI assist with structuring.</CardDescription>
+          <CardDescription>Record your voice to create text notes with audio playback.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4 items-center">
-             <Button onClick={toggleListening} disabled={hasMicPermission === false && typeof window !== 'undefined' && !('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)} className={cn("w-full sm:w-auto rounded-lg py-3 text-base group", isListening && "bg-red-600 hover:bg-red-700")}>
-              {isListening ? <MicOff className="mr-2 h-5 w-5" /> : <Mic className="mr-2 h-5 w-5" />}
-              {isListening ? 'Stop Dictation' : 'Start Dictation'}
-            </Button>
-            <div className="flex-grow w-full sm:w-auto">
-                <Label htmlFor="note-template" className="sr-only">Note Template for Structuring</Label>
-                <Select value={selectedTemplate} onValueChange={(v) => setSelectedTemplate(v as any)}>
-                    <SelectTrigger id="note-template" className="w-full rounded-lg">
-                        <SelectValue placeholder="Select template for AI structuring" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="general">General Cleanup</SelectItem>
-                        <SelectItem value="soap">SOAP Note</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-            <Button onClick={handleStructureNote} variant="outline" className="w-full sm:w-auto rounded-lg text-sm" disabled={isLoadingAi || !combinedTranscript.trim()}>
-                {isLoadingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
-                Structure with AI
-            </Button>
-          </div>
+          <Button onClick={isRecording ? stopRecording : startRecording} className={cn("w-full rounded-lg py-3 text-base group", isRecording && "bg-red-600 hover:bg-red-700")}>
+            {isRecording ? <Square className="mr-2 h-5 w-5" /> : <Mic className="mr-2 h-5 w-5" />}
+            {isRecording ? 'Stop Recording' : 'Start Recording & Dictation'}
+          </Button>
           {hasMicPermission === false && (
              <Alert variant="destructive" className="rounded-lg">
-                <AlertTriangle className="h-4 w-4"/>
                 <AlertTitle>Microphone Access Denied</AlertTitle>
-                <AlertDescription className="text-xs">Please enable microphone permissions in your browser settings to use dictation.</AlertDescription>
+                <AlertDescription className="text-xs">Please enable microphone permissions in your browser settings.</AlertDescription>
              </Alert>
           )}
-           {typeof window !== 'undefined' && !('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) && hasMicPermission === null && (
-             <Alert variant="destructive" className="rounded-lg">
-                <AlertTriangle className="h-4 w-4"/>
-                <AlertTitle>Dictation Not Supported</AlertTitle>
-                <AlertDescription className="text-xs">Your browser does not support speech recognition. Try Chrome or Edge.</AlertDescription>
-             </Alert>
-            )}
 
           <div>
-            <Label htmlFor="dictation-output" className="font-semibold">Dictated Notes</Label>
-            <ScrollArea className="h-[250px] mt-1 border rounded-lg p-3 bg-background">
-              <Textarea
-                id="dictation-output"
-                value={combinedTranscript}
-                readOnly
-                placeholder={isListening ? "Listening..." : "Your dictated notes will appear here."}
-                className="min-h-full resize-none border-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none text-sm whitespace-pre-wrap"
-              />
-            </ScrollArea>
+            <Label htmlFor="dictation-output" className="font-semibold">Live Transcript</Label>
+            <Textarea
+              id="dictation-output"
+              value={transcript}
+              onChange={(e) => setTranscript(e.target.value)}
+              placeholder={isRecording ? "Listening..." : "Your live transcript will appear here. You can also type or edit."}
+              className="min-h-[150px] mt-1 rounded-lg bg-background"
+            />
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col items-start gap-4 pt-4 border-t">
-            <Button className="w-full sm:w-auto rounded-lg" onClick={() => toast({title: "Note Saved (Demo)", description: "Your clinical note has been saved."})}>
-                <FileText className="mr-2 h-4 w-4"/>Save Note
+        <CardFooter className="flex justify-end pt-4 border-t">
+            <Button className="rounded-lg" onClick={handleSaveNote} disabled={isSaving || isRecording || !transcript.trim()}>
+                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
+                Save Note
             </Button>
         </CardFooter>
+      </Card>
+      
+      <Card className="mt-6 shadow-md rounded-xl">
+        <CardHeader><CardTitle>Saved Dictations</CardTitle></CardHeader>
+        <CardContent>
+            <ScrollArea className="h-[40vh] border rounded-lg">
+                {isLoading && <div className="p-4 text-center"><Loader2 className="h-6 w-6 animate-spin inline-block"/></div>}
+                {!isLoading && savedDictations.length === 0 && <p className="p-4 text-center text-muted-foreground text-sm">No saved dictations found.</p>}
+                <div className="p-2 space-y-2">
+                    {savedDictations.map(note => (
+                        <Card key={note.id} className="p-3">
+                           <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="font-semibold text-sm">{note.title}</p>
+                                    <p className="text-xs text-muted-foreground">{formatDistanceToNow(note.createdAt, { addSuffix: true })}</p>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <Button size="iconSm" variant="outline" onClick={() => handlePlayAudio(note.id, note.audioUrl)}>
+                                        {currentAudio?.id === note.id && isPlaying ? <Pause className="h-4 w-4"/> : <Play className="h-4 w-4"/>}
+                                    </Button>
+                                    <Button size="iconSm" variant="ghost" className="text-destructive hover:bg-destructive/10" onClick={() => handleDeleteDictation(note.id)}>
+                                        <Trash2 className="h-4 w-4"/>
+                                    </Button>
+                                </div>
+                           </div>
+                           <p className="text-sm mt-2 p-2 bg-muted/50 rounded-md whitespace-pre-wrap">{note.text}</p>
+                        </Card>
+                    ))}
+                </div>
+            </ScrollArea>
+        </CardContent>
       </Card>
     </div>
   );
