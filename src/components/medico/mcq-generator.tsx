@@ -1,3 +1,4 @@
+
 // src/components/medico/mcq-generator.tsx
 "use client";
 
@@ -22,6 +23,7 @@ import { firestore } from '@/lib/firebase';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { MarkdownRenderer } from '../markdown/markdown-renderer';
 
 const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "Ophthalmology", "ENT", "General Medicine", "General Surgery", "Obstetrics & Gynaecology", "Pediatrics", "Other"] as const;
 const systems = ["Cardiovascular", "Respiratory", "Gastrointestinal", "Neurological", "Musculoskeletal", "Endocrine", "Genitourinary", "Integumentary", "Hematological", "Immunological", "Other"] as const;
@@ -314,9 +316,9 @@ export function McqGenerator({ initialTopic }: McqGeneratorProps) {
                       ))}
                     </ul>
                     {mcq.explanation && (
-                      <p className="text-xs mt-3 text-muted-foreground italic border-t pt-2">
-                        <span className="font-semibold">Explanation:</span> {mcq.explanation}
-                      </p>
+                      <div className="text-xs mt-3 text-muted-foreground italic border-t pt-2">
+                         <MarkdownRenderer content={`**Explanation:** ${mcq.explanation}`} />
+                      </div>
                     )}
                   </Card>
                 ))}

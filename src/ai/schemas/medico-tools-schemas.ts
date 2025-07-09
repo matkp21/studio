@@ -32,7 +32,7 @@ export const StudyNotesGeneratorOutputSchema = z.object({
   notes: z.string().describe('Concise, AI-generated study notes on the topic, formatted for clarity with headings and bullet points where appropriate.'),
   summaryPoints: z.array(z.string()).optional().describe('Key summary points (e.g., 3-5 points) for quick revision of the topic.'),
   diagram: z.string().optional().describe('A Mermaid.js syntax for a flowchart or diagram relevant to the topic.'),
-  nextSteps: z.array(NextStepSchema).optional().describe('A list of suggested next steps for the user to continue their study session.'),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user to continue their study session.'),
 });
 export type StudyNotesGeneratorOutput = z.infer<typeof StudyNotesGeneratorOutputSchema>;
 
@@ -64,7 +64,7 @@ export type SingleMCQ = z.infer<typeof MCQSchema>;
 export const MedicoMCQGeneratorOutputSchema = z.object({
   mcqs: z.array(MCQSchema).describe('An array of generated MCQs, each with a question, options, and an explanation.'),
   topicGenerated: z.string().describe('The topic for which these MCQs were generated.'),
-  nextSteps: z.array(NextStepSchema).optional().describe('A list of suggested next steps for the user to continue their study session.'),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user to continue their study session.'),
 });
 export type MedicoMCQGeneratorOutput = z.infer<typeof MedicoMCQGeneratorOutputSchema>;
 
@@ -85,7 +85,7 @@ export const MedicoExamPaperOutputSchema = z.object({
   mcqs: z.array(MCQSchema).optional().describe('An array of generated MCQs for the exam.'),
   essays: z.array(EssayQuestionSchema).optional().describe('An array of generated essay questions.'),
   topicGenerated: z.string().describe('The exam type for which this paper was generated.'),
-  nextSteps: z.array(NextStepSchema).optional().describe('Suggested next actions after reviewing the exam.'),
+  nextSteps: z.array(NextStepSchema).describe('Suggested next actions after reviewing the exam.'),
 });
 export type MedicoExamPaperOutput = z.infer<typeof MedicoExamPaperOutputSchema>;
 
@@ -103,7 +103,7 @@ export type MedicoStudyTimetableInput = z.infer<typeof MedicoStudyTimetableInput
 export const MedicoStudyTimetableOutputSchema = z.object({
   timetable: z.string().describe('A structured study timetable in Markdown format for display.'),
   performanceAnalysis: z.string().optional().describe('A brief analysis of how the schedule addresses the user\'s weak points.'),
-  nextSteps: z.array(NextStepSchema).optional().describe('A list of suggested next steps for the user to begin their study plan.'),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user to begin their study plan.'),
 });
 export type MedicoStudyTimetableOutput = z.infer<typeof MedicoStudyTimetableOutputSchema>;
 
@@ -125,7 +125,7 @@ export type MedicoFlashcard = z.infer<typeof MedicoFlashcardSchema>;
 export const MedicoFlashcardGeneratorOutputSchema = z.object({
   flashcards: z.array(MedicoFlashcardSchema).describe('An array of generated flashcards.'),
   topicGenerated: z.string().describe('The topic for which these flashcards were generated.'),
-  nextSteps: z.array(NextStepSchema).optional().describe('A list of suggested next steps for the user to continue their study session.'),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user to continue their study session.'),
 });
 export type MedicoFlashcardGeneratorOutput = z.infer<typeof MedicoFlashcardGeneratorOutputSchema>;
 
@@ -140,7 +140,7 @@ export const MedicoMnemonicsGeneratorOutputSchema = z.object({
   explanation: z.string().describe('An explanation of what each letter/part of the mnemonic stands for.'),
   topicGenerated: z.string().describe('The topic for which this mnemonic was generated.'),
   imageUrl: z.string().url().optional().describe('URL to a generated visual aid for the mnemonic.'),
-  nextSteps: z.array(NextStepSchema).optional().describe('Suggested next study actions.'),
+  nextSteps: z.array(NextStepSchema).describe('Suggested next study actions.'),
 });
 export type MedicoMnemonicsGeneratorOutput = z.infer<typeof MedicoMnemonicsGeneratorOutputSchema>;
 
@@ -167,7 +167,7 @@ export const MedicoFlowchartCreatorOutputSchema = z.object({
     nodes: z.array(ReactFlowNodeSchema),
     edges: z.array(ReactFlowEdgeSchema),
     topicGenerated: z.string(),
-    nextSteps: z.array(NextStepSchema).optional(),
+    nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user.'),
 });
 export type MedicoFlowchartCreatorOutput = z.infer<typeof MedicoFlowchartCreatorOutputSchema>;
 
@@ -186,7 +186,7 @@ export const MedicoClinicalCaseOutputSchema = z.object({
   feedback: z.string().optional().describe("Feedback on the user's previous response."),
   isCompleted: z.boolean().describe("Whether the case has reached a conclusion."),
   summary: z.string().optional().describe("A summary of the case if completed."),
-  nextSteps: z.array(NextStepSchema).optional(),
+  nextSteps: z.array(NextStepSchema).optional(), // Optional: only present on completion
 });
 export type MedicoClinicalCaseOutput = z.infer<typeof MedicoClinicalCaseOutputSchema>;
 
@@ -200,7 +200,7 @@ export const MedicoAnatomyVisualizerOutputSchema = z.object({
   description: z.string(),
   imageUrl: z.string().url().optional(),
   relatedStructures: z.array(z.string()).optional(),
-  nextSteps: z.array(NextStepSchema).optional(),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user.'),
 });
 export type MedicoAnatomyVisualizerOutput = z.infer<typeof MedicoAnatomyVisualizerOutputSchema>;
 
@@ -219,7 +219,7 @@ export const MedicoDDTrainerOutputSchema = z.object({
     feedback: z.string().optional(),
     updatedCaseSummary: z.string(),
     isCompleted: z.boolean(),
-    nextSteps: z.array(NextStepSchema).optional(),
+    nextSteps: z.array(NextStepSchema).optional(), // Optional: only present on completion
 });
 export type MedicoDDTrainerOutput = z.infer<typeof MedicoDDTrainerOutputSchema>;
 
@@ -233,7 +233,7 @@ export type MedicoTopicPredictorInput = z.infer<typeof MedicoTopicPredictorInput
 export const MedicoTopicPredictorOutputSchema = z.object({
   predictedTopics: z.array(z.string()),
   rationale: z.string().optional(),
-  nextSteps: z.array(NextStepSchema).optional(),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user.'),
 });
 export type MedicoTopicPredictorOutput = z.infer<typeof MedicoTopicPredictorOutputSchema>;
 
@@ -252,7 +252,7 @@ export const MedicoDrugDosageOutputSchema = z.object({
   calculatedDose: z.string(),
   calculationExplanation: z.string(),
   warnings: z.array(z.string()).optional(),
-  nextSteps: z.array(NextStepSchema).optional(),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user.'),
 });
 export type MedicoDrugDosageOutput = z.infer<typeof MedicoDrugDosageOutputSchema>;
 
@@ -268,7 +268,7 @@ export type MedicoNoteSummarizerInput = z.infer<typeof MedicoNoteSummarizerInput
 export const MedicoNoteSummarizerOutputSchema = z.object({
   summary: z.string(),
   format: z.enum(['bullet', 'flowchart', 'table', 'diagram']),
-  nextSteps: z.array(NextStepSchema).optional(),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user.'),
 });
 export type MedicoNoteSummarizerOutput = z.infer<typeof MedicoNoteSummarizerOutputSchema>;
 
@@ -288,7 +288,7 @@ export const MedicoVirtualRoundsOutputSchema = z.object({
   currentObservation: z.string(),
   nextPrompt: z.string(),
   isCompleted: z.boolean(),
-  nextSteps: z.array(NextStepSchema).optional(),
+  nextSteps: z.array(NextStepSchema).optional(), // Optional: only present on completion
 });
 export type MedicoVirtualRoundsOutput = z.infer<typeof MedicoVirtualRoundsOutputSchema>;
 
@@ -297,7 +297,7 @@ export const PathoMindInputSchema = z.object({ topic: z.string() });
 export const PathoMindOutputSchema = z.object({
   explanation: z.string(),
   diagram: z.string().optional(),
-  nextSteps: z.array(NextStepSchema).optional(),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user.'),
 });
 export type PathoMindInput = z.infer<typeof PathoMindInputSchema>;
 export type PathoMindOutput = z.infer<typeof PathoMindOutputSchema>;
@@ -308,7 +308,7 @@ export const PharmaGenieOutputSchema = z.object({
   mechanismOfAction: z.string(),
   indications: z.array(z.string()),
   sideEffects: z.array(z.string()),
-  nextSteps: z.array(NextStepSchema).optional(),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user.'),
 });
 export type PharmaGenieInput = z.infer<typeof PharmaGenieInputSchema>;
 export type PharmaGenieOutput = z.infer<typeof PharmaGenieOutputSchema>;
@@ -319,7 +319,7 @@ export const MicroMateOutputSchema = z.object({
   virulenceFactors: z.string(),
   diseasesCaused: z.string(),
   labDiagnosis: z.string(),
-  nextSteps: z.array(NextStepSchema).optional(),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user.'),
 });
 export type MicroMateInput = z.infer<typeof MicroMateInputSchema>;
 export type MicroMateOutput = z.infer<typeof MicroMateOutputSchema>;
@@ -328,7 +328,7 @@ export const DiagnoBotInputSchema = z.object({ labResults: z.string() });
 export const DiagnoBotOutputSchema = z.object({
   interpretation: z.string(),
   likelyDifferentials: z.array(z.string()),
-  nextSteps: z.array(NextStepSchema).optional(),
+  nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user.'),
 });
 export type DiagnoBotInput = z.infer<typeof DiagnoBotInputSchema>;
 export type DiagnoBotOutput = z.infer<typeof DiagnoBotOutputSchema>;
@@ -349,7 +349,7 @@ export const MedicoProgressTrackerOutputSchema = z.object({
     topic: z.string(),
     newProgressPercentage: z.number(),
   }).optional().describe("Updated progress for the specific topic."),
-  nextSteps: z.array(NextStepSchema).optional().describe("Suggested next actions to continue studying."),
+  nextSteps: z.array(NextStepSchema).describe('Suggested next actions to continue studying.'),
 });
 export type MedicoProgressTrackerOutput = z.infer<typeof MedicoProgressTrackerOutputSchema>;
 
@@ -368,7 +368,7 @@ export const MedicoCaseChallengeGeneratorOutputSchema = z.object({
   caseDetails: z.string().describe("The detailed clinical presentation for the user to solve."),
   correctAnswer: z.string().describe("The single correct primary diagnosis."),
   timeLimitSeconds: z.number().int().positive().describe("The time limit in seconds to solve the challenge."),
-  nextSteps: z.array(NextStepSchema).optional().describe("Suggested next actions after completing the challenge."),
+  nextSteps: z.array(NextStepSchema).describe('Suggested next actions after completing the challenge.'),
 });
 export type MedicoCaseChallengeGeneratorOutput = z.infer<typeof MedicoCaseChallengeGeneratorOutputSchema>;
 
