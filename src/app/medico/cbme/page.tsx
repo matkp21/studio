@@ -1,3 +1,4 @@
+
 // src/app/medico/cbme/page.tsx
 'use client';
 

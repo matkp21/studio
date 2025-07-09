@@ -77,7 +77,7 @@ export const MedicoExamPaperInputSchema = z.object({
 export type MedicoExamPaperInput = z.infer<typeof MedicoExamPaperInputSchema>;
 
 // New structured answer schema for essay questions
-const StructuredAnswerSchema = z.object({
+export const StructuredAnswerSchema = z.object({
   definition: z.string().describe("A clear, concise definition of the topic."),
   anatomyPhysiology: z.string().optional().describe("Brief overview of relevant anatomy or physiology."),
   etiology: z.string().describe("List of causes and risk factors."),
