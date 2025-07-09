@@ -1,13 +1,13 @@
+
 // src/components/medico/study-timetable-creator.tsx
 "use client";
 
-import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -21,23 +21,29 @@ import { useProMode } from '@/contexts/pro-mode-context';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 import Link from 'next/link';
+import { useAiAgent } from '@/hooks/use-ai-agent';
 
 const formSchema = z.object({
   examName: z.string().min(3, { message: "Exam name must be at least 3 characters." }).max(100, { message: "Exam name too long."}),
   examDate: z.date({ required_error: "Exam date is required." }),
   subjects: z.string().min(1, { message: "At least one subject is required."}),
   studyHoursPerWeek: z.coerce.number().int().min(1, {message: "Minimum 1 hour."}).max(100, {message: "Maximum 100 hours."}).default(20),
-  performanceContext: z.string().optional(), // New field
+  performanceContext: z.string().optional(),
 });
 
 type TimetableFormValues = z.infer<typeof formSchema>;
 
 export function StudyTimetableCreator() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [generatedTimetable, setGeneratedTimetable] = useState<MedicoStudyTimetableOutput | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const { user } = useProMode();
+  const { execute: runGenerateTimetable, data: generatedTimetable, isLoading, error, reset } = useAiAgent(createStudyTimetable, {
+    onSuccess: (data, input) => {
+        toast({
+            title: "Personalized Timetable Generated!",
+            description: `Your smart study plan for "${input.examName}" is ready.`,
+        });
+    }
+  });
 
   const form = useForm<TimetableFormValues>({
     resolver: zodResolver(formSchema),
@@ -46,43 +52,26 @@ export function StudyTimetableCreator() {
       examDate: undefined,
       subjects: "",
       studyHoursPerWeek: 20,
-      performanceContext: "", // New field default
+      performanceContext: "",
     },
   });
 
   const onSubmit: SubmitHandler<TimetableFormValues> = async (data) => {
-    setIsLoading(true);
-    setGeneratedTimetable(null);
-    setError(null);
-
-    try {
-      const formattedData: MedicoStudyTimetableInput = {
-        examName: data.examName,
-        examDate: data.examDate.toISOString().split('T')[0], 
-        subjects: data.subjects.split(',').map(s => s.trim()).filter(Boolean),
-        studyHoursPerWeek: data.studyHoursPerWeek,
-        performanceContext: data.performanceContext || undefined, // Pass new field
-      };
-      const result = await createStudyTimetable(formattedData);
-      setGeneratedTimetable(result);
-      toast({
-        title: "Personalized Timetable Generated!",
-        description: `Your smart study plan for "${data.examName}" is ready.`,
-      });
-    } catch (err) {
-      console.error("Timetable generation error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-      setError(errorMessage);
-      toast({
-        title: "Generation Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    const formattedData: MedicoStudyTimetableInput = {
+      examName: data.examName,
+      examDate: data.examDate.toISOString().split('T')[0], 
+      subjects: data.subjects.split(',').map(s => s.trim()).filter(Boolean),
+      studyHoursPerWeek: data.studyHoursPerWeek,
+      performanceContext: data.performanceContext || undefined,
+    };
+    await runGenerateTimetable(formattedData);
   };
   
+  const handleReset = () => {
+    form.reset();
+    reset();
+  };
+
   const handleSaveToLibrary = async () => {
     if (!generatedTimetable || !user) {
       toast({ title: "Cannot Save", description: "No content to save or user not logged in.", variant: "destructive" });
@@ -217,19 +206,24 @@ ${generatedTimetable.performanceAnalysis || 'N/A'}
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-6" />
-                Generate Personalized Plan
-              </>
+          <div className="flex gap-2">
+            <Button type="submit" className="w-full sm:w-auto rounded-lg py-3 text-base group" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Wand2 className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:rotate-6" />
+                  Generate Personalized Plan
+                </>
+              )}
+            </Button>
+            {generatedTimetable && (
+              <Button type="button" variant="outline" onClick={handleReset} className="rounded-lg">Clear</Button>
             )}
-          </Button>
+          </div>
         </form>
       </Form>
 
@@ -241,7 +235,13 @@ ${generatedTimetable.performanceAnalysis || 'N/A'}
       )}
 
       {generatedTimetable && (
-        <Card className="shadow-md rounded-xl mt-6 border-green-500/30 bg-gradient-to-br from-card via-card to-green-500/5">
+        <Card className="shadow-md rounded-xl mt-6 border-green-500/30 bg-gradient-to-br from-card to-green-500/5 relative">
+           {isLoading && (
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Updating...</span>
+            </div>
+          )}
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
               <CalendarDays className="h-6 w-6 text-green-600" />
@@ -250,7 +250,7 @@ ${generatedTimetable.performanceAnalysis || 'N/A'}
           </CardHeader>
           <CardContent>
              {generatedTimetable.performanceAnalysis && (
-                 <Alert variant="default" className="border-purple-500/50 bg-purple-500/10">
+                 <Alert variant="default" className="border-purple-500/50 bg-purple-500/10 mb-4">
                     <Lightbulb className="h-5 w-5 text-purple-600" />
                     <AlertTitle className="font-semibold text-purple-700 dark:text-purple-500">AI Planning Rationale</AlertTitle>
                     <AlertDescription className="text-purple-600/90 dark:text-purple-500/90 text-xs">
@@ -258,7 +258,7 @@ ${generatedTimetable.performanceAnalysis || 'N/A'}
                     </AlertDescription>
                  </Alert>
             )}
-            <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg mt-4">
+            <ScrollArea className="h-[400px] p-1 border bg-background rounded-lg">
               <div className="p-4">
                 <MarkdownRenderer content={generatedTimetable.timetable} />
               </div>
