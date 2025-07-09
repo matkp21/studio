@@ -39,89 +39,33 @@ import {
 import { cn } from '@/lib/utils';
 import { useProMode, type UserRole } from '@/contexts/pro-mode-context';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge'; // Import Badge
-
-const baseNavItems = [
-  { href: '/', label: 'Home', icon: Home, ariaLabel: 'Go to Home page' },
-  { href: '/chat', label: 'Chat', icon: MessageSquareHeart, ariaLabel: 'Open Chat interface' },
-  { href: '/medications', label: 'Medications', icon: PillIcon, ariaLabel: 'Manage Medications' },
-  { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye, ariaLabel: 'Open AR Viewer' },
-  { href: '/explorer', label: '3D Explorer', icon: Orbit, ariaLabel: 'Open 3D Interactive Explorer' },
-];
-
-const patientManagementNavItem = {
-  href: '/patient-management',
-  label: 'Patient Management',
-  icon: ClipboardList,
-  ariaLabel: 'Open Patient Management'
-};
-
-const medicoDashboardNavItem = {
-  href: '/medico',
-  label: 'Medico Hub',
-  icon: GraduationCap,
-  ariaLabel: 'Open Medico Study Hub'
-};
-
-const medicoLibraryItem = {
-  href: '/medico/library',
-  label: 'Study Library',
-  icon: Library,
-  ariaLabel: 'Open Study Library'
-};
-
-const proToolsNavItem = {
-  href: '/pro',
-  label: 'Clinical Suite',
-  icon: BriefcaseMedical,
-  ariaLabel: 'Open Professional Clinical Suite'
-};
+import { Badge } from '@/components/ui/badge';
 
 interface SidebarNavProps {
   unreadNotificationCount: number;
 }
+
+// A more declarative and maintainable way to define navigation items.
+// The `roles` array determines who sees the link. `null` is for guests.
+const allNavItems = [
+  { href: '/', label: 'Home', icon: Home, ariaLabel: 'Go to Home page', roles: ['pro', 'medico', 'diagnosis', null] },
+  { href: '/chat', label: 'Chat', icon: MessageSquareHeart, ariaLabel: 'Open Chat interface', roles: ['pro', 'medico', 'diagnosis', null] },
+  { href: '/medications', label: 'Medications', icon: PillIcon, ariaLabel: 'Manage Medications', roles: ['pro', 'medico', 'diagnosis', null] },
+  { href: '/ar-viewer', label: 'AR Viewer', icon: ScanEye, ariaLabel: 'Open AR Viewer', roles: ['pro', 'medico', 'diagnosis', null] },
+  { href: '/explorer', label: '3D Explorer', icon: Orbit, ariaLabel: 'Open 3D Interactive Explorer', roles: ['pro', 'medico', 'diagnosis', null] },
+  { href: '/pro', label: 'Clinical Suite', icon: BriefcaseMedical, ariaLabel: 'Open Professional Clinical Suite', roles: ['pro'] },
+  { href: '/patient-management', label: 'Patient Management', icon: ClipboardList, ariaLabel: 'Open Patient Management', roles: ['pro'] },
+  { href: '/medico', label: 'Medico Hub', icon: GraduationCap, ariaLabel: 'Open Medico Study Hub', roles: ['medico'] },
+  { href: '/medico/library', label: 'Study Library', icon: Library, ariaLabel: 'Open Study Library', roles: ['medico'] },
+  { href: '/notifications', label: 'Notifications', icon: BellRing, ariaLabel: 'View Notifications', roles: ['pro', 'medico', 'diagnosis'] },
+  { href: '/feedback', label: 'Feedback', icon: Info, ariaLabel: 'Submit Feedback', roles: ['pro', 'medico', 'diagnosis'] },
+];
 
 export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
   const pathname = usePathname();
   const { userRole } = useProMode();
   const { toast } = useToast();
   const { isMobile, state: sidebarState } = useSidebar();
-
-  let navItems = [...baseNavItems];
-
-  // Add role-specific items
-  if (userRole === 'medico') {
-    if (!navItems.find(item => item.href === '/medico')) {
-      navItems.push(medicoDashboardNavItem);
-    }
-    if (!navItems.find(item => item.href === '/medico/library')) {
-      navItems.push(medicoLibraryItem);
-    }
-  } else if (userRole === 'pro') {
-     if (!navItems.find(item => item.href === '/pro')) {
-      navItems.push(proToolsNavItem);
-    }
-    if (!navItems.find(item => item.href === '/patient-management')) {
-      navItems.push(patientManagementNavItem);
-    }
-  }
-  
-  // Add Notifications link (it's common for all logged-in states)
-  const notificationsNavItem = {
-    href: '/notifications',
-    label: 'Notifications',
-    icon: BellRing,
-    ariaLabel: 'View Notifications',
-    badgeCount: unreadNotificationCount
-  };
-  // Insert after 3D Explorer, or at a suitable position
-  const explorerIndex = navItems.findIndex(item => item.href === '/explorer');
-  if (explorerIndex !== -1) {
-    navItems.splice(explorerIndex + 1, 0, notificationsNavItem);
-  } else { // Fallback if explorer isn't found for some reason
-    navItems.splice(4, 0, notificationsNavItem);
-  }
-
 
   const handleLogout = () => {
     toast({
@@ -130,6 +74,8 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
     });
   };
 
+  // Filter navigation items based on the current user role
+  const navItems = allNavItems.filter(item => item.roles.includes(userRole));
 
   return (
     <TooltipProvider>
@@ -142,6 +88,9 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
             const isActive = item.href === '/'
               ? pathname === '/'
               : pathname.startsWith(item.href);
+
+            const isNotifications = item.href === '/notifications';
+            const badgeCount = isNotifications ? unreadNotificationCount : 0;
 
             return (
               <SidebarMenuItem key={item.href}>
@@ -170,9 +119,9 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
                            />
                           <span>{item.label}</span>
                         </div>
-                        {item.href === '/notifications' && item.badgeCount > 0 && (
+                        {isNotifications && badgeCount > 0 && (
                            <Badge className="sidebar-notification-badge h-5 px-1.5 text-xs ml-auto group-data-[collapsible=icon]:hidden">
-                             {item.badgeCount}
+                             {badgeCount}
                            </Badge>
                         )}
                       </Link>
@@ -185,7 +134,7 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
                       className="bg-sidebar text-sidebar-foreground border-sidebar-border shadow-md"
                     >
                       {item.label}
-                      {item.href === '/notifications' && item.badgeCount > 0 && ` (${item.badgeCount})`}
+                      {isNotifications && badgeCount > 0 && ` (${badgeCount})`}
                     </TooltipContent>
                   )}
                 </Tooltip>
@@ -196,43 +145,6 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
       </SidebarContent>
       <SidebarFooter className="p-2 border-t border-sidebar-border/50">
         <SidebarMenu>
-          <SidebarMenuItem>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                 <Link href="/feedback" passHref legacyBehavior>
-                    <SidebarMenuButton
-                    as="a" // Important for legacyBehavior with Link
-                    isActive={pathname === '/feedback'}
-                    aria-label="Submit Feedback"
-                    className={cn(
-                        "justify-start w-full rounded-lg group transition-all duration-200 ease-in-out sidebar-item-shine",
-                        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md",
-                        pathname === '/feedback'
-                        ? "bg-sidebar-active-background text-sidebar-active-foreground shadow-lg font-semibold sidebar-active-item-glow"
-                        : "text-sidebar-foreground/80 hover:text-sidebar-foreground",
-                        "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-1 focus-visible:ring-offset-sidebar-background"
-                    )}
-                    >
-                        <Info className={cn(
-                            "h-5 w-5 transition-transform duration-200 ease-in-out",
-                            "group-hover:scale-110",
-                            pathname === '/feedback' && "text-sidebar-active-foreground"
-                            )} />
-                        <span>Feedback</span>
-                    </SidebarMenuButton>
-                 </Link>
-              </TooltipTrigger>
-              {(sidebarState === "collapsed" || isMobile) && (
-                  <TooltipContent
-                    side="right"
-                    align="center"
-                    className="bg-sidebar text-sidebar-foreground border-sidebar-border shadow-md"
-                  >
-                    Feedback
-                  </TooltipContent>
-              )}
-            </Tooltip>
-          </SidebarMenuItem>
           <SidebarMenuItem>
              <Tooltip>
                 <TooltipTrigger asChild>
@@ -310,7 +222,7 @@ export function SidebarNav({ unreadNotificationCount }: SidebarNavProps) {
             <div className="flex flex-col overflow-hidden">
                 <span className="text-sm font-medium text-sidebar-foreground truncate">Dr. Medi User</span>
                 <span className="text-xs text-sidebar-foreground/70 truncate">
-                {userRole === 'pro' ? 'Professional' : userRole === 'medico' ? 'Medical Student' : userRole === 'diagnosis' ? 'Patient/User' : 'Clinician'}
+                {userRole === 'pro' ? 'Professional' : userRole === 'medico' ? 'Medical Student' : 'Patient/User'}
                 </span>
             </div>
           )}
