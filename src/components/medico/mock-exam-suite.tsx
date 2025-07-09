@@ -259,4 +259,3 @@ This mock exam contained ${activeExam.questions.length} questions.
     </div>
   );
 }
-```
