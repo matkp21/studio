@@ -28,7 +28,7 @@ interface ProTool {
   title: string;
   description: string;
   icon: React.ElementType;
-  component: React.ElementType;
+  component: React.LazyExoticComponent<React.ComponentType<any>>;
 }
 
 interface ToolCardProps {
@@ -39,23 +39,22 @@ interface ToolCardProps {
 }
 
 const ToolCardComponent: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, isEditMode }) => {
-  return (
-    <DialogTrigger asChild>
-      <motion.div
-        whileHover={!isEditMode ? { y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.2)" } : {}}
-        transition={{ type: "spring", stiffness: 300 }}
-        className={cn(
-          "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
-          !isEditMode && "hover:shadow-lg cursor-pointer tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
-          isEditMode && "cursor-grab border-dashed border-muted-foreground/50"
-        )}
-        onClick={() => !isEditMode && onLaunch(tool.id)}
-        role="button"
-        tabIndex={isEditMode ? -1 : 0}
-        onKeyDown={(e) => { if (!isEditMode && (e.key === 'Enter' || e.key === ' ') ) onLaunch(tool.id); }}
-        aria-disabled={!!(isEditMode)}
-        aria-label={`Launch ${tool.title}`}
-      >
+  const cardContent = (
+    <motion.div
+      whileHover={!isEditMode ? { y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.2)" } : {}}
+      transition={{ type: "spring", stiffness: 300 }}
+      className={cn(
+        "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
+        !isEditMode && "hover:shadow-lg cursor-pointer tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
+        isEditMode && "cursor-grab border-dashed border-muted-foreground/50"
+      )}
+      onClick={() => !isEditMode && onLaunch(tool.id)}
+      role="button"
+      tabIndex={isEditMode ? -1 : 0}
+      onKeyDown={(e) => { if (!isEditMode && (e.key === 'Enter' || e.key === ' ') ) onLaunch(tool.id); }}
+      aria-disabled={!!(isEditMode)}
+      aria-label={`Launch ${tool.title}`}
+    >
         {isEditMode && (
           <GripVertical className="absolute top-2 left-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder" />
         )}
@@ -92,9 +91,14 @@ const ToolCardComponent: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequent
               </Button>
            </div>
         </CardContent>
-      </motion.div>
-    </DialogTrigger>
+    </motion.div>
   );
+
+  if (isEditMode) {
+    return cardContent;
+  }
+
+  return <DialogTrigger asChild>{cardContent}</DialogTrigger>;
 };
 
 export const ProToolCard = React.memo(ToolCardComponent);

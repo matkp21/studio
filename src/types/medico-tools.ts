@@ -26,6 +26,8 @@ export type ActiveToolId =
   | 'pharmagenie'
   | 'micromate'
   | 'diagnobot'
+  | 'mock-pyqs' // Added new tool id
+  | 'cbme' // Added new tool id
   | null;
 
 export interface MedicoTool {
@@ -36,4 +38,5 @@ export interface MedicoTool {
   component?: React.ElementType; 
   href?: string; 
   comingSoon?: boolean;
+  isFrequentlyUsed?: boolean; // New optional property
 }

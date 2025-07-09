@@ -9,16 +9,27 @@ import {
   CheckSquare, GripVertical, Star, Settings, CalendarDays
 } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
-import { allMedicoToolsList, frequentlyUsedMedicoToolIds } from '@/config/medico-tools-config';
+import { allMedicoToolsList } from '@/config/medico-tools-config';
 import type { MedicoTool } from '@/types/medico-tools';
 import { HeroWidgets, type HeroTask } from '@/components/homepage/hero-widgets';
-import { MedicoToolCard } from './medico-tool-card'; // Import the extracted component
+import { MedicoToolCard } from './medico-tool-card';
 
 // Wrapper component to handle suspense boundary for useSearchParams
 export function MedicoDashboard() {
     const [isEditMode, setIsEditMode] = useState(false);
-    const [displayedTools, setDisplayedTools] = useState<MedicoTool[]>(allMedicoToolsList);
     
+    // The single source of truth for tool order
+    const [displayedTools, setDisplayedTools] = useState<MedicoTool[]>(() => {
+        // In a real app, you would fetch the user's saved order from a DB.
+        // For now, we use the default order from the config.
+        return allMedicoToolsList;
+    });
+    
+    // These are now derived from the single state, ensuring consistency
+    const frequentlyUsedMedicoToolIds = allMedicoToolsList
+        .filter(t => t.isFrequentlyUsed)
+        .map(t => t.id);
+
     const frequentlyUsedTools = displayedTools.filter(tool => frequentlyUsedMedicoToolIds.includes(tool.id));
     const otherTools = displayedTools.filter(tool => !frequentlyUsedMedicoToolIds.includes(tool.id));
     
@@ -69,6 +80,7 @@ export function MedicoDashboard() {
                     </div>
                     <Reorder.Group
                     as="div"
+                    axis="y"
                     values={displayedTools}
                     onReorder={setDisplayedTools}
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"

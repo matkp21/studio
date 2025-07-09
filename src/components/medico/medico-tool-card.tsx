@@ -23,7 +23,8 @@ const MedicoToolCardComponent: React.FC<MedicoToolCardProps> = ({ tool, isFreque
       transition={{ type: "spring", stiffness: 300, damping: 15 }}
       className={cn(
         "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
-        !isEditMode && "hover:shadow-xl cursor-pointer tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
+        !isEditMode && tool.isFrequentlyUsed && "tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
+        !isEditMode && !tool.isFrequentlyUsed && "hover:shadow-xl hover:border-primary/40",
         tool.comingSoon && "opacity-60 hover:shadow-md cursor-not-allowed",
         isEditMode && "cursor-grab border-dashed border-muted-foreground/50"
       )}
@@ -35,7 +36,7 @@ const MedicoToolCardComponent: React.FC<MedicoToolCardProps> = ({ tool, isFreque
       {isEditMode && (
         <GripVertical className="absolute top-2 right-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder" />
       )}
-      {isFrequentlyUsed && !isEditMode && (
+      {tool.isFrequentlyUsed && !isEditMode && (
         <Star className="absolute top-2 right-2 h-5 w-5 text-yellow-400 fill-yellow-400 z-10" />
       )}
       <CardHeader className="pb-3 pt-4 px-4">
@@ -77,15 +78,15 @@ const MedicoToolCardComponent: React.FC<MedicoToolCardProps> = ({ tool, isFreque
 
   const linkHref = tool.href || `/medico/${tool.id}`;
 
-  if (!isEditMode && !tool.comingSoon) {
-    return (
-      <Link href={linkHref} className="no-underline h-full flex">
-        {cardContent}
-      </Link>
-    );
+  if (isEditMode || tool.comingSoon) {
+    return cardContent;
   }
 
-  return cardContent;
+  return (
+    <Link href={linkHref} className="no-underline h-full flex">
+      {cardContent}
+    </Link>
+  );
 };
 
 export const MedicoToolCard = React.memo(MedicoToolCardComponent);

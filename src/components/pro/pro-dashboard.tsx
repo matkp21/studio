@@ -2,7 +2,7 @@
 "use client";
 
 import type { ReactNode } from 'react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '../ui/scroll-area';
@@ -10,22 +10,23 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { cn } from '@/lib/utils';
 import {
   Brain, ClipboardCheck, ArrowRightLeft, Mic, BarChart3, BriefcaseMedical,
-  FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, Settings, Star, CheckSquare, ShieldCheck
+  FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, Settings, Star, CheckSquare, ShieldCheck, Loader2
 } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
-
-// Import the actual components
-import { DifferentialDiagnosisAssistant } from './differential-diagnosis-assistant';
-import { DischargeSummaryGenerator } from './discharge-summary-generator';
-import { TreatmentProtocolNavigator } from './treatment-protocol-navigator';
-import { PharmacopeiaChecker } from './pharmacopeia-checker';
-import { SmartDictation } from './smart-dictation';
-import { ClinicalCalculatorSuite } from './clinical-calculator-suite';
-import { PatientCommunicationDrafter } from './patient-communication-drafter';
-import { OnCallHandoverAssistant } from './on-call-handover-assistant';
-import { ResearchSummarizer } from './research-summarizer';
-import { TriageAndReferral } from './triage-and-referral';
 import { ProToolCard } from './pro-tool-card'; // Import the extracted component
+
+// Dynamic imports for performance
+const TriageAndReferral = React.lazy(() => import('./triage-and-referral').then(m => ({ default: m.TriageAndReferral })));
+const DifferentialDiagnosisAssistant = React.lazy(() => import('./differential-diagnosis-assistant').then(m => ({ default: m.DifferentialDiagnosisAssistant })));
+const DischargeSummaryGenerator = React.lazy(() => import('./discharge-summary-generator').then(m => ({ default: m.DischargeSummaryGenerator })));
+const TreatmentProtocolNavigator = React.lazy(() => import('./treatment-protocol-navigator').then(m => ({ default: m.TreatmentProtocolNavigator })));
+const PharmacopeiaChecker = React.lazy(() => import('./pharmacopeia-checker').then(m => ({ default: m.PharmacopeiaChecker })));
+const SmartDictation = React.lazy(() => import('./smart-dictation').then(m => ({ default: m.SmartDictation })));
+const ClinicalCalculatorSuite = React.lazy(() => import('./clinical-calculator-suite').then(m => ({ default: m.ClinicalCalculatorSuite })));
+const PatientCommunicationDrafter = React.lazy(() => import('./patient-communication-drafter').then(m => ({ default: m.PatientCommunicationDrafter })));
+const OnCallHandoverAssistant = React.lazy(() => import('./on-call-handover-assistant').then(m => ({ default: m.OnCallHandoverAssistant })));
+const ResearchSummarizer = React.lazy(() => import('./research-summarizer').then(m => ({ default: m.ResearchSummarizer })));
+
 
 type ActiveToolId =
   | 'diffDx'
@@ -45,7 +46,7 @@ interface ProTool {
   title: string;
   description: string;
   icon: React.ElementType;
-  component: React.ElementType;
+  component: React.LazyExoticComponent<React.ComponentType<any>>;
 }
 
 const allProToolsList: ProTool[] = [
@@ -70,6 +71,7 @@ export function ProModeDashboard() {
   const [displayedTools, setDisplayedTools] = useState<ProTool[]>(allProToolsList);
 
   const currentTool = allProToolsList.find(tool => tool.id === activeDialog);
+  const ToolComponent = currentTool?.component;
 
   const frequentlyUsedTools = displayedTools.filter(tool => frequentlyUsedToolIds.includes(tool.id));
   const otherTools = displayedTools.filter(tool => !frequentlyUsedToolIds.includes(tool.id));
@@ -104,29 +106,12 @@ export function ProModeDashboard() {
           >
             {displayedTools.map((tool) => (
               <Reorder.Item key={tool.id} value={tool} layout>
-                <Dialog open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
                   <ProToolCard
                     tool={tool}
                     onLaunch={setActiveDialog}
                     isFrequentlyUsed={frequentlyUsedToolIds.includes(tool.id)}
                     isEditMode={isEditMode}
                   />
-                  {tool.component && activeDialog === tool.id && (
-                    <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
-                      <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
-                        <DialogTitle className="text-2xl flex items-center gap-2">
-                          <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
-                        </DialogTitle>
-                        <DialogDescription className="text-sm">{tool.description}</DialogDescription>
-                      </DialogHeader>
-                      <ScrollArea className="flex-grow overflow-y-auto">
-                        <div className="p-6 pt-2">
-                          <tool.component />
-                        </div>
-                      </ScrollArea>
-                    </DialogContent>
-                  )}
-                </Dialog>
               </Reorder.Item>
             ))}
           </Reorder.Group>
@@ -140,24 +125,7 @@ export function ProModeDashboard() {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {frequentlyUsedTools.map((tool) => (
-                  <Dialog key={`${tool.id}-freq`} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
-                    <ProToolCard tool={tool} onLaunch={setActiveDialog} isFrequentlyUsed isEditMode={isEditMode} />
-                    {tool.component && activeDialog === tool.id && (
-                        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
-                            <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
-                            <DialogTitle className="text-2xl flex items-center gap-2">
-                                <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
-                            </DialogTitle>
-                            <DialogDescription className="text-sm">{tool.description}</DialogDescription>
-                            </DialogHeader>
-                            <ScrollArea className="flex-grow overflow-y-auto">
-                            <div className="p-6 pt-2">
-                                <tool.component />
-                            </div>
-                            </ScrollArea>
-                        </DialogContent>
-                    )}
-                  </Dialog>
+                    <ProToolCard key={`${tool.id}-freq`} tool={tool} onLaunch={setActiveDialog} isFrequentlyUsed isEditMode={isEditMode} />
                 ))}
               </div>
             </section>
@@ -167,29 +135,32 @@ export function ProModeDashboard() {
             <h2 className="text-2xl font-semibold text-foreground mb-5">All Professional Tools</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {otherTools.map((tool) => (
-                <Dialog key={tool.id} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
-                    <ProToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
-                    {tool.component && activeDialog === tool.id && (
-                         <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
-                            <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
-                            <DialogTitle className="text-2xl flex items-center gap-2">
-                                <tool.icon className="h-6 w-6 text-primary" /> {tool.title}
-                            </DialogTitle>
-                            <DialogDescription className="text-sm">{tool.description}</DialogDescription>
-                            </DialogHeader>
-                            <ScrollArea className="flex-grow overflow-y-auto">
-                            <div className="p-6 pt-2">
-                                <tool.component />
-                            </div>
-                            </ScrollArea>
-                        </DialogContent>
-                    )}
-                </Dialog>
+                  <ProToolCard key={tool.id} tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
               ))}
             </div>
           </section>
         </>
       )}
+
+      <Dialog open={!!activeDialog} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
+        {currentTool && ToolComponent && (
+            <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
+                <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
+                <DialogTitle className="text-2xl flex items-center gap-2">
+                    <currentTool.icon className="h-6 w-6 text-primary" /> {currentTool.title}
+                </DialogTitle>
+                <DialogDescription className="text-sm">{currentTool.description}</DialogDescription>
+                </DialogHeader>
+                <ScrollArea className="flex-grow overflow-y-auto">
+                <Suspense fallback={<div className="flex justify-center items-center h-full min-h-[400px]"><Loader2 className="h-8 w-8 animate-spin text-primary"/></div>}>
+                    <div className="p-6 pt-2">
+                        <ToolComponent />
+                    </div>
+                </Suspense>
+                </ScrollArea>
+            </DialogContent>
+        )}
+      </Dialog>
     </div>
   );
 }
