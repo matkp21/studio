@@ -37,6 +37,27 @@ The JSON object MUST contain the following fields:
 5.  'caseDetails': A paragraph describing the patient's presentation, history, and key examination findings. This should be detailed enough for a medical student to form a primary diagnosis.
 6.  'correctAnswer': The single, most likely primary diagnosis.
 7.  'timeLimitSeconds': A reasonable time limit in seconds for a student to solve this case based on its difficulty (e.g., Easy: 120s, Medium: 90s, Hard: 60s).
+8.  'nextSteps': After the student finishes this challenge, what should they do next? Provide at least two relevant suggestions in the 'nextSteps' field. For example, if the topic is "Myocardial Infarction", suggest generating study notes for it or trying MCQs on cardiology.
+
+**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.**
+
+Example for 'nextSteps' on a case about "Appendicitis":
+[
+  {
+    "title": "Review the Topic",
+    "description": "Generate comprehensive study notes on Acute Appendicitis to solidify your understanding.",
+    "toolId": "theorycoach-generator",
+    "prefilledTopic": "Acute Appendicitis",
+    "cta": "Generate Notes"
+  },
+  {
+    "title": "Try Another Challenge",
+    "description": "Test your skills with another case challenge on a similar difficulty.",
+    "toolId": "challenges",
+    "prefilledTopic": "Surgical abdomen",
+    "cta": "Start New Challenge"
+  }
+]
 
 Ensure the entire output is a single, valid JSON object conforming to the MedicoCaseChallengeGeneratorOutputSchema.
 `,

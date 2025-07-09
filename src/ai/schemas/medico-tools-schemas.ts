@@ -1,3 +1,4 @@
+
 // src/ai/schemas/medico-tools-schemas.ts
 
 /**
@@ -84,7 +85,7 @@ export const MedicoExamPaperOutputSchema = z.object({
   mcqs: z.array(MCQSchema).optional().describe('An array of generated MCQs for the exam.'),
   essays: z.array(EssayQuestionSchema).optional().describe('An array of generated essay questions.'),
   topicGenerated: z.string().describe('The exam type for which this paper was generated.'),
-  // No nextSteps here as it's a full paper simulation.
+  nextSteps: z.array(NextStepSchema).optional().describe('Suggested next actions after reviewing the exam.'),
 });
 export type MedicoExamPaperOutput = z.infer<typeof MedicoExamPaperOutputSchema>;
 
@@ -367,6 +368,7 @@ export const MedicoCaseChallengeGeneratorOutputSchema = z.object({
   caseDetails: z.string().describe("The detailed clinical presentation for the user to solve."),
   correctAnswer: z.string().describe("The single correct primary diagnosis."),
   timeLimitSeconds: z.number().int().positive().describe("The time limit in seconds to solve the challenge."),
+  nextSteps: z.array(NextStepSchema).optional().describe("Suggested next actions after completing the challenge."),
 });
 export type MedicoCaseChallengeGeneratorOutput = z.infer<typeof MedicoCaseChallengeGeneratorOutputSchema>;
 

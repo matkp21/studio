@@ -2,18 +2,22 @@
 // src/components/medico/gamified-case-challenges.tsx
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Swords, Trophy, Clock, Loader2, PlayCircle, Target, CheckCircle, XCircle } from 'lucide-react';
+import { Swords, Trophy, Clock, Loader2, PlayCircle, Target, CheckCircle, XCircle, Save, ArrowRight } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { generateCaseChallenge, type MedicoCaseChallengeGeneratorOutput } from '@/ai/agents/medico/CaseChallengeGeneratorAgent';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { useProMode } from '@/contexts/pro-mode-context';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
+import Link from 'next/link';
 
 type Challenge = MedicoCaseChallengeGeneratorOutput;
 
@@ -34,6 +38,7 @@ export function GamifiedCaseChallenges() {
   const [result, setResult] = useState<'correct' | 'incorrect' | null>(null);
   const [score, setScore] = useState<number | null>(null);
   const { toast } = useToast();
+  const { user } = useProMode();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Medium');
 
@@ -47,6 +52,7 @@ export function GamifiedCaseChallenges() {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(newTimerId);
+          // Use a function reference that captures the current state
           handleTimeUp();
           return 0;
         }
@@ -54,6 +60,7 @@ export function GamifiedCaseChallenges() {
       });
     }, 1000);
     setTimerId(newTimerId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   const handleFetchChallenge = async () => {
@@ -107,6 +114,36 @@ export function GamifiedCaseChallenges() {
     setResult(null);
     setScore(null);
     setUserAnswer('');
+  };
+
+  const handleSaveToLibrary = async () => {
+    if (!activeChallenge || !user) {
+      toast({ title: "Cannot Save", description: "No active challenge or user not logged in.", variant: "destructive" });
+      return;
+    }
+    const notesContent = `
+## Case Challenge: ${activeChallenge.title}
+**Difficulty:** ${activeChallenge.difficulty}
+
+**Case Details:**
+${activeChallenge.caseDetails}
+
+**Correct Answer:**
+${activeChallenge.correctAnswer}
+    `;
+    try {
+      await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), {
+        type: 'notes',
+        topic: `Case Challenge: ${activeChallenge.title}`,
+        userId: user.uid,
+        notes: notesContent,
+        createdAt: serverTimestamp(),
+      });
+      toast({ title: "Saved to Library", description: "This case challenge has been saved as a note." });
+    } catch (e) {
+      console.error("Firestore save error:", e);
+      toast({ title: "Save Failed", description: "Could not save to library.", variant: "destructive" });
+    }
   };
 
   const getDifficultyClass = (difficulty: Challenge['difficulty']) => {
@@ -165,6 +202,36 @@ export function GamifiedCaseChallenges() {
                             </Alert>
                         )}
                         <Button onClick={resetChallenge} variant="outline" className="w-full rounded-lg">Back to Challenges</Button>
+
+                         {result !== null && (
+                            <div className="pt-3 border-t mt-3 flex flex-col items-start gap-4">
+                                <Button onClick={handleSaveToLibrary} disabled={!user}>
+                                    <Save className="mr-2 h-4 w-4"/> Save Case to Library
+                                </Button>
+                                {activeChallenge.nextSteps && activeChallenge.nextSteps.length > 0 && (
+                                    <div className="w-full space-y-3">
+                                        <h4 className="font-semibold text-md text-primary">Recommended Next Steps:</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            {activeChallenge.nextSteps.map((step, index) => (
+                                                <Card key={index} className="bg-card/50 hover:bg-card/90 transition-colors">
+                                                    <CardHeader className="p-3 pb-1">
+                                                        <CardTitle className="text-sm">{step.title}</CardTitle>
+                                                        <CardDescription className="text-xs">{step.description}</CardDescription>
+                                                    </CardHeader>
+                                                    <CardFooter className="p-3 pt-1">
+                                                        <Button variant="outline" size="xs" asChild className="w-full">
+                                                            <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
+                                                                {step.cta} <ArrowRight className="ml-2 h-3 w-3"/>
+                                                            </Link>
+                                                        </Button>
+                                                    </CardFooter>
+                                                </Card>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 )}
             </CardContent>
