@@ -1,4 +1,3 @@
-
 // src/components/welcome/welcome-display.tsx
 "use client";
 
