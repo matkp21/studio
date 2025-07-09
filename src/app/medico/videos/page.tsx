@@ -1,7 +1,7 @@
 // src/app/medico/videos/page.tsx
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,7 @@ export default function VideoLibraryPage() {
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
 
-    const searchYouTubeVideos = async (query: string) => {
+    const searchYouTubeVideos = useCallback(async (query: string) => {
         setIsLoading(true);
         setVideos([]); // Clear previous results
         try {
@@ -43,13 +43,12 @@ export default function VideoLibraryPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [toast]);
     
     // Initial fetch for a default topic
     useEffect(() => {
         searchYouTubeVideos('Pharmacology');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [searchYouTubeVideos]);
 
     const handleSearch = () => {
         if (!searchQuery.trim()) {
