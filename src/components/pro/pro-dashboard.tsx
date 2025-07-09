@@ -6,11 +6,11 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '../ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { cn } from '@/lib/utils';
 import {
   Brain, ClipboardCheck, ArrowRightLeft, Mic, BarChart3, BriefcaseMedical,
-  FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, ArrowRight, Settings, Star, GripVertical, CheckSquare, ShieldCheck
+  FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, Settings, Star, CheckSquare, ShieldCheck
 } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
 
@@ -24,7 +24,8 @@ import { ClinicalCalculatorSuite } from './clinical-calculator-suite';
 import { PatientCommunicationDrafter } from './patient-communication-drafter';
 import { OnCallHandoverAssistant } from './on-call-handover-assistant';
 import { ResearchSummarizer } from './research-summarizer';
-import { TriageAndReferral } from './triage-and-referral'; // Import the new component
+import { TriageAndReferral } from './triage-and-referral';
+import { ProToolCard } from './pro-tool-card'; // Import the extracted component
 
 type ActiveToolId =
   | 'diffDx'
@@ -60,74 +61,7 @@ const allProToolsList: ProTool[] = [
   { id: 'research', title: 'Research & Literature Summarizer', description: 'AI summaries of key papers for clinical questions.', icon: Library, component: ResearchSummarizer },
 ];
 
-// Simulate frequently used tools - in a real app, this would be dynamic
 const frequentlyUsedToolIds: ActiveToolId[] = ['smartTriage', 'discharge', 'pharmacopeia', 'protocols'];
-
-interface ToolCardProps {
-  tool: ProTool;
-  onLaunch: (toolId: ActiveToolId) => void;
-  isFrequentlyUsed?: boolean;
-  isEditMode?: boolean; // Pass edit mode state
-}
-
-const ToolCard: React.FC<ToolCardProps> = ({ tool, onLaunch, isFrequentlyUsed, isEditMode }) => {
-  return (
-    <DialogTrigger asChild>
-      <motion.div
-        whileHover={!isEditMode ? { y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.2)" } : {}}
-        transition={{ type: "spring", stiffness: 300 }}
-        className={cn(
-          "bg-card rounded-xl overflow-hidden shadow-md transition-all duration-300 h-full flex flex-col group relative border-2 border-transparent",
-          !isEditMode && "hover:shadow-lg cursor-pointer tool-card-frequent firebase-gradient-border-hover animate-subtle-pulse-glow",
-          isEditMode && "cursor-grab border-dashed border-muted-foreground/50"
-        )}
-        onClick={() => !isEditMode && onLaunch(tool.id)}
-        role="button"
-        tabIndex={isEditMode ? -1 : 0}
-        onKeyDown={(e) => { if (!isEditMode && (e.key === 'Enter' || e.key === ' ') ) onLaunch(tool.id); }}
-        aria-disabled={!!(isEditMode)}
-        aria-label={`Launch ${tool.title}`}
-      >
-        {isEditMode && (
-          <GripVertical className="absolute top-2 left-2 h-5 w-5 text-muted-foreground z-10" title="Drag to reorder" />
-        )}
-        {isFrequentlyUsed && !isEditMode && (
-          <Star className="absolute top-2 right-2 h-5 w-5 text-yellow-400 fill-yellow-400 z-10" />
-        )}
-        <CardHeader className="pb-3 pt-4 px-4">
-          <div className="flex items-center gap-3 mb-1.5">
-            <div className={cn(
-                "p-2 rounded-lg bg-primary/10 text-primary transition-colors duration-300",
-                !isEditMode && "group-hover:bg-gradient-to-br group-hover:from-[hsl(var(--firebase-color-1-light-h),var(--firebase-color-1-light-s),calc(var(--firebase-color-1-light-l)_-_10%))/0.2] group-hover:to-[hsl(var(--firebase-color-3-light-h),var(--firebase-color-3-light-s),calc(var(--firebase-color-3-light-l)_-_10%))/0.2] group-hover:text-foreground"
-            )}>
-                <tool.icon className={cn(
-                    "h-7 w-7 transition-transform duration-300",
-                    !isEditMode && "group-hover:scale-110",
-                    !isEditMode && "group-hover:text-purple-500"
-                )} />
-            </div>
-            <CardTitle className={cn(
-                "text-lg leading-tight text-foreground",
-                 !isEditMode && "group-hover:text-primary"
-            )}>{tool.title}</CardTitle>
-          </div>
-          <CardDescription className="text-xs leading-relaxed line-clamp-2 min-h-[2.5em]">{tool.description}</CardDescription>
-        </CardHeader>
-        <CardContent className="pt-2 px-4 pb-3 flex-grow flex items-end">
-           <div className="w-full text-right">
-              <Button variant="link" size="sm" disabled={isEditMode} className={cn(
-                  "text-primary group-hover:underline p-0 h-auto text-xs",
-                   !isEditMode && "group-hover:text-foreground group-hover:hover:text-primary",
-                   isEditMode && "text-muted-foreground cursor-default"
-                  )}>
-                 Open Tool <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </Button>
-           </div>
-        </CardContent>
-      </motion.div>
-    </DialogTrigger>
-  );
-};
 
 
 export function ProModeDashboard() {
@@ -171,7 +105,7 @@ export function ProModeDashboard() {
             {displayedTools.map((tool) => (
               <Reorder.Item key={tool.id} value={tool} layout>
                 <Dialog open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
-                  <ToolCard
+                  <ProToolCard
                     tool={tool}
                     onLaunch={setActiveDialog}
                     isFrequentlyUsed={frequentlyUsedToolIds.includes(tool.id)}
@@ -207,7 +141,7 @@ export function ProModeDashboard() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {frequentlyUsedTools.map((tool) => (
                   <Dialog key={`${tool.id}-freq`} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
-                    <ToolCard tool={tool} onLaunch={setActiveDialog} isFrequentlyUsed isEditMode={isEditMode} />
+                    <ProToolCard tool={tool} onLaunch={setActiveDialog} isFrequentlyUsed isEditMode={isEditMode} />
                     {tool.component && activeDialog === tool.id && (
                         <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
                             <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
@@ -234,7 +168,7 @@ export function ProModeDashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {otherTools.map((tool) => (
                 <Dialog key={tool.id} open={activeDialog === tool.id} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
-                    <ToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
+                    <ProToolCard tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
                     {tool.component && activeDialog === tool.id && (
                          <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
                             <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
