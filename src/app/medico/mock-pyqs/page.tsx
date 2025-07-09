@@ -23,11 +23,13 @@ import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { PageWrapper } from '@/components/layout/page-wrapper';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { StructuredAnswerDetails } from '@/components/medico/library/structured-answer-details';
 
 const formSchema = z.object({
   examType: z.string().min(3, { message: "Exam type must be at least 3 characters." }).max(100),
   year: z.string().optional(),
-  count: z.coerce.number().int().min(1, "At least 1 MCQ.").max(10, "Max 10 MCQs.").default(5),
+  count: z.coerce.number().int().min(1, "At least 1 MCQ.").max(20, "Max 20 MCQs.").default(10),
 });
 type ExamPaperFormValues = z.infer<typeof formSchema>;
 
@@ -53,7 +55,7 @@ export default function MockPYQsPage() {
 
   const form = useForm<ExamPaperFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { examType: "Final MBBS Prof Mock", year: "", count: 5 },
+    defaultValues: { examType: "Final MBBS Prof Mock", year: "", count: 10 },
   });
 
   const onSubmit: SubmitHandler<ExamPaperFormValues> = async (data) => {
@@ -131,7 +133,7 @@ export default function MockPYQsPage() {
                             <FormItem>
                             <FormLabel htmlFor="count-gen">Number of MCQs</FormLabel>
                             <FormControl>
-                                <Input id="count-gen" type="number" min="1" max="10" {...field} />
+                                <Input id="count-gen" type="number" min="1" max="20" {...field} />
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -202,12 +204,23 @@ export default function MockPYQsPage() {
                         <h3 className="font-semibold text-lg mb-2 flex items-center gap-2"><FileText className="h-5 w-5"/>Essay Questions</h3>
                         <div className="space-y-4">
                         {examData.essays.map((essay, index) => (
-                            <Card key={`essay-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
+                           <Card key={`essay-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
                             <p className="font-semibold mb-2 text-foreground text-sm">Essay Q{index + 1}: {essay.question}</p>
-                            <div className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
-                                <MarkdownRenderer content={`**Answer Outline:** ${essay.fullAnswer}`} />
-                            </div>
-                            </Card>
+                            <Accordion type="single" collapsible className="w-full">
+                              <AccordionItem value="answer-10m">
+                                <AccordionTrigger>View 10-Mark Answer</AccordionTrigger>
+                                <AccordionContent>
+                                  <StructuredAnswerDetails answer={essay.answer10M} />
+                                </AccordionContent>
+                              </AccordionItem>
+                              <AccordionItem value="answer-5m">
+                                <AccordionTrigger>View 5-Mark Answer</AccordionTrigger>
+                                <AccordionContent>
+                                  <MarkdownRenderer content={essay.answer5M} />
+                                </AccordionContent>
+                              </AccordionItem>
+                            </Accordion>
+                          </Card>
                         ))}
                         </div>
                     </div>

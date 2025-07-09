@@ -1,4 +1,3 @@
-
 // src/config/medico-tools-config.ts
 import type { MedicoTool } from '@/types/medico-tools';
 import {

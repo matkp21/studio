@@ -200,7 +200,7 @@ export default function StudyLibraryPage() {
         case 'notes': case 'summary':
             return <MarkdownRenderer content={myItem.notes || myItem.summary || ''} />;
         case 'mcqs':
-            return (
+             return (
               <div className="space-y-4">{myItem.mcqs?.map((mcq, index) => (
                 <Card key={index} className="p-3 bg-card/80 shadow-sm rounded-lg">
                   <p className="font-semibold mb-2 text-foreground text-sm">Q{index + 1}: {mcq.question}</p>
@@ -214,13 +214,40 @@ export default function StudyLibraryPage() {
         case 'examPaper':
             return (
               <div className="space-y-4">
-                {myItem.essays?.map((essay, index) => (
+                 {myItem.essays?.map((essay, index) => (
                   <Card key={`essay-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
                     <p className="font-semibold mb-2 text-foreground text-sm">Essay Q{index + 1}: {essay.question}</p>
                     <Accordion type="single" collapsible className="w-full">
-                      <AccordionItem value="answer-10m"><AccordionTrigger>View 10-Mark Answer</AccordionTrigger><AccordionContent><StructuredAnswerDetails answer={essay.answer10M} /></AccordionContent></AccordionItem>
-                      <AccordionItem value="answer-5m"><AccordionTrigger>View 5-Mark Answer</AccordionTrigger><AccordionContent><MarkdownRenderer content={essay.answer5M} /></AccordionContent></AccordionItem>
+                      <AccordionItem value="answer-10m">
+                        <AccordionTrigger>View 10-Mark Answer</AccordionTrigger>
+                        <AccordionContent>
+                          <StructuredAnswerDetails answer={essay.answer10M} />
+                        </AccordionContent>
+                      </AccordionItem>
+                      <AccordionItem value="answer-5m">
+                        <AccordionTrigger>View 5-Mark Answer</AccordionTrigger>
+                        <AccordionContent>
+                          <MarkdownRenderer content={essay.answer5M} />
+                        </AccordionContent>
+                      </AccordionItem>
                     </Accordion>
+                  </Card>
+                ))}
+                {myItem.mcqs?.map((mcq, index) => (
+                  <Card key={`mcq-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
+                    <p className="font-semibold mb-2 text-foreground text-sm">MCQ Q{index + 1}: {mcq.question}</p>
+                    <ul className="space-y-1.5 text-xs">
+                      {mcq.options.map((opt, optIndex) => (
+                        <li key={optIndex} className={cn("p-2 border rounded-md transition-colors", opt.isCorrect ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400 font-medium" : "border-border")}>
+                          {String.fromCharCode(65 + optIndex)}. {opt.text}
+                        </li>
+                      ))}
+                    </ul>
+                    {mcq.explanation && (
+                      <div className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
+                         <MarkdownRenderer content={`**Explanation:** ${mcq.explanation}`} />
+                      </div>
+                    )}
                   </Card>
                 ))}
               </div>
