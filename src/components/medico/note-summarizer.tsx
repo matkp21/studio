@@ -84,20 +84,12 @@ export function NoteSummarizer() {
 
       const result = await summarizeNoteText(input);
       setSummaryResult(result);
-      toast({
-        title: "Summary Generated!",
-        description: `Your document has been summarized as a ${data.format}.`,
-      });
-
+      
       // Track Progress
       try {
         await trackProgress({
             activityType: 'notes_review',
             topic: `Summarized: ${data.file.name}`
-        });
-        toast({
-            title: "Progress Tracked!",
-            description: "This activity has been added to your progress."
         });
       } catch (progressError) {
           console.warn("Could not track progress for note summarizer:", progressError);
@@ -236,24 +228,34 @@ export function NoteSummarizer() {
                 <Save className="mr-2 h-4 w-4"/> Save to Library
               </Button>
                {summaryResult.nextSteps && summaryResult.nextSteps.length > 0 && (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline">
-                        Next Steps <ChevronDown className="ml-2 h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Recommended Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {summaryResult.nextSteps.map((step, index) => (
-                        <DropdownMenuItem key={index} asChild className="cursor-pointer">
-                          <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
-                            {step.cta}
-                          </Link>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex rounded-md border">
+                  <Button asChild className="flex-grow rounded-r-none border-r-0 font-semibold">
+                    <Link href={`/medico/${summaryResult.nextSteps[0].toolId}?topic=${encodeURIComponent(summaryResult.nextSteps[0].prefilledTopic)}`}>
+                      {summaryResult.nextSteps[0].cta}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  {summaryResult.nextSteps.length > 1 && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="icon" className="rounded-l-none">
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>More Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {summaryResult.nextSteps.slice(1).map((step, index) => (
+                          <DropdownMenuItem key={index} asChild className="cursor-pointer">
+                            <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
+                              {step.cta}
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
                 )}
             </CardFooter>
         </Card>

@@ -1,3 +1,4 @@
+// This file is unused now, but we can keep it for future use.
 "use client"
 
 // Inspired by react-hot-toast library
