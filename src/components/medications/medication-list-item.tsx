@@ -2,6 +2,7 @@
 // src/components/medications/medication-list-item.tsx
 "use client";
 
+import React from 'react';
 import type { Medication, MedicationLogEntry } from '@/types/medication';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -57,8 +58,7 @@ function formatSchedule(schedule?: Medication['schedule']): string {
   return scheduleString;
 }
 
-export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, onViewReminders, onViewDrugInfo }: MedicationListItemProps) {
-  
+const MedicationListItemComponent: React.FC<MedicationListItemProps> = ({ medication, onEdit, onDelete, onLogDose, onViewReminders, onViewDrugInfo }) => {
   const lastThreeLogs = medication.log?.slice(-3).reverse() || [];
 
   return (
@@ -98,7 +98,7 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, on
         )}
 
         {medication.reason && <p><span className="font-semibold">Reason:</span> {medication.reason}</p>}
-        <p><span className="font-semibold">Prescribed:</span> {format(new Date(medication.prescriptionDate), "PPP")} {medication.prescribingDoctor && `by ${medication.prescribingDoctor}`}</p>
+        <p><span className="font-semibold">Prescribed:</span> {format(new Date(medication.prescriptionDate), "PPP")} {medication.prescribingDoctor && `by ${medication.prescribingDoctor}`}</p>}
         {medication.duration && <p><span className="font-semibold">Duration:</span> {medication.duration}</p>}
 
         <div className="mt-2 pt-2 border-t border-dashed">
@@ -176,3 +176,6 @@ export function MedicationListItem({ medication, onEdit, onDelete, onLogDose, on
     </Card>
   );
 }
+
+MedicationListItemComponent.displayName = 'MedicationListItem';
+export const MedicationListItem = React.memo(MedicationListItemComponent);

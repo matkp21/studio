@@ -2,7 +2,7 @@
 "use client";
 
 import type { HTMLAttributes } from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 
 interface TypewriterTextProps extends HTMLAttributes<HTMLParagraphElement> {
@@ -11,52 +11,37 @@ interface TypewriterTextProps extends HTMLAttributes<HTMLParagraphElement> {
   onComplete?: () => void;
 }
 
-export function TypewriterText({ text, speed = 150, onComplete, className, ...props }: TypewriterTextProps) {
+export function TypewriterText({ text, speed = 50, onComplete, className, ...props }: TypewriterTextProps) {
   const [displayedText, setDisplayedText] = useState('');
-  const [words, setWords] = useState<string[]>([]);
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
 
-  useEffect(() => {
-    // Reset when text prop changes
-    setDisplayedText('');
-    setCurrentWordIndex(0);
-    setIsCompleted(false);
-    if (text) {
-      // Split by whitespace (including newlines) while keeping the delimiters
-      // This treats words and whitespace blocks (spaces, newlines) as items to animate.
-      // filter(Boolean) removes any empty strings that might result from split.
-      setWords(text.split(/(\s+)/).filter(Boolean));
-    } else {
-      setWords([]);
-    }
+  const words = useMemo(() => {
+    if (!text) return [];
+    // This regex splits by whitespace but keeps the whitespace as a separate element in the array.
+    // This is crucial for preserving formatting like newlines and multiple spaces.
+    return text.split(/(\s+)/).filter(Boolean);
   }, [text]);
 
   useEffect(() => {
-    if (isCompleted) return;
-
+    setDisplayedText(''); // Reset when the text prop changes
+    
     if (words.length === 0) {
-      // If there are no words (e.g., empty or null text prop), call onComplete.
-      if (!isCompleted && (text === '' || text === null)) {
-        onComplete?.();
-        setIsCompleted(true);
-      }
+      onComplete?.();
       return;
     }
 
-    if (currentWordIndex < words.length) {
-      const timeoutId = setTimeout(() => {
-        setDisplayedText((prev) => prev + words[currentWordIndex]);
-        setCurrentWordIndex((prev) => prev + 1);
-      }, speed);
-      return () => clearTimeout(timeoutId);
-    } else if (currentWordIndex === words.length && !isCompleted) {
-      // All words/segments have been appended
-      onComplete?.();
-      setIsCompleted(true);
-    }
-  }, [currentWordIndex, words, speed, onComplete, text, isCompleted, displayedText]);
+    let currentWordIndex = 0;
+    const intervalId = setInterval(() => {
+      if (currentWordIndex < words.length) {
+        setDisplayedText(prev => prev + words[currentWordIndex]);
+        currentWordIndex++;
+      } else {
+        clearInterval(intervalId);
+        onComplete?.();
+      }
+    }, speed);
+
+    return () => clearInterval(intervalId);
+  }, [words, speed, onComplete]);
 
   return <p className={cn("text-sm whitespace-pre-wrap", className)} {...props}>{displayedText}</p>;
 }
-

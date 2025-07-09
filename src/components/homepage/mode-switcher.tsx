@@ -1,12 +1,14 @@
+
 // src/components/homepage/mode-switcher.tsx
 "use client";
 
+import { useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Stethoscope, ScanSearch, BookOpenText, LayoutDashboard } from "lucide-react"; // Added LayoutDashboard
-import { useProMode } from "@/contexts/pro-mode-context"; // Import useProMode
+import { Stethoscope, ScanSearch, BookOpenText, LayoutDashboard } from "lucide-react";
+import { useProMode } from "@/contexts/pro-mode-context";
 
-export type ActiveMode = 'symptom' | 'image' | 'education' | 'dashboard'; // Added 'dashboard'
+export type ActiveMode = 'symptom' | 'image' | 'education' | 'dashboard';
 
 interface ModeSwitcherProps {
   activeMode: ActiveMode;
@@ -14,20 +16,18 @@ interface ModeSwitcherProps {
 }
 
 export function ModeSwitcher({ activeMode, setActiveMode }: ModeSwitcherProps) {
-  const { userRole } = useProMode(); // Get userRole
+  const { userRole } = useProMode();
 
-  const modesConfig = [
-    { id: 'symptom', label: 'Symptom Analysis', icon: Stethoscope, ariaLabel: 'Switch to Symptom Analysis mode' },
-    { id: 'image', label: 'Image Processing', icon: ScanSearch, ariaLabel: 'Switch to Image Processing mode' },
-    // Conditional third mode
-    userRole === 'pro'
-      ? { id: 'dashboard' as ActiveMode, label: 'Clinical Dashboard', icon: LayoutDashboard, ariaLabel: 'Switch to Clinical Dashboard mode' }
-      : { id: 'education' as ActiveMode, label: 'Educational Support', icon: BookOpenText, ariaLabel: 'Switch to Educational Support mode' },
-  ] as const;
-  
-  // Filter out null if userRole is not 'pro' and we didn't provide a fallback (though we did)
-  const modes = modesConfig.filter(Boolean);
-
+  const modes = useMemo(() => {
+    const config = [
+      { id: 'symptom' as const, label: 'Symptom Analysis', icon: Stethoscope, ariaLabel: 'Switch to Symptom Analysis mode' },
+      { id: 'image' as const, label: 'Image Processing', icon: ScanSearch, ariaLabel: 'Switch to Image Processing mode' },
+      userRole === 'pro'
+        ? { id: 'dashboard' as const, label: 'Clinical Dashboard', icon: LayoutDashboard, ariaLabel: 'Switch to Clinical Dashboard mode' }
+        : { id: 'education' as const, label: 'Educational Support', icon: BookOpenText, ariaLabel: 'Switch to Educational Support mode' },
+    ];
+    return config;
+  }, [userRole]);
 
   return (
     <div id="mode-switcher" className="flex justify-center slide-in-bottom fade-in-delay-7" role="tablist" aria-label="Application Modes">
@@ -56,4 +56,3 @@ export function ModeSwitcher({ activeMode, setActiveMode }: ModeSwitcherProps) {
     </div>
   );
 }
-

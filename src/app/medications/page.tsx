@@ -2,7 +2,7 @@
 // src/app/medications/page.tsx
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { PageWrapper } from '@/components/layout/page-wrapper';
 import { MedicationForm } from '@/components/medications/medication-form';
 import { MedicationListItem, type SampleDrugInfo, type DosAndDontsItem } from '@/components/medications/medication-list-item';
@@ -189,7 +189,7 @@ export default function MedicationManagementPage() {
     }
   }, [medications, isClient]);
 
-  const handleAddOrUpdateMedication = (medication: Medication) => {
+  const handleAddOrUpdateMedication = useCallback((medication: Medication) => {
     setMedications(prevMeds => {
       const existingIndex = prevMeds.findIndex(m => m.id === medication.id);
       if (existingIndex > -1) {
@@ -208,19 +208,19 @@ export default function MedicationManagementPage() {
     });
     setShowFormModal(false);
     setEditingMedication(null);
-  };
+  }, []);
 
-  const handleEditMedication = (medication: Medication) => {
+  const handleEditMedication = useCallback((medication: Medication) => {
     setEditingMedication(medication);
     setShowFormModal(true);
-  };
+  }, []);
 
-  const handleDeleteMedication = (id: string) => {
+  const handleDeleteMedication = useCallback((id: string) => {
     setMedications(prevMeds => prevMeds.filter(m => m.id !== id));
     toast({ title: "Medication Removed", description: "The medication has been deleted from your list." });
-  };
+  }, [toast]);
 
-  const handleLogDose = (medicationId: string, status: MedicationLogEntry['status']) => {
+  const handleLogDose = useCallback((medicationId: string, status: MedicationLogEntry['status']) => {
     setMedications(prevMeds =>
       prevMeds.map(med => {
         if (med.id === medicationId) {
@@ -234,19 +234,19 @@ export default function MedicationManagementPage() {
       })
     );
     toast({ title: `Dose Logged`, description: `Marked as ${status} for today.` });
-  };
+  }, [toast]);
 
-  const openAddMedicationModal = () => {
+  const openAddMedicationModal = useCallback(() => {
     setEditingMedication(null);
     setShowFormModal(true);
-  }
+  }, [])
 
-  const handleViewReminders = (medication: Medication) => {
+  const handleViewReminders = useCallback((medication: Medication) => {
     setSelectedMedicationForReminders(medication);
     setShowRemindersDialog(true);
-  };
+  }, []);
 
-  const handleViewDrugInfo = (medication: Medication) => {
+  const handleViewDrugInfo = useCallback((medication: Medication) => {
     setSelectedMedicationForInfo(medication);
     setDrugInfoLoading(true);
     setFetchedDrugInfo(null);
@@ -259,7 +259,7 @@ export default function MedicationManagementPage() {
       setFetchedDrugInfo(info);
       setDrugInfoLoading(false);
     }, 1500);
-  };
+  }, []);
 
 
   if (!isClient) {
