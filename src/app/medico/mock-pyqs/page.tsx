@@ -1,7 +1,7 @@
 // src/app/medico/mock-pyqs/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -25,7 +25,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { PageWrapper } from '@/components/layout/page-wrapper';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { StructuredAnswerDetails } from '@/components/medico/library/structured-answer-details';
-import { Badge } from '@/components/ui/badge'; // Import Badge
+import { Badge } from '@/components/ui/badge';
 
 const formSchema = z.object({
   examType: z.string().min(3, { message: "Exam type must be at least 3 characters." }).max(100),

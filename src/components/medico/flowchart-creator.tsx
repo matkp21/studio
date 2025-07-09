@@ -35,7 +35,7 @@ const Toolbar = ({ onAddNode, onUndo, onRedo, canUndo, canRedo, onExport, onClea
       <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo} title="Undo"><Undo className="h-4 w-4"/></Button>
       <Button variant="ghost" size="icon" onClick={onRedo} disabled={!canRedo} title="Redo"><Redo className="h-4 w-4"/></Button>
       <Button variant="ghost" size="icon" onClick={() => onExport('png')} title="Export as PNG"><FileDown className="h-4 w-4"/></Button>
-      <Button variant="ghost" size="icon" onClick={onSave} title="Save (Conceptual)"><Save className="h-4 w-4" /></Button>
+      <Button variant="ghost" size="icon" onClick={onSave} title="Save Flowchart"><Save className="h-4 w-4" /></Button>
       <Button variant="destructive" size="icon" onClick={onClear} title="Clear Canvas"><Trash2 className="h-4 w-4"/></Button>
     </Card>
   );
@@ -147,9 +147,10 @@ const FlowchartEditor = () => {
           return;
         }
         try {
+          const topicForSave = aiResult?.topicGenerated || aiTopic || 'Custom Flowchart';
           const dataToSave = {
             type: 'flowchart',
-            topic: aiResult?.topicGenerated || aiTopic || 'Custom Flowchart',
+            topic: topicForSave,
             userId: user.uid,
             flowchartData: JSON.stringify(
               { nodes: nodes || [], edges: edges || [] },
@@ -158,7 +159,7 @@ const FlowchartEditor = () => {
             createdAt: serverTimestamp(),
           };
           await addDoc(collection(firestore, `users/${user.uid}/studyLibrary`), dataToSave);
-          toast({ title: "Flowchart Saved!", description: "Your flowchart has been saved to your library."});
+          toast({ title: "Flowchart Saved!", description: `Flowchart for "${topicForSave}" has been saved.`});
         } catch(err) {
           toast({ title: "Save Failed", description: "Could not save flowchart.", variant: "destructive"});
         }
@@ -192,8 +193,7 @@ const FlowchartEditor = () => {
                           nodes={nodes}
                           edges={edges}
                           onNodesChange={onNodesChange}
-                          onEdgesChange={onEdgesChange}
-                          onConnect={onConnect}
+                          onEdgesChange={onConnect}
                           nodeTypes={nodeTypes}
                           fitView
                           className="medico-layout-background" // Use consistent background
