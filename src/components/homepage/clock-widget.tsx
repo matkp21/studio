@@ -12,7 +12,7 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlarmClockCheck, TimerIcon, BellRing, PlusCircle, Play, Pause, RotateCcw, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils'; // Added cn for potential conditional styling
+import { cn } from '@/lib/utils';
 
 interface Reminder {
   id: string;
@@ -21,34 +21,71 @@ interface Reminder {
 }
 
 interface ClockWidgetProps {
-  onClose?: () => void; // Made onClose optional as it might not always be needed by Popover
+  onClose?: () => void;
 }
 
+// Isolated component for the clock display to prevent re-rendering the whole widget every second.
+const ClockDisplay = () => {
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+        const clockInterval = setInterval(() => {
+        setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(clockInterval);
+    }, []);
+
+    const hoursForClock = currentTime.getHours() % 12;
+    const minutesForClock = currentTime.getMinutes();
+    const secondsForClock = currentTime.getSeconds();
+    const hourAngle = (hoursForClock + minutesForClock / 60) * 30;
+    const minuteAngle = (minutesForClock + secondsForClock / 60) * 6;
+    const secondAngle = secondsForClock * 6;
+
+    return (
+        <>
+            <div className="text-center">
+                <p className="text-5xl font-bold tabular-nums text-foreground">{format(currentTime, "HH:mm")}</p>
+                <p className="text-sm text-muted-foreground">{format(currentTime, "ss 'sec'")}</p>
+                <p className="text-lg text-foreground mt-1">{format(currentTime, "eeee, MMMM do")}</p>
+            </div>
+            <div className="relative w-32 h-32 mx-auto mt-6" aria-label="Analogue clock">
+                <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+                <circle cx="50" cy="50" r="48" stroke="hsl(var(--border))" strokeWidth="2" fill="hsl(var(--card))" />
+                {[...Array(12)].map((_, i) => (
+                    <line key={`h-marker-${i}`} x1="50" y1="10" x2="50" y2="14" stroke="hsl(var(--foreground))" strokeWidth="1.5" transform={`rotate(${i * 30} 50 50)`} />
+                ))}
+                {[...Array(60)].map((_, i) => (i % 5 === 0 ? null : 
+                    <line key={`m-marker-${i}`} x1="50" y1="10" x2="50" y2="12" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" transform={`rotate(${i * 6} 50 50)`} />
+                ))}
+                <line x1="50" y1="50" x2="50" y2="30" stroke="hsl(var(--foreground))" strokeWidth="3.5" strokeLinecap="round" transform={`rotate(${hourAngle} 50 50)`} />
+                <line x1="50" y1="50" x2="50" y2="20" stroke="hsl(var(--foreground))" strokeWidth="2.5" strokeLinecap="round" transform={`rotate(${minuteAngle} 50 50)`} />
+                <line x1="50" y1="50" x2="50" y2="15" stroke="hsl(var(--primary))" strokeWidth="1" strokeLinecap="round" transform={`rotate(${secondAngle} 50 50)`} />
+                <circle cx="50" cy="50" r="2.5" fill="hsl(var(--primary))" stroke="hsl(var(--card))" strokeWidth="1"/>
+                </svg>
+            </div>
+        </>
+    );
+};
+
+
 export function ClockWidget({ onClose }: ClockWidgetProps) {
-  const [currentTime, setCurrentTime] = useState(new Date());
   const { toast } = useToast();
 
   const [timerInputHours, setTimerInputHours] = useState(0);
   const [timerInputMinutes, setTimerInputMinutes] = useState(5);
   const [timerInputSeconds, setTimerInputSeconds] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(0); // Initialize to 0
+  const [timeLeft, setTimeLeft] = useState(0); 
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [timerIntervalId, setTimerIntervalId] = useState<NodeJS.Timeout | null>(null);
 
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [newReminderText, setNewReminderText] = useState('');
   const [newReminderDateTime, setNewReminderDateTime] = useState<Date | undefined>(new Date());
-
-  useEffect(() => {
-    const clockInterval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(clockInterval);
-  }, []);
-
+  
   const startTimer = useCallback(() => {
-    let initialTime = timeLeft; // Start from timeLeft if paused
-    if (!isTimerRunning && initialTime <= 0) { // Only reset if not running and timeLeft is 0
+    let initialTime = timeLeft; 
+    if (!isTimerRunning && initialTime <= 0) { 
         initialTime = timerInputHours * 3600 + timerInputMinutes * 60 + timerInputSeconds;
     }
 
@@ -123,7 +160,6 @@ export function ClockWidget({ onClose }: ClockWidgetProps) {
     };
     setReminders(prev => [...prev, newReminder].sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime()));
     setNewReminderText('');
-    // setNewReminderDateTime(new Date()); // Optionally reset date
     toast({ title: "Reminder Set", description: `Reminder "${newReminder.text}" scheduled.` });
   };
 
@@ -131,15 +167,7 @@ export function ClockWidget({ onClose }: ClockWidgetProps) {
     setReminders(prev => prev.filter(r => r.id !== id));
     toast({ title: "Reminder Deleted" });
   };
-
-  const hoursForClock = currentTime.getHours() % 12;
-  const minutesForClock = currentTime.getMinutes();
-  const secondsForClock = currentTime.getSeconds();
-  const hourAngle = (hoursForClock + minutesForClock / 60) * 30;
-  const minuteAngle = (minutesForClock + secondsForClock / 60) * 6;
-  const secondAngle = secondsForClock * 6;
-
-
+  
   return (
     <Card className="border-none shadow-none bg-transparent w-full">
       <Tabs defaultValue="clock" className="w-full">
@@ -150,26 +178,7 @@ export function ClockWidget({ onClose }: ClockWidgetProps) {
         </TabsList>
         
         <TabsContent value="clock" className="p-4 pt-6">
-          <div className="text-center">
-            <p className="text-5xl font-bold tabular-nums text-foreground">{format(currentTime, "HH:mm")}</p>
-            <p className="text-sm text-muted-foreground">{format(currentTime, "ss 'sec'")}</p>
-            <p className="text-lg text-foreground mt-1">{format(currentTime, "eeee, MMMM do")}</p>
-          </div>
-          <div className="relative w-32 h-32 mx-auto mt-6" aria-label="Analogue clock">
-            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
-              <circle cx="50" cy="50" r="48" stroke="hsl(var(--border))" strokeWidth="2" fill="hsl(var(--card))" />
-              {[...Array(12)].map((_, i) => (
-                <line key={`h-marker-${i}`} x1="50" y1="10" x2="50" y2="14" stroke="hsl(var(--foreground))" strokeWidth="1.5" transform={`rotate(${i * 30} 50 50)`} />
-              ))}
-              {[...Array(60)].map((_, i) => (i % 5 === 0 ? null : 
-                <line key={`m-marker-${i}`} x1="50" y1="10" x2="50" y2="12" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" transform={`rotate(${i * 6} 50 50)`} />
-              ))}
-              <line x1="50" y1="50" x2="50" y2="30" stroke="hsl(var(--foreground))" strokeWidth="3.5" strokeLinecap="round" transform={`rotate(${hourAngle} 50 50)`} />
-              <line x1="50" y1="50" x2="50" y2="20" stroke="hsl(var(--foreground))" strokeWidth="2.5" strokeLinecap="round" transform={`rotate(${minuteAngle} 50 50)`} />
-              <line x1="50" y1="50" x2="50" y2="15" stroke="hsl(var(--primary))" strokeWidth="1" strokeLinecap="round" transform={`rotate(${secondAngle} 50 50)`} />
-              <circle cx="50" cy="50" r="2.5" fill="hsl(var(--primary))" stroke="hsl(var(--card))" strokeWidth="1"/>
-            </svg>
-          </div>
+          <ClockDisplay />
         </TabsContent>
 
         <TabsContent value="timer" className="p-4 space-y-4">
