@@ -254,4 +254,3 @@ ${predictionResult.rationale || 'N/A'}
     </div>
   );
 }
-```
