@@ -2,7 +2,7 @@
 import type { MedicoTool, ActiveToolId } from '@/types/medico-tools';
 import {
   NotebookText, FileQuestion, CalendarClock, Layers, CaseUpper, Lightbulb, BookCopy,
-  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, FlaskConical, Microscope, TestTubeDiagonal, Swords, Library, Trophy
+  Users, Eye, Brain, TrendingUp, Calculator, Workflow, Award, Star, Settings, CheckSquare, GripVertical, FileText, Youtube, Mic, FlaskConical, Microscope, TestTubeDiagonal, Swords, Library, Trophy, BookMarked
 } from 'lucide-react';
 
 // Component Imports
@@ -10,7 +10,6 @@ import { StudyNotesGenerator } from '@/components/medico/study-notes-generator';
 import { McqGenerator } from '@/components/medico/mcq-generator';
 import { StudyTimetableCreator } from '@/components/medico/study-timetable-creator';
 import { FlashcardGenerator } from '@/components/medico/flashcard-generator';
-import { SolvedQuestionPapersViewer } from '@/components/medico/solved-question-papers-viewer';
 import { MnemonicsGenerator } from '@/components/medico/mnemonics-generator';
 import { FlowchartCreator } from '@/components/medico/flowchart-creator';
 import { ClinicalCaseSimulator } from '@/components/medico/clinical-case-simulator';
@@ -32,8 +31,9 @@ import { MockExamSuite } from '@/components/medico/mock-exam-suite';
 // Define the full list of tools
 export const allMedicoToolsList: MedicoTool[] = [
   { id: 'theorycoach-generator', title: 'Study Notes Generator', description: 'Generate and view concise notes for medical topics, with AI aiming for the summarization quality of models like MedLM.', icon: NotebookText, component: StudyNotesGenerator },
-  { id: 'q-bank', title: 'Exam Paper Generator', description: "Generate mock exam papers simulating previous years, with MCQs and essay questions.", icon: BookCopy, component: SolvedQuestionPapersViewer },
+  { id: 'mock-pyqs', title: 'Mock Previous Year Question Paper', description: "Generate mock exam papers simulating previous years, with MCQs and essay questions.", icon: BookCopy, href: '/medico/mock-pyqs' },
   { id: 'mcq', title: 'MCQ Generator', description: 'Create multiple-choice questions for exam practice.', icon: FileQuestion, component: McqGenerator },
+  { id: 'cbme', title: 'CBME Competency Browser', description: 'Search and browse through CBME-aligned competencies.', icon: BookMarked, href: '/medico/cbme' },
   { id: 'flashcards', title: 'Flashcard Generator', description: 'Create digital flashcards for quick revision.', icon: Layers, component: FlashcardGenerator },
   { id: 'mnemonics', title: 'Mnemonic Generator', description: 'Create memory aids with AI-generated visuals.', icon: Lightbulb, component: MnemonicsGenerator },
   { id: 'pathomind', title: 'PathoMind', description: 'Explain any disease pathophysiology with diagrams.', icon: Brain, component: PathoMindExplainer },

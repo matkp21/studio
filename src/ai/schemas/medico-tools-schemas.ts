@@ -77,7 +77,7 @@ export type MedicoExamPaperInput = z.infer<typeof MedicoExamPaperInputSchema>;
 
 export const EssayQuestionSchema = z.object({
   question: z.string().describe('The essay question.'),
-  answer_outline: z.string().describe('A brief outline of the key points for the answer.'),
+  fullAnswer: z.string().describe('A detailed, full-length answer to the essay question, structured with headings.'),
 });
 
 export const MedicoExamPaperOutputSchema = z.object({

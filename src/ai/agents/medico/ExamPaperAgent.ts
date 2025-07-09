@@ -1,4 +1,3 @@
-
 // src/ai/agents/medico/ExamPaperAgent.ts
 'use server';
 /**
@@ -37,7 +36,7 @@ Instructions:
     - Provide exactly four distinct options. One option must have 'isCorrect' set to true.
     - The other three options should be plausible distractors with 'isCorrect' set to false.
     - Provide a brief explanation for the correct answer.
-3.  Generate 2-3 essay-style questions that are typical for this kind of exam. For each essay, provide a brief outline of the expected answer.
+3.  Generate 2-3 essay-style questions that are typical for this kind of exam. For each essay, provide a detailed, full-length answer as if it were for a 10-mark question. Structure the answer logically with clear headings (e.g., ## Definition, ## Etiology, ## Clinical Features, ## Management).
 4.  The 'topicGenerated' field in your output must be set to "{{{examType}}}".
 5.  Generate a 'nextSteps' field with at least two relevant follow-up actions a student could take after reviewing this paper. For example, suggest generating notes for one of the essay topics or creating a study plan.
 
