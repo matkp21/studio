@@ -173,24 +173,34 @@ ${microbeData.labDiagnosis}
               <Save className="mr-2 h-4 w-4"/> Save to Library
             </Button>
             {microbeData.nextSteps && microbeData.nextSteps.length > 0 && (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline">
-                        Next Steps <ChevronDown className="ml-2 h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Recommended Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {microbeData.nextSteps.map((step, index) => (
-                        <DropdownMenuItem key={index} asChild className="cursor-pointer">
-                          <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
-                            {step.cta}
-                          </Link>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex rounded-md border">
+                  <Button asChild className="flex-grow rounded-r-none border-r-0 font-semibold">
+                    <Link href={`/medico/${microbeData.nextSteps[0].toolId}?topic=${encodeURIComponent(microbeData.nextSteps[0].prefilledTopic)}`}>
+                      {microbeData.nextSteps[0].cta}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  {microbeData.nextSteps.length > 1 && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="icon" className="rounded-l-none">
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>More Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {microbeData.nextSteps.slice(1).map((step, index) => (
+                          <DropdownMenuItem key={index} asChild className="cursor-pointer">
+                            <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
+                              {step.cta}
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
               )}
           </CardFooter>
         </Card>

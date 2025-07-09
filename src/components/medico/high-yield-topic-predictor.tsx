@@ -221,24 +221,34 @@ ${predictionResult.rationale || 'N/A'}
               <Save className="mr-2 h-4 w-4"/> Save as Note
             </Button>
              {predictionResult.nextSteps && predictionResult.nextSteps.length > 0 && (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline">
-                        Next Steps <ChevronDown className="ml-2 h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Recommended Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {predictionResult.nextSteps.map((step, index) => (
-                        <DropdownMenuItem key={index} asChild className="cursor-pointer">
-                          <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
-                            {step.cta}
-                          </Link>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex rounded-md border">
+                  <Button asChild className="flex-grow rounded-r-none border-r-0 font-semibold">
+                    <Link href={`/medico/${predictionResult.nextSteps[0].toolId}?topic=${encodeURIComponent(predictionResult.nextSteps[0].prefilledTopic)}`}>
+                      {predictionResult.nextSteps[0].cta}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  {predictionResult.nextSteps.length > 1 && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="icon" className="rounded-l-none">
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>More Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {predictionResult.nextSteps.slice(1).map((step, index) => (
+                          <DropdownMenuItem key={index} asChild className="cursor-pointer">
+                            <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
+                              {step.cta}
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
               )}
           </CardFooter>
         </Card>
