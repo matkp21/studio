@@ -1,4 +1,3 @@
-
 // src/ai/agents/medico/ExamPaperAgent.ts
 'use server';
 /**
@@ -45,6 +44,7 @@ Generate a clear and unambiguous set of Multiple Choice Questions (MCQs) based o
 - Provide exactly four distinct options. One option must have 'isCorrect' set to true.
 - The other three options should be plausible distractors with 'isCorrect' set to false.
 - Provide a brief explanation for the correct answer.
+- For each question (both MCQ and essay), include an array of relevant NMC competency codes (e.g., ["IM 1.2", "PE 3.4"]) in the 'competencyIds' field. If no specific competency applies, provide an empty array.
 
 **Output Formatting:**
 - The 'topicGenerated' field in your output must be set to "{{{examType}}}".

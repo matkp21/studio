@@ -1,7 +1,7 @@
 // src/app/medico/mock-pyqs/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -25,6 +25,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { PageWrapper } from '@/components/layout/page-wrapper';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { StructuredAnswerDetails } from '@/components/medico/library/structured-answer-details';
+import { Badge } from '@/components/ui/badge'; // Import Badge
 
 const formSchema = z.object({
   examType: z.string().min(3, { message: "Exam type must be at least 3 characters." }).max(100),
@@ -94,7 +95,7 @@ export default function MockPYQsPage() {
         <Card className="shadow-lg rounded-xl">
             <CardHeader>
                 <CardTitle className="text-xl">Generate Exam Paper</CardTitle>
-                <CardDescription>Create a mock exam paper by specifying the exam type and number of questions.</CardDescription>
+                <CardDescription>Create a mock exam paper by specifying the exam type and number of questions. AI will attempt to map questions to relevant NMC competencies.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -175,37 +176,18 @@ export default function MockPYQsPage() {
             <CardContent>
                 <ScrollArea className="h-[60vh] p-1 border bg-background rounded-lg">
                 <div className="p-4 space-y-6">
-                    {examData.mcqs && examData.mcqs.length > 0 && (
-                    <div>
-                        <h3 className="font-semibold text-lg mb-2 flex items-center gap-2"><FileQuestion className="h-5 w-5"/>Multiple Choice Questions</h3>
-                        <div className="space-y-4">
-                        {examData.mcqs.map((mcq, index) => (
-                            <Card key={index} className="p-3 bg-card/80 shadow-sm rounded-lg">
-                            <p className="font-semibold mb-2 text-foreground text-sm">Q{index + 1}: {mcq.question}</p>
-                            <ul className="space-y-1.5 text-xs">
-                                {mcq.options.map((opt, optIndex) => (
-                                <li key={optIndex} className={cn("p-2 border rounded-md transition-colors", opt.isCorrect ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400 font-medium" : "border-border")}>
-                                    {String.fromCharCode(65 + optIndex)}. {opt.text}
-                                </li>
-                                ))}
-                            </ul>
-                            {mcq.explanation && (
-                                <div className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
-                                <MarkdownRenderer content={`**Explanation:** ${mcq.explanation}`} />
-                                </div>
-                            )}
-                            </Card>
-                        ))}
-                        </div>
-                    </div>
-                    )}
                     {examData.essays && examData.essays.length > 0 && (
                     <div>
                         <h3 className="font-semibold text-lg mb-2 flex items-center gap-2"><FileText className="h-5 w-5"/>Essay Questions</h3>
                         <div className="space-y-4">
                         {examData.essays.map((essay, index) => (
-                           <Card key={`essay-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
+                           <Card key={`essay-${index}`} className="p-4 bg-card/80 shadow-sm rounded-lg">
                             <p className="font-semibold mb-2 text-foreground text-sm">Essay Q{index + 1}: {essay.question}</p>
+                            {essay.competencyIds && essay.competencyIds.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mb-2">
+                                    {essay.competencyIds.map(id => <Badge key={id} variant="secondary">{id}</Badge>)}
+                                </div>
+                            )}
                             <Accordion type="single" collapsible className="w-full">
                               <AccordionItem value="answer-10m">
                                 <AccordionTrigger>View 10-Mark Answer</AccordionTrigger>
@@ -221,6 +203,35 @@ export default function MockPYQsPage() {
                               </AccordionItem>
                             </Accordion>
                           </Card>
+                        ))}
+                        </div>
+                    </div>
+                    )}
+                    {examData.mcqs && examData.mcqs.length > 0 && (
+                    <div>
+                        <h3 className="font-semibold text-lg mb-2 flex items-center gap-2"><FileQuestion className="h-5 w-5"/>Multiple Choice Questions</h3>
+                        <div className="space-y-4">
+                        {examData.mcqs.map((mcq, index) => (
+                            <Card key={index} className="p-3 bg-card/80 shadow-sm rounded-lg">
+                            <p className="font-semibold mb-2 text-foreground text-sm">Q{index + 1}: {mcq.question}</p>
+                             {mcq.competencyIds && mcq.competencyIds.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mb-2">
+                                    {mcq.competencyIds.map(id => <Badge key={id} variant="secondary">{id}</Badge>)}
+                                </div>
+                            )}
+                            <ul className="space-y-1.5 text-xs">
+                                {mcq.options.map((opt, optIndex) => (
+                                <li key={optIndex} className={cn("p-2 border rounded-md transition-colors", opt.isCorrect ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400 font-medium" : "border-border")}>
+                                    {String.fromCharCode(65 + optIndex)}. {opt.text}
+                                </li>
+                                ))}
+                            </ul>
+                            {mcq.explanation && (
+                                <div className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
+                                <MarkdownRenderer content={`**Explanation:** ${mcq.explanation}`} />
+                                </div>
+                            )}
+                            </Card>
                         ))}
                         </div>
                     </div>

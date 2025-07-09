@@ -1,4 +1,3 @@
-
 // src/ai/schemas/medico-tools-schemas.ts
 
 /**
@@ -57,6 +56,7 @@ export const MCQSchema = z.object({
   question: z.string().describe('The MCQ question text.'),
   options: z.array(MCQOptionSchema).length(4, { message: "Each MCQ must have exactly 4 options."}).describe('Exactly four options for the MCQ, one of which must be correct.'),
   explanation: z.string().optional().describe('A brief explanation for why the correct answer is correct. This helps in learning.'),
+  competencyIds: z.array(z.string()).optional().describe("Associated NMC competency codes (e.g., 'AN 5.1')."),
 });
 export type SingleMCQ = z.infer<typeof MCQSchema>;
 
@@ -97,6 +97,7 @@ export const EssayQuestionSchema = z.object({
   question: z.string().describe('The essay question.'),
   answer10M: StructuredAnswerSchema.describe('A detailed, structured answer suitable for a 10-mark question.'),
   answer5M: z.string().describe('A condensed summary answer suitable for a 5-mark question.'),
+  competencyIds: z.array(z.string()).optional().describe("Associated NMC competency codes (e.g., 'IM 1.2')."),
 });
 export type EssayQuestion = z.infer<typeof EssayQuestionSchema>;
 
