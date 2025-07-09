@@ -1,4 +1,3 @@
-
 // src/ai/schemas/medico-tools-schemas.ts
 
 /**
