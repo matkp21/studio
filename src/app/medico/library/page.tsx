@@ -1,4 +1,3 @@
-
 // src/app/medico/library/page.tsx
 "use client";
 
@@ -8,13 +7,13 @@ import { useRouter } from 'next/navigation';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { firestore } from '@/lib/firebase';
 import { collection, query, where, getDocs, orderBy, Timestamp, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
-import { Loader2, Library, BookOpen, FileQuestion, Users, UploadCloud, Bookmark, BookmarkCheck, Lightbulb, Workflow, Layers, UserCircle } from 'lucide-react';
+import { Loader2, Library, BookOpen, FileQuestion, Users, UploadCloud, Bookmark, BookmarkCheck, Lightbulb, Workflow, Layers, UserCircle, ArrowRight, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { MCQSchema, MedicoFlashcard, EssayQuestionSchema } from '@/ai/schemas/medico-tools-schemas';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,7 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 
 
@@ -79,7 +78,7 @@ const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: Libra
     const router = useRouter();
 
     const handleAction = (tool: 'mcq' | 'flashcards' | 'notes') => {
-        const url = `/medico?tool=${tool}&topic=${encodeURIComponent(item.topic)}`;
+        const url = `/medico/${tool}?topic=${encodeURIComponent(item.topic)}`;
         router.push(url);
     };
 
@@ -109,18 +108,20 @@ const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: Libra
                     Type: <span className="capitalize">{item.type.replace('community', '')}</span> | {item.createdAt ? format(item.createdAt.toDate(), 'dd MMM yyyy') : 'Date N/A'}
                 </CardDescription>
             </CardHeader>
-            <CardContent className="p-4 pt-2 flex-grow flex items-end justify-between">
-                <Button variant="outline" size="sm" className="text-xs flex-1" onClick={() => onViewItem(item)}>
-                    View Details
-                </Button>
+            <CardContent className="p-4 pt-2 flex-grow flex items-end justify-end">
                  <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="ml-2 text-xs">Actions</Button>
+                        <Button variant="outline" size="sm" className="text-xs">
+                            Actions <ChevronDown className="ml-2 h-3 w-3" />
+                        </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => handleAction('mcq')}>Generate MCQs</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleAction('flashcards')}>Create Flashcards</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleAction('notes')}>Generate More Notes</DropdownMenuItem>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => onViewItem(item)} className="cursor-pointer">View Details</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Launch Tool</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => handleAction('notes')} className="cursor-pointer">Generate Notes</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleAction('mcq')} className="cursor-pointer">Generate MCQs</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleAction('flashcards')} className="cursor-pointer">Create Flashcards</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </CardContent>
@@ -135,6 +136,7 @@ const systems = ["Cardiovascular", "Respiratory", "Gastrointestinal", "Neurologi
 export default function StudyLibraryPage() {
   const { user, loading: authLoading } = useProMode();
   const { toast } = useToast();
+  const router = useRouter();
   
   const [myLibraryItems, setMyLibraryItems] = useState<MyLibraryItem[]>([]);
   const [communityItems, setCommunityItems] = useState<CommunityLibraryItem[]>([]);
@@ -261,6 +263,13 @@ export default function StudyLibraryPage() {
     } finally {
         setIsUploading(false);
     }
+  };
+
+  const handleActionFromDialog = (tool: 'mcq' | 'flashcards' | 'notes') => {
+    if (!activeItem) return;
+    const url = `/medico/${tool}?topic=${encodeURIComponent(activeItem.topic)}`;
+    router.push(url);
+    setActiveItem(null); // Close the dialog
   };
   
   const renderItemDetails = (item: CombinedLibraryItem) => {
@@ -471,6 +480,12 @@ export default function StudyLibraryPage() {
                 <DialogDescription>Type: {activeItem.type}</DialogDescription>
               </DialogHeader>
               <ScrollArea className="flex-grow p-6 pt-0">{renderItemDetails(activeItem)}</ScrollArea>
+              <DialogFooter className="p-4 border-t flex-wrap justify-start gap-2 bg-muted/50">
+                  <h4 className="font-semibold text-sm w-full text-foreground">Launch a tool with this topic:</h4>
+                  <Button size="sm" variant="outline" onClick={() => handleActionFromDialog('notes')}>Generate Notes</Button>
+                  <Button size="sm" variant="outline" onClick={() => handleActionFromDialog('mcq')}>Generate MCQs</Button>
+                  <Button size="sm" variant="outline" onClick={() => handleActionFromDialog('flashcards')}>Create Flashcards</Button>
+              </DialogFooter>
             </>
           )}
         </DialogContent>
