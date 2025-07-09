@@ -10,7 +10,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { MedicoExamPaperInputSchema, MedicoExamPaperOutputSchema } from '@/ai/schemas/medico-tools-schemas';
+import { MedicoExamPaperInputSchema, MedicoExamPaperOutputSchema, EssayQuestionSchema } from '@/ai/schemas/medico-tools-schemas';
 import type { z } from 'zod';
 
 export type MedicoExamPaperInput = z.infer<typeof MedicoExamPaperInputSchema>;
@@ -24,43 +24,32 @@ const examPaperPrompt = ai.definePrompt({
   name: 'medicoExamPaperPrompt',
   input: { schema: MedicoExamPaperInputSchema },
   output: { schema: MedicoExamPaperOutputSchema },
-  prompt: `You are an expert medical examiner. Your task is to generate a mock exam paper based on the following criteria.
+  prompt: `You are an expert medical examiner creating a mock exam paper based on the following criteria.
 
 Exam Type: {{{examType}}}
 {{#if year}}Focus Year (for pattern analysis): {{{year}}}{{/if}}
 Number of MCQs to generate: {{{count}}}
 
-Instructions:
-1.  Based on the exam type (and year if provided), generate a realistic mock paper.
-2.  Create a clear and unambiguous set of Multiple Choice Questions (MCQs). For each MCQ:
-    - Provide exactly four distinct options. One option must have 'isCorrect' set to true.
-    - The other three options should be plausible distractors with 'isCorrect' set to false.
-    - Provide a brief explanation for the correct answer.
-3.  Generate 2-3 essay-style questions that are typical for this kind of exam. For each essay, provide a detailed, full-length answer as if it were for a 10-mark question. Structure the answer logically with clear headings (e.g., ## Definition, ## Etiology, ## Clinical Features, ## Management).
-4.  The 'topicGenerated' field in your output must be set to "{{{examType}}}".
-5.  Generate a 'nextSteps' field with at least two relevant follow-up actions a student could take after reviewing this paper. For example, suggest generating notes for one of the essay topics or creating a study plan.
+Your primary task is to generate a comprehensive JSON object containing a realistic mock paper with MCQs and structured essay questions, plus relevant next study steps.
 
-**CRITICAL: The 'nextSteps' field is mandatory and must not be omitted.**
+**Instructions for Essay Questions (CRITICAL):**
+Generate 2-3 essay-style questions typical for this exam. For each essay question, you MUST provide:
+1.  'question': The text of the essay question.
+2.  'answer10M': A detailed, structured 10-mark answer as a JSON object with the following fields: 'definition', 'etiology', 'pathophysiology', 'clinicalFeatures', 'investigations', 'management', and optionally 'anatomyPhysiology', 'complications', 'prognosis', 'references'. Ensure the content for each field is a comprehensive string. Omit the 'diagrams' field.
+3.  'answer5M': A separate, concise summary answer suitable for a 5-mark question, provided as a single string.
+4.  Ensure the entire response for each essay question fits the 'EssayQuestionSchema'.
 
-Example for 'nextSteps':
-[
-  {
-    "title": "Deep Dive into Essay Topic",
-    "description": "Generate comprehensive notes for one of the essay questions to prepare a full answer.",
-    "toolId": "theorycoach-generator",
-    "prefilledTopic": "[First Essay Question Topic]",
-    "cta": "Generate Notes"
-  },
-  {
-    "title": "Create a Study Plan",
-    "description": "Use the high-yield topic predictor to plan your study schedule for the {{{examType}}} exam.",
-    "toolId": "topics",
-    "prefilledTopic": "{{{examType}}}",
-    "cta": "Predict Topics"
-  }
-]
+**Instructions for MCQs:**
+Generate a clear and unambiguous set of Multiple Choice Questions (MCQs) based on the exam type. For each MCQ:
+- Provide exactly four distinct options. One option must have 'isCorrect' set to true.
+- The other three options should be plausible distractors with 'isCorrect' set to false.
+- Provide a brief explanation for the correct answer.
 
-Format your output as a valid JSON object.
+**Output Formatting:**
+- The 'topicGenerated' field in your output must be set to "{{{examType}}}".
+- The 'nextSteps' field is mandatory. Generate at least two relevant follow-up actions a student could take. Example: suggest generating detailed notes for one of the essay topics or creating a study plan.
+
+Format your entire output as a single, valid JSON object conforming to the MedicoExamPaperOutputSchema.
 `,
   config: {
     temperature: 0.6, // More creative for varied questions

@@ -68,8 +68,8 @@ const uniqueSubjects = [...new Set(competencies.map(c => c.subject))];
 const uniqueSystems = [...new Set(competencies.map(c => c.system))];
 
 export default function CBMEPage() {
-  const [selectedSubject, setSelectedSubject] = useState(uniqueSubjects[0] || '');
-  const [selectedSystem, setSelectedSystem] = useState(uniqueSystems[0] || '');
+  const [selectedSubject, setSelectedSubject] = useState('');
+  const [selectedSystem, setSelectedSystem] = useState('');
   const [search, setSearch] = useState('');
   
   const filtered = competencies.filter(
@@ -94,14 +94,16 @@ export default function CBMEPage() {
             <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Select onValueChange={setSelectedSubject} value={selectedSubject}>
-                    <SelectTrigger><SelectValue/></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="All Subjects"/></SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="">All Subjects</SelectItem>
                         {uniqueSubjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <Select onValueChange={setSelectedSystem} value={selectedSystem}>
-                    <SelectTrigger><SelectValue/></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="All Systems"/></SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="">All Systems</SelectItem>
                         {uniqueSystems.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
@@ -119,7 +121,7 @@ export default function CBMEPage() {
             </CardContent>
         </Card>
 
-        <h2 className="text-xl font-semibold mb-4 text-foreground">{selectedSystem} - {selectedSubject}</h2>
+        <h2 className="text-xl font-semibold mb-4 text-foreground">{selectedSystem || 'All Systems'} - {selectedSubject || 'All Subjects'}</h2>
 
         <div className="space-y-3">
             <AnimatePresence>

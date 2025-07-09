@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import type { MCQSchema, MedicoFlashcard, EssayQuestionSchema } from '@/ai/schemas/medico-tools-schemas';
+import type { MCQSchema, MedicoFlashcard, EssayQuestion, StructuredAnswer } from '@/ai/schemas/medico-tools-schemas';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 
 // Define types for library items
@@ -41,7 +42,7 @@ interface MyLibraryItem extends BaseLibraryItem {
   notes?: string;
   summaryPoints?: string[];
   mcqs?: MCQSchema[];
-  essays?: EssayQuestionSchema[];
+  essays?: EssayQuestion[];
   difficulty?: 'easy' | 'medium' | 'hard';
   examType?: 'university' | 'neet-pg' | 'usmle';
   summary?: string;
@@ -132,6 +133,33 @@ const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: Libra
 
 const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "Ophthalmology", "ENT", "General Medicine", "General Surgery", "Obstetrics & Gynaecology", "Pediatrics", "Other"] as const;
 const systems = ["Cardiovascular", "Respiratory", "Gastrointestinal", "Neurological", "Musculoskeletal", "Endocrine", "Genitourinary", "Integumentary", "Hematological", "Immunological", "Other"] as const;
+
+const StructuredAnswerDetails: React.FC<{ answer: StructuredAnswer }> = ({ answer }) => {
+  const fields = [
+    { label: 'Definition', value: answer.definition },
+    { label: 'Anatomy/Physiology', value: answer.anatomyPhysiology },
+    { label: 'Etiology', value: answer.etiology },
+    { label: 'Pathophysiology', value: answer.pathophysiology },
+    { label: 'Clinical Features', value: answer.clinicalFeatures },
+    { label: 'Investigations', value: answer.investigations },
+    { label: 'Management', value: answer.management },
+    { label: 'Complications', value: answer.complications },
+    { label: 'Prognosis', value: answer.prognosis },
+    { label: 'References', value: answer.references },
+  ];
+  return (
+    <Accordion type="single" collapsible className="w-full">
+      {fields.filter(f => f.value).map((field, index) => (
+        <AccordionItem value={`item-${index}`} key={field.label}>
+          <AccordionTrigger>{field.label}</AccordionTrigger>
+          <AccordionContent>
+            <MarkdownRenderer content={field.value || ''} />
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
+  );
+};
 
 export default function StudyLibraryPage() {
   const { user, loading: authLoading } = useProMode();
@@ -292,7 +320,6 @@ export default function StudyLibraryPage() {
                 </>
             );
         case 'mcqs':
-        case 'examPaper':
             return (
                 <div className="space-y-4">
                 {myItem.mcqs?.map((mcq, index) => (
@@ -312,14 +339,39 @@ export default function StudyLibraryPage() {
                     )}
                   </Card>
                 ))}
-                {myItem.essays?.map((essay, index) => (
-                  <Card key={`essay-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
-                    <p className="font-semibold mb-2 text-foreground text-sm">Essay Q{index + 1}: {essay.question}</p>
-                    <div className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
-                       <MarkdownRenderer content={`**Answer Outline:** ${essay.answer_outline}`} />
-                    </div>
-                  </Card>
-                ))}
+              </div>
+            );
+        case 'examPaper':
+            return (
+                 <div className="space-y-4">
+                    {myItem.mcqs?.map((mcq, index) => (
+                    <Card key={`mcq-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
+                        <p className="font-semibold mb-2 text-foreground text-sm">MCQ Q{index + 1}: {mcq.question}</p>
+                        <ul className="space-y-1.5 text-xs">{mcq.options.map((opt, i) => <li key={i} className={cn("p-2 border rounded-md", opt.isCorrect && "border-green-500 bg-green-500/10")}>{opt.text}</li>)}</ul>
+                        {mcq.explanation && <div className="text-xs mt-2 text-muted-foreground italic border-t pt-2"><MarkdownRenderer content={`**Explanation:** ${mcq.explanation}`} /></div>}
+                    </Card>
+                    ))}
+                    {myItem.essays?.map((essay, index) => (
+                    <Card key={`essay-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
+                        <p className="font-semibold mb-2 text-foreground text-sm">Essay Q{index + 1}: {essay.question}</p>
+                        <div className="text-sm mt-2 space-y-3">
+                           <Accordion type="single" collapsible className="w-full">
+                                <AccordionItem value="answer-10m">
+                                    <AccordionTrigger>View 10-Mark Answer</AccordionTrigger>
+                                    <AccordionContent>
+                                        <StructuredAnswerDetails answer={essay.answer10M} />
+                                    </AccordionContent>
+                                </AccordionItem>
+                                 <AccordionItem value="answer-5m">
+                                    <AccordionTrigger>View 5-Mark Answer</AccordionTrigger>
+                                    <AccordionContent>
+                                        <MarkdownRenderer content={essay.answer5M} />
+                                    </AccordionContent>
+                                </AccordionItem>
+                           </Accordion>
+                        </div>
+                    </Card>
+                    ))}
               </div>
             );
         case 'mnemonic':

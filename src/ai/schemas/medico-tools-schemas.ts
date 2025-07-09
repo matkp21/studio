@@ -75,14 +75,34 @@ export const MedicoExamPaperInputSchema = z.object({
 });
 export type MedicoExamPaperInput = z.infer<typeof MedicoExamPaperInputSchema>;
 
+// New structured answer schema for essay questions
+const StructuredAnswerSchema = z.object({
+  definition: z.string().describe("A clear, concise definition of the topic."),
+  anatomyPhysiology: z.string().optional().describe("Brief overview of relevant anatomy or physiology."),
+  etiology: z.string().describe("List of causes and risk factors."),
+  pathophysiology: z.string().describe("Explanation of the disease mechanism."),
+  clinicalFeatures: z.string().describe("Details on signs and symptoms."),
+  investigations: z.string().describe("List of relevant investigations (e.g., Blood tests, Imaging)."),
+  management: z.string().describe("Details on management (e.g., Medical, Surgical)."),
+  complications: z.string().optional().describe("Potential complications."),
+  prognosis: z.string().optional().describe("Likely outcome of the condition."),
+  diagrams: z.array(z.string().url()).optional().describe("Array of URLs to diagrams. Omit this field for now as image generation is disabled."),
+  references: z.string().optional().describe("Standard textbook references (e.g., 'Bailey & Love 27th Ed')."),
+});
+export type StructuredAnswer = z.infer<typeof StructuredAnswerSchema>;
+
+
 export const EssayQuestionSchema = z.object({
   question: z.string().describe('The essay question.'),
-  fullAnswer: z.string().describe('A detailed, full-length answer to the essay question, structured with headings.'),
+  answer10M: StructuredAnswerSchema.describe('A detailed, structured answer suitable for a 10-mark question.'),
+  answer5M: z.string().describe('A condensed summary answer suitable for a 5-mark question.'),
 });
+export type EssayQuestion = z.infer<typeof EssayQuestionSchema>;
+
 
 export const MedicoExamPaperOutputSchema = z.object({
   mcqs: z.array(MCQSchema).optional().describe('An array of generated MCQs for the exam.'),
-  essays: z.array(EssayQuestionSchema).optional().describe('An array of generated essay questions.'),
+  essays: z.array(EssayQuestionSchema).optional().describe('An array of generated essay questions with structured 10-mark answers and concise 5-mark answers.'),
   topicGenerated: z.string().describe('The exam type for which this paper was generated.'),
   nextSteps: z.array(NextStepSchema).describe('Suggested next actions after reviewing the exam.'),
 });
