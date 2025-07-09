@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, TrendingUp, Wand2, ListChecks, Save, ArrowRight } from 'lucide-react';
+import { Loader2, TrendingUp, Wand2, ListChecks, Save, ArrowRight, ChevronDown } from 'lucide-react';
 import { predictHighYieldTopics, type MedicoTopicPredictorInput, type MedicoTopicPredictorOutput } from '@/ai/agents/medico/HighYieldTopicPredictorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
@@ -18,6 +18,7 @@ import { useProMode } from '@/contexts/pro-mode-context';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 import Link from 'next/link';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const formSchema = z.object({
   examType: z.string().min(3, { message: "Exam type must be at least 3 characters." }).max(100, { message: "Exam type too long."}),
@@ -215,31 +216,29 @@ ${predictionResult.rationale || 'N/A'}
                 )}
             </div>
           </CardContent>
-          <CardFooter className="p-4 border-t flex flex-col items-start gap-4">
+          <CardFooter className="p-4 border-t flex items-center justify-between">
             <Button onClick={handleSaveToLibrary} disabled={!user}>
               <Save className="mr-2 h-4 w-4"/> Save as Note
             </Button>
              {predictionResult.nextSteps && predictionResult.nextSteps.length > 0 && (
-                <div className="w-full space-y-3">
-                    <h4 className="font-semibold text-md text-primary">Recommended Next Steps:</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {predictionResult.nextSteps.map((step, index) => (
-                            <Card key={index} className="bg-card/50 hover:bg-card/90 transition-colors">
-                                <CardHeader className="p-3 pb-1">
-                                    <CardTitle className="text-sm">{step.title}</CardTitle>
-                                    <CardDescription className="text-xs">{step.description}</CardDescription>
-                                </CardHeader>
-                                <CardFooter className="p-3 pt-1">
-                                    <Button variant="outline" size="xs" asChild className="w-full">
-                                        <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
-                                            {step.cta} <ArrowRight className="ml-2 h-3 w-3"/>
-                                        </Link>
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline">
+                        Next Steps <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Recommended Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {predictionResult.nextSteps.map((step, index) => (
+                        <DropdownMenuItem key={index} asChild className="cursor-pointer">
+                          <Link href={`/medico/${step.toolId}?topic=${encodeURIComponent(step.prefilledTopic)}`}>
+                            {step.cta}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
               )}
           </CardFooter>
         </Card>
