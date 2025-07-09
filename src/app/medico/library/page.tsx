@@ -316,7 +316,7 @@ export default function StudyLibraryPage() {
                   <Card key={`essay-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
                     <p className="font-semibold mb-2 text-foreground text-sm">Essay Q{index + 1}: {essay.question}</p>
                     <div className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
-                       <MarkdownRenderer content={`**Answer Outline:** ${essay.answer_outline}`} />
+                       <MarkdownRenderer content={`**Answer Outline:** ${essay.fullAnswer}`} />
                     </div>
                   </Card>
                 ))}
