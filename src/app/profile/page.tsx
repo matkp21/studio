@@ -1,3 +1,4 @@
+
 // src/app/profile/page.tsx
 "use client";
 
@@ -44,7 +45,7 @@ export default function ProfilePage() {
               View and manage your MediAssistant profile details.
             </CardDescription>
           </CardHeader>
-          <ProfileDisplay initialUser={placeholderUser} userRole={userRole} />
+          <ProfileDisplay initialUser={placeholderUser} />
         </Card>
       </div>
     </PageWrapper>

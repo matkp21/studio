@@ -1,3 +1,4 @@
+
 import { HeartPulse } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -8,7 +9,7 @@ interface LogoProps {
 
 export function Logo({ simple = false, className }: LogoProps) {
   return (
-    <div className={cn("flex items-center gap-2 p-1", className)}>
+    <div className={cn("flex items-center gap-2", className)}>
       <div className={cn(
         "flex items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm",
         simple ? "h-8 w-8" : "h-9 w-9" // Conditional sizing for icon container
