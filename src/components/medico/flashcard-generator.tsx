@@ -1,4 +1,3 @@
-
 // src/components/medico/flashcard-generator.tsx
 "use client";
 
@@ -12,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Layers, Wand2, ArrowLeftRight, CheckCircle, XCircle, Save, ArrowRight, ChevronDown } from 'lucide-react';
-import { generateFlashcards, type MedicoFlashcardGeneratorInput, type MedicoFlashcardGeneratorOutput, type MedicoFlashcard } from '@/ai/agents/medico/FlashcardGeneratorAgent';
+import { generateFlashcards, type MedicoFlashcardGeneratorInput, type MedicoFlashcard } from '@/ai/agents/medico/FlashcardGeneratorAgent';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -24,6 +23,7 @@ import React, { useState, useEffect } from 'react';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MedicoFlashcardGeneratorOutputSchema } from '@/ai/schemas/medico-tools-schemas';
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters long." }).max(100, { message: "Topic too long." }),
@@ -44,14 +44,13 @@ interface FlashcardGeneratorProps {
   initialTopic?: string | null;
 }
 
-
 export function FlashcardGenerator({ initialTopic }: FlashcardGeneratorProps) {
   const { toast } = useToast();
   const { user } = useProMode();
   const [generatedFlashcards, setGeneratedFlashcards] = useState<FlashcardDisplay[] | null>(null);
   const [currentTopic, setCurrentTopic] = useState<string | null>(null);
 
-  const { execute: runGenerateFlashcards, data: aiData, isLoading, error, reset } = useAiAgent(generateFlashcards, {
+  const { execute: runGenerateFlashcards, data: aiData, isLoading, error, reset } = useAiAgent(generateFlashcards, MedicoFlashcardGeneratorOutputSchema, {
     onSuccess: async (data, input) => {
       if (!data?.flashcards || !data.topicGenerated) {
         toast({
@@ -70,7 +69,6 @@ export function FlashcardGenerator({ initialTopic }: FlashcardGeneratorProps) {
       setGeneratedFlashcards(displayFlashcards);
       setCurrentTopic(data.topicGenerated);
       
-      // Track Progress silently unless there is an error
       try {
         await trackProgress({
             activityType: 'notes_review',
@@ -81,7 +79,6 @@ export function FlashcardGenerator({ initialTopic }: FlashcardGeneratorProps) {
       }
     },
   });
-
 
   const form = useForm<FlashcardFormValues>({
     resolver: zodResolver(formSchema),
@@ -147,7 +144,6 @@ export function FlashcardGenerator({ initialTopic }: FlashcardGeneratorProps) {
       toast({ title: "Save Failed", description: "Could not save flashcards to your library.", variant: "destructive" });
     }
   };
-
 
   return (
     <div className="space-y-6">

@@ -12,18 +12,20 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
-import { generateExamPaper, type MedicoExamPaperInput, type MedicoExamPaperOutput } from '@/ai/agents/medico/ExamPaperAgent';
+import { generateExamPaper, type MedicoExamPaperInput, MedicoExamPaperOutputSchema, type MedicoExamPaperOutput } from '@/ai/agents/medico/ExamPaperAgent';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormMessage } from '@/components/ui/form';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useAiAgent } from '@/hooks/use-ai-agent';
 
-type Question = MedicoExamPaperOutput['mcqs'][number];
+type Question = Exclude<MedicoExamPaperOutput['mcqs'], undefined>[number];
+
 
 interface Exam {
   id: string;
@@ -46,13 +48,50 @@ export function MockExamSuite() {
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
   const [examResult, setExamResult] = useState<{ score: number; correct: number; total: number } | null>(null);
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
   const { user } = useProMode();
+
+  const { execute: runGenerateExam, data: examData, isLoading, error } = useAiAgent(
+    generateExamPaper, 
+    MedicoExamPaperOutputSchema,
+    {
+      onSuccess: (data) => {
+        if (!data.mcqs || data.mcqs.length === 0) {
+          toast({ title: "No MCQs Generated", description: "The AI did not generate any multiple-choice questions for this exam.", variant: "destructive" });
+          return;
+        }
+        const exam: Exam = {
+          id: `exam-${Date.now()}`,
+          title: data.topicGenerated,
+          timeLimitMinutes: data.mcqs.length,
+          questions: data.mcqs,
+        };
+        startExam(exam);
+      }
+    }
+  );
 
   const form = useForm<ExamFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { examType: "Final MBBS Prof Mock", count: 10 },
   });
+  
+  const startExam = useCallback((exam: Exam) => {
+    setActiveExam(exam);
+    setTimeLeft(exam.timeLimitMinutes * 60);
+    setExamResult(null);
+    setUserAnswers({});
+    const newTimerId = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(newTimerId);
+          handleSubmitExam(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    setTimerId(newTimerId);
+  }, []); // dependencies will be added back if needed
 
   const handleSubmitExam = useCallback((timeUp = false) => {
     if (!activeExam) return;
@@ -84,45 +123,9 @@ export function MockExamSuite() {
   }, [activeExam, timerId, userAnswers, toast]);
 
 
-  const startExam = useCallback((examData: MedicoExamPaperOutput) => {
-    if (!examData.mcqs || examData.mcqs.length === 0) {
-      toast({ title: "No MCQs Generated", description: "The AI did not generate any multiple-choice questions for this exam.", variant: "destructive" });
-      return;
-    }
-    const exam: Exam = {
-      id: `exam-${Date.now()}`,
-      title: examData.topicGenerated,
-      timeLimitMinutes: examData.mcqs.length, // 1 minute per MCQ
-      questions: examData.mcqs,
-    };
-    setActiveExam(exam);
-    setTimeLeft(exam.timeLimitMinutes * 60);
-    setExamResult(null);
-    setUserAnswers({});
-    const newTimerId = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(newTimerId);
-          handleSubmitExam(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    setTimerId(newTimerId);
-  }, [toast, handleSubmitExam]);
-
   const handleGenerateAndStart: SubmitHandler<ExamFormValues> = async (data) => {
-    setIsLoading(true);
-    try {
-      const input: MedicoExamPaperInput = { examType: data.examType, count: data.count };
-      const examData = await generateExamPaper(input);
-      startExam(examData);
-    } catch (err) {
-      toast({ title: "Failed to Generate Exam", description: err instanceof Error ? err.message : "An unknown error occurred.", variant: 'destructive' });
-    } finally {
-      setIsLoading(false);
-    }
+    const input: MedicoExamPaperInput = { examType: data.examType, count: data.count };
+    await runGenerateExam(input);
   };
   
   const handleAnswerChange = (questionId: string, answerIndex: number) => {
@@ -137,7 +140,7 @@ export function MockExamSuite() {
   };
 
   const handleSaveToLibrary = async () => {
-    if (!activeExam || !user) {
+    if (!activeExam || !user || !examData) {
       toast({ title: "Cannot Save", description: "No active exam to save or user not logged in.", variant: "destructive" });
       return;
     }
@@ -151,7 +154,8 @@ This mock exam contained ${activeExam.questions.length} questions.
         type: 'examPaper',
         topic: activeExam.title,
         userId: user.uid,
-        mcqs: activeExam.questions,
+        mcqs: examData.mcqs,
+        essays: examData.essays,
         createdAt: serverTimestamp(),
       });
       toast({ title: "Saved to Library", description: "This mock exam has been saved." });

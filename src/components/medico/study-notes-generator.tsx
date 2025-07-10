@@ -1,4 +1,3 @@
-
 // src/components/medico/study-notes-generator.tsx
 "use client";
 
@@ -12,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, BookOpen, Wand2, FileText, Save, ArrowRight, ChevronDown } from 'lucide-react';
-import { generateStudyNotes } from '@/ai/agents/medico/StudyNotesAgent';
+import { generateStudyNotes, type StudyNotesGeneratorOutput } from '@/ai/agents/medico/StudyNotesAgent';
 import { useToast } from '@/hooks/use-toast';
 import { useAiAgent } from '@/hooks/use-ai-agent';
 import { useProMode } from '@/contexts/pro-mode-context';
@@ -25,6 +24,7 @@ import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MermaidRenderer } from '@/components/markdown/mermaid-renderer';
+import { StudyNotesGeneratorOutputSchema } from '@/ai/schemas/medico-tools-schemas';
 
 const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "Ophthalmology", "ENT", "General Medicine", "General Surgery", "Obstetrics & Gynaecology", "Pediatrics", "Other"] as const;
 const systems = ["Cardiovascular", "Respiratory", "Gastrointestinal", "Neurological", "Musculoskeletal", "Endocrine", "Genitourinary", "Integumentary", "Hematological", "Immunological", "Other"] as const;
@@ -49,7 +49,7 @@ const seedQuestions = [
 export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) {
   const { toast } = useToast();
   const { user } = useProMode();
-  const { execute: runGenerateAnswer, data: generatedAnswer, isLoading, error, reset } = useAiAgent(generateStudyNotes, {
+  const { execute: runGenerateAnswer, data: generatedAnswer, isLoading, error, reset } = useAiAgent(generateStudyNotes, StudyNotesGeneratorOutputSchema, {
      onSuccess: async (data, input) => {
       toast({
           title: "Structured Notes Generated!",
@@ -60,10 +60,6 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
         await trackProgress({
             activityType: 'notes_review',
             topic: input.topic,
-        });
-        toast({
-            title: "Progress Tracked!",
-            description: "This activity has been added to your progress."
         });
       } catch (progressError) {
           console.warn("Could not track progress:", progressError);
