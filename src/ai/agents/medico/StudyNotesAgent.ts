@@ -25,7 +25,7 @@ const studyNotesPrompt = ai.definePrompt({
   name: 'medicoStudyNotesPrompt',
   input: { schema: StudyNotesGeneratorInputSchema },
   output: { schema: StudyNotesGeneratorOutputSchema },
-  prompt: `You are an AI medical expert. Your primary task is to generate a comprehensive JSON object containing structured study notes AND a list of relevant next study steps for a medical student.
+  prompt: `You are an AI medical expert. Your primary task is to generate a comprehensive JSON object containing structured study notes, a separate array of summary points, a Mermaid.js diagram, and a list of relevant next study steps for a medical student.
 
 The JSON object you generate MUST have four fields: 'notes', 'summaryPoints', 'diagram', and 'nextSteps'.
 
@@ -54,24 +54,21 @@ Example for 'nextSteps':
 Topic/Question: {{{topic}}}
 Desired Answer Length: {{{answerLength}}}
 
-1.  **'notes' field**: Generate comprehensive notes on the topic. Strictly follow this 11-point format, using Markdown headings (e.g., '## 1. Definition'):
-    1.  **Definition**: Provide a clear, concise definition.
-    2.  **Relevant Anatomy / Physiology**: Briefly mention if critical to understanding the topic.
-    3.  **Etiology / Risk Factors**: List the causes and risk factors.
-    4.  **Pathophysiology**: Explain the mechanism of the disease.
-    5.  **Clinical Features**: Detail the signs and symptoms.
-    6.  **Investigations**: List relevant investigations under subheadings (Blood tests, Imaging, Special tests).
-    7.  **Management**: Detail the management under subheadings (Medical, Surgical if applicable).
-    8.  **Complications**: List potential complications.
-    9.  **Prognosis**: Briefly describe the likely outcome.
-    10. **Flowcharts / Tables / Diagrams**: Generate a relevant flowchart or table using Mermaid.js syntax. For example, a diagnostic pathway or a classification table. The diagram should be useful for visual learners. This Mermaid code goes into the 'diagram' field of the JSON output, NOT here in the notes.
-    11. **References**: Name 1-2 standard textbooks (e.g., Robbins, Ghai, Bailey & Love) where this topic is covered.
+1.  **'notes' field**: Generate comprehensive notes on the topic. Use Markdown headings (e.g., '## Definition'). Structure the notes under standard headings like:
+    - Definition
+    - Etiology/Risk Factors
+    - Pathophysiology
+    - Clinical Features
+    - Investigations (use subheadings like Blood tests, Imaging, etc.)
+    - Management (use subheadings like Medical, Surgical, etc.)
+    - Complications
+    - Prognosis
 
-2.  **'summaryPoints' field**: Create a separate array of 3-5 key, high-yield summary points for quick revision. Each point should be a string.
+2.  **'summaryPoints' field**: Separately, create an array of 3-5 key, high-yield summary points for quick revision. Each point must be a string.
 
-3.  **'diagram' field**: Place the Mermaid.js syntax generated in step 10 into this field as a single string. If no diagram is relevant, this can be null.
+3.  **'diagram' field**: Separately, generate a relevant flowchart or diagram using Mermaid.js syntax that visually summarizes a key pathway or classification for the topic. This must be a single string. If no diagram is relevant, this can be null.
 
-Constraint: For a '10-mark' answer, the 'notes' content should be around 500 words. For a '5-mark' answer, around 250 words.
+Constraint: For a '10-mark' answer, the 'notes' content should be detailed. For a '5-mark' answer, it should be more concise.
 Ensure the entire response is a single valid JSON object conforming to the StudyNotesGeneratorOutputSchema.
 `,
   config: {

@@ -219,7 +219,7 @@ export function StudyNotesGenerator({ initialTopic }: StudyNotesGeneratorProps) 
       {error && <Alert variant="destructive" className="rounded-lg"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
 
       {generatedAnswer && (
-        <Card className="shadow-md rounded-xl mt-6 border-primary/30 bg-gradient-to-br from-card via-card to-primary/5 relative">
+        <Card className="shadow-md rounded-xl mt-6 border-primary/30 bg-gradient-to-br from-card to-primary/5 relative">
           {isLoading && (
             <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />

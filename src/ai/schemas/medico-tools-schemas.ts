@@ -29,8 +29,8 @@ export type StudyNotesGeneratorInput = z.infer<typeof StudyNotesGeneratorInputSc
 
 export const StudyNotesGeneratorOutputSchema = z.object({
   notes: z.string().describe('Concise, AI-generated study notes on the topic, formatted for clarity with headings and bullet points where appropriate.'),
-  summaryPoints: z.array(z.string()).optional().describe('Key summary points (e.g., 3-5 points) for quick revision of the topic.'),
-  diagram: z.string().optional().describe('A Mermaid.js syntax for a flowchart or diagram relevant to the topic.'),
+  summaryPoints: z.array(z.string()).describe('A separate array of 3-5 key, high-yield summary points for quick revision of the topic.'),
+  diagram: z.string().nullable().describe('A Mermaid.js syntax for a flowchart or diagram relevant to the topic. Can be null.'),
   nextSteps: z.array(NextStepSchema).describe('A list of suggested next steps for the user to continue their study session.'),
 });
 export type StudyNotesGeneratorOutput = z.infer<typeof StudyNotesGeneratorOutputSchema>;
