@@ -1,5 +1,5 @@
 // src/types/medico-tools.ts
-import type { ReactNode, LazyExoticComponent, ComponentType } from 'react';
+import type { ReactNode, ComponentType } from 'react';
 
 export type ActiveToolId =
   | 'q-bank'
@@ -35,7 +35,7 @@ export interface MedicoTool {
   title: string;
   description: string;
   icon: React.ElementType;
-  component?: LazyExoticComponent<ComponentType<any>>; // Updated to support lazy loading 
+  component?: ComponentType<any>; // Changed from LazyExoticComponent
   href?: string; 
   comingSoon?: boolean;
   isFrequentlyUsed?: boolean; // New optional property

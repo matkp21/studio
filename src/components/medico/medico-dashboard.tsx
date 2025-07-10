@@ -11,7 +11,7 @@ import { motion, Reorder } from 'framer-motion';
 import { allMedicoToolsList } from '@/config/medico-tools-config';
 import type { MedicoTool, ActiveToolId } from '@/types/medico-tools';
 import { HeroWidgets, type HeroTask } from '@/components/homepage/hero-widgets';
-import { ProToolCard } from '@/components/pro/pro-tool-card'; // Reusing this card for consistency
+import { MedicoToolCard } from '@/components/medico/medico-tool-card'; // Changed to MedicoToolCard
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -84,8 +84,8 @@ export function MedicoDashboard() {
                     >
                     {displayedTools.map((tool) => (
                         <Reorder.Item key={tool.id} value={tool} layout>
-                          <ProToolCard 
-                            tool={tool as any} // Cast to satisfy ProToolCard's stricter type for now
+                          <MedicoToolCard 
+                            tool={tool}
                             onLaunch={setActiveDialog} 
                             isFrequentlyUsed={frequentlyUsedToolIds.includes(tool.id)} 
                             isEditMode={isEditMode} 
@@ -103,9 +103,9 @@ export function MedicoDashboard() {
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {frequentlyUsedTools.map((tool) => (
-                           <ProToolCard
+                           <MedicoToolCard
                               key={`${tool.id}-freq`}
-                              tool={tool as any}
+                              tool={tool}
                               onLaunch={setActiveDialog}
                               isFrequentlyUsed
                               isEditMode={isEditMode}
@@ -119,7 +119,7 @@ export function MedicoDashboard() {
                     <h2 className="text-2xl font-semibold text-foreground mb-5">All Medico Tools</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                         {otherTools.map((tool) => (
-                           <ProToolCard key={tool.id} tool={tool as any} onLaunch={setActiveDialog} isEditMode={isEditMode} />
+                           <MedicoToolCard key={tool.id} tool={tool} onLaunch={setActiveDialog} isEditMode={isEditMode} />
                         ))}
                     </div>
                     </section>

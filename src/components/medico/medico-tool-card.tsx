@@ -9,14 +9,16 @@ import { ArrowRight, Star, GripVertical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import type { MedicoTool } from '@/types/medico-tools';
+import { DialogTrigger } from '../ui/dialog';
 
 interface MedicoToolCardProps {
   tool: MedicoTool;
   isFrequentlyUsed?: boolean;
   isEditMode?: boolean;
+  onLaunch: (toolId: MedicoTool['id']) => void;
 }
 
-const MedicoToolCardComponent: React.FC<MedicoToolCardProps> = ({ tool, isFrequentlyUsed, isEditMode }) => {
+const MedicoToolCardComponent: React.FC<MedicoToolCardProps> = ({ tool, isFrequentlyUsed, isEditMode, onLaunch }) => {
   const cardContent = (
     <motion.div
       whileHover={!isEditMode ? { y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.1)" } : {}}
@@ -81,11 +83,20 @@ const MedicoToolCardComponent: React.FC<MedicoToolCardProps> = ({ tool, isFreque
   if (isEditMode || tool.comingSoon) {
     return cardContent;
   }
+  
+  if (tool.href) {
+    return (
+      <Link href={linkHref} className="no-underline h-full flex">
+        {cardContent}
+      </Link>
+    );
+  }
 
+  // If it's not a link, it's a dialog trigger
   return (
-    <Link href={linkHref} className="no-underline h-full flex">
+    <DialogTrigger asChild onClick={() => onLaunch(tool.id)} >
       {cardContent}
-    </Link>
+    </DialogTrigger>
   );
 };
 

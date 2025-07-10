@@ -27,7 +27,7 @@ const sampleProgressData: MedicoProgressTrackerOutput & { subjects: any[], achie
     { name: 'Ob/Gyn', progress: 80, quizzesCompleted: 7, notesReviewed: 10 },
     { name: 'Pharmacology', progress: 45, quizzesCompleted: 2, notesReviewed: 18 },
   ],
-  achievements: [
+  newAchievements: [
     { id: 'ach1', name: 'Pediatrics Quiz Master', icon: Award, unlocked: true },
     { id: 'ach2', name: 'Surgery Note Taker', icon: CheckCircle, unlocked: true },
     { id: 'ach3', name: 'Study Streak: 7 Days', icon: Target, unlocked: false },
@@ -156,14 +156,14 @@ export default function ProgressTracker() {
           </CardHeader>
           <CardContent>
              <div className="space-y-3">
-              {progressData.achievements.map(ach => (
-                <div key={ach.id} className={`flex items-center gap-3 p-2 border rounded-lg ${ach.unlocked ? 'border-green-500/50 bg-green-500/10' : 'border-dashed opacity-70'}`}>
-                  <div className={`p-1.5 rounded-full ${ach.unlocked ? 'bg-green-600' : 'bg-muted-foreground'}`}>
-                    <ach.icon className={`h-5 w-5 ${ach.unlocked ? 'text-white' : 'text-background'}`} />
+              {progressData.newAchievements.map(ach => (
+                <div key={(ach as any).id} className={`flex items-center gap-3 p-2 border rounded-lg ${(ach as any).unlocked ? 'border-green-500/50 bg-green-500/10' : 'border-dashed opacity-70'}`}>
+                  <div className={`p-1.5 rounded-full ${(ach as any).unlocked ? 'bg-green-600' : 'bg-muted-foreground'}`}>
+                    <Award className={`h-5 w-5 ${(ach as any).unlocked ? 'text-white' : 'text-background'}`} />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{ach.name}</p>
-                    {!ach.unlocked && <p className="text-xs text-muted-foreground">(Locked)</p>}
+                    <p className="text-sm font-medium">{(ach as any).name}</p>
+                    {!(ach as any).unlocked && <p className="text-xs text-muted-foreground">(Locked)</p>}
                   </div>
                 </div>
               ))}

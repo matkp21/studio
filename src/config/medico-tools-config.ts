@@ -1,4 +1,3 @@
-
 // src/config/medico-tools-config.ts
 import type { MedicoTool } from '@/types/medico-tools';
 import {
@@ -7,28 +6,28 @@ import {
 } from 'lucide-react';
 import React from 'react';
 
-// Lazy load components for better performance
-const StudyNotesGenerator = React.lazy(() => import('@/components/medico/study-notes-generator').then(m => ({ default: m.StudyNotesGenerator })));
-const McqGenerator = React.lazy(() => import('@/components/medico/mcq-generator').then(m => ({ default: m.McqGenerator })));
-const StudyTimetableCreator = React.lazy(() => import('@/components/medico/study-timetable-creator').then(m => ({ default: m.StudyTimetableCreator })));
-const FlashcardGenerator = React.lazy(() => import('@/components/medico/flashcard-generator').then(m => ({ default: m.FlashcardGenerator })));
-const MnemonicsGenerator = React.lazy(() => import('@/components/medico/mnemonics-generator').then(m => ({ default: m.MnemonicsGenerator })));
-const FlowchartCreator = React.lazy(() => import('@/components/medico/flowchart-creator').then(m => ({ default: m.FlowchartCreator })));
-const ClinicalCaseSimulator = React.lazy(() => import('@/components/medico/clinical-case-simulator').then(m => ({ default: m.ClinicalCaseSimulator })));
-const DifferentialDiagnosisTrainer = React.lazy(() => import('@/components/medico/differential-diagnosis-trainer').then(m => ({ default: m.DifferentialDiagnosisTrainer })));
-const PathoMindExplainer = React.lazy(() => import('@/components/medico/pathomind-explainer').then(m => ({ default: m.PathoMindExplainer })));
-const PharmaGenie = React.lazy(() => import('@/components/medico/pharma-genie').then(m => ({ default: m.PharmaGenie })));
-const MicroMate = React.lazy(() => import('@/components/medico/micro-mate').then(m => ({ default: m.MicroMate })));
-const DiagnoBot = React.lazy(() => import('@/components/medico/diagno-bot').then(m => ({ default: m.DiagnoBot })));
-const HighYieldTopicPredictor = React.lazy(() => import('@/components/medico/high-yield-topic-predictor').then(m => ({ default: m.HighYieldTopicPredictor })));
-const AnatomyVisualizer = React.lazy(() => import('@/components/medico/anatomy-visualizer').then(m => ({ default: m.AnatomyVisualizer })));
-const DrugDosageCalculator = React.lazy(() => import('@/components/medico/drug-dosage-calculator').then(m => ({ default: m.DrugDosageCalculator })));
-const NoteSummarizer = React.lazy(() => import('@/components/medico/note-summarizer').then(m => ({ default: m.NoteSummarizer })));
-const VirtualPatientRounds = React.lazy(() => import('@/components/medico/virtual-patient-rounds').then(m => ({ default: m.VirtualPatientRounds })));
-const ProgressTracker = React.lazy(() => import('@/components/medico/progress-tracker').then(m => ({ default: m.ProgressTracker })));
-const SmartDictation = React.lazy(() => import('@/components/medico/smart-dictation').then(m => ({ default: m.SmartDictation })));
-const GamifiedCaseChallenges = React.lazy(() => import('@/components/medico/gamified-case-challenges').then(m => ({ default: m.GamifiedCaseChallenges })));
-const MockExamSuite = React.lazy(() => import('@/components/medico/mock-exam-suite').then(m => ({ default: m.MockExamSuite })));
+// Regular imports instead of lazy loading
+import { StudyNotesGenerator } from '@/components/medico/study-notes-generator';
+import { McqGenerator } from '@/components/medico/mcq-generator';
+import { StudyTimetableCreator } from '@/components/medico/study-timetable-creator';
+import { FlashcardGenerator } from '@/components/medico/flashcard-generator';
+import { MnemonicsGenerator } from '@/components/medico/mnemonics-generator';
+import { FlowchartCreator } from '@/components/medico/flowchart-creator';
+import ClinicalCaseSimulator from '@/components/medico/clinical-case-simulator';
+import DifferentialDiagnosisTrainer from '@/components/medico/differential-diagnosis-trainer';
+import { PathoMindExplainer } from '@/components/medico/pathomind-explainer';
+import { PharmaGenie } from '@/components/medico/pharma-genie';
+import MicroMate from '@/components/medico/micro-mate';
+import { DiagnoBot } from '@/components/medico/diagno-bot';
+import { HighYieldTopicPredictor } from '@/components/medico/high-yield-topic-predictor';
+import AnatomyVisualizer from '@/components/medico/anatomy-visualizer';
+import DrugDosageCalculator from '@/components/medico/drug-dosage-calculator';
+import NoteSummarizer from '@/components/medico/note-summarizer';
+import VirtualPatientRounds from '@/components/medico/virtual-patient-rounds';
+import ProgressTracker from '@/components/medico/progress-tracker';
+import SmartDictation from '@/components/medico/smart-dictation';
+import GamifiedCaseChallenges from '@/components/medico/gamified-case-challenges';
+import MockExamSuite from '@/components/medico/mock-exam-suite';
 
 // Define the full list of tools
 export const allMedicoToolsList: MedicoTool[] = [
