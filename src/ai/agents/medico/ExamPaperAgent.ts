@@ -10,7 +10,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { MedicoExamPaperInputSchema, MedicoExamPaperOutputSchema, EssayQuestionSchema } from '@/ai/schemas/medico-tools-schemas';
+import { MedicoExamPaperInputSchema, MedicoExamPaperOutputSchema } from '@/ai/schemas/medico-tools-schemas';
 import type { z } from 'zod';
 
 export type MedicoExamPaperInput = z.infer<typeof MedicoExamPaperInputSchema>;

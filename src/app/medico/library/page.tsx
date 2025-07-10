@@ -25,6 +25,7 @@ import Image from 'next/image';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
 import { LibraryCard, type LibraryCardProps, type BaseLibraryItem as LibraryItemForCard } from '@/components/medico/library/library-card';
+import { StructuredAnswerDetails } from '@/components/medico/library/structured-answer-details';
 
 
 // Define types for library items
@@ -229,7 +230,6 @@ export default function StudyLibraryPage() {
                 </>
             );
         case 'mcqs':
-        case 'examPaper':
             return (
                 <div className="space-y-4">
                 {myItem.mcqs?.map((mcq, index) => (
@@ -249,11 +249,28 @@ export default function StudyLibraryPage() {
                     )}
                   </Card>
                 ))}
+              </div>
+            );
+        case 'examPaper':
+            return (
+                <div className="space-y-4">
+                {myItem.mcqs?.map((mcq, index) => (
+                  <Card key={index} className="p-3 bg-card/80 shadow-sm rounded-lg">
+                    <p className="font-semibold mb-2 text-foreground text-sm">MCQ Q{index + 1}: {mcq.question}</p>
+                    <ul className="space-y-1.5 text-xs">
+                      {mcq.options.map((opt, optIndex) => (
+                        <li key={optIndex} className={cn("p-2 border rounded-md transition-colors", opt.isCorrect ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400 font-medium" : "border-border")}>
+                          {String.fromCharCode(65 + optIndex)}. {opt.text}
+                        </li>
+                      ))}
+                    </ul>
+                  </Card>
+                ))}
                 {myItem.essays?.map((essay, index) => (
                   <Card key={`essay-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
                     <p className="font-semibold mb-2 text-foreground text-sm">Essay Q{index + 1}: {essay.question}</p>
                     <div className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
-                       <MarkdownRenderer content={`**Answer Outline:** ${essay.answer5M}`} />
+                       <StructuredAnswerDetails answer={essay.answer10M} />
                     </div>
                   </Card>
                 ))}

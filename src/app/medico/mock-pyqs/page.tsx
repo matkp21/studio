@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, BookCopy, Wand2, Save, ArrowRight, ChevronDown, FileQuestion, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAiAgent } from '@/hooks/use-ai-agent';
-import { generateExamPaper, type MedicoExamPaperOutput } from '@/ai/agents/medico/ExamPaperAgent';
+import { generateExamPaper, type MedicoExamPaperInput, type MedicoExamPaperOutput } from '@/ai/agents/medico/ExamPaperAgent';
 import { useProMode } from '@/contexts/pro-mode-context';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
@@ -26,6 +26,7 @@ import { PageWrapper } from '@/components/layout/page-wrapper';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { StructuredAnswerDetails } from '@/components/medico/library/structured-answer-details';
 import { Badge } from '@/components/ui/badge';
+import { MedicoExamPaperOutputSchema } from '@/ai/schemas/medico-tools-schemas';
 
 const formSchema = z.object({
   examType: z.string().min(3, { message: "Exam type must be at least 3 characters." }).max(100),
@@ -37,7 +38,7 @@ type ExamPaperFormValues = z.infer<typeof formSchema>;
 export default function MockPYQsPage() {
   const { toast } = useToast();
   const { user } = useProMode();
-  const { execute: runGenerateExam, data: examData, isLoading, error, reset } = useAiAgent(generateExamPaper, {
+  const { execute: runGenerateExam, data: examData, isLoading, error, reset } = useAiAgent(generateExamPaper, MedicoExamPaperOutputSchema, {
     onSuccess: (data, input) => {
       if (!data || (!data.mcqs?.length && !data.essays?.length)) {
         toast({
