@@ -29,9 +29,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/lib/firebase';
 
 export function SettingsMenu() {
   const { userRole, selectUserRole } = useProMode();
+  const [user] = useAuthState(auth);
   const { toast } = useToast();
 
   const handleLogout = () => {
@@ -55,7 +58,7 @@ export function SettingsMenu() {
     return 'Guest';
   }
 
-  const isGuest = userRole === null;
+  const isGuest = !user; // Use auth state to determine guest status
 
   const userRolesForSelection: { value: Exclude<UserRole, null>; label: string; icon: React.ElementType }[] = [
     { value: 'pro', label: 'Professional', icon: BriefcaseMedical },
@@ -182,15 +185,6 @@ export function SettingsMenu() {
         <SettingsItem label="App Tutorials" icon={BookOpen} actionElement={<Button variant="link" size="sm" disabled>View Tutorials</Button>} />
         <SettingsItem label="Provide Feedback" icon={Edit} actionElement={<Link href="/feedback"><Button variant="outline" size="sm">Submit Feedback</Button></Link>} />
         <SettingsItem label="Report a Problem" icon={AlertTriangle} actionElement={<Button variant="outline" size="sm" disabled>Report Issue</Button>} />
-      </SettingsSection>
-      <Separator />
-
-      {/* About */}
-      <SettingsSection title="About MediAssistant" icon={Info}>
-        <SettingsItem label="App Version" description="1.0.0 (Alpha)" />
-        <SettingsItem label="What's New" actionElement={<Button variant="link" size="sm" disabled>Release Notes</Button>} />
-        <SettingsItem label="Terms of Service" actionElement={<Link href="#"><Button variant="link" size="sm">View Terms</Button></Link>} />
-        <SettingsItem label="Rate MediAssistant" actionElement={<Button variant="link" size="sm" disabled>Rate App</Button>} />
       </SettingsSection>
       <Separator />
 

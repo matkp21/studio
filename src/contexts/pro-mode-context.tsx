@@ -39,30 +39,29 @@ export const ProModeProvider = ({ children }: ProModeProviderProps) => {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    // This effect runs only on the client after mounting, preventing hydration errors.
     setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (isClient) {
-      const storedRole = localStorage.getItem('userRole') as UserRole;
-      if (user && !storedRole) {
-        // User logged in but no role selected, wait for onboarding/selection
-      } else if (storedRole) {
+    try {
+      const storedRole = localStorage.getItem('userRole') as UserRole | null;
+      if (storedRole) {
         setUserRole(storedRole);
-      } else {
-        setUserRole(null); // Guest
       }
+    } catch (e) {
+      console.warn("Could not access localStorage to get user role:", e);
     }
-  }, [user, isClient]);
-
+  }, []);
 
   const selectUserRole = useCallback((role: UserRole) => {
     setUserRole(role);
-    if (isClient) {
-      if (role) {
-        localStorage.setItem('userRole', role);
-      } else {
-        localStorage.removeItem('userRole');
+    if (isClient) { // Only access localStorage on the client
+      try {
+        if (role) {
+          localStorage.setItem('userRole', role);
+        } else {
+          localStorage.removeItem('userRole');
+        }
+      } catch (e) {
+        console.warn("Could not write to localStorage for user role:", e);
       }
     }
   }, [isClient]);

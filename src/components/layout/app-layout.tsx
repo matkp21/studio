@@ -1,3 +1,4 @@
+
 // src/components/layout/app-layout.tsx
 "use client";
 
@@ -83,12 +84,11 @@ const ThemeToggleButton = () => {
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
-  const { userRole, selectUserRole } = useProMode();
+  const { user, userRole, selectUserRole, loading: authLoading } = useProMode();
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
 
-  // Simplified state machine for initial display
   const [displayState, setDisplayState] = useState<'loading' | 'onboarding' | 'welcome' | 'app'>('loading');
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -99,26 +99,24 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const notificationBellRef = useRef<HTMLButtonElement>(null);
   
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedRole = localStorage.getItem('userRole') as UserRole | null;
-      if (storedRole && !userRole) {
-        selectUserRole(storedRole); 
-        return; 
-      }
+    if (authLoading) {
+      setDisplayState('loading');
+      return;
+    }
 
+    if (typeof window !== 'undefined') {
       const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
       const welcomeShownThisSession = sessionStorage.getItem('welcomeDisplayShown') === 'true';
 
-      if (!onboardingComplete) {
+      if (!onboardingComplete && user) {
         setDisplayState('onboarding');
-      } else if (!welcomeShownThisSession && !['/login', '/signup'].includes(pathname)) {
-        // Show the generic welcome screen for all roles. Role-specific animations are now on their respective pages.
+      } else if (user && !welcomeShownThisSession && !['/login', '/signup'].includes(pathname)) {
         setDisplayState('welcome');
       } else {
         setDisplayState('app');
       }
     }
-  }, [userRole, selectUserRole, pathname]);
+  }, [authLoading, user, pathname]);
 
 
   const fetchNotifications = useCallback(() => {
@@ -203,7 +201,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
       if (roleFromStorage && roleFromStorage !== userRole) {
           selectUserRole(roleFromStorage); 
       }
-      // After onboarding, always go to the generic welcome screen.
       setDisplayState('welcome');
     }
   };
@@ -223,7 +220,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
     return <div className="fixed inset-0 bg-background flex items-center justify-center"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
   }
 
-  if (displayState === 'onboarding') {
+  if (displayState === 'onboarding' && user) {
     return <OnboardingModal isOpen={true} onClose={handleOnboardingClose} />;
   }
 
