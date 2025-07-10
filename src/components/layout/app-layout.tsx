@@ -1,3 +1,4 @@
+
 // src/components/layout/app-layout.tsx
 "use client";
 
@@ -26,7 +27,7 @@ import { AnimatedTagline } from '@/components/layout/animated-tagline';
 import WelcomeDisplay from '@/components/welcome/welcome-display'; 
 import type { NotificationItem } from '@/types/notifications';
 import { useToast } from '@/hooks/use-toast';
-import { NotificationPanelCompact } from './notification-panel-compact'; // Import new panel
+import { NotificationPanelCompact } from './notification-panel-compact';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -395,16 +396,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </nav>
         </header>
         <main className="flex-1 flex flex-col overflow-auto relative">
-          {React.Children.map(children, child => {
-            if (React.isValidElement(child) && typeof child.type !== 'string') { 
-              return React.cloneElement(child as React.ReactElement<any>, { 
-                notifications, 
-                markNotificationAsRead: handleMarkAsRead, 
-                markAllNotificationsAsRead: handleMarkAllAsRead 
-              });
-            }
-            return child;
-          })}
+          {children}
         </main>
         <Footer />
       </SidebarInset>

@@ -1,3 +1,4 @@
+
 // src/contexts/pro-mode-context.tsx
 "use client";
 
@@ -11,7 +12,7 @@ import type { FirebaseError } from 'firebase/app';
 export type UserRole = 'pro' | 'medico' | 'diagnosis' | null;
 
 interface ProModeContextType {
-  isProMode: boolean; // Derived from userRole
+  isProMode: boolean;
   userRole: UserRole;
   selectUserRole: (role: UserRole) => void;
   user: FirebaseUser | null | undefined;
@@ -38,8 +39,9 @@ export const ProModeProvider = ({ children }: ProModeProviderProps) => {
   const [user, loading, error] = useAuthState(auth);
   const [isClient, setIsClient] = useState(false);
 
+  // This effect runs only once on the client after mounting.
+  // This correctly avoids trying to access localStorage on the server, fixing hydration errors.
   useEffect(() => {
-    // This effect runs only on the client after mounting, preventing hydration errors.
     setIsClient(true);
     try {
       const storedRole = localStorage.getItem('userRole') as UserRole | null;
@@ -53,7 +55,7 @@ export const ProModeProvider = ({ children }: ProModeProviderProps) => {
 
   const selectUserRole = useCallback((role: UserRole) => {
     setUserRole(role);
-    if (isClient) { // Only access localStorage on the client
+    if (isClient) { // Safety check to ensure localStorage is only accessed on the client.
       try {
         if (role) {
           localStorage.setItem('userRole', role);
