@@ -12,7 +12,8 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
-import { generateExamPaper, type MedicoExamPaperInput, MedicoExamPaperOutputSchema, type MedicoExamPaperOutput } from '@/ai/agents/medico/ExamPaperAgent';
+import { generateExamPaper, type MedicoExamPaperInput, type MedicoExamPaperOutput } from '@/ai/agents/medico/ExamPaperAgent';
+import { MedicoExamPaperOutputSchema } from '@/ai/schemas/medico-tools-schemas'; // Corrected import
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -25,13 +26,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAiAgent } from '@/hooks/use-ai-agent';
 
 type Question = Exclude<MedicoExamPaperOutput['mcqs'], undefined>[number];
-
+type EssayQuestion = Exclude<MedicoExamPaperOutput['essays'], undefined>[number]; // Added this type
 
 interface Exam {
   id: string;
   title: string;
   timeLimitMinutes: number;
   questions: Question[];
+  essays?: EssayQuestion[]; // Added essays to the exam interface
 }
 
 const formSchema = z.object({
@@ -62,8 +64,9 @@ export function MockExamSuite() {
         const exam: Exam = {
           id: `exam-${Date.now()}`,
           title: data.topicGenerated,
-          timeLimitMinutes: data.mcqs.length,
+          timeLimitMinutes: (data.mcqs.length * 1) + ((data.essays?.length || 0) * 5), // Adjusted time limit
           questions: data.mcqs,
+          essays: data.essays || [], // Include essays
         };
         startExam(exam);
       }
@@ -75,7 +78,8 @@ export function MockExamSuite() {
     defaultValues: { examType: "Final MBBS Prof Mock", count: 10 },
   });
   
-  const startExam = useCallback((exam: Exam) => {
+  // This callback was causing a dependency loop with handleSubmitExam. Refactored to remove useCallback here.
+  const startExam = (exam: Exam) => {
     setActiveExam(exam);
     setTimeLeft(exam.timeLimitMinutes * 60);
     setExamResult(null);
@@ -84,14 +88,30 @@ export function MockExamSuite() {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(newTimerId);
-          handleSubmitExam(true);
+          // Directly call the logic here instead of a callback to avoid stale state
+          if (!activeExam) return 0;
+           toast({ title: "Time's Up!", description: `Exam submitted automatically.`, variant: 'destructive'});
+           const correctCount = Object.entries(userAnswers).reduce((acc, [question, answerIndex]) => {
+              const q = activeExam.questions.find(q => q.question === question);
+              if (q && q.options[answerIndex]?.isCorrect) {
+                  return acc + 1;
+              }
+              return acc;
+          }, 0);
+          const score = Math.round((correctCount / activeExam.questions.length) * 100);
+          setExamResult({ score, correct: correctCount, total: activeExam.questions.length });
+          trackProgress({
+              activityType: 'mcq_session',
+              topic: `Mock Exam: ${activeExam.title}`,
+              score: score,
+          }).catch(err => console.warn("Failed to track progress for mock exam:", err));
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     setTimerId(newTimerId);
-  }, []); // dependencies will be added back if needed
+  };
 
   const handleSubmitExam = useCallback((timeUp = false) => {
     if (!activeExam) return;
@@ -208,6 +228,12 @@ This mock exam contained ${activeExam.questions.length} questions.
                                       ))}
                                   </RadioGroup>
                               </div>
+                          ))}
+                          {activeExam.essays && activeExam.essays.map((essay, index) => (
+                             <div key={essay.question} className="p-3 border rounded-lg">
+                                <p className="font-semibold text-sm mb-2">Essay Q{index+1}: {essay.question}</p>
+                                <Textarea placeholder="Type your essay answer here..." className="min-h-[120px]"/>
+                            </div>
                           ))}
                       </div>
                     </ScrollArea>
