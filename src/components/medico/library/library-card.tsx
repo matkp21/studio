@@ -21,7 +21,7 @@ export interface BaseLibraryItem {
 export interface LibraryCardProps {
   item: BaseLibraryItem;
   isBookmarked: boolean;
-  onToggleBookmark: (itemId: string) => void;
+  onToggleBookmark: (itemId: string, itemType: LibraryItemType) => void;
   onViewItem: (item: BaseLibraryItem) => void;
 }
 
@@ -50,7 +50,7 @@ const LibraryCardComponent: React.FC<LibraryCardProps> = ({ item, isBookmarked, 
             <CardHeader className="p-4 pb-2">
                 <div className="flex justify-between items-start">
                     <Icon className="h-6 w-6 text-primary mb-2 flex-shrink-0"/>
-                    <Button variant="ghost" size="iconSm" onClick={(e) => { e.stopPropagation(); onToggleBookmark(item.id); }} className="text-muted-foreground hover:text-primary">
+                    <Button variant="ghost" size="iconSm" onClick={(e) => { e.stopPropagation(); onToggleBookmark(item.id, item.type); }} className="text-muted-foreground hover:text-primary">
                         {isBookmarked ? <BookmarkCheck className="h-5 w-5 text-primary"/> : <Bookmark className="h-5 w-5"/>}
                     </Button>
                 </div>

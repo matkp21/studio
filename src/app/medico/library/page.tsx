@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import type { MCQSchema, MedicoFlashcard, EssayQuestionSchema } from '@/ai/schemas/medico-tools-schemas';
+import type { MCQSchema, MedicoFlashcard, EssayQuestion } from '@/ai/schemas/medico-tools-schemas';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MarkdownRenderer } from '@/components/markdown/markdown-renderer';
+import { LibraryCard, type LibraryCardProps, type BaseLibraryItem as LibraryItemForCard } from '@/components/medico/library/library-card';
 
 
 // Define types for library items
@@ -41,7 +42,7 @@ interface MyLibraryItem extends BaseLibraryItem {
   notes?: string;
   summaryPoints?: string[];
   mcqs?: MCQSchema[];
-  essays?: EssayQuestionSchema[];
+  essays?: EssayQuestion[];
   difficulty?: 'easy' | 'medium' | 'hard';
   examType?: 'university' | 'neet-pg' | 'usmle';
   summary?: string;
@@ -65,70 +66,6 @@ interface CommunityLibraryItem extends BaseLibraryItem {
 }
 
 type CombinedLibraryItem = MyLibraryItem | CommunityLibraryItem;
-
-// LibraryCard component
-interface LibraryCardProps {
-    item: CombinedLibraryItem;
-    isBookmarked: boolean;
-    onToggleBookmark: (itemId: string, itemType: LibraryItemType) => void;
-    onViewItem: (item: CombinedLibraryItem) => void;
-}
-
-const LibraryCard = ({ item, isBookmarked, onToggleBookmark, onViewItem }: LibraryCardProps) => {
-    const router = useRouter();
-
-    const handleAction = (tool: 'mcq' | 'flashcards' | 'notes') => {
-        const url = `/medico/${tool}?topic=${encodeURIComponent(item.topic)}`;
-        router.push(url);
-    };
-
-    const getIcon = (type: LibraryItemType) => {
-        switch (type) {
-            case 'mcqs': case 'examPaper': return FileQuestion;
-            case 'notes': case 'summary': case 'communityNote': return BookOpen;
-            case 'mnemonic': case 'communityMnemonic': return Lightbulb;
-            case 'flowchart': return Workflow;
-            case 'flashcards': return Layers;
-            default: return Library;
-        }
-    };
-    const Icon = getIcon(item.type);
-
-    return (
-        <Card className="shadow-md rounded-xl overflow-hidden hover:shadow-primary/20 transition-all duration-300 group flex flex-col">
-            <CardHeader className="p-4 pb-2">
-                <div className="flex justify-between items-start">
-                    <Icon className="h-6 w-6 text-primary mb-2 flex-shrink-0"/>
-                    <Button variant="ghost" size="iconSm" onClick={(e) => { e.stopPropagation(); onToggleBookmark(item.id, item.type); }} className="text-muted-foreground hover:text-primary">
-                        {isBookmarked ? <BookmarkCheck className="h-5 w-5 text-primary"/> : <Bookmark className="h-5 w-5"/>}
-                    </Button>
-                </div>
-                <CardTitle className="text-md line-clamp-2 font-semibold h-12">{item.topic}</CardTitle>
-                <CardDescription className="text-xs">
-                    Type: <span className="capitalize">{item.type.replace('community', '')}</span> | {item.createdAt ? format(item.createdAt.toDate(), 'dd MMM yyyy') : 'Date N/A'}
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="p-4 pt-2 flex-grow flex items-end justify-end">
-                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="text-xs">
-                            Actions <ChevronDown className="ml-2 h-3 w-3" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onViewItem(item)} className="cursor-pointer">View Details</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuLabel>Launch Tool</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleAction('notes')} className="cursor-pointer">Generate Notes</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleAction('mcq')} className="cursor-pointer">Generate MCQs</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleAction('flashcards')} className="cursor-pointer">Create Flashcards</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </CardContent>
-        </Card>
-    );
-};
-
 
 const subjects = ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "Ophthalmology", "ENT", "General Medicine", "General Surgery", "Obstetrics & Gynaecology", "Pediatrics", "Other"] as const;
 const systems = ["Cardiovascular", "Respiratory", "Gastrointestinal", "Neurological", "Musculoskeletal", "Endocrine", "Genitourinary", "Integumentary", "Hematological", "Immunological", "Other"] as const;
@@ -316,7 +253,7 @@ export default function StudyLibraryPage() {
                   <Card key={`essay-${index}`} className="p-3 bg-card/80 shadow-sm rounded-lg">
                     <p className="font-semibold mb-2 text-foreground text-sm">Essay Q{index + 1}: {essay.question}</p>
                     <div className="text-xs mt-2 text-muted-foreground italic border-t pt-2">
-                       <MarkdownRenderer content={`**Answer Outline:** ${essay.fullAnswer}`} />
+                       <MarkdownRenderer content={`**Answer Outline:** ${essay.answer5M}`} />
                     </div>
                   </Card>
                 ))}
@@ -368,7 +305,7 @@ export default function StudyLibraryPage() {
             {filteredItems.map(item => (
                 <LibraryCard 
                     key={item.id} 
-                    item={item}
+                    item={item as LibraryItemForCard}
                     isBookmarked={bookmarkedItemIds.includes(item.id)}
                     onToggleBookmark={() => handleToggleBookmark(item.id)}
                     onViewItem={setActiveItem}
