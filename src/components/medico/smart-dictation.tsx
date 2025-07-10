@@ -1,3 +1,4 @@
+
 // src/components/medico/smart-dictation.tsx
 "use client";
 
@@ -28,7 +29,7 @@ interface SavedDictation {
   createdAt: Date;
 }
 
-export function SmartDictation() {
+export default function SmartDictation() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -153,9 +154,9 @@ export function SmartDictation() {
     
     try {
       // 1. Upload audio to Storage
-      const audioRef = ref(storage, `dictations/${user.uid}/${Date.now()}.webm`);
-      await uploadBytes(audioRef, audioBlob);
-      const audioUrl = await getDownloadURL(audioRef);
+      const audioStorageRef = ref(storage, `dictations/${user.uid}/${Date.now()}.webm`);
+      await uploadBytes(audioStorageRef, audioBlob);
+      const audioUrl = await getDownloadURL(audioStorageRef);
 
       // 2. Save text and audio URL to Firestore
       await addDoc(collection(firestore, `users/${user.uid}/dictations`), {

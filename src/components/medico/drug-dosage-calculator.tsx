@@ -33,7 +33,7 @@ const formSchema = z.object({
 
 type DosageFormValues = z.infer<typeof formSchema>;
 
-export function DrugDosageCalculator() {
+export default function DrugDosageCalculator() {
   const [isLoading, setIsLoading] = useState(false);
   const [calculationResult, setCalculationResult] = useState<MedicoDrugDosageOutput | null>(null);
   const [error, setError] = useState<string | null>(null);

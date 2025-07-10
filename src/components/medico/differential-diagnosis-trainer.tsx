@@ -35,7 +35,7 @@ interface DifferentialDiagnosisTrainerProps {
     initialTopic?: string | null;
 }
 
-export function DifferentialDiagnosisTrainer({ initialTopic }: DifferentialDiagnosisTrainerProps) {
+export default function DifferentialDiagnosisTrainer({ initialTopic }: DifferentialDiagnosisTrainerProps) {
   const [caseData, setCaseData] = useState<MedicoDDTrainerOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

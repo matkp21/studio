@@ -33,7 +33,7 @@ const responseFormSchema = z.object({
 });
 type ResponseFormValues = z.infer<typeof responseFormSchema>;
 
-export function ClinicalCaseSimulator() {
+export default function ClinicalCaseSimulator() {
   const [caseData, setCaseData] = useState<MedicoClinicalCaseOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -1,3 +1,4 @@
+
 // src/components/medico/virtual-patient-rounds.tsx
 "use client";
 
@@ -32,7 +33,7 @@ const actionFormSchema = z.object({
 });
 type ActionFormValues = z.infer<typeof actionFormSchema>;
 
-export function VirtualPatientRounds() {
+export default function VirtualPatientRounds() {
   const [roundData, setRoundData] = useState<MedicoVirtualRoundsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

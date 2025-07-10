@@ -1,3 +1,4 @@
+
 // src/components/medico/flowchart-creator.tsx
 "use client";
 
@@ -11,7 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { medicalFlowchartTemplates, type FlowchartTemplate } from '@/config/flowchart-templates';
 import { useFlowEditor } from '@/hooks/use-flow-editor';
 import { nodeTypes } from './flowchart-custom-nodes';
-import { FileDown, Undo, Redo, PlusCircle, Trash2, BookCopy, Share2, Save, Wand2, Loader2, ArrowRight, ChevronDown } from 'lucide-react';
+import { FileDown, Undo, Redo, PlusCircle, Trash2, BookCopy, Save, Wand2, Loader2, ArrowRight, ChevronDown } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { useToast } from '@/hooks/use-toast';
@@ -193,7 +194,8 @@ const FlowchartEditor = () => {
                           nodes={nodes}
                           edges={edges}
                           onNodesChange={onNodesChange}
-                          onEdgesChange={onConnect}
+                          onEdgesChange={onEdgesChange}
+                          onConnect={onConnect}
                           nodeTypes={nodeTypes}
                           fitView
                           className="medico-layout-background" // Use consistent background
@@ -234,7 +236,7 @@ const FlowchartEditor = () => {
     );
 };
 
-export function FlowchartCreator() {
+export default function FlowchartCreator() {
   return (
     <ReactFlowProvider>
       <FlowchartEditor />

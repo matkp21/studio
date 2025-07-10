@@ -1,9 +1,10 @@
+
 // src/app/medico/[toolId]/page.tsx
 'use client';
 
 import { useParams, useSearchParams, notFound } from 'next/navigation';
 import { allMedicoToolsList } from '@/config/medico-tools-config';
-import React, { Suspense } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import { PageWrapper } from '@/components/layout/page-wrapper';
 import { Loader2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,10 +15,9 @@ function MedicoToolPageContent() {
     const toolId = params.toolId as string;
     const topic = searchParams.get('topic');
 
-    const tool = allMedicoToolsList.find(t => t.id === toolId);
+    const tool = useMemo(() => allMedicoToolsList.find(t => t.id === toolId), [toolId]);
 
     if (!tool || !tool.component) {
-        // This will render the not-found.tsx file in the nearest parent segment
         notFound();
     }
 
@@ -34,7 +34,13 @@ function MedicoToolPageContent() {
                     <CardDescription>{tool.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <ToolComponent initialTopic={topic} />
+                    <Suspense fallback={
+                        <div className="flex justify-center items-center min-h-[200px]">
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        </div>
+                    }>
+                        <ToolComponent initialTopic={topic} />
+                    </Suspense>
                 </CardContent>
             </Card>
         </PageWrapper>
@@ -46,11 +52,11 @@ export default function MedicoToolPage() {
         <Suspense fallback={
             <PageWrapper title="Loading Tool...">
                 <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
                 </div>
             </PageWrapper>
         }>
             <MedicoToolPageContent />
         </Suspense>
-    )
+    );
 }

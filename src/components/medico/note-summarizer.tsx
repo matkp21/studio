@@ -34,7 +34,7 @@ const formSchema = z.object({
 
 type SummarizerFormValues = z.infer<typeof formSchema>;
 
-export function NoteSummarizer() {
+export default function NoteSummarizer() {
   const [isLoading, setIsLoading] = useState(false);
   const [extractedText, setExtractedText] = useState<string | null>(null);
   const [summaryResult, setSummaryResult] = useState<MedicoNoteSummarizerOutput | null>(null);

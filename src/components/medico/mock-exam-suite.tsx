@@ -1,3 +1,4 @@
+
 // src/components/medico/mock-exam-suite.tsx
 "use client";
 
@@ -6,14 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Trophy, Clock, Loader2, PlayCircle, BarChart, CheckCircle, XCircle, FilePlus, Wand2, Save } from 'lucide-react';
+import { Trophy, Clock, Loader2, PlayCircle, BarChart, CheckCircle, XCircle, FilePlus, Wand2, Save, Textarea } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { trackProgress } from '@/ai/agents/medico/ProgressTrackerAgent';
 import { generateExamPaper, type MedicoExamPaperInput, type MedicoExamPaperOutput } from '@/ai/agents/medico/ExamPaperAgent';
-import { MedicoExamPaperOutputSchema } from '@/ai/schemas/medico-tools-schemas'; // Corrected import
+import { MedicoExamPaperOutputSchema, type EssayQuestion as EssayQuestionType } from '@/ai/schemas/medico-tools-schemas';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -26,14 +27,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAiAgent } from '@/hooks/use-ai-agent';
 
 type Question = Exclude<MedicoExamPaperOutput['mcqs'], undefined>[number];
-type EssayQuestion = Exclude<MedicoExamPaperOutput['essays'], undefined>[number]; // Added this type
+type EssayQuestion = EssayQuestionType;
 
 interface Exam {
   id: string;
   title: string;
   timeLimitMinutes: number;
   questions: Question[];
-  essays?: EssayQuestion[]; // Added essays to the exam interface
+  essays?: EssayQuestion[];
 }
 
 const formSchema = z.object({
@@ -43,7 +44,7 @@ const formSchema = z.object({
 type ExamFormValues = z.infer<typeof formSchema>;
 
 
-export function MockExamSuite() {
+export default function MockExamSuite() {
   const [activeExam, setActiveExam] = useState<Exam | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
@@ -64,9 +65,9 @@ export function MockExamSuite() {
         const exam: Exam = {
           id: `exam-${Date.now()}`,
           title: data.topicGenerated,
-          timeLimitMinutes: (data.mcqs.length * 1) + ((data.essays?.length || 0) * 5), // Adjusted time limit
+          timeLimitMinutes: (data.mcqs.length * 1) + ((data.essays?.length || 0) * 5),
           questions: data.mcqs,
-          essays: data.essays || [], // Include essays
+          essays: data.essays || [],
         };
         startExam(exam);
       }
@@ -78,7 +79,6 @@ export function MockExamSuite() {
     defaultValues: { examType: "Final MBBS Prof Mock", count: 10 },
   });
   
-  // This callback was causing a dependency loop with handleSubmitExam. Refactored to remove useCallback here.
   const startExam = (exam: Exam) => {
     setActiveExam(exam);
     setTimeLeft(exam.timeLimitMinutes * 60);
@@ -88,23 +88,7 @@ export function MockExamSuite() {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(newTimerId);
-          // Directly call the logic here instead of a callback to avoid stale state
-          if (!activeExam) return 0;
-           toast({ title: "Time's Up!", description: `Exam submitted automatically.`, variant: 'destructive'});
-           const correctCount = Object.entries(userAnswers).reduce((acc, [question, answerIndex]) => {
-              const q = activeExam.questions.find(q => q.question === question);
-              if (q && q.options[answerIndex]?.isCorrect) {
-                  return acc + 1;
-              }
-              return acc;
-          }, 0);
-          const score = Math.round((correctCount / activeExam.questions.length) * 100);
-          setExamResult({ score, correct: correctCount, total: activeExam.questions.length });
-          trackProgress({
-              activityType: 'mcq_session',
-              topic: `Mock Exam: ${activeExam.title}`,
-              score: score,
-          }).catch(err => console.warn("Failed to track progress for mock exam:", err));
+          handleSubmitExam(true); // Pass true to indicate time's up
           return 0;
         }
         return prev - 1;

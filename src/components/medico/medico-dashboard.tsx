@@ -1,12 +1,12 @@
+
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import {
-  CheckSquare, GripVertical, Star, Settings, CalendarDays
+  CheckSquare, Settings, CalendarDays, Star
 } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
 import { allMedicoToolsList } from '@/config/medico-tools-config';
@@ -19,11 +19,7 @@ export function MedicoDashboard() {
     const [isEditMode, setIsEditMode] = useState(false);
     
     // The single source of truth for tool order
-    const [displayedTools, setDisplayedTools] = useState<MedicoTool[]>(() => {
-        // In a real app, you would fetch the user's saved order from a DB.
-        // For now, we use the default order from the config.
-        return allMedicoToolsList;
-    });
+    const [displayedTools, setDisplayedTools] = useState<MedicoTool[]>(allMedicoToolsList);
     
     // These are now derived from the single state, ensuring consistency
     const frequentlyUsedMedicoToolIds = allMedicoToolsList

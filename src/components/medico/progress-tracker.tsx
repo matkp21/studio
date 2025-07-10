@@ -45,7 +45,7 @@ const sampleProgressData: MedicoProgressTrackerOutput & { subjects: any[], achie
   ]
 };
 
-export function ProgressTracker() {
+export default function ProgressTracker() {
   const [progressData] = useState(sampleProgressData);
   const { resolvedTheme } = useTheme();
 

@@ -1,3 +1,4 @@
+
 // src/components/medico/anatomy-visualizer.tsx
 "use client";
 
@@ -27,7 +28,7 @@ const formSchema = z.object({
 
 type AnatomyFormValues = z.infer<typeof formSchema>;
 
-export function AnatomyVisualizer() {
+export default function AnatomyVisualizer() {
   const [isLoading, setIsLoading] = useState(false);
   const [anatomyData, setAnatomyData] = useState<MedicoAnatomyVisualizerOutput | null>(null);
   const [error, setError] = useState<string | null>(null);

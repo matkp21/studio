@@ -1,3 +1,4 @@
+
 // src/components/medico/micro-mate.tsx
 
 "use client";
@@ -27,7 +28,7 @@ const formSchema = z.object({
 });
 type MicroMateFormValues = z.infer<typeof formSchema>;
 
-export function MicroMate() {
+export default function MicroMate() {
   const { toast } = useToast();
   const { user } = useProMode();
   const { execute: runGetMicrobeInfo, data: microbeData, isLoading, error, reset } = useAiAgent(getMicrobeInfo, {
