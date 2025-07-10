@@ -1,6 +1,4 @@
-
 // src/components/medico/micro-mate.tsx
-
 "use client";
 
 import { useForm, type SubmitHandler } from 'react-hook-form';
@@ -21,6 +19,7 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MicroMateOutputSchema } from '@/ai/schemas/medico-tools-schemas';
 
 
 const formSchema = z.object({
@@ -31,7 +30,7 @@ type MicroMateFormValues = z.infer<typeof formSchema>;
 export default function MicroMate() {
   const { toast } = useToast();
   const { user } = useProMode();
-  const { execute: runGetMicrobeInfo, data: microbeData, isLoading, error, reset } = useAiAgent(getMicrobeInfo, {
+  const { execute: runGetMicrobeInfo, data: microbeData, isLoading, error, reset } = useAiAgent(getMicrobeInfo, MicroMateOutputSchema, {
     onSuccess: (data, input) => {
       toast({
         title: "Microbe Info Ready!",

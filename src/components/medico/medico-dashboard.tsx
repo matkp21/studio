@@ -1,33 +1,32 @@
-
 // src/components/medico/medico-dashboard.tsx
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
-  CheckSquare, Settings, CalendarDays, Star
+  CheckSquare, Settings, CalendarDays, Star, GripVertical, Loader2
 } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
 import { allMedicoToolsList } from '@/config/medico-tools-config';
-import type { MedicoTool } from '@/types/medico-tools';
+import type { MedicoTool, ActiveToolId } from '@/types/medico-tools';
 import { HeroWidgets, type HeroTask } from '@/components/homepage/hero-widgets';
-import { MedicoToolCard } from './medico-tool-card';
+import { ProToolCard } from '@/components/pro/pro-tool-card'; // Reusing this card for consistency
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Wrapper component to handle suspense boundary for useSearchParams
 export function MedicoDashboard() {
     const [isEditMode, setIsEditMode] = useState(false);
-    
-    // The single source of truth for tool order
     const [displayedTools, setDisplayedTools] = useState<MedicoTool[]>(allMedicoToolsList);
-    
-    // These are now derived from the single state, ensuring consistency
-    const frequentlyUsedMedicoToolIds = allMedicoToolsList
+    const [activeDialog, setActiveDialog] = useState<ActiveToolId>(null);
+
+    const frequentlyUsedToolIds = allMedicoToolsList
         .filter(t => t.isFrequentlyUsed)
         .map(t => t.id);
 
-    const frequentlyUsedTools = displayedTools.filter(tool => frequentlyUsedMedicoToolIds.includes(tool.id));
-    const otherTools = displayedTools.filter(tool => !frequentlyUsedMedicoToolIds.includes(tool.id));
+    const frequentlyUsedTools = displayedTools.filter(tool => frequentlyUsedToolIds.includes(tool.id));
+    const otherTools = displayedTools.filter(tool => !frequentlyUsedToolIds.includes(tool.id));
     
     const medicoTasks: HeroTask[] = [
       { id: 'med-1', date: new Date(), title: 'Anatomy Lecture', description: '10:00 AM - Skeletal System' },
@@ -35,6 +34,8 @@ export function MedicoDashboard() {
       { id: 'med-3', date: new Date(new Date().setDate(new Date().getDate() + 1)), title: 'Quiz Due: Pharmacology', description: 'Covers autonomic drugs' },
     ];
 
+    const currentTool = allMedicoToolsList.find(tool => tool.id === activeDialog);
+    const ToolComponent = currentTool?.component;
 
      return (
         <div className="container mx-auto py-8">
@@ -83,11 +84,12 @@ export function MedicoDashboard() {
                     >
                     {displayedTools.map((tool) => (
                         <Reorder.Item key={tool.id} value={tool} layout>
-                        <MedicoToolCard 
-                            tool={tool} 
-                            isFrequentlyUsed={frequentlyUsedMedicoToolIds.includes(tool.id)} 
+                          <ProToolCard 
+                            tool={tool as any} // Cast to satisfy ProToolCard's stricter type for now
+                            onLaunch={setActiveDialog} 
+                            isFrequentlyUsed={frequentlyUsedToolIds.includes(tool.id)} 
                             isEditMode={isEditMode} 
-                        />
+                          />
                         </Reorder.Item>
                     ))}
                     </Reorder.Group>
@@ -101,7 +103,13 @@ export function MedicoDashboard() {
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {frequentlyUsedTools.map((tool) => (
-                            <MedicoToolCard key={`${tool.id}-freq`} tool={tool} isFrequentlyUsed isEditMode={isEditMode} />
+                           <ProToolCard
+                              key={`${tool.id}-freq`}
+                              tool={tool as any}
+                              onLaunch={setActiveDialog}
+                              isFrequentlyUsed
+                              isEditMode={isEditMode}
+                            />
                         ))}
                         </div>
                     </section>
@@ -111,12 +119,35 @@ export function MedicoDashboard() {
                     <h2 className="text-2xl font-semibold text-foreground mb-5">All Medico Tools</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                         {otherTools.map((tool) => (
-                            <MedicoToolCard key={tool.id} tool={tool} isEditMode={isEditMode} />
+                           <ProToolCard key={tool.id} tool={tool as any} onLaunch={setActiveDialog} isEditMode={isEditMode} />
                         ))}
                     </div>
                     </section>
                 </>
                 )}
+            
+            <Dialog open={!!activeDialog} onOpenChange={(isOpen) => !isOpen && setActiveDialog(null)}>
+              {currentTool && ToolComponent && (
+                  <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] flex flex-col p-0">
+                      <DialogHeader className="p-6 pb-4 sticky top-0 bg-background border-b z-10">
+                          <DialogTitle className="text-2xl flex items-center gap-2">
+                              <currentTool.icon className="h-6 w-6 text-primary" /> {currentTool.title}
+                          </DialogTitle>
+                          <DialogDescription className="text-sm">{currentTool.description}</DialogDescription>
+                      </DialogHeader>
+                      <ScrollArea className="flex-grow overflow-y-auto">
+                          <Suspense fallback={<div className="flex justify-center items-center h-full min-h-[400px]"><Loader2 className="h-8 w-8 animate-spin text-primary"/></div>}>
+                              <div className="p-6 pt-2">
+                                  <ToolComponent />
+                              </div>
+                          </Suspense>
+                      </ScrollArea>
+                      <DialogClose asChild>
+                          <Button variant="outline" className="m-4 self-end">Close</Button>
+                      </DialogClose>
+                  </DialogContent>
+              )}
+            </Dialog>
         </div>
     );
 };

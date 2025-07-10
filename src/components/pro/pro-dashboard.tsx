@@ -6,14 +6,14 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '../ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '../ui/dialog';
 import { cn } from '@/lib/utils';
 import {
   Brain, ClipboardCheck, ArrowRightLeft, Mic, BarChart3, BriefcaseMedical,
   FileText, Pill, MessageSquareHeart, PhoneForwarded, Library, FilePlus, Settings, Star, CheckSquare, ShieldCheck, Loader2
 } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
-import { ProToolCard } from './pro-tool-card'; // Import the extracted component
+import { ProToolCard } from './pro-tool-card'; 
 
 // Dynamic imports for performance
 const TriageAndReferral = React.lazy(() => import('./triage-and-referral').then(m => ({ default: m.TriageAndReferral })));
@@ -158,6 +158,9 @@ export function ProModeDashboard() {
                     </div>
                 </Suspense>
                 </ScrollArea>
+                <DialogClose asChild>
+                    <Button variant="outline" className="m-4 self-end">Close</Button>
+                </DialogClose>
             </DialogContent>
         )}
       </Dialog>

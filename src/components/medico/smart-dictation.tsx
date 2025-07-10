@@ -1,4 +1,3 @@
-
 // src/components/medico/smart-dictation.tsx
 "use client";
 

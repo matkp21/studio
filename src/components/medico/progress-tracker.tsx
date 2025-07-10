@@ -1,4 +1,3 @@
-
 // src/components/medico/progress-tracker.tsx
 "use client";
 

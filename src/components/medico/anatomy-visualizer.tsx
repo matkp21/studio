@@ -1,4 +1,3 @@
-
 // src/components/medico/anatomy-visualizer.tsx
 "use client";
 
@@ -21,6 +20,8 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useAiAgent } from '@/hooks/use-ai-agent';
+import { MedicoAnatomyVisualizerOutputSchema } from '@/ai/schemas/medico-tools-schemas';
 
 const formSchema = z.object({
   anatomicalStructure: z.string().min(3, { message: "Structure name must be at least 3 characters." }).max(100, { message: "Structure name too long."}),
@@ -29,11 +30,17 @@ const formSchema = z.object({
 type AnatomyFormValues = z.infer<typeof formSchema>;
 
 export default function AnatomyVisualizer() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [anatomyData, setAnatomyData] = useState<MedicoAnatomyVisualizerOutput | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const { user } = useProMode();
+  const { execute: runGetAnatomy, data: anatomyData, isLoading, error, reset } = useAiAgent(getAnatomyDescription, MedicoAnatomyVisualizerOutputSchema, {
+    onSuccess: (data, input) => {
+        toast({
+            title: "Anatomy Description Ready!",
+            description: `Details for "${input.anatomicalStructure}" have been generated.`,
+        });
+    }
+  });
+
 
   const form = useForm<AnatomyFormValues>({
     resolver: zodResolver(formSchema),
@@ -43,25 +50,7 @@ export default function AnatomyVisualizer() {
   });
 
   const onSubmit: SubmitHandler<AnatomyFormValues> = async (data) => {
-    setIsLoading(true);
-    setAnatomyData(null);
-    setError(null);
-
-    try {
-      const result = await getAnatomyDescription(data as MedicoAnatomyVisualizerInput);
-      setAnatomyData(result);
-    } catch (err) {
-      console.error("Anatomy description error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-      setError(errorMessage);
-      toast({
-        title: "Retrieval Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await runGetAnatomy(data as MedicoAnatomyVisualizerInput);
   };
   
   const handleSaveToLibrary = async () => {

@@ -1,4 +1,3 @@
-
 // src/types/medico-tools.ts
 import type { ReactNode, LazyExoticComponent, ComponentType } from 'react';
 

@@ -30,7 +30,7 @@ const sampleLeaderboard = [
 ];
 
 
-export function GamifiedCaseChallenges() {
+export default function GamifiedCaseChallenges() {
   const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);

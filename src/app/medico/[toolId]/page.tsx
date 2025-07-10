@@ -1,4 +1,3 @@
-
 // src/app/medico/[toolId]/page.tsx
 'use client';
 
@@ -15,13 +14,17 @@ function MedicoToolPageContent() {
     const toolId = params.toolId as string;
     const topic = searchParams.get('topic');
 
-    const tool = useMemo(() => allMedicoToolsList.find(t => t.id === toolId), [toolId]);
+    const tool = useMemo(() => {
+      if (!toolId) return null;
+      return allMedicoToolsList.find(t => t.id === toolId);
+    }, [toolId]);
 
-    if (!tool || !tool.component) {
+    if (!tool) {
         notFound();
     }
 
-    const ToolComponent = tool.component;
+    // Since component is now required for this route, we don't need to check for its existence
+    const ToolComponent = tool.component!;
 
     return (
         <PageWrapper title={tool.title}>
@@ -34,6 +37,7 @@ function MedicoToolPageContent() {
                     <CardDescription>{tool.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
+                     {/* The Suspense boundary is critical for lazy loaded components */}
                     <Suspense fallback={
                         <div className="flex justify-center items-center min-h-[200px]">
                             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -49,6 +53,7 @@ function MedicoToolPageContent() {
 
 export default function MedicoToolPage() {
     return (
+        // The outer Suspense is for loading the page content itself (including params hooks)
         <Suspense fallback={
             <PageWrapper title="Loading Tool...">
                 <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
